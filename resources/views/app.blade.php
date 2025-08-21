@@ -1,1 +1,1 @@
-@extends('home')
+{{-- @extends('home') --}}
