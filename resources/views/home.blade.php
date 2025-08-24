@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Home Page')
+
 @section('content')
 <!-- Hero: Start -->
 <section id="hero-animation">
@@ -62,7 +64,7 @@
                 <h5 class="mb-2">Quality Code</h5>
                 <p class="features-icon-description">Code structure that all developers will easily understand and fall in love with.</p>
             </div>
-            
+
             <!-- Feature 2 -->
             <div class="col-lg-4 col-sm-6 text-center features-icon-box">
                 <div class="mb-4 text-primary text-center">
@@ -73,7 +75,7 @@
                 <h5 class="mb-2">Continuous Updates</h5>
                 <p class="features-icon-description">Free updates for the next 12 months, including new demos and features.</p>
             </div>
-            
+
             <!-- Más features... -->
         </div>
     </div>
@@ -113,7 +115,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Más team members... -->
         </div>
     </div>
@@ -134,7 +136,7 @@
             designed for you
         </h4>
         <p class="text-center pb-2 mb-7">All plans include 40+ advanced tools and features to boost your product.<br />Choose the best plan to fit your needs.</p>
-        
+
         <div class="row g-6 pt-lg-5">
             <!-- Basic Plan -->
             <div class="col-xl-4 col-lg-6">
@@ -161,7 +163,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Más planes de precios... -->
         </div>
     </div>
@@ -186,7 +188,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- Más fun facts... -->
         </div>
     </div>
@@ -207,7 +209,7 @@
             </span>
         </h4>
         <p class="text-center mb-12 pb-md-4">Browse through these FAQs to find answers to commonly asked questions.</p>
-        
+
         <div class="accordion" id="accordionExample">
             <!-- FAQ Item 1 -->
             <div class="card accordion-item">
@@ -218,7 +220,7 @@
                     <div class="accordion-body">Lemon drops chocolate cake gummies carrot cake chupa chups muffin topping...</div>
                 </div>
             </div>
-            
+
             <!-- Más FAQ items... -->
         </div>
     </div>
@@ -257,7 +259,7 @@
             together
         </h4>
         <p class="text-center mb-12 pb-md-4">Any question or remark? just write us a message</p>
-        
+
         <div class="row g-6">
             <div class="col-lg-5">
                 <!-- Contact info -->

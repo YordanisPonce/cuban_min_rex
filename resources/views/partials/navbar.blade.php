@@ -226,7 +226,7 @@
       <!-- Menu wrapper: End -->
       <!-- Toolbar: Start -->
       <ul class="navbar-nav flex-row align-items-center ms-auto">
-        
+
           <!-- Style Switcher -->
           <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-1">
             <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);" data-bs-toggle="dropdown">
@@ -252,10 +252,10 @@
             </ul>
           </li>
           <!-- / Style Switcher-->
-        
+
         <!-- navbar button: Start -->
         <li>
-          <a href="#" class="btn btn-primary" target="_blank"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
+          <a href="{{ route('login') }}" class="btn btn-primary" ><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
         </li>
         <!-- navbar button: End -->
       </ul>
