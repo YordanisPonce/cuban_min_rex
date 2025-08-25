@@ -18,8 +18,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
-use DutchCodingCompany\FilamentSocialite\FilamentSocialitePlugin;
-use DutchCodingCompany\FilamentSocialite\Provider;
+
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -43,14 +42,7 @@ class AdminPanelProvider extends PanelProvider
                 AccountWidget::class,
                 FilamentInfoWidget::class,
             ])
-            ->plugins([
-                FilamentSocialitePlugin::make()
-                    ->providers([
-                        Provider::make('google')
-                            ->label('Google')
-                            // ->icon('heroicon-o-globe'),
-                    ]),
-            ])
+            ->plugins([ ])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

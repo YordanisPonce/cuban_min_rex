@@ -173,19 +173,19 @@
 
                     <div class="d-flex justify-content-center">
                         <!-- Social logins -->
-                        {{-- <a href="{{ route('google.redirect') }}" class="btn btn-icon rounded-circle btn-text-google-plus me-1_5">
+                        {{-- <a href="{{ route('#') }}" class="btn btn-icon rounded-circle btn-text-google-plus me-1_5">
                             <i class="icon-base ti tabler-brand-google-filled icon-20px"></i>
                         </a> --}}
 
-                        {{-- <a href="{{ route('socialite.filament.admin.oauth.redirect', 'facebook') }}" class="btn btn-icon rounded-circle btn-text-facebook me-1_5">
+                        {{-- <a href="{{ route('#', 'facebook') }}" class="btn btn-icon rounded-circle btn-text-facebook me-1_5">
                             <i class="icon-base ti tabler-brand-facebook-filled icon-20px"></i>
                         </a>
 
-                        <a href="{{ route('socialite.filament.admin.oauth.redirect', 'github') }}" class="btn btn-icon rounded-circle btn-text-github me-1_5">
+                        <a href="{{ route('#', 'github') }}" class="btn btn-icon rounded-circle btn-text-github me-1_5">
                             <i class="icon-base ti tabler-brand-github-filled icon-20px"></i>
                         </a>
 
-                        <a href="{{ route('socialite.filament.admin.oauth.redirect', 'twitter') }}" class="btn btn-icon rounded-circle btn-text-twitter">
+                        <a href="{{ route('#', 'twitter') }}" class="btn btn-icon rounded-circle btn-text-twitter">
                             <i class="icon-base ti tabler-brand-twitter-filled icon-20px"></i>
                         </a> --}}
                     </div>
