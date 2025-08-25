@@ -173,9 +173,9 @@
 
                     <div class="d-flex justify-content-center">
                         <!-- Social logins -->
-                        <a href="{{ route('socialite.filament.admin.oauth.redirect', 'google') }}" class="btn btn-icon rounded-circle btn-text-google-plus me-1_5">
+                        {{-- <a href="{{ route('google.redirect') }}" class="btn btn-icon rounded-circle btn-text-google-plus me-1_5">
                             <i class="icon-base ti tabler-brand-google-filled icon-20px"></i>
-                        </a>
+                        </a> --}}
 
                         {{-- <a href="{{ route('socialite.filament.admin.oauth.redirect', 'facebook') }}" class="btn btn-icon rounded-circle btn-text-facebook me-1_5">
                             <i class="icon-base ti tabler-brand-facebook-filled icon-20px"></i>

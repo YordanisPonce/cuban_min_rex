@@ -6,7 +6,7 @@
 <!-- Hero: Start -->
 <section id="hero-animation">
     <div id="landingHero" class="section-py landing-hero position-relative">
-        <img src="assets/img/front-pages/backgrounds/hero-bg.png" alt="hero background" class="position-absolute top-0 start-50 translate-middle-x object-fit-cover w-100 h-100" data-speed="1" />
+        <img src="{{ asset('assets/img/front-pages/backgrounds/hero-bg.png') }}" alt="hero background" class="position-absolute top-0 start-50 translate-middle-x object-fit-cover w-100 h-100" data-speed="1" />
         <div class="container">
             <div class="hero-text-box text-center position-relative">
                 <h1 class="text-primary hero-title display-6 fw-extrabold">One dashboard to manage all your businesses</h1>
@@ -15,15 +15,15 @@
                     for Reliability and Customizability.
                 </h2>
                 <div class="landing-hero-btn d-inline-block position-relative">
-                    <span class="hero-btn-item position-absolute d-none d-md-flex fw-medium">Join community <img src="assets/img/front-pages/icon/Join-community-arrow.png" alt="Join community arrow" class="scaleX-n1-rtl" /></span>
+                    <span class="hero-btn-item position-absolute d-none d-md-flex fw-medium">Join community <img src="{{ asset('assets/img/front-pages/icon/Join-community-arrow.png') }}" alt="Join community arrow" class="scaleX-n1-rtl" /></span>
                     <a href="#landingPricing" class="btn btn-primary btn-lg">Get early access</a>
                 </div>
             </div>
             <div id="heroDashboardAnimation" class="hero-animation-img">
                 <a href="https://demos.pixinvent.com/vuexy-html-admin-template/html/vertical-menu-template/app-ecommerce-dashboard.html" target="_blank">
                     <div id="heroAnimationImg" class="position-relative hero-dashboard-img">
-                        <img src="assets/img/front-pages/landing-page/hero-dashboard-light.png" alt="hero dashboard" class="animation-img" data-app-light-img="assets/front-pages/front-pages/landing-page/hero-dashboard-dark.png" />
-                        <img src="assets/img/front-pages/landing-page/hero-elements-light.png" alt="hero elements" class="position-absolute hero-elements-img animation-img top-0 start-0" data-app-light-img="front-pages/landing-page/hero-elements-light.png" data-app-dark-img="assets/img/front-pages/landing-page/hero-elements-dark.png" />
+                        <img src="{{ asset('assets/img/front-pages/landing-page/hero-dashboard-light.png')}}" alt="hero dashboard" class="animation-img" data-app-light-img="{{ asset('assets/front-pages/front-pages/landing-page/hero-dashboard-dark.png')}}" />
+                        <img src="{{ asset('assets/img/front-pages/landing-page/hero-elements-light.png')}}" alt="hero elements" class="position-absolute hero-elements-img animation-img top-0 start-0" data-app-light-img="front-pages/landing-page/hero-elements-light.png" data-app-dark-img="assets/img/front-pages/landing-page/hero-elements-dark.png" />
                     </div>
                 </a>
             </div>
@@ -42,7 +42,7 @@
         <h4 class="text-center mb-1">
             <span class="position-relative fw-extrabold z-1"
                 >Everything you need
-                <img src="assets/img/front-pages/icon/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
+                <img src="{{ asset('assets/img/front-pages/icon/section-title-icon.png')}}" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
             </span>
             to start your next project
         </h4>
@@ -97,7 +97,7 @@
         <h4 class="text-center mb-1">
             <span class="position-relative fw-extrabold z-1"
                 >Supported
-                <img src="assets/img/front-pages/icon/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
+                <img src=""{{ asset('assets/img/front-pages/icon/section-title-icon.png')}}" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
             </span>
             by Real People
         </h4>
@@ -107,7 +107,7 @@
             <div class="col-lg-3 col-sm-6">
                 <div class="card mt-3 mt-lg-0 shadow-none">
                     <div class="bg-label-primary border border-bottom-0 border-label-primary position-relative team-image-box">
-                        <img src="assets/img/front-pages/landing-page/team-member-1.png" class="position-absolute card-img-position bottom-0 start-50" alt="human image" />
+                        <img src="{{ asset('assets/img/front-pages/landing-page/team-member-1.png')}}" class="position-absolute card-img-position bottom-0 start-50" alt="human image" />
                     </div>
                     <div class="card-body border border-top-0 border-label-primary text-center">
                         <h5 class="card-title mb-0">Sophie Gilbert</h5>
@@ -131,7 +131,7 @@
         <h4 class="text-center mb-1">
             <span class="position-relative fw-extrabold z-1"
                 >Tailored pricing plans
-                <img src="assets/img/front-pages/icon/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
+                <img src="{{ asset('assets/img/front-pages/icon/section-title-icon.png')}}" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
             </span>
             designed for you
         </h4>
@@ -143,7 +143,7 @@
                 <div class="card">
                     <div class="card-header">
                         <div class="text-center">
-                            <img src="assets/img/front-pages/icon/paper-airplane.png" alt="paper airplane icon" class="mb-8 pb-2" />
+                            <img src="{{ asset('assets/img/front-pages/icon/paper-airplane.png')}}" alt="paper airplane icon" class="mb-8 pb-2" />
                             <h4 class="mb-0">Basic</h4>
                             <div class="d-flex align-items-center justify-content-center">
                                 <span class="price-monthly h2 text-primary fw-extrabold mb-0">$19</span>
@@ -205,7 +205,7 @@
             Frequently asked
             <span class="position-relative fw-extrabold z-1"
                 >questions
-                <img src="assets/img/front-pages/icon/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
+                <img src="{{ asset('assets/img/front-pages/icon/section-title-icon.png')}}" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
             </span>
         </h4>
         <p class="text-center mb-12 pb-md-4">Browse through these FAQs to find answers to commonly asked questions.</p>
@@ -229,7 +229,7 @@
 
 <!-- CTA: Start -->
 <section id="landingCTA" class="section-py landing-cta position-relative p-lg-0 pb-0">
-    <img src="assets/img/front-pages/backgrounds/cta-bg-light.png" class="position-absolute bottom-0 end-0 scaleX-n1-rtl h-100 w-100 z-n1" alt="cta image" />
+    <img src="{{ asset('assets/img/front-pages/backgrounds/cta-bg-light.png')}}" class="position-absolute bottom-0 end-0 scaleX-n1-rtl h-100 w-100 z-n1" alt="cta image" />
     <div class="container">
         <div class="row align-items-center gy-12">
             <div class="col-lg-6 text-start text-sm-center text-lg-start">
@@ -238,7 +238,7 @@
                 <a href="https://demos.pixinvent.com/vuexy-html-admin-template/html/front-pages/payment-page.html" class="btn btn-lg btn-primary">Get Started</a>
             </div>
             <div class="col-lg-6 pt-lg-12 text-center text-lg-end">
-                <img src="assets/img/front-pages/landing-page/cta-dashboard.png" alt="cta dashboard" class="img-fluid mt-lg-4" />
+                <img src="{{ asset('assets/img/front-pages/landing-page/cta-dashboard.png')}}" alt="cta dashboard" class="img-fluid mt-lg-4" />
             </div>
         </div>
     </div>
@@ -254,7 +254,7 @@
         <h4 class="text-center mb-1">
             <span class="position-relative fw-extrabold z-1"
                 >Let's work
-                <img src="assets/img/front-pages/icon/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
+                <img src="{{ asset('assets/img/front-pages/icon/section-title-icon.png')}}" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1" />
             </span>
             together
         </h4>

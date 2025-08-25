@@ -5,12 +5,31 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login'); // mostrar login
 Route::post('/login', [AuthenticatedSessionController::class, 'store']); // procesar login
 Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout'); // logout
+
+Route::get('/auth/callback/google', function () {
+    $googleUser = Socialite::driver('google')->user();
+    $user = User::updateOrCreate(
+        ['email' => $googleUser->getEmail()],
+        [
+            'name' => $googleUser->getName(),
+            'google_id' => $googleUser->getId(),
+            'avatar' => $googleUser->getAvatar(),
+        ]
+    );
+
+    Auth::login($user);
+
+    return redirect()->route('home');
+})->name('google.callback');
 
 Route::middleware(['auth','verified'])->group(function (){
     // Route::get('/dashboard', function () {   //por ahora no lo utilizo

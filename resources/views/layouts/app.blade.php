@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
     <title>@yield('title', 'Cuban_Mix_Rex')</title>
-    
+
     <meta name="description" content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
     <!-- Canonical SEO -->
     <meta name="keywords" content="Vuexy bootstrap dashboard, vuexy bootstrap 5 dashboard, themeselection, html dashboard, web dashboard, frontend dashboard, responsive bootstrap theme" />
@@ -17,7 +17,7 @@
     <meta property="og:description" content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
     <meta property="og:site_name" content="Pixinvent" />
     <link rel="canonical" href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
-    
+
     @if(env('APP_ENV') == 'production')
     <script>
         (function (w, d, s, l, i) {
@@ -32,7 +32,7 @@
         })(window, document, 'script', 'dataLayer', 'GTM-5J3LMKC');
     </script>
     @endif
-    
+
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
 
@@ -45,38 +45,38 @@
 
     <!-- Core CSS -->
     <!-- build:css assets/vendor/css/theme.css  -->
-    
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
-    
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
-    
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/demo.css') }}" />
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page.css') }}" />
-    
+
     <!-- Vendors CSS -->
-    
+
     <!-- endbuild -->
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/nouislider/nouislider.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/swiper/swiper.css') }}" />
 
     <!-- Page CSS -->
-    
+
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page-landing.css') }}" />
 
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-    
+
     <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
     <script src="{{ asset('assets/vendor/js/template-customizer.js') }}"></script>
-    
+
     <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-    
+
     <script src="{{ asset('assets/js/front-config.js') }}"></script>
-    
+
     @stack('styles')
 </head>
 
@@ -101,14 +101,14 @@
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/theme.js  -->
-    
+
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>
 
     <script src="{{ asset('assets/vendor/libs/@algolia/autocomplete-js.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/pickr/pickr.js') }}"></script>
-    
+
     <!-- endbuild -->
 
     <!-- Vendors JS -->
@@ -120,7 +120,7 @@
 
     <!-- Page JS -->
     <script src="{{ asset('assets/js/front-page-landing.js') }}"></script>
-    
+
     @stack('scripts')
 </body>
 </html>

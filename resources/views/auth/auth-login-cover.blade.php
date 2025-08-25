@@ -51,7 +51,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/css/demo.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/vendor/css/demo.css') }}" />
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page.css') }}" />
 
@@ -167,7 +167,7 @@
                             <i class="icon-base ti tabler-brand-google-filled icon-20px"></i>
                         </a>
 
-                        <a href="{{ route('socialite.filament.admin.oauth.redirect', 'facebook') }}" class="btn btn-icon rounded-circle btn-text-facebook me-1_5">
+                        {{-- <a href="{{ route('socialite.filament.admin.oauth.redirect', 'facebook') }}" class="btn btn-icon rounded-circle btn-text-facebook me-1_5">
                             <i class="icon-base ti tabler-brand-facebook-filled icon-20px"></i>
                         </a>
 
@@ -176,7 +176,7 @@
                         </a>
 
                         <a href="{{ route('socialite.filament.admin.oauth.redirect', 'twitter') }}" class="btn btn-icon rounded-circle btn-text-twitter">
-                            <i class="icon-base ti tabler-brand-twitter-filled icon-20px"></i>
+                            <i class="icon-base ti tabler-brand-twitter-filled icon-20px"></i> --}}
                         </a>
                     </div>
                 </div>

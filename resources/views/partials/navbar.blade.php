@@ -254,9 +254,37 @@
           <!-- / Style Switcher-->
 
         <!-- navbar button: Start -->
-        <li>
-          <a href="{{ route('login') }}" class="btn btn-primary" ><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
-        </li>
+        @auth
+          <li class="nav-item dropdown ms-2">
+            <a class="nav-link dropdown-toggle d-flex align-items-center hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
+              <div class="avatar avatar-online">
+                <span class="avatar-initial rounded-circle bg-label-primary">{{ substr(Auth::user()->name, 0, 1) }}</span>
+              </div>
+              <span class="ms-2 d-none d-md-block">{{ Auth::user()->name }}</span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                  <i class="icon-base ti tabler-user me-2"></i>
+                  <span class="align-middle">Perfil</span>
+                </a>
+              </li>
+              <li>
+                <form method="POST" action="{{ route('logout') }}">
+                  @csrf
+                  <button type="submit" class="dropdown-item">
+                    <i class="icon-base ti tabler-logout me-2"></i>
+                    <span class="align-middle">Cerrar sesión</span>
+                  </button>
+                </form>
+              </li>
+            </ul>
+          </li>
+        @else
+          <li>
+            <a href="{{ route('login') }}" class="btn btn-primary" ><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
+          </li>
+        @endauth
         <!-- navbar button: End -->
       </ul>
       <!-- Toolbar: End -->
