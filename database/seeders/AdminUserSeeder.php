@@ -2,21 +2,22 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
+use App\Enums\UserRole;
+use App\Enums\AdminUser;
 
 class AdminUserSeeder extends Seeder
 {
     public function run(): void
     {
         User::firstOrCreate(
-            ['email' => 'admin@cuban.com'],
+            ['email' => AdminUser::EMAIL->value],
             [
-                'name' => 'Super Admin',
-                'password' => Hash::make('12345678'),
-                'role' => 'admin',
+                'name' => AdminUser::NAME->value,
+                'password' => Hash::make(AdminUser::PASSWORD->value),
+                'role' => UserRole::ADMIN->value,
             ]
         );
     }
