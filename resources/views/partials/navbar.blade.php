@@ -278,7 +278,7 @@
           </li>
         @else
           <li>
-            <a href="{{ route('login') }}" class="btn btn-primary" ><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Login/Register</span></a>
+            <a href="{{ route('login') }}" class="btn btn-primary" ><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Acceder / Registrar</span></a>
           </li>
         @endauth
         <!-- navbar button: End -->
