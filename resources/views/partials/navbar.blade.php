@@ -224,7 +224,7 @@
       <ul class="navbar-nav flex-row align-items-center ms-auto">
 
           <!-- Style Switcher -->
-          <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-1">
+          {{-- <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-1">
             <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);" data-bs-toggle="dropdown">
               <i class="icon-base ti tabler-sun icon-lg theme-icon-active"></i>
               <span class="d-none ms-2" id="nav-theme-text">Toggle theme</span>
@@ -246,7 +246,7 @@
                 </button>
               </li>
             </ul>
-          </li>
+          </li> --}}
           <!-- / Style Switcher-->
 
         <!-- navbar button: Start -->
