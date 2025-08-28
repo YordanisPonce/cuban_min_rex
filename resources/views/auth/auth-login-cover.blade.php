@@ -140,7 +140,7 @@
                                 <label class="form-check-label" for="remember-me"> Recuérdame </label>
                             </div>
                             @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}"><p class="mb-0">Alvidó su contraseña?</p></a>
+                                <a href="{{ route('password.request') }}"><p class="mb-0">¿Olvidó su contraseña?</p></a>
                             @endif
                         </div>
 
