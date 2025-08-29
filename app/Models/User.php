@@ -7,6 +7,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Cashier\Billable;
 
 
 class User extends Authenticatable implements FilamentUser
@@ -65,6 +66,8 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->avatar_url ?? null;
     }
+
+    use Billable;
 
 
 

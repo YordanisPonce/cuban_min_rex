@@ -18,7 +18,7 @@
               <img src="{{ asset('assets/img/front-pages/icon/cubamix.svg') }}" alt="Cuban Mix Rex Logo" style="width: 32px; height: 22px; object-fit: contain;">
             </span>
           </span>
-          <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1">Cuban Mix Rex</span>
+          <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-md-inline">Cuban Mix Rex</span>
         </a>
       </div>
       <!-- Menu logo wrapper: End -->
