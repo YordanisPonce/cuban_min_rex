@@ -2,12 +2,13 @@
 
 namespace App\Filament\Resources\Plans\Tables;
 
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+// use Filament\Actions\BulkActionGroup;
+// use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Filament\Actions\DeleteAction;
 
 class PlansTable
 {
@@ -17,10 +18,10 @@ class PlansTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
-                TextColumn::make('stripe_product_id')
-                    ->searchable(),
-                TextColumn::make('stripe_price_id')
-                    ->searchable(),
+                // TextColumn::make('stripe_product_id')
+                //     ->searchable(),
+                // TextColumn::make('stripe_price_id')
+                    // ->searchable(),
                 TextColumn::make('price')
                     ->money()
                     ->sortable(),
@@ -43,11 +44,12 @@ class PlansTable
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                // BulkActionGroup::make([
+                //     DeleteBulkAction::make(),
+                // ]),
             ]);
     }
 }

@@ -16,6 +16,18 @@ class Plan extends Model
         'is_recommended',
     ];
 
+    protected static function booted()
+    {
+        static::saving(function ($plan) {
+            if ($plan->is_recommended) {
+                // Desmarca otros planes recomendados
+                self::where('is_recommended', true)
+                    ->where('id', '!=', $plan->id)
+                    ->update(['is_recommended' => false]);
+            }
+        });
+    }
+
     public function planActive($query)
     {
         return $query->orderBy('price', 'asc');
@@ -28,5 +40,4 @@ class Plan extends Model
     {
         return $query->where('is_recommended', true);
     }
-
 }
