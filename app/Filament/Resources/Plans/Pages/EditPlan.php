@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Plans\Pages;
 
 use App\Filament\Resources\Plans\PlanResource;
+use App\Services\StripeService;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
@@ -15,5 +16,12 @@ class EditPlan extends EditRecord
         return [
             DeleteAction::make(),
         ];
+    }
+
+    protected function afterSave(): void
+    {
+        $plan = $this->getRecord();
+        $stripeService = app(StripeService::class);
+        $stripeService->syncStripePlan($plan);
     }
 }
