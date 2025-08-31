@@ -5,16 +5,14 @@ namespace App\Filament\Resources\Plans;
 use App\Filament\Resources\Plans\Pages\CreatePlan;
 use App\Filament\Resources\Plans\Pages\EditPlan;
 use App\Filament\Resources\Plans\Pages\ListPlans;
-use App\Filament\Resources\Plans\Pages\ViewPlan;
-use App\Filament\Resources\Plans\Schemas\PlanInfolist;
+use App\Filament\Resources\Plans\Schemas\PlanForm;
 use App\Filament\Resources\Plans\Tables\PlansTable;
 use App\Models\Plan;
 use BackedEnum;
 use Filament\Resources\Resource;
-use Filament\Tables\Table;
-use Filament\Support\Icons\Heroicon;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Table;
 
 class PlanResource extends Resource
 {
@@ -26,22 +24,7 @@ class PlanResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Components\TextInput::make('name')->required(),
-                Components\TextInput::make('price')->numeric()->required(),
-                Components\Select::make('interval')
-                    ->options([
-                        'monthly' => 'Mensual',
-                        'yearly'  => 'Anual',
-                    ])
-                    ->required(),
-            ]);
-    }
-
-    public static function infolist(Schema $schema): Schema
-    {
-        return PlanInfolist::configure($schema);
+        return PlanForm::configure($schema);
     }
 
     public static function table(Table $table): Table
@@ -51,16 +34,17 @@ class PlanResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            //
+        ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index'  => ListPlans::route('/'),
+            'index' => ListPlans::route('/'),
             'create' => CreatePlan::route('/create'),
-            'view'   => ViewPlan::route('/{record}'),
-            'edit'   => EditPlan::route('/{record}/edit'),
+            'edit' => EditPlan::route('/{record}/edit'),
         ];
     }
 }
