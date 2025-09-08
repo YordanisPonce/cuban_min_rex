@@ -17,10 +17,28 @@ class StripeService
     public function syncStripePlan(Plan $plan): bool
     {
 
-        $product = $this->client->products->create([
-            'name' => $plan->name,
-            'description' => $plan->description,
-        ]);
+        if ($plan->stripe_price_id) {
+            
+            $product = $this->client->products->update($plan->stripe_product_id, [
+                'name' => $plan->name,
+                'description' => $plan->description,
+            ]);
+        } else {
+
+            $product = $this->client->products->create([
+                'name' => $plan->name,
+                'description' => $plan->description,
+            ]);
+
+            $plan->stripe_product_id = $product->id;
+
+        }
+
+        if ($plan->stripe_price_id) {
+            $this->client->prices->update($plan->stripe_price_id, [
+                'active' => false,
+            ]);
+        }
 
         $interval = $this->mapInterval($plan->duration_months);
 
@@ -45,7 +63,7 @@ class StripeService
         return match ($durationMonths) {
             12 => 'year',
             1  => 'month',
-            default => 'month', 
+            default => 'month',
         };
     }
 }
