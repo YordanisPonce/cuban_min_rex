@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Plan;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -8,7 +9,9 @@ class HomeController extends Controller
     public function index()
     {
         $pageTitle = "Inicio";
-        return view('home', compact('pageTitle'));
+        $plans = Plan::orderByDesc('is_recommended')->get();
+
+        return view('home', compact('pageTitle', 'plans'));
     }
 
     // Seccines del Home
@@ -24,7 +27,7 @@ class HomeController extends Controller
             ["name" => "Ana García", "role" => "CEO"],
             ["name" => "Carlos López", "role" => "Desarrollador"]
         ];
-        
+
         return view('about', compact('pageTitle', 'teamMembers'));
     }
 }

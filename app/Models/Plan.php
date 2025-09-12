@@ -40,4 +40,12 @@ class Plan extends Model
     {
         return $query->where('is_recommended', true);
     }
+
+    public function orders(): HasMany {
+        return $this->hasMany(Order::class);
+    }
+
+    public function getPriceFormattedAttribute(): string {
+        return number_format($this->price, 2);
+    }
 }

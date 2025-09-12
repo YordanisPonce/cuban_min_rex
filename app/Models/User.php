@@ -67,7 +67,17 @@ class User extends Authenticatable implements FilamentUser
         return $this->avatar_url ?? null;
     }
 
-   
+    public function orders(): HasMany { return $this->hasMany(Order::class); }
+
+    public function currentPlan(): BelongsTo {
+        return $this->belongsTo(Plan::class, 'current_plan_id');
+    }
+
+    public function hasActivePlan(): bool {
+        return !is_null($this->current_plan_id) && $this->plan_expires_at?->isFuture();
+    }
+
+
 
 
 

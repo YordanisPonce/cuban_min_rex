@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -39,5 +42,27 @@ Route::middleware(['auth','verified'])->group(function (){
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+// Crear orden y redirigir a Stripe
+// Route::post('/checkout/{plan}', [CheckoutController::class, 'create'])
+//     ->middleware('auth')
+//     ->name('checkout.create');
+
+Route::get('/payment/{plan}', [PaymentController::class, 'showForm'])
+    ->middleware('auth')
+    ->name('payment.form');
+
+Route::post('/payment/process', [PaymentController::class, 'process'])
+    ->middleware('auth')
+    ->name('payment.process');
+
+Route::view('/payment/ok', 'payments.ok')->name('payment.ok');
+Route::view('/payment/ko', 'payments.ko')->name('payment.ko');
+
+// Webhook de Stripe
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+    ->name('stripe.webhook');
+
+Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
 
 require __DIR__.'/auth.php';

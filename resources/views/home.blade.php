@@ -431,7 +431,46 @@
 
     <div class="row g-6 pt-lg-5">
       <!-- Plan Básico -->
-      <div class="col-xl-4 col-lg-6">
+        <div class="row gy-4">
+            @foreach($plans as $plan)
+                @php
+                $isActive = auth()->check() && auth()->user()->current_plan_id === $plan->id && auth()->user()->hasActivePlan();
+                @endphp
+
+                <div class="col-md-6 col-lg-4">
+                <div class="card shadow-sm h-100 text-center p-3 {{ $isActive ? 'border border-success' : '' }}">
+                    <div class="card-body">
+                    @if($plan->is_recommended)
+                        <span class="badge bg-success mb-2">Recomendado</span>
+                    @endif
+                    @if($isActive)
+                        <span class="badge bg-primary mb-2">Tu plan</span>
+                    @endif
+
+                    <h5 class="fw-bold">{{ $plan->name }}</h5>
+                    <p class="mb-1 text-muted">{{ $plan->description }}</p>
+                    <h6 class="text-primary fs-4 mb-3">€{{ $plan->price_formatted }}</h6>
+
+                    @auth
+                        @if($isActive)
+                            <button class="btn btn-secondary" disabled>Ya lo tienes</button>
+                        @else
+                            <a href="{{ route('payment.form', $plan->id) }}"
+                            class="btn btn-primary">
+                            Comprar plan
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                        Inicia sesión para comprar
+                        </a>
+                    @endauth
+                    </div>
+                </div>
+                </div>
+            @endforeach
+        </div>
+      {{-- <div class="col-xl-4 col-lg-6">
         <div class="card">
           <div class="card-header text-center">
             <img src="https://cdn-icons-png.flaticon.com/512/727/727218.png" alt="icono básico" class="mb-4" style="width:60px;">
@@ -456,10 +495,10 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> --}}
 
       <!-- Plan Premium -->
-      <div class="col-xl-4 col-lg-6">
+      {{-- <div class="col-xl-4 col-lg-6">
         <div class="card border border-primary shadow-xl">
           <div class="card-header text-center">
             <img src="https://cdn-icons-png.flaticon.com/512/727/727245.png" alt="icono premium" class="mb-4" style="width:60px;">
@@ -514,7 +553,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> --}}
     </div>
   </div>
 </section>
