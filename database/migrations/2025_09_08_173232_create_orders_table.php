@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('plan_id')->constrained()->cascadeOnDelete();
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('plan_id');
 
             $table->string('stripe_session_id')->nullable();
             $table->string('stripe_payment_intent')->nullable();
@@ -23,6 +23,9 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('expires_at')->nullable();
             $table->timestamps();
+
+            $table->foreign('user_id')->references('id')->on('users')->constrained()->cascadeOnDelete();
+            $table->foreign('plan_id')->references('id')->on('plans')->constrained()->cascadeOnDelete();
         });
     }
 

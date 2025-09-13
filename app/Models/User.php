@@ -77,7 +77,9 @@ class User extends Authenticatable implements FilamentUser
         return !is_null($this->current_plan_id) && $this->plan_expires_at?->isFuture();
     }
 
-
+    public function billing(){
+        return $this->hasOne(Billing::class);
+    }
 
 
 

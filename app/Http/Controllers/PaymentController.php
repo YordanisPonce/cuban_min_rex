@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Billing;
+use App\Models\Order;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
@@ -48,6 +50,23 @@ class PaymentController extends Controller
                 'success_url' => route('payment.ok'),
                 'cancel_url'  => route('payment.ko'),
             ]);
+
+            $order = new Order();
+            $order->user_id = $request->user()->id;
+            $order->plan_id = $plan->id;
+            $order->status = 'pending';
+            $order->save();
+
+            $billing = $request->user()->billing;
+            if (!$billing) {
+                $billing = new Billing();
+                $billing->user_id = $request->user()->id;
+            }
+            $billing->phone = $request->phone;
+            $billing->address = $request->address;
+            $billing->postal = $request->postal;
+            $billing->country = $request->country;
+            $billing->save();
 
             return response()->json(['url' => $session->url]);
         } catch (\Exception $e) {

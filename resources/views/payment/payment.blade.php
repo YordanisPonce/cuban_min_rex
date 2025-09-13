@@ -30,37 +30,41 @@
                             <div class="row g-6">
                                 <div class="col-md-6">
                                     <label class="form-label">Nombre completo</label>
-                                    <input type="text" name="name" class="form-control" placeholder="Juan Pérez" required />
+                                    <input type="text" name="name" class="form-control" placeholder="Juan Pérez" value="{{ Auth::user()->name }}" required />
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Correo electrónico</label>
-                                    <input type="email" name="email" class="form-control" placeholder="ejemplo@gmail.com" required />
+                                    <input type="email" name="email" class="form-control" placeholder="ejemplo@gmail.com" value="{{ Auth::user()->email }}" required />
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Teléfono</label>
-                                    <input type="tel" name="phone" class="form-control" placeholder="+34 600 123 456" />
+                                    <input type="tel" name="phone" class="form-control" placeholder="+34 600 123 456"  value="{{ Auth::user()->billing->phone }}" required/>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Dirección</label>
-                                    <input type="text" name="address" class="form-control" placeholder="Calle Falsa 123" />
+                                    <input type="text" name="address" class="form-control" placeholder="Calle Falsa 123"  value="{{ Auth::user()->billing->address }}" required />
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Código postal</label>
-                                    <input type="text" name="zip" class="form-control" placeholder="28001" />
+                                    <input type="text" name="postal" class="form-control" placeholder="28001"  value="{{ Auth::user()->billing->postal }}" required />
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">País</label>
                                     <select name="country" class="form-select" required>
                                         <option value="">Seleccionar</option>
-                                        <option value="España">España</option>
-                                        <option value="México">México</option>
-                                        <option value="Argentina">Argentina</option>
-                                        <option value="Colombia">Colombia</option>
+                                        @php
+                                            $countries = ['España', 'México', 'Argentina', 'Colombia'];
+                                        @endphp
+                                        @foreach ($countries as $country)
+                                            <option value="{{ $country }}" {{ Auth::user()->billing->country == $country ? 'selected' : '' }}>
+                                                {{ $country }}
+                                            </option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
@@ -81,15 +85,19 @@
                         </p>
 
                         <div class="bg-lighter p-6 rounded">
-                            <p>Un comienzo simple para todos</p>
+                            <p>{{$plan->description}}</p>
                             <div class="d-flex align-items-center mb-4">
-                                <h1 class="text-heading mb-0">59,99 €</h1>
-                                <sub class="h6 text-body mb-n3">/mes</sub>
+                                @foreach($plans as $plan)
+                                    @if($plan->id == $planId)
+                                        <h1 class="text-heading mb-0">{{$plan->price}} €</h1>
+                                        <sub class="h6 text-body mb-n3">/mes</sub>
+                                    @endif
+                                @endforeach
                             </div>
                         </div>
 
                         <div class="mt-5">
-                            <div class="d-flex justify-content-between align-items-center">
+                            <!-- <div class="d-flex justify-content-between align-items-center">
                                 <p class="mb-0">Subtotal</p>
                                 <h6 class="mb-0">85,99 €</h6>
                             </div>
@@ -101,7 +109,7 @@
                             <div class="d-flex justify-content-between align-items-center mt-4 pb-1">
                                 <p class="mb-0">Total</p>
                                 <h6 class="mb-0">90,98 €</h6>
-                            </div>
+                            </div> -->
 
                             <div class="d-grid mt-5">
                                 <button id="checkoutBtn" class="btn btn-success" form="checkoutForm">
