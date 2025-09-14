@@ -6,6 +6,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -32,15 +33,15 @@ class CategoriesTable
                 //
             ])
             ->recordActions([
-                EditAction::make()->hidden(fn($record) => auth()->id() != $record->user_id),
-                DeleteAction::make()->hidden(fn($record) => auth()->id() != $record->user_id),
+                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ])->modifyQueryUsing(
-                fn(EloquentBuilder $query) => $query->where('is_general', true)->orWhere('user_id', auth()->id())
+                fn(EloquentBuilder $query) => $query->where('is_general', true)->orWhere('user_id', Auth::user()->id)
             );
     }
 }
