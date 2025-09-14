@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use DateTime;
+
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -76,7 +78,14 @@ class User extends Authenticatable implements FilamentUser
     }
 
     public function hasActivePlan(): bool {
-        return !is_null($this->current_plan_id) && $this->plan_expires_at?->isFuture();
+        $isFuture = false;
+        if ($this->plan_expires_at) {
+            $expirationDate = new DateTime($this->plan_expires_at);
+            if ($expirationDate > new DateTime()) {
+                $isFuture = true;
+            }
+        }
+        return !is_null($this->current_plan_id) && $isFuture;
     }
 
     public function billing(){

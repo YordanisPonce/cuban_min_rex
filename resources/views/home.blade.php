@@ -437,7 +437,7 @@
                 $isActive = auth()->check() && auth()->user()->current_plan_id === $plan->id && auth()->user()->hasActivePlan();
               @endphp
               <div class="col-xl-4 col-lg-6">
-                <div class="card">
+                <div class="{{ $isActive ? 'card border border-primary shadow-xl' : 'card'}}">
                   <div class="card-header">
                     <div class="text-center">
                       <img src="{{ asset('storage/' . $plan->image) }}" alt="paper airplane icon" class="mb-8 pb-2 w-25" />
