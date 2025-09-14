@@ -3,10 +3,13 @@
 namespace App\Filament\Resources\Categories\Tables;
 
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\Builder;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class CategoriesTable
 {
@@ -29,12 +32,15 @@ class CategoriesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->hidden(fn($record) => auth()->id() != $record->user_id),
+                DeleteAction::make()->hidden(fn($record) => auth()->id() != $record->user_id),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])->modifyQueryUsing(
+                fn(EloquentBuilder $query) => $query->where('is_general', true)->orWhere('user_id', auth()->id())
+            );
     }
 }

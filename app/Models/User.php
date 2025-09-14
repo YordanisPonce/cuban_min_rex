@@ -57,7 +57,7 @@ class User extends Authenticatable implements FilamentUser
     // // === Filament ===
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->role==='admin'; // todos los usuarios pueden acceder, hay que cambiar para Pro
+        return true;
     }
 
     public function getFilamentName(): string
