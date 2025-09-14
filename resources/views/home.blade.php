@@ -408,14 +408,14 @@
     </h4>
     <p class="text-center pb-2 mb-7">
       Disfruta de toda la música que amas, con beneficios que se adaptan a ti. <br>
-      Paga mensual o ahorra con el plan anual 🎧
+      <!-- Paga mensual o ahorra con el plan anual 🎧 -->
     </p>
 
-    <div class="text-center mb-12">
+    <!-- <div class="text-center mb-12">
       <div class="position-relative d-inline-block pt-3 pt-md-0">
         <label class="switch switch-sm switch-primary me-0">
           <span class="switch-label fs-6 text-body me-3">Mensual</span>
-          <input type="checkbox" class="switch-input price-duration-toggler" checked="">
+          <input type="checkbox" class="switch-input price-duration-toggler">
           <span class="switch-toggle-slider">
             <span class="switch-on"></span>
             <span class="switch-off"></span>
@@ -427,7 +427,7 @@
           <span class="fw-medium mt-2 ms-1"> Ahorra 25%</span>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="row g-6 pt-lg-5">
       <!-- Plan Básico -->
@@ -444,15 +444,16 @@
                       <h4 class="mb-0">{{ $plan->name }}</h4>
                       <div class="d-flex align-items-center justify-content-center">
                         <span class="price-monthly h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
-                        <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">€{{ $plan->price_formatted*0.75 }}</span>
+                        <!-- <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">€{{ $plan->price_formatted*0.75 }}</span> -->
                         <sub class="h6 text-body-secondary mb-n1 ms-1">/mes</sub>
                       </div>
-                      <div class="position-relative pt-2">
+                      <!-- <div class="position-relative pt-2">
                         <div class="price-yearly text-body-secondary price-yearly-toggle d-none">€{{ $plan->price_formatted*12*0.75 }} / año</div>
-                      </div>
+                      </div> -->
                     </div>
                   </div>
                   <div class="card-body">
+                    @if($plan->description)
                     <ul class="list-unstyled pricing-list">
                       <li>
                         <h6 class="d-flex align-items-center mb-3">
@@ -461,6 +462,7 @@
                         </h6>
                       </li>
                     </ul>
+                    @endif
                     <div class="d-grid mt-8">
                       @auth
                         @if($isActive)

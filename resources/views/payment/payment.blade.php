@@ -249,7 +249,7 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         let formData = new FormData(form);
-
+                        document.querySelector('#loader').style.display = 'flex';
                         fetch(form.action, {
                             method: "POST",
                             headers: {
@@ -262,16 +262,19 @@
                             try {
                                 data = await res.json();
                             } catch {
+                                document.querySelector('#loader').style.display = 'none';
                                 throw new Error("Respuesta inesperada del servidor");
                             }
 
                             if (res.ok && data.url) {
                                 window.location.href = data.url;
                             } else {
+                                document.querySelector('#loader').style.display = 'none';
                                 Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago", "error");
                             }
                         })
                         .catch(err => {
+                            document.querySelector('#loader').style.display = 'none';
                             Swal.fire("Error", err.message, "error");
                         });
                     }

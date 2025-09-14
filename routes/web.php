@@ -56,8 +56,8 @@ Route::post('/payment/process', [PaymentController::class, 'process'])
     ->middleware('auth')
     ->name('payment.process');
 
-Route::view('/payment/ok', 'payments.ok')->name('payment.ok');
-Route::view('/payment/ko', 'payments.ko')->name('payment.ko');
+Route::view('/payment_ok', 'payment.ok')->name('payment.ok');
+Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
 // Webhook de Stripe
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])

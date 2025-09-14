@@ -9,7 +9,7 @@ class HomeController extends Controller
     public function index()
     {
         $pageTitle = "Inicio";
-        $plans = Plan::orderByDesc('is_recommended')->get();
+        $plans = Plan::orderBy('price')->get();
 
         return view('home', compact('pageTitle', 'plans'));
     }

@@ -77,6 +77,22 @@
 
     <script src="{{ asset('assets/js/front-config.js') }}"></script>
 
+    <style>
+        /* Estilo para el loader */
+        .loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+
     @stack('styles')
 </head>
 
@@ -98,6 +114,12 @@
         <a href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" target="_blank" class="btn btn-danger btn-buy-now">Buy Now</a>
     </div>
     @endif
+
+    <div class="loader" id="loader">
+        <div class="spinner-border" role="status">
+            
+        </div>
+    </div>
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/theme.js  -->
