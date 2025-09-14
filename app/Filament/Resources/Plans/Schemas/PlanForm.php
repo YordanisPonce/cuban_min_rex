@@ -6,6 +6,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
+use Filament\Forms\Components\FileUpload;
+use App\Models\Plan;
 
 class PlanForm
 {
@@ -41,6 +43,16 @@ class PlanForm
                             }
                         },
                     ]),
+                FileUpload::make('image')
+                    ->image()
+                    ->avatar()
+                    ->imageEditor()
+                    ->circleCropper()
+                    ->label('Subir Foto')
+                    ->required()
+                    ->disk('public')
+                    ->directory('images') 
+                    ->preserveFilenames(),
             ]);
     }
 }

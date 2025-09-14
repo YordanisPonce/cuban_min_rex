@@ -38,19 +38,19 @@
                                     <input type="email" name="email" class="form-control" placeholder="ejemplo@gmail.com" value="{{ Auth::user()->email }}" required />
                                 </div>
 
-                                <div class="col-md-6">
+                                <div class="col-md-6"> 
                                     <label class="form-label">Teléfono</label>
-                                    <input type="tel" name="phone" class="form-control" placeholder="+34 600 123 456"  value="{{ Auth::user()->billing->phone }}" required/>
+                                    <input type="tel" name="phone" class="form-control" placeholder="+34 600 123 456"  value="{{ Auth::user()->billing ? Auth::user()->billing->phone : '' }}" required/>
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Dirección</label>
-                                    <input type="text" name="address" class="form-control" placeholder="Calle Falsa 123"  value="{{ Auth::user()->billing->address }}" required />
+                                    <input type="text" name="address" class="form-control" placeholder="Calle Falsa 123"  value="{{ Auth::user()->billing ? Auth::user()->billing->address : '' }}" required />
                                 </div>
 
                                 <div class="col-md-6">
                                     <label class="form-label">Código postal</label>
-                                    <input type="text" name="postal" class="form-control" placeholder="28001"  value="{{ Auth::user()->billing->postal }}" required />
+                                    <input type="text" name="postal" class="form-control" placeholder="28001"  value="{{ Auth::user()->billing ? Auth::user()->billing->postal : '' }}" required />
                                 </div>
 
                                 <div class="col-md-6">
@@ -61,7 +61,7 @@
                                             $countries = ['España', 'México', 'Argentina', 'Colombia'];
                                         @endphp
                                         @foreach ($countries as $country)
-                                            <option value="{{ $country }}" {{ Auth::user()->billing->country == $country ? 'selected' : '' }}>
+                                            <option value="{{ $country }}" {{ Auth::user()->billing ? (Auth::user()->billing->country == $country ? 'selected' : '') : '' }}>
                                                 {{ $country }}
                                             </option>
                                         @endforeach
@@ -85,15 +85,15 @@
                         </p>
 
                         <div class="bg-lighter p-6 rounded">
-                            <p>{{$plan->description}}</p>
-                            <div class="d-flex align-items-center mb-4">
-                                @foreach($plans as $plan)
-                                    @if($plan->id == $planId)
-                                        <h1 class="text-heading mb-0">{{$plan->price}} €</h1>
-                                        <sub class="h6 text-body mb-n3">/mes</sub>
-                                    @endif
-                                @endforeach
-                            </div>
+                            @foreach($plans as $plan)
+                                @if($plan->id == $planId)
+                                    <p>{{$plan->description}}</p>
+                                    <div class="d-flex align-items-center mb-4">
+                                                <h1 class="text-heading mb-0">{{$plan->price}} €</h1>
+                                                <sub class="h6 text-body mb-n3">/mes</sub>
+                                    </div>
+                                @endif
+                            @endforeach
                         </div>
 
                         <div class="mt-5">

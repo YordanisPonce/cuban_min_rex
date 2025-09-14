@@ -7,6 +7,7 @@ namespace App\Filament\Resources\Plans\Tables;
 use Filament\Actions\EditAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Table;
 use Filament\Actions\DeleteAction;
 
@@ -28,6 +29,10 @@ class PlansTable
                 TextColumn::make('duration_months')
                     ->numeric()
                     ->sortable(),
+                ImageColumn::make('image')
+                    ->label('Image')
+                    ->disk('public')
+                    ->url(fn ($record) => $record->image ? asset('storage/' . $record->image) : null),
                 IconColumn::make('is_recommended')
                     ->boolean(),
                 TextColumn::make('created_at')

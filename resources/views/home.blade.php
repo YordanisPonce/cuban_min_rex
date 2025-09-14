@@ -433,41 +433,50 @@
       <!-- Plan Básico -->
         <div class="row gy-4">
             @foreach($plans as $plan)
-                @php
+              @php
                 $isActive = auth()->check() && auth()->user()->current_plan_id === $plan->id && auth()->user()->hasActivePlan();
-                @endphp
-
-                <div class="col-md-6 col-lg-4">
-                <div class="card shadow-sm h-100 text-center p-3 {{ $isActive ? 'border border-success' : '' }}">
-                    <div class="card-body">
-                    @if($plan->is_recommended)
-                        <span class="badge bg-success mb-2">Recomendado</span>
-                    @endif
-                    @if($isActive)
-                        <span class="badge bg-primary mb-2">Tu plan</span>
-                    @endif
-
-                    <h5 class="fw-bold">{{ $plan->name }}</h5>
-                    <p class="mb-1 text-muted">{{ $plan->description }}</p>
-                    <h6 class="text-primary fs-4 mb-3">€{{ $plan->price_formatted }}</h6>
-
-                    @auth
+              @endphp
+              <div class="col-xl-4 col-lg-6">
+                <div class="card">
+                  <div class="card-header">
+                    <div class="text-center">
+                      <img src="{{ asset('storage/' . $plan->image) }}" alt="paper airplane icon" class="mb-8 pb-2 w-25" />
+                      <h4 class="mb-0">{{ $plan->name }}</h4>
+                      <div class="d-flex align-items-center justify-content-center">
+                        <span class="price-monthly h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
+                        <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">€{{ $plan->price_formatted*0.75 }}</span>
+                        <sub class="h6 text-body-secondary mb-n1 ms-1">/mes</sub>
+                      </div>
+                      <div class="position-relative pt-2">
+                        <div class="price-yearly text-body-secondary price-yearly-toggle d-none">€{{ $plan->price_formatted*12*0.75 }} / año</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <ul class="list-unstyled pricing-list">
+                      <li>
+                        <h6 class="d-flex align-items-center mb-3">
+                          <span class="badge badge-center rounded-pill bg-label-primary p-0 me-3"><i class="icon-base ti tabler-check icon-12px"></i></span>
+                          {{ $plan->description }}
+                        </h6>
+                      </li>
+                    </ul>
+                    <div class="d-grid mt-8">
+                      @auth
                         @if($isActive)
                             <button class="btn btn-secondary" disabled>Ya lo tienes</button>
                         @else
-                            <a href="{{ route('payment.form', $plan->id) }}"
-                            class="btn btn-primary">
-                            Comprar plan
-                            </a>
+                            <a href="{{ route('payment.form', $plan->id) }}" class="btn btn-label-primary">Adquirir Plan</a>
                         @endif
-                    @else
-                        <a href="{{ route('login') }}" class="btn btn-outline-primary">
-                        Inicia sesión para comprar
-                        </a>
-                    @endauth
+                      @else
+                          <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                          Inicia sesión para comprar
+                          </a>
+                      @endauth
                     </div>
+                  </div>
                 </div>
-                </div>
+              </div>
             @endforeach
         </div>
       {{-- <div class="col-xl-4 col-lg-6">
