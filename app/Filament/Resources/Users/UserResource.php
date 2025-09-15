@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Gate;
 
 class UserResource extends Resource
 {
@@ -41,10 +42,14 @@ class UserResource extends Resource
 
     public static function getPages(): array
     {
-        return [
-            'index' => ListUsers::route('/'),
-            'create' => CreateUser::route('/create'),
-            'edit' => EditUser::route('/{record}/edit'),
-        ];
+        $pages = [];
+
+        if (Gate::allows('viewAny', User::class)) {
+            $pages['index'] = ListUsers::route('/');
+            $pages['create'] = CreateUser::route('/create');
+            $pages['edit'] = EditUser::route('/{record}/edit');
+        }
+
+        return $pages;
     }
 }

@@ -213,9 +213,11 @@
               </div>
             </div>
           </li>
+          @auth
           <li class="nav-item">
-            <a class="nav-link fw-medium" href="#" target="_blank">Admin</a>
+            <a class="nav-link fw-medium" href="/admin" target="_blank">Admin</a>
           </li>
+          @endauth
         </ul>
       </div>
       <div class="landing-menu-overlay d-lg-none"></div>

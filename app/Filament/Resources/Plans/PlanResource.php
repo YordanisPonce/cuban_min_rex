@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Support\Facades\Gate;
 
 class PlanResource extends Resource
 {
@@ -41,10 +42,14 @@ class PlanResource extends Resource
 
     public static function getPages(): array
     {
-        return [
-            'index' => ListPlans::route('/'),
-            'create' => CreatePlan::route('/create'),
-            'edit' => EditPlan::route('/{record}/edit'),
-        ];
+        $pages = [];
+
+        if (Gate::allows('viewAny', Plan::class)) {
+            $pages['index'] = ListPlans::route('/');
+            $pages['create'] = CreatePlan::route('/create');
+            $pages['edit'] = EditPlan::route('/{record}/edit');
+        }
+
+        return $pages;
     }
 }
