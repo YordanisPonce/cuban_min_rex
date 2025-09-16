@@ -46,8 +46,6 @@ class PlanForm
                 FileUpload::make('image')
                     ->image()
                     ->avatar()
-                    ->imageEditor()
-                    ->circleCropper()
                     ->label('Subir Foto')
                     ->required()
                     ->disk('public')

@@ -8,6 +8,7 @@ use App\Models\Collection;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TextInput;
 
 class FileForm
 {
@@ -16,16 +17,21 @@ class FileForm
         return $schema
             ->components([
                 Hidden::make('user_id')->default(Auth::user()->id),
-                FileUpload::make('name')
-                    ->disk('public')
-                    ->directory('files')
-                    ->preserveFilenames(),
+                TextInput::make('name')
+                    ->required(),
                 Select::make('collection_id')
                     ->label('Selecciona una Colección')
                     ->options(function () {
                         return Collection::where('user_id', Auth::user()->id)
                             ->pluck('name', 'id');
-                    })
+                    }),
+                FileUpload::make('file')
+                    ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])
+                    ->maxSize(20480)
+                    ->required()
+                    ->disk('public')
+                    ->directory('files')
+                    ->downloadable(),
             ]);
     }
 }

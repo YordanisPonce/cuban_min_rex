@@ -19,17 +19,19 @@ class CollectionForm
                 Hidden::make('user_id')->default(Auth::user()->id),
                 TextInput::make('name')
                     ->required(),
-                FileUpload::make('image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('images') 
-                    ->preserveFilenames(),
                 Select::make('category_id')
                     ->label('Selecciona una Categoría')
+                    ->required()
                     ->options(function () {
                         return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
                             ->pluck('name', 'id');
-                    })
+                    }),
+                FileUpload::make('image')
+                    ->image()
+                    ->avatar()
+                    ->disk('public')
+                    ->directory('images') 
+                    ->preserveFilenames(),
             ]);
     }
 }

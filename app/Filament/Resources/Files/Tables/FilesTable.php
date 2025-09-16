@@ -18,6 +18,9 @@ class FilesTable
             ->columns([
                 TextColumn::make('name')
                     ->searchable(),
+                TextColumn::make('file')
+                    ->disk('public')
+                    ->url(fn ($record) => $record->image ? asset('storage/' . $record->image) : null),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

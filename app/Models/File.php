@@ -11,6 +11,7 @@ class File extends Model
         'name',
         'collection_id',
         'user_id',
+        'file',
     ];
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
