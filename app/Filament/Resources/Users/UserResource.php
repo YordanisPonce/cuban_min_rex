@@ -42,14 +42,12 @@ class UserResource extends Resource
 
     public static function getPages(): array
     {
-        $pages = [];
 
-        if (Gate::allows('viewAny', User::class)) {
-            $pages['index'] = ListUsers::route('/');
-            $pages['create'] = CreateUser::route('/create');
-            $pages['edit'] = EditUser::route('/{record}/edit');
-        }
+        return [
+            'index' => ListUsers::route('/'),
+            'create' => CreateUser::route('/create'),
+            'edit' => EditUser::route('/{record}/edit'),
+        ];
 
-        return $pages;
     }
 }

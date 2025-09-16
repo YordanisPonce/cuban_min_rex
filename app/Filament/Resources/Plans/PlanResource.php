@@ -42,14 +42,11 @@ class PlanResource extends Resource
 
     public static function getPages(): array
     {
-        $pages = [];
 
-        if (Gate::allows('viewAny', Plan::class)) {
-            $pages['index'] = ListPlans::route('/');
-            $pages['create'] = CreatePlan::route('/create');
-            $pages['edit'] = EditPlan::route('/{record}/edit');
-        }
-
-        return $pages;
+        return [
+            'index' => ListPlans::route('/'),
+            'create' => CreatePlan::route('/create'),
+            'edit' => EditPlan::route('/{record}/edit')
+        ];
     }
 }
