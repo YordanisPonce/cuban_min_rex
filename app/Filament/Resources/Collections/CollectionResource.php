@@ -21,6 +21,8 @@ class CollectionResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'Collection';
+    
+    protected static string|null $label = 'Colecciones';
 
     public static function form(Schema $schema): Schema
     {

@@ -18,6 +18,7 @@ class FileForm
             ->components([
                 Hidden::make('user_id')->default(Auth::user()->id),
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 Select::make('collection_id')
                     ->label('Selecciona una Colección')
@@ -26,6 +27,7 @@ class FileForm
                             ->pluck('name', 'id');
                     }),
                 FileUpload::make('file')
+                    ->label('Archivo Adjunto')
                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])
                     ->maxSize(20480)
                     ->required()

@@ -21,6 +21,8 @@ class FileResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
 
     protected static ?string $recordTitleAttribute = 'File';
+    
+    protected static string|null $label = 'Archivos';
 
     public static function form(Schema $schema): Schema
     {

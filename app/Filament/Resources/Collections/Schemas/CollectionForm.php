@@ -18,6 +18,7 @@ class CollectionForm
             ->components([
                 Hidden::make('user_id')->default(Auth::user()->id),
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 Select::make('category_id')
                     ->label('Selecciona una Categoría')
@@ -27,6 +28,7 @@ class CollectionForm
                             ->pluck('name', 'id');
                     }),
                 FileUpload::make('image')
+                    ->label('Subir Foto')
                     ->image()
                     ->avatar()
                     ->disk('public')

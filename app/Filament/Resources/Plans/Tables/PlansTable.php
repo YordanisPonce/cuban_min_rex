@@ -18,15 +18,18 @@ class PlansTable
         return $table
             ->columns([
                 TextColumn::make('name')
+                    ->label('Nombre')
                     ->searchable(),
                 // TextColumn::make('stripe_product_id')
                 //     ->searchable(),
                 // TextColumn::make('stripe_price_id')
                     // ->searchable(),
                 TextColumn::make('price')
+                    ->label('Precio')
                     ->money()
                     ->sortable(),
                 TextColumn::make('duration_months')
+                    ->label('Meses de duración')
                     ->numeric()
                     ->sortable(),
                 ImageColumn::make('image')
@@ -34,12 +37,15 @@ class PlansTable
                     ->disk('public')
                     ->url(fn ($record) => $record->image ? asset('storage/' . $record->image) : null),
                 IconColumn::make('is_recommended')
+                    ->label('Recomendado')
                     ->boolean(),
                 TextColumn::make('created_at')
+                    ->label('Fecha de Creación')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
+                    ->label('Fecha de Actualización')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

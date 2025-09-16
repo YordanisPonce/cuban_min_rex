@@ -16,16 +16,20 @@ class PlanForm
         return $schema
             ->components([
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
                 // TextInput::make('stripe_product_id'),
                 // TextInput::make('stripe_price_id'),
                 TextInput::make('price')
+                    ->label('Precio')
                     ->required()
                     ->numeric()
                     ->prefix('$'),
                 Textarea::make('description')
+                    ->label('Descripción')
                     ->columnSpanFull(),
                 TextInput::make('duration_months')
+                    ->label('Meses de Duración')
                     ->required()
                     ->numeric()
                     ->default(1),

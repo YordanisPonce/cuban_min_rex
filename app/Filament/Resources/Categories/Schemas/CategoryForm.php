@@ -16,6 +16,7 @@ class CategoryForm
                 Hidden::make('user_id')->default(Auth::user()->id),
                 Hidden::make('is_general')->default(Auth::user()->role == 'admin'),
                 TextInput::make('name')
+                    ->label('Nombre')
                     ->required(),
             ]);
     }
