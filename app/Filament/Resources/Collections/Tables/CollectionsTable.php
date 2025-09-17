@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Collections\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -37,7 +38,8 @@ class CollectionsTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

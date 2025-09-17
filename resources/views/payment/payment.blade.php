@@ -1,10 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Página de Inicio')
+@section('title', 'Checkout')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
 @endpush
 
 @section('content')

@@ -15,5 +15,5 @@ class File extends Model
     ];
 
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
-    public function plan(): BelongsTo { return $this->belongsTo(Collection::class); }
+    public function collection(): BelongsTo { return $this->belongsTo(Collection::class); }
 }

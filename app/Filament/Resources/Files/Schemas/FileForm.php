@@ -26,6 +26,10 @@ class FileForm
                         return Collection::where('user_id', Auth::user()->id)
                             ->pluck('name', 'id');
                     }),
+                TextInput::make('price')
+                    ->label('Precio')
+                    ->numeric()
+                    ->prefix('$'),
                 FileUpload::make('file')
                     ->label('Archivo Adjunto')
                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])
@@ -33,7 +37,8 @@ class FileForm
                     ->required()
                     ->disk('public')
                     ->directory('files')
-                    ->downloadable(),
+                    ->downloadable()
+                    ->columnSpanFull(),
             ]);
     }
 }

@@ -1,6 +1,7 @@
 <!doctype html>
 
 <html lang="en" class="layout-navbar-fixed layout-wide" dir="ltr" data-skin="default" data-bs-theme="dark" data-assets-path="{{ asset('assets/') }}" data-template="front-pages">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
@@ -20,15 +21,18 @@
 
     @if(env('APP_ENV') == 'production')
     <script>
-        (function (w, d, s, l, i) {
-          w[l] = w[l] || [];
-          w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
-          var f = d.getElementsByTagName(s)[0],
-            j = d.createElement(s),
-            dl = l != 'dataLayer' ? '&l=' + l : '';
-          j.async = true;
-          j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
-          f.parentNode.insertBefore(j, f);
+        (function(w, d, s, l, i) {
+            w[l] = w[l] || [];
+            w[l].push({
+                'gtm.start': new Date().getTime(),
+                event: 'gtm.js'
+            });
+            var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s),
+                dl = l != 'dataLayer' ? '&l=' + l : '';
+            j.async = true;
+            j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+            f.parentNode.insertBefore(j, f);
         })(window, document, 'script', 'dataLayer', 'GTM-5J3LMKC');
     </script>
     @endif
@@ -65,6 +69,8 @@
     <!-- Page CSS -->
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page-landing.css') }}" />
+    
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
 
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
@@ -90,6 +96,14 @@
             display: none;
             justify-content: center;
             align-items: center;
+        }
+
+        .carousel-item {
+            max-height: 100vh;
+
+            img {
+                height: 100%;
+            }
         }
     </style>
 
@@ -117,7 +131,7 @@
 
     <div class="loader" id="loader">
         <div class="spinner-border" role="status">
-            
+
         </div>
     </div>
 
@@ -145,4 +159,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

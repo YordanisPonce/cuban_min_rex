@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Files\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
@@ -19,6 +20,10 @@ class FilesTable
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
+                TextColumn::make('price')
+                    ->label('Precio')
+                    ->money()
+                    ->sortable(),
                 TextColumn::make('file')
                     ->label('Archivo Adjunto')
                     ->url(fn ($record) => $record->image ? asset('storage/' . $record->image) : null),
@@ -37,7 +42,8 @@ class FilesTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
+                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
