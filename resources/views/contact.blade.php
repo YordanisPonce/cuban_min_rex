@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Página de FAQ')
+@section('title', 'Página de Contacto')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
@@ -11,7 +11,7 @@
 
 <!-- Contact Us: Start -->
 <section id="landingContact" class="section-py bg-body landing-contact">
-    <div class="container">
+    <div class="container" style="margin-top: 60px;">
         <div class="text-center mb-4">
             <span class="badge bg-label-primary">🎶 Contáctanos</span>
         </div>

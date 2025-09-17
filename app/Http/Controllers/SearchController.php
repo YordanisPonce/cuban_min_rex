@@ -11,6 +11,7 @@ class SearchController extends Controller
 {
     public function search(Request $request)
     {
+        $categories = Category::where('show_in_landing', true)->get();
         $word = $request->search;
         $results = File::where('name', 'like', '%' . $word . '%')
             ->orWhereHas('collection', function ($query) use ($word) {
@@ -30,6 +31,6 @@ class SearchController extends Controller
                 ];
             });
 
-        return view('search', compact('results'));
+        return view('search', compact('results', 'categories'));
     }
 }

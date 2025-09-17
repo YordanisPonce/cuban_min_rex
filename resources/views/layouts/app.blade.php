@@ -69,7 +69,7 @@
     <!-- Page CSS -->
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page-landing.css') }}" />
-    
+
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
 
     <!-- Helpers -->
@@ -105,12 +105,22 @@
                 height: 100%;
             }
         }
+
+        .dark-screen {
+            width: 100%;
+            height: 100vh;
+            background-color: black;
+            opacity: 0.6;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
     </style>
 
     @stack('styles')
 </head>
 
-<body>
+<body class="d-flex flex-column" style="height: 100vh">
     @if(env('APP_ENV') == 'production')
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5J3LMKC" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
     @endif

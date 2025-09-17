@@ -6,6 +6,7 @@ use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -60,10 +61,13 @@ Route::post('/payment/process', [PaymentController::class, 'process'])
 Route::view('/payment_ok', 'payment.ok')->name('payment.ok');
 Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
-Route::view('/faq', 'faq')->name('faq');
-Route::view('/contact', 'contact')->name('contact');
+Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
+Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
+
+Route::get('/categories/{category}', [CategoryController::class, 'show'])
+    ->name('category.show');
 
 // Webhook de Stripe
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])

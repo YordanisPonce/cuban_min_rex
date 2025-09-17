@@ -29,14 +29,19 @@
         </button>
         <ul class="navbar-nav me-auto">
           <li class="nav-item">
-            <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Home</a>
+            <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link fw-medium" href="/faq">FAQ</a>
+            <a class="nav-link fw-medium" href="/faq">Preguntas Frecuentes</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link fw-medium" href="/contact">Contact us</a>
+            <a class="nav-link fw-medium" href="/contact">Contacto</a>
           </li>
+          @foreach($categories as $category)
+          <li class="nav-item">
+            <a class="nav-link fw-medium" href="{{ route('category.show', $category->id) }}">{{ $category->name }}</a>
+          </li>
+          @endforeach
           <!-- <li class="nav-item mega-dropdown">
             <a href="javascript:void(0);" class="nav-link dropdown-toggle navbar-ex-14-mega-dropdown mega-dropdown fw-medium" aria-expanded="false" data-bs-toggle="mega-dropdown" data-trigger="hover">
               <span data-i18n="Pages">Pages</span>
@@ -209,7 +214,7 @@
           </li> -->
           @auth
           <li class="nav-item">
-            <a class="nav-link fw-medium" href="/admin" target="_blank">Admin</a>
+            <a class="nav-link fw-medium" href="/admin" target="_blank">Admistración</a>
           </li>
           @endauth
         </ul>
@@ -217,39 +222,13 @@
       <div class="landing-menu-overlay d-lg-none"></div>
       <!-- Menu wrapper: End -->
       <!-- Toolbar: Start -->
-      <ul class="navbar-nav flex-row align-items-center ms-auto">
+      <ul class="navbar-nav flex-row align-items-center ms-auto gap-4">
         <li class="nav-item">
           <form action="{{ route('search') }}" method="GET" class="input-wrapper input-group input-group-merge position-relative mx-auto">
             <span class="input-group-text" id="basic-addon1"><i class="icon-base ti tabler-search"></i></span>
             <input type="text" name="search" class="form-control" placeholder="Buscar" aria-label="Search" aria-describedby="basic-addon1" />
           </form>
         </li>
-
-        <!-- Style Switcher -->
-        {{-- <li class="nav-item dropdown-style-switcher dropdown me-2 me-xl-1">
-            <a class="nav-link dropdown-toggle hide-arrow" id="nav-theme" href="javascript:void(0);" data-bs-toggle="dropdown">
-              <i class="icon-base ti tabler-sun icon-lg theme-icon-active"></i>
-              <span class="d-none ms-2" id="nav-theme-text">Toggle theme</span>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="nav-theme-text">
-              <li>
-                <button type="button" class="dropdown-item align-items-center active" data-bs-theme-value="light" aria-pressed="false">
-                  <span><i class="icon-base ti tabler-sun icon-md me-3" data-icon="sun"></i>Light</span>
-                </button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="dark" aria-pressed="true">
-                  <span><i class="icon-base ti tabler-moon-stars icon-md me-3" data-icon="moon-stars"></i>Dark</span>
-                </button>
-              </li>
-              <li>
-                <button type="button" class="dropdown-item align-items-center" data-bs-theme-value="system" aria-pressed="false">
-                  <span><i class="icon-base ti tabler-device-desktop-analytics icon-md me-3" data-icon="device-desktop-analytics"></i>System</span>
-                </button>
-              </li>
-            </ul>
-          </li> --}}
-        <!-- / Style Switcher-->
 
         <!-- navbar button: Start -->
         @auth

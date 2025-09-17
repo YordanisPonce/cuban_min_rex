@@ -11,6 +11,7 @@ class Category extends Model
         'name',
         'user_id',
         'is_general',
+        'show_in_landing',
     ];
 
     public function user(): BelongsTo

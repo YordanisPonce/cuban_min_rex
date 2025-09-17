@@ -10,7 +10,7 @@
 @section('content')
 <!-- FAQ: Start -->
 <section id="musicFAQ" class="section-py bg-body">
-    <div class="container">
+    <div class="container" style="margin-top: 60px;">
         <div class="text-center mb-4">
             <span class="badge bg-label-primary">Soporte</span>
         </div>
