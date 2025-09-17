@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Categories\Schemas;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
 class CategoryForm
@@ -17,7 +18,12 @@ class CategoryForm
                 Hidden::make('is_general')->default(Auth::user()->role == 'admin'),
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
+                Toggle::make('show_in_landing')
+                    ->label('Mostrar en Home')
+                    ->reactive()
+                    ->visible(fn () => Auth::user()->role == 'admin')
             ]);
     }
 }

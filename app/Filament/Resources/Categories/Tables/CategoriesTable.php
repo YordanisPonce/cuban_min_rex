@@ -7,8 +7,8 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Illuminate\Support\Facades\Auth;
-use Filament\Forms\Components\Builder;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
@@ -21,6 +21,10 @@ class CategoriesTable
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
+                IconColumn::make('show_in_landing')
+                    ->label('Mostrar en Home')
+                    ->boolean()
+                    ->visible(fn () => Auth::user()->role == 'admin'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
