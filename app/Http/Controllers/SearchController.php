@@ -28,8 +28,12 @@ class SearchController extends Controller
                     'collection' => $file->collection->name ?? null,
                     'category' => $file->collection->category->name ?? null,
                     'price' => $file->price,
+                    'url' => $file->file,
                 ];
             });
+        $results = $results->filter(function ($item) {
+            return pathinfo('storage/public/files/'.$item['url'], PATHINFO_EXTENSION)!=='zip';
+        });
 
         return view('search', compact('results', 'categories'));
     }

@@ -56,8 +56,8 @@ class UsersTable
                 //
             ])
             ->recordActions([
-                EditAction::make(),
-                DeleteAction::make(),
+                EditAction::make()->label('Editar'),
+                DeleteAction::make()->label('Eliminar'),
             ])
             ->toolbarActions([
                 // BulkActionGroup::make([
