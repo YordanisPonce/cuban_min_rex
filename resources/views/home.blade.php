@@ -412,12 +412,12 @@
                 <img src="{{ asset('storage/' . $plan->image) }}" alt="paper airplane icon" class="mb-8 pb-2 w-25" />
                 <h4 class="mb-0">{{ $plan->name }}</h4>
                 <div class="d-flex align-items-center justify-content-center">
-                  <span class="price-monthly h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
-                  <!-- <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">€{{ $plan->price_formatted*0.75 }}</span> -->
+                  <span class="price-monthly h2 text-primary fw-extrabold mb-0">$ {{ $plan->price_formatted }}</span>
+                  <!-- <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">$ {{ $plan->price_formatted*0.75 }}</span> -->
                   <sub class="h6 text-body-secondary mb-n1 ms-1">/mes</sub>
                 </div>
                 <!-- <div class="position-relative pt-2">
-                      <div class="price-yearly text-body-secondary price-yearly-toggle d-none">€{{ $plan->price_formatted*12*0.75 }} / año</div>
+                      <div class="price-yearly text-body-secondary price-yearly-toggle d-none">$ {{ $plan->price_formatted*12*0.75 }} / año</div>
                     </div> -->
               </div>
             </div>

@@ -34,7 +34,7 @@
                             <td>{{ $file['name'] }}</td>
                             <td>{{ $file['collection'] }}</td>
                             <td>{{ $file['category'] }}</td>
-                            <th>€ {{ $file['price'] }}</th>
+                            <th>$ {{ $file['price'] }}</th>
                             <td></td>
                         </tr>
                         @endforeach

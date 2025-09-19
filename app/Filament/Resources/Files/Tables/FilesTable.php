@@ -26,7 +26,7 @@ class FilesTable
                     ->sortable(),
                 TextColumn::make('file')
                     ->label('Archivo Adjunto')
-                    ->url(fn ($record) => $record->image ? asset('storage/' . $record->image) : null),
+                    ->url(fn ($record) => $record->file ? asset('storage/' . $record->file) : null),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
@@ -42,8 +42,8 @@ class FilesTable
                 //
             ])
             ->recordActions([
-                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
-                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id),
+                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Editar'),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
