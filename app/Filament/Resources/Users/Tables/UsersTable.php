@@ -42,15 +42,6 @@ class UsersTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('stripe_id')
-                    ->searchable(),
-                TextColumn::make('pm_type')
-                    ->searchable(),
-                TextColumn::make('pm_last_four')
-                    ->searchable(),
-                TextColumn::make('trial_ends_at')
-                    ->dateTime()
-                    ->sortable(),
             ])
             ->filters([
                 //

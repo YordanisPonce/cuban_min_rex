@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "98ab455ed475fbe216ebb5d625a2ab88",
+    "content-hash": "b91f06a85200cec95ddb6651564b8a5f",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -4286,6 +4286,66 @@
                 }
             ],
             "time": "2025-07-07T06:15:55+00:00"
+        },
+        {
+            "name": "owenvoke/blade-entypo",
+            "version": "v2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/owenvoke/blade-entypo.git",
+                "reference": "2d4d46084d60805c2827289a76464606f4449383"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/owenvoke/blade-entypo/zipball/2d4d46084d60805c2827289a76464606f4449383",
+                "reference": "2d4d46084d60805c2827289a76464606f4449383",
+                "shasum": ""
+            },
+            "require": {
+                "blade-ui-kit/blade-icons": "^1.5",
+                "illuminate/support": "^10.34|^11.0|^12.0",
+                "php": "^8.1"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.15",
+                "orchestra/testbench": "^8.5|^9.0|^10.0",
+                "pestphp/pest": "^2.34|^3.7",
+                "phpstan/phpstan": "^1.10|^2.1",
+                "symfony/var-dumper": "^6.4|^7.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "OwenVoke\\BladeEntypo\\BladeEntypoServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "OwenVoke\\BladeEntypo\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A package to easily make use of Entypo in your Laravel Blade views",
+            "support": {
+                "issues": "https://github.com/owenvoke/blade-entypo/issues",
+                "source": "https://github.com/owenvoke/blade-entypo/tree/v2.3.0"
+            },
+            "funding": [
+                {
+                    "url": "https://ecologi.com/owenvoke?gift-trees",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/owenvoke",
+                    "type": "github"
+                }
+            ],
+            "time": "2025-04-22T08:12:14+00:00"
         },
         {
             "name": "paragonie/constant_time_encoding",
@@ -12036,12 +12096,12 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
         "php": "^8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "plugin-api-version": "2.6.0"
 }

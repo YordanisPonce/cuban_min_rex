@@ -3,12 +3,14 @@
 namespace App\Filament\Resources\Files\Pages;
 
 use App\Filament\Resources\Files\FileResource;
+use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -36,16 +38,36 @@ class ListFiles extends ListRecords
                         ->columnSpanFull(),
                     Select::make('collection_id')
                         ->label('Selecciona una Colección')
-                        ->required()
                         ->options(function () {
                             return Collection::where('user_id', Auth::user()->id)
                                 ->pluck('name', 'id');
+                        })->reactive()
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            if (Collection::find($state)) {
+                                $set('dinamic_category_id', Collection::find($state)->category->id);
+                                $set('category_id', Collection::find($state)->category->id);
+                            } else {
+                                $set('dinamic_category_id', $state);
+                            }
                         }),
+                    Select::make('dinamic_category_id')
+                        ->label('Selecciona una Categoría')
+                        ->options(function () {
+                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
+                                ->pluck('name', 'id');
+                        })
+                        ->disabled(fn($get) => $get('collection_id') !== null)
+                        ->afterStateUpdated(function ($state, callable $set) {
+                            $set('category_id', $state);
+                        }),
+                    Hidden::make('category_id')
+                        ->default(fn($get) => $get('dinamic_category_id')),
                 ])->action(function (array $data): void {
                     $file = new File();
-                    $file->name = basename('public/files'.$data['file']);
+                    $file->name = basename('public/files' . $data['file']);
                     $file->file = $data['file'];
                     $file->collection_id = $data['collection_id'];
+                    $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
                     $file->save();
 
@@ -53,7 +75,7 @@ class ListFiles extends ListRecords
                     $path = storage_path('app/public/' . $file->file);
 
                     if ($zip->open($path) === TRUE) {
-                        
+
                         $extractPath = storage_path('app/temp');
                         $zip->extractTo($extractPath);
                         $zip->close();
@@ -65,8 +87,9 @@ class ListFiles extends ListRecords
                                 Storage::disk('public')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
                                 $file = new File();
                                 $file->name = $f;
-                                $file->file = 'files/'.$f;
+                                $file->file = 'files/' . $f;
                                 $file->collection_id = $data['collection_id'];
+                                $file->category_id = $data['category_id'];
                                 $file->user_id = Auth::user()->id;
                                 $file->save();
                             }
@@ -79,8 +102,8 @@ class ListFiles extends ListRecords
                     }
                 }),
 
-                CreateAction::make()
-                    ->label('Nuevo archivo'),
-            ];
-        }
+            CreateAction::make()
+                ->label('Nuevo archivo'),
+        ];
+    }
 }

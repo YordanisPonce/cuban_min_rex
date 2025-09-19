@@ -10,6 +10,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
+use Filament\Actions\Action;
+use Illuminate\Support\Facades\Response;
 
 class FilesTable
 {
@@ -24,9 +26,10 @@ class FilesTable
                     ->label('Precio')
                     ->money()
                     ->sortable(),
-                TextColumn::make('file')
-                    ->label('Archivo Adjunto')
-                    ->url(fn ($record) => $record->file ? asset('storage/' . $record->file) : null),
+                TextColumn::make('category.name')
+                    ->label('Categoría'),
+                TextColumn::make('collection.name')
+                    ->label('Coleccion'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
@@ -42,6 +45,14 @@ class FilesTable
                 //
             ])
             ->recordActions([
+                Action::make('download')
+                    ->label('Descargar')
+                    ->hidden(fn($record) => Auth::user()->id != $record->user_id)
+                    ->icon(svg('entypo-download'))
+                    ->action(function ($record) {
+                        $path = storage_path('app/public/'.$record->file);
+                        return Response::download($path);
+                    }),
                 EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Editar'),
                 DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Eliminar'),
             ])
