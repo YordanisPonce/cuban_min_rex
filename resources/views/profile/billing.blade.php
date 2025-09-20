@@ -37,7 +37,8 @@
                                 </div>
                                 <div class="mb-6">
                                     @php
-                                    $expDate = new DateTime(Auth::user()->plan_expires_at)->format('d \d\e F \d\e Y');
+                                    setlocale(LC_TIME, 'Spanish_Spain.1252');
+                                    $expDate = strftime('%d de %B de %Y', new DateTime(Auth::user()->plan_expires_at)->getTimestamp());
                                     @endphp
                                     <h6 class="mb-1">Activo hasta el {{ $expDate }}</h6>
                                     <p>Te enviearemos una notificación cuando esté cerca de expirar</p>
