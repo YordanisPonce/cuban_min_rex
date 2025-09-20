@@ -85,7 +85,7 @@
                             </div>
                             <div class="col-12 d-flex gap-2 flex-wrap">
                                 <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#pricingModal">Actualizar Plan</button>
-                                <button class="btn btn-label-danger cancel-subscription">Cancelar Suscripción</button>
+                                <a class="btn btn-label-danger cancel-subscription" href="{{ route('payment.cancelSubscription') }}">Cancelar Suscripción</a>
                             </div>
                             @else
                             <div class="alert alert-warning mb-6" role="alert">

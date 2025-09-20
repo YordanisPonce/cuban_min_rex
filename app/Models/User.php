@@ -93,7 +93,7 @@ class User extends Authenticatable implements FilamentUser
             $expirationDate = new DateTime($this->plan_expires_at);
             return $expirationDate->diff(new DateTime());
         }
-        return 0;
+        return null;
     }
 
     public function billing(){

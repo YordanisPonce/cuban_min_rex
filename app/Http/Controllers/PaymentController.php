@@ -88,6 +88,10 @@ class PaymentController extends Controller
 
         if (auth()->user()->subscribed('default')) {
             auth()->user()->subscription('default')->cancel();
+
+            auth()->user()->current_plan_id = null;
+            auth()->user()->plan_expires_at = null;
+            auth()->user()->save();
         }
 
         return "Suscripcion cancelada satisfactoriamente";
