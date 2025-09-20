@@ -7,55 +7,29 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 use Stripe\Webhook;
+use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 
-class StripeWebhookController extends Controller
+class StripeWebhookController extends CashierController
 {
-    public function handle(Request $request)
+    public function handleCustomerSubscriptionCreated(array $payload)
     {
-        $signature = $request->header('Stripe-Signature');
-        $secret = config('services.stripe.webhook_secret');
+        $session = $payload['data']['object'];
+        $orderId = $session['metadata']['order_id'] ?? null;
+        if ($orderId) {
+            $order = Order::find($orderId);
+            if ($order) {
+                $order->status = 'paid';
+                $order->paid_at = now();
+                $order->expires_at = Carbon::now()->addMonths($order->plan->duration_months);
+                $order->save();
 
-        try {
-            $event = Webhook::constructEvent(
-                $request->getContent(), $signature, $secret
-            );
-        } catch (\Throwable $e) {
-            Log::error('Stripe webhook error: '.$e->getMessage());
-            return response()->json(['error' => 'invalid'], 400);
+                // Asignar plan al usuario
+                $user = $order->user;
+                $user->current_plan_id = $order->plan_id;
+                $user->plan_expires_at = $order->expires_at;
+                $user->save();
+            }
         }
-
-        switch ($event->type) {
-            case 'checkout.session.completed':
-                $session = $event->data->object;
-                $orderId = $session->metadata->order_id ?? null;
-
-                if ($orderId) {
-                    $order = Order::find($orderId);
-                    if ($order) {
-                        $order->status = 'paid';
-                        $order->paid_at = now();
-                        $order->expires_at = Carbon::now()->addMonths($order->plan->duration_months);
-                        $order->save();
-
-                        // Asignar plan al usuario
-                        $user = $order->user;
-                        $user->current_plan_id = $order->plan_id;
-                        $user->plan_expires_at = $order->expires_at;
-                        $user->save();
-                    }
-                }
-                break;
-
-            case 'checkout.session.expired':
-                $sessionId = $event->data->object->id ?? null;
-                $order = Order::where('stripe_session_id', $sessionId)->first();
-                if ($order && $order->status === 'pending') {
-                    $order->status = 'failed';
-                    $order->save();
-                }
-                break;
-        }
-
-        return response()->json(['received' => true]);
     }
+
 }

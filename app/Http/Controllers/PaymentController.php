@@ -17,7 +17,7 @@ class PaymentController extends Controller
         $plans = Plan::all();
         return view('payment.payment', [
             'planId' => $planId,
-            'plans'  => $plans
+            'plans' => $plans
         ]);
     }
 
@@ -36,20 +36,26 @@ class PaymentController extends Controller
             ], 422);
         }
 
-        \Stripe\Stripe::setApiKey(config('services.stripe.secret_key'));
-
         try {
-            $session = \Stripe\Checkout\Session::create([
-                'payment_method_types' => ['card'],
-                'customer_email' => $request->email,
-                'line_items' => [[
-                    'price' => $plan->stripe_price_id, // ✅ Usamos el price_id correcto
-                    'quantity' => 1,
-                ]],
-                'mode' => 'subscription',
-                'success_url' => route('payment.ok'),
-                'cancel_url'  => route('payment.ko'),
-            ]);
+            $session = auth()->user()->checkout(
+                [$plan->stripe_price_id],
+                [
+                    'payment_method_types' => ['card'],
+                    'line_items' => [
+                        [
+                            'price' => $plan->stripe_price_id,
+                            'quantity' => 1,
+                        ]
+                    ],
+                    'mode' => 'subscription',
+                    'success_url' => route('payment.ok'),
+                    'cancel_url' => route('payment.form', ['plan' => $plan->id]),
+                    'metadata' => [
+                        'plan_id' => $plan->id,
+                        'user_id' => $request->user()->id,
+                    ],
+                ]
+            );
 
             $order = new Order();
             $order->user_id = $request->user()->id;
@@ -75,5 +81,16 @@ class PaymentController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function cancelSubscription()
+    {
+
+        if (auth()->user()->subscribed('default')) {
+            auth()->user()->subscription('default')->cancel();
+        }
+
+        return "Suscripcion cancelada satisfactoriamente";
+
     }
 }

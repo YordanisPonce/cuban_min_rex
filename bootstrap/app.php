@@ -14,6 +14,13 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
         ]);
 
+         $middleware->validateCsrfTokens(except: [
+            '/stripe/webhook',
+        ]);
+    
+    $middleware->([
+        '/ruta-que-deseas-excluir', // Cambia esto por la ruta que quieres excluir
+    ]);
         //
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -56,6 +56,9 @@ Route::get('/payment/{plan}', [PaymentController::class, 'showForm'])
 Route::post('/payment/process', [PaymentController::class, 'process'])
     ->middleware('auth')
     ->name('payment.process');
+Route::post('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
+    ->middleware('auth')
+    ->name('payment.cancelSubscription');
 
 Route::view('/payment_ok', 'payment.ok')->name('payment.ok');
 Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
@@ -69,7 +72,7 @@ Route::get('/categories/{category}', [CategoryController::class, 'show'])
     ->name('category.show');
 
 // Webhook de Stripe
-Route::post('/stripe/webhook', [StripeWebhookController::class, 'handle'])
+Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
     ->name('stripe.webhook');
 
 Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
