@@ -37,12 +37,11 @@ Route::get('/auth/callback/google', function () {
 })->name('google.callback');
 
 Route::middleware(['auth','verified'])->group(function (){
-    // Route::get('/dashboard', function () {   //por ahora no lo utilizo
-    //    return view('dashboard'); // resources/views/
-    // })->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile/billing', [ProfileController::class, 'billing'])->name('profile.billing');
+    Route::post('/profile/billing', [ProfileController::class, 'updateBilling'])->name('profile.updateBilling');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 // Crear orden y redirigir a Stripe

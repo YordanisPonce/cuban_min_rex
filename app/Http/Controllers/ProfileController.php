@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProfileUpdateRequest;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Billing;
+use App\Models\Category;
+use App\Models\Plan;
+use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,26 +17,45 @@ class ProfileController extends Controller
     /**
      * Display the user's profile form.
      */
-    public function edit(Request $request): View // Cambiar Response por View
+    public function edit(Request $request): View
     {
-        return view('profile.edit', [ // Cambiar Inertia::render por view
-            'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
-            'status' => session('status'),
-        ]);
+        $categories = Category::where('show_in_landing', true)->get();
+        return view('profile.account', compact('categories'));
+    }
+
+    public function billing(Request $request): View
+    {
+        $categories = Category::where('show_in_landing', true)->get();
+        $plans = Plan::orderBy('price')->get();
+        return view('profile.billing', compact('categories', 'plans'));
     }
 
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = User::find(Auth::user()->id);
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
 
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+        return Redirect::route('profile.edit');
+    }
+
+    public function updateBilling(Request $request): RedirectResponse
+    {
+        $user = User::find(Auth::user()->id);
+        $billing = $user->billing;
+        if (!$billing) {
+            $billing = new Billing();
+            $billing->user_id = $user->id;
         }
-
-        $request->user()->save();
+        $billing->phone = $request->phone;
+        $billing->address = $request->address;
+        $billing->postal = $request->postal;
+        $billing->country = $request->country;
+        $billing->save();
 
         return Redirect::route('profile.edit');
     }
@@ -44,11 +65,7 @@ class ProfileController extends Controller
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validate([
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
+        $user = User::find(Auth::user()->id);
 
         Auth::logout();
 

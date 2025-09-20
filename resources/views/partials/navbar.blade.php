@@ -240,29 +240,29 @@
             <span class="ms-2 d-none d-md-block">{{ Auth::user()->name }}</span>
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
-            {{-- <li>
-                <a class="dropdown-item" href="{{ route('profile.edit') }}">
-            <i class="icon-base ti tabler-user me-2"></i>
-            <span class="align-middle">Perfil</span>
-            </a>
-        </li> --}}
-        <li>
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit" class="dropdown-item">
-              <i class="icon-base ti tabler-logout me-2"></i>
-              <span class="align-middle">Cerrar sesión</span>
-            </button>
-          </form>
+            <li>
+              <a class="dropdown-item" href="{{ route('profile.edit') }}">
+                <i class="icon-base ti tabler-user me-2"></i>
+                <span class="align-middle">Perfil</span>
+              </a>
+            </li>
+            <li>
+              <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="dropdown-item">
+                  <i class="icon-base ti tabler-logout me-2"></i>
+                  <span class="align-middle">Cerrar sesión</span>
+                </button>
+              </form>
+            </li>
+          </ul>
         </li>
-      </ul>
-      </li>
-      @else
-      <li>
-        <a href="{{ route('login') }}" class="btn btn-primary"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Acceder / Registrar</span></a>
-      </li>
-      @endauth
-      <!-- navbar button: End -->
+        @else
+        <li>
+          <a href="{{ route('login') }}" class="btn btn-primary"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span class="d-none d-md-block">Acceder / Registrar</span></a>
+        </li>
+        @endauth
+        <!-- navbar button: End -->
       </ul>
       <!-- Toolbar: End -->
     </div>

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use DateInterval;
 use DateTime;
 
 use Filament\Models\Contracts\FilamentUser;
@@ -12,7 +13,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -86,6 +86,14 @@ class User extends Authenticatable implements FilamentUser
             }
         }
         return !is_null($this->current_plan_id) && $isFuture;
+    }
+
+    public function planExpirationDays(): DateInterval {
+        if ($this->hasActivePlan()) {
+            $expirationDate = new DateTime($this->plan_expires_at);
+            return $expirationDate->diff(new DateTime());
+        }
+        return 0;
     }
 
     public function billing(){

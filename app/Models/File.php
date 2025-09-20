@@ -12,6 +12,7 @@ class File extends Model
         'collection_id',
         'category_id',
         'user_id',
+        'price',
         'file',
     ];
 

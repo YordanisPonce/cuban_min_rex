@@ -44,7 +44,7 @@
 
                                 <div class="col-md-6">
                                     <label class="form-label">Dirección</label>
-                                    <input type="text" name="address" class="form-control" placeholder="Calle Falsa 123"  value="{{ Auth::user()->billing ? Auth::user()->billing->address : '' }}" required />
+                                    <input type="text" name="address" class="form-control" placeholder="Dirección de Facturación"  value="{{ Auth::user()->billing ? Auth::user()->billing->address : '' }}" required />
                                 </div>
 
                                 <div class="col-md-6">
