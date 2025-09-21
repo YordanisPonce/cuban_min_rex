@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Billing;
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -27,7 +28,8 @@ class ProfileController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->get();
         $plans = Plan::orderBy('price')->get();
-        return view('profile.billing', compact('categories', 'plans'));
+        $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
+        return view('profile.billing', compact('categories', 'plans', 'orders'));
     }
 
     /**

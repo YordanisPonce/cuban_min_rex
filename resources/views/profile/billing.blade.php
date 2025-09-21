@@ -85,7 +85,7 @@
                             </div>
                             <div class="col-12 d-flex gap-2 flex-wrap">
                                 <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#pricingModal">Actualizar Plan</button>
-                                <a class="btn btn-label-danger cancel-subscription" href="{{ route('payment.cancelSubscription') }}">Cancelar Suscripción</a>
+                                <button class="btn btn-label-danger cancel-subscription" onclick="mostrarAdvertencia()">Cancelar Suscripción</button>
                             </div>
                             @else
                             <div class="alert alert-warning mb-6" role="alert">
@@ -144,6 +144,37 @@
                         </form>
                     </div>
                     <!-- /Billing Address -->
+                </div>
+                <div class="card">
+                    <!-- Billing History -->
+                    <h5 class="card-header text-md-start text-center">Historial de facturas</h5>
+                    <div class="card-datatable border-top">
+                    <table class="invoice-list-table table border-top">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Plan</th>
+                                <th>Cantidad Pagada</th>
+                                <th class="text-truncate">Fecha de Pago</th>
+                                <th>Estado</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($orders as $order)
+                                <tr>
+                                    <td></td>
+                                    <td>{{ $order->plan->name }}</td>
+                                    <td>{{ $order->plan->price }}</td>
+                                    <td>{{ $order->status === 'paid' ? $order->paid_at : $order->created_at }}</td>
+                                    <td>{{ $order->status === 'paid' ? 'Pagado' : ($order->status === 'pending' ? 'Pendiente' : 'Fallida') }}</td>
+                                    <td></td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                    </div>
+                    <!--/ Billing History -->
                 </div>
             </div>
         </div>
@@ -235,3 +266,22 @@
 <!-- / Content -->
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    function mostrarAdvertencia(e) {
+        Swal.fire({
+            title: '¿Estás seguro?',
+            text: 'Esta acción no se puede deshacer.',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/payment/cancel-subscription';
+            }
+        });
+    }
+</script>
+@endpush
