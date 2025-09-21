@@ -9,7 +9,7 @@ class Order extends Model
 {
     protected $fillable = [
         'user_id','plan_id','stripe_session_id','stripe_payment_intent',
-        'status','paid_at','expires_at'
+        'amount','status','paid_at','expires_at'
     ];
 
     protected $casts = [

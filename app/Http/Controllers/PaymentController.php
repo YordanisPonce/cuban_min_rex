@@ -60,6 +60,7 @@ class PaymentController extends Controller
             $order = new Order();
             $order->user_id = $request->user()->id;
             $order->plan_id = $plan->id;
+            $order->amount = $plan->price;
             $order->status = 'pending';
             $order->save();
 

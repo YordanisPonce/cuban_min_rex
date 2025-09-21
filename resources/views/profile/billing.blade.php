@@ -165,7 +165,7 @@
                                 <tr>
                                     <td></td>
                                     <td>{{ $order->plan->name }}</td>
-                                    <td>{{ $order->plan->price }}</td>
+                                    <td>{{ $order->amount }}</td>
                                     <td>{{ $order->status === 'paid' ? $order->paid_at : $order->created_at }}</td>
                                     <td>{{ $order->status === 'paid' ? 'Pagado' : ($order->status === 'pending' ? 'Pendiente' : 'Fallida') }}</td>
                                     <td></td>
