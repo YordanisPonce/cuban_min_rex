@@ -20,22 +20,39 @@
                     <thead>
                         <tr>
                             <th></th>
+                            <th>Fecha</th>
+                            <th>Subido por</th>
                             <th>Nombre</th>
                             <th>Álbum</th>
                             <th>Categoría</th>
-                            <th>Precio</th>
+                            <th></th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach($results as $file)
+                        @php
+                        setlocale(LC_TIME, 'Spanish_Spain.1252');
+                        $date = strftime('%d de %B de %Y', new DateTime($file['date'])->getTimestamp());
+                        @endphp
                         <tr>
                             <td></td>
+                            <td>{{ $date }}</td>
+                            <td>{{ $file['user'] }}</td>
                             <td>{{ $file['name'] }}</td>
                             <td>{{ $file['collection'] }}</td>
                             <td>{{ $file['category'] }}</td>
-                            <th>$ {{ $file['price'] }}</th>
-                            <td></td>
+                            @if (!Auth::user()->hasActivePlan())
+                            <td>$ {{ $file['price'] }}</td>
+                            @endif
+                            <td>
+                                @if (Auth::user()->hasActivePlan())
+                                    <a style="display: flex; width: 20px" href="">{{ svg('entypo-download') }}</a>
+                                @else
+                                    <a style="display: flex; width: 20px" href="">{{ svg('vaadin-cart') }}</a>
+                                @endif
+                            </td>
+                            <th></th>
                         </tr>
                         @endforeach
                     </tbody>

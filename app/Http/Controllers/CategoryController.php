@@ -17,6 +17,8 @@ class CategoryController extends Controller
             ->get()
             ->map(function ($file) {
                 return [
+                    'date' => $file->created_at,
+                    'user' => $file->user->name,
                     'name' => $file->name,
                     'collection' => $file->collection->name ?? null,
                     'category' => $file->collection->category->name ?? null,

@@ -51,182 +51,6 @@
                             </li>
                         @endforeach
                     @endisset
-
-                    <!-- <li class="nav-item mega-dropdown">
-            <a href="javascript:void(0);" class="nav-link dropdown-toggle navbar-ex-14-mega-dropdown mega-dropdown fw-medium" aria-expanded="false" data-bs-toggle="mega-dropdown" data-trigger="hover">
-              <span data-i18n="Pages">Pages</span>
-            </a>
-            <div class="dropdown-menu p-4 p-xl-8">
-              <div class="row gy-4">
-                <div class="col-12 col-lg">
-                  <div class="h6 d-flex align-items-center mb-3 mb-lg-5">
-                    <div class="avatar flex-shrink-0 me-3">
-                      <span class="avatar-initial rounded bg-label-primary"><i class="icon-base ti tabler-layout-grid icon-lg"></i></span>
-                    </div>
-                    <span class="ps-1">Other</span>
-                  </div>
-                  <ul class="nav flex-column">
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        <span data-i18n="Pricing">Pricing</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        <span data-i18n="Payment">Payment</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        <span data-i18n="Checkout">Checkout</span>
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        <span data-i18n="Help Center">Help Center</span>
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="col-12 col-lg">
-                  <div class="h6 d-flex align-items-center mb-3 mb-lg-5">
-                    <div class="avatar flex-shrink-0 me-3">
-                      <span class="avatar-initial rounded bg-label-primary"><i class="icon-base ti tabler-lock-open icon-lg"></i></span>
-                    </div>
-                    <span class="ps-1">Auth Demo</span>
-                  </div>
-                  <ul class="nav flex-column">
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Login (Basic)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Login (Cover)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Register (Basic)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Register (Cover)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Register (Multi-steps)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Forgot Password (Basic)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Forgot Password (Cover)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Reset Password (Basic)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Reset Password (Cover)
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="col-12 col-lg">
-                  <div class="h6 d-flex align-items-center mb-3 mb-lg-5">
-                    <div class="avatar flex-shrink-0 me-3">
-                      <span class="avatar-initial rounded bg-label-primary"><i class="icon-base ti tabler-file-analytics icon-lg"></i></span>
-                    </div>
-                    <span class="ps-1">Other</span>
-                  </div>
-                  <ul class="nav flex-column">
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Error
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Under Maintenance
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Coming Soon
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Not Authorized
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Verify Email (Basic)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Verify Email (Cover)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Two Steps (Basic)
-                      </a>
-                    </li>
-                    <li class="nav-item">
-                      <a class="nav-link mega-dropdown-link" href="#">
-                        <i class="icon-base ti tabler-circle me-1 icon-12px"></i>
-                        Two Steps (Cover)
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-                <div class="col-lg-4 d-none d-lg-block">
-                  <div class="bg-body nav-img-col p-2">
-                    <img src="{{ asset('assets/img/front-pages/misc/nav-item-col-img.png') }}" alt="nav item col image" class="w-100" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </li> -->
-                    @auth
-                        <li class="nav-item">
-                            <a class="nav-link fw-medium" href="/admin" target="_blank">Admistración</a>
-                        </li>
-                    @endauth
                 </ul>
             </div>
             <div class="landing-menu-overlay d-lg-none"></div>
@@ -259,6 +83,12 @@
                                 <a class="dropdown-item" href="{{ route('profile.edit') }}">
                                     <i class="icon-base ti tabler-user me-2"></i>
                                     <span class="align-middle">Perfil</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item" href="/admin" target="_blank">
+                                    <i class="icon-base ti tabler-dashboard me-2"></i>
+                                    <span class="align-middle">Panel de Administración</span>
                                 </a>
                             </li>
                             <li>
