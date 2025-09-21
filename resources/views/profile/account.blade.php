@@ -8,7 +8,7 @@
 
 @section('content')
 <!-- Content wrapper -->
-<div class="content-wrapper pt-10 bg-body">
+<div class="content-wrapper pt-10 mt-5 bg-body">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y mt-10">
         <div class="row">

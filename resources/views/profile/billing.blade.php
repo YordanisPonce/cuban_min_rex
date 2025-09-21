@@ -1,5 +1,7 @@
 @extends('layouts.app')
-
+@php
+    use Carbon\Carbon;
+@endphp
 @section('title', 'Perfil de Usuario')
 
 @push('styles')
@@ -9,7 +11,7 @@
 
 @section('content')
 <!-- Content wrapper -->
-<div class="content-wrapper pt-10 bg-body">
+<div class="content-wrapper pt-10 mt-5 bg-body">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y mt-10">
         <div class="row">
@@ -37,8 +39,8 @@
                                 </div>
                                 <div class="mb-6">
                                     @php
-                                    setlocale(LC_TIME, 'Spanish_Spain.1252');
-                                    $expDate = strftime('%d de %B de %Y', new DateTime(Auth::user()->plan_expires_at)->getTimestamp());
+                                    Carbon::setLocale('es');
+                                    $expDate = Carbon::parse(auth()->user()->plan_expires_at)->translatedFormat('d \d\e F \d\e Y H:i');
                                     @endphp
                                     <h6 class="mb-1">Activo hasta el {{ $expDate }}</h6>
                                     <p>Te enviearemos una notificación cuando esté cerca de expirar</p>
