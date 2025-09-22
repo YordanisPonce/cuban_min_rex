@@ -78,16 +78,16 @@
                                     </div>
                                     <div class="progress rounded mb-1">
                                         @php
-                                        $percent = Auth::user()->planExpirationDays()->days > 0 ? ((Auth::user()->currentPlan->duration_months * 30 - Auth::user()->planExpirationDays()->days) / (Auth::user()->currentPlan->duration_months * 30) * 100) : '100';
+                                        $percent = Auth::user()->planExpirationDays()->days > 0 ? ((Auth::user()->currentPlan?->duration_months * 30 - Auth::user()->planExpirationDays()->days) / (Auth::user()->currentPlan?->duration_months * 30) * 100) : '100';
                                         @endphp
-                                        <div class="progress-bar rounded" style="width: {{ $percent }}%" role="progressbar" aria-valuenow="{{Auth::user()->currentPlan->duration_months * 30 - Auth::user()->planExpirationDays()->days}}" aria-valuemin="0" aria-valuemax="{{Auth::user()->currentPlan->duration_months * 30}}"></div>
+                                        <div class="progress-bar rounded" style="width: {{ $percent }}%" role="progressbar" aria-valuenow="{{Auth::user()->currentPlan?->duration_months * 30 - Auth::user()->planExpirationDays()->days}}" aria-valuemin="0" aria-valuemax="{{Auth::user()->currentPlan->duration_months * 30}}"></div>
                                     </div>
                                     <small>{{Auth::user()->planExpirationDays()->days}} días restantes hasta que tu plan requiera actualización</small>
                                 </div>
                             </div>
                             <div class="col-12 d-flex gap-2 flex-wrap">
                                 <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#pricingModal">Actualizar Plan</button>
-                                <button class="btn btn-label-danger cancel-subscription" onclick="mostrarAdvertencia()">Cancelar Suscripción</button>
+                                <button class="btn btn-label-danger cancel-subscription"  onclick="mostrarAdvertencia()">Cancelar Suscripción</button>
                             </div>
                             @else
                             <div class="alert alert-warning mb-6" role="alert">

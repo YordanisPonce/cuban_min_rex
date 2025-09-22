@@ -88,7 +88,6 @@ class PaymentController extends Controller
 
     public function cancelSubscription()
     {
-
         if (auth()->user()->subscribed('default')) {
             auth()->user()->subscription('default')->cancel();
         }
@@ -99,8 +98,8 @@ class PaymentController extends Controller
         $categories = Category::where('show_in_landing', true)->get();
         $plans = Plan::orderBy('price')->get();
         $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
-        
-        return view('profile.billing', compact('categories', 'plans', 'orders'));
+
+        return redirect()->back()->with('success', 'Membresia cancelada satisfactoriamente');
 
     }
 }

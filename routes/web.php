@@ -36,7 +36,7 @@ Route::get('/auth/callback/google', function () {
     return redirect()->route('home');
 })->name('google.callback');
 
-Route::middleware(['auth','verified'])->group(function (){
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::get('/profile/billing', [ProfileController::class, 'billing'])->name('profile.billing');
     Route::post('/profile/billing', [ProfileController::class, 'updateBilling'])->name('profile.updateBilling');
@@ -50,16 +50,16 @@ Route::middleware(['auth','verified'])->group(function (){
 //     ->middleware('auth')
 //     ->name('checkout.create');
 
-Route::get('/payment/{plan}', [PaymentController::class, 'showForm'])
-    ->middleware('auth')
-    ->name('payment.form');
-
 Route::post('/payment/process', [PaymentController::class, 'process'])
     ->middleware('auth')
     ->name('payment.process');
-Route::post('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
+Route::get('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
     ->middleware('auth')
     ->name('payment.cancelSubscription');
+Route::get('/{plan}/payment', [PaymentController::class, 'showForm'])
+    ->middleware('auth')
+    ->name('payment.form');
+
 
 Route::view('/payment_ok', 'payment.ok')->name('payment.ok');
 Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
@@ -78,4 +78,4 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
 
 Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
