@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Billing;
+use App\Models\Category;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
 use App\Models\Plan;
+use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller
 {
@@ -89,13 +91,16 @@ class PaymentController extends Controller
 
         if (auth()->user()->subscribed('default')) {
             auth()->user()->subscription('default')->cancel();
-
-            auth()->user()->current_plan_id = null;
-            auth()->user()->plan_expires_at = null;
-            auth()->user()->save();
         }
 
-        return "Suscripcion cancelada satisfactoriamente";
+        auth()->user()->current_plan_id = null;
+        auth()->user()->save();
+
+        $categories = Category::where('show_in_landing', true)->get();
+        $plans = Plan::orderBy('price')->get();
+        $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
+        
+        return view('profile.billing', compact('categories', 'plans', 'orders'));
 
     }
 }

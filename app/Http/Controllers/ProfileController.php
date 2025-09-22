@@ -9,6 +9,7 @@ use App\Models\Plan;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View; // Cambiar Inertia\Response por View
@@ -35,12 +36,19 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(Request $request): RedirectResponse
+    public function update(Request $request)
     {
+        $categories = Category::where('show_in_landing', true)->get();
+
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->save();
+        try {
+            $user->save();
+        } catch (\Throwable $th) {
+            $error = "El correo asignado ya pertenece a otro usuario";
+            return view('profile.account', compact('categories', 'error'));
+        }
 
         return Redirect::route('profile.edit');
     }
@@ -60,6 +68,29 @@ class ProfileController extends Controller
         $billing->save();
 
         return Redirect::route('profile.edit');
+    }
+
+    public function updatePassword(Request $request)
+    {
+        $categories = Category::where('show_in_landing', true)->get();
+
+        $user = Auth::user();
+        
+        if(Hash::check($request->currentPassword, $user->password)){
+            if($request->newPassword === $request->confirmPassword){
+                $user->password = Hash::make($request->newPassword);
+                $user->save();
+            } else {
+                $error = "Por favor confirme correctamente la nueva contraseña";
+                return view('profile.account', compact('categories', 'error'));
+            }
+        }else{
+            $error = "La contraseña actual introducida no es correcta";
+            return view('profile.account', compact('categories', 'error'));
+        }
+
+        $success = "La contraseña ha sido cambiada correctamente";
+        return view('profile.account', compact('categories', 'success'));
     }
 
     /**

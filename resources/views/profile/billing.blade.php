@@ -11,7 +11,7 @@
 
 @section('content')
 <!-- Content wrapper -->
-<div class="content-wrapper pt-10 mt-5 bg-body">
+<div class="content-wrapper pt-10 bg-body">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y mt-10">
         <div class="row">
@@ -114,11 +114,11 @@
                             <div class="row g-6">
                                 <div class="col-12">
                                     <label for="billingAddress" class="form-label">Dirección de Facturación</label>
-                                    <input type="text" class="form-control" id="billingAddress" name="billingAddress" placeholder="Dirección de Facturación"   value="{{ Auth::user()->billing ? Auth::user()->billing->address : '' }}" required/>
+                                    <input type="text" class="form-control" id="billingAddress" name="address" placeholder="Dirección de Facturación"   value="{{ Auth::user()->billing ? Auth::user()->billing->address : '' }}" required/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="mobileNumber" class="form-label">Teléfono</label>
-                                    <input class="form-control mobile-number" type="text" id="mobileNumber" name="mobileNumber" value="{{ Auth::user()->billing ? Auth::user()->billing->phone : '' }}" placeholder="+34 600 123 456" required/>
+                                    <input class="form-control mobile-number" type="text" id="mobileNumber" name="phone" value="{{ Auth::user()->billing ? Auth::user()->billing->phone : '' }}" placeholder="+34 600 123 456" required/>
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="country" class="form-label">País</label>
@@ -150,7 +150,7 @@
                 <div class="card">
                     <!-- Billing History -->
                     <h5 class="card-header text-md-start text-center">Historial de facturas</h5>
-                    <div class="card-datatable border-top">
+                    <div class="card-datatable table-responsive border-top">
                     <table class="invoice-list-table table border-top">
                         <thead>
                             <tr>

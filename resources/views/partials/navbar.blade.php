@@ -13,7 +13,7 @@
                     <i class="icon-base ti tabler-menu-2 icon-lg align-middle text-heading fw-medium"></i>
                 </button>
                 <!-- Mobile menu toggle: End-->
-                <a href="{{ route('home') }}" class="app-brand-link">
+                <a href="{{ route('home') }}" class="app-brand-link d-none d-md-flex">
                     <span class="app-brand-logo demo">
                         <span class="text-primary">
                             <!-- Reemplaza el SVG con tu imagen PNG -->
@@ -21,19 +21,32 @@
                                 style="width: 32px; height: 22px; object-fit: contain;">
                         </span>
                     </span>
-                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-md-inline">Cuban Mix
+                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-lg-inline">Cuban Mix
                         Rex</span>
                 </a>
             </div>
             <!-- Menu logo wrapper: End -->
             <!-- Menu wrapper: Start -->
             <div class="collapse navbar-collapse landing-nav-menu" id="navbarSupportedContent">
+                <button class="navbar-toggler border-0 text-heading position-absolute start-0 top-0 scaleX-n1-rtl p-2"
+                    type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="app-brand-logo demo">
+                        <span class="text-primary">
+                            <!-- Reemplaza el SVG con tu imagen PNG -->
+                            <img src="{{ asset('assets/img/front-pages/icon/cubamix.svg') }}" alt="Cuban Mix Rex Logo"
+                                style="width: 32px; height: 22px; object-fit: contain;">
+                        </span>
+                    </span>
+                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-inline">Cuban Mix
+                        Rex</span>
+                </button>
                 <button class="navbar-toggler border-0 text-heading position-absolute end-0 top-0 scaleX-n1-rtl p-2"
                     type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <i class="icon-base ti tabler-x icon-lg"></i>
                 </button>
-                <ul class="navbar-nav me-auto">
+                <ul class="navbar-nav me-auto mt-xs-10">
                     <li class="nav-item">
                         <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
                     </li>
@@ -56,7 +69,7 @@
             <div class="landing-menu-overlay d-lg-none"></div>
             <!-- Menu wrapper: End -->
             <!-- Toolbar: Start -->
-            <ul class="navbar-nav flex-row align-items-center ms-auto gap-4">
+            <ul class="navbar-nav flex-row align-items-center ms-auto gap-4 navbar-right">
                 <li class="nav-item">
                     <form action="{{ route('search') }}" method="GET"
                         class="input-wrapper input-group input-group-merge position-relative mx-auto">

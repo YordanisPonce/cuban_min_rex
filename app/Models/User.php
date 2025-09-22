@@ -85,10 +85,10 @@ class User extends Authenticatable implements FilamentUser
                 $isFuture = true;
             }
         }
-        return !is_null($this->current_plan_id) && $isFuture;
+        return $isFuture;
     }
 
-    public function planExpirationDays(): DateInterval {
+    public function planExpirationDays() {
         if ($this->hasActivePlan()) {
             $expirationDate = new DateTime($this->plan_expires_at);
             return $expirationDate->diff(new DateTime());

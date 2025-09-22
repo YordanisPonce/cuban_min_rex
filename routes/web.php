@@ -41,6 +41,7 @@ Route::middleware(['auth','verified'])->group(function (){
     Route::get('/profile/billing', [ProfileController::class, 'billing'])->name('profile.billing');
     Route::post('/profile/billing', [ProfileController::class, 'updateBilling'])->name('profile.updateBilling');
     Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.changePassword');
     Route::get('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 

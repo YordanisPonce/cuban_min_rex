@@ -85,7 +85,7 @@
       </div>
     </div>
 
-    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+    <button class="carousel-control-prev d-none d-md-block" type="button" data-bs-target="#demo" data-bs-slide="prev">
       <span>
         <svg fill="#000000" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
           xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
@@ -94,7 +94,7 @@
         </svg>
       </span>
     </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+    <button class="carousel-control-next d-none d-md-block" type="button" data-bs-target="#demo" data-bs-slide="next">
       <span>
         <svg fill="#000000" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
           xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
@@ -287,8 +287,8 @@
               </div>
 
             </div>
-            <div class="swiper-button-next" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-d5f7ff1684355bde"></div>
-            <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-d5f7ff1684355bde"></div>
+            <div class="swiper-button-next d-none d-md-block" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-d5f7ff1684355bde"></div>
+            <div class="swiper-button-prev d-none d-md-block" tabindex="0" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-d5f7ff1684355bde"></div>
             <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
           </div>
         </div>
@@ -381,31 +381,12 @@
       <!-- Paga mensual o ahorra con el plan anual 🎧 -->
     </p>
 
-    <!-- <div class="text-center mb-12">
-      <div class="position-relative d-inline-block pt-3 pt-md-0">
-        <label class="switch switch-sm switch-primary me-0">
-          <span class="switch-label fs-6 text-body me-3">Mensual</span>
-          <input type="checkbox" class="switch-input price-duration-toggler">
-          <span class="switch-toggle-slider">
-            <span class="switch-on"></span>
-            <span class="switch-off"></span>
-          </span>
-          <span class="switch-label fs-6 text-body ms-3">Anual</span>
-        </label>
-        <div class="pricing-plans-item position-absolute d-flex">
-          <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/pricing-plans-arrow.png" alt="pricing plans arrow" class="scaleX-n1-rtl">
-          <span class="fw-medium mt-2 ms-1"> Ahorra 25%</span>
-        </div>
-      </div>
-    </div> -->
-
-    <div class="row g-6 pt-lg-5">
-      <div class="row gy-4">
+    <div class="row pt-lg-5">
         @foreach($plans as $plan)
         @php
         $isActive = auth()->check() && auth()->user()->current_plan_id === $plan->id && auth()->user()->hasActivePlan();
         @endphp
-        <div class="col-xl-4 col-lg-6">
+        <div class="col-12 col-xl-4 col-lg-6">
           <div class="{{ $isActive ? 'card border border-primary shadow-xl' : 'card'}}">
             <div class="card-header">
               <div class="text-center">
@@ -447,7 +428,6 @@
               </div>
             </div>
           </div>
-        </div>
         @endforeach
       </div>
     </div>

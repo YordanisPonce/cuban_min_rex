@@ -8,7 +8,7 @@
 
 @section('content')
 <!-- Content wrapper -->
-<div class="content-wrapper pt-10 mt-5 bg-body">
+<div class="content-wrapper pt-10 bg-body">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y mt-10">
         <div class="row">
@@ -26,7 +26,7 @@
                 <div class="card mb-6">
                     <!-- Account -->
                     <div class="card-body pt-4">
-                        <form id="formAccountSettings" method="POST" action="{{ route('profile.update') }}">
+                        <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}">
                             @csrf
                             <div class="row gy-4 gx-6 mb-6">
                                 <div class="col-md-6 form-control-validation">
@@ -46,6 +46,47 @@
                     </div>
                     <!-- /Account -->
                 </div>
+                <!-- Change Password -->
+                <div class="card mb-6">
+                    <h5 class="card-header">Cambiar Contraseña</h5>
+                    <div class="card-body pt-1">
+                    <form id="formAccountSettings" method="POST" action="{{ route('profile.changePassword') }}">
+                        @csrf
+                        <div class="row mb-sm-6 mb-2">
+                        <div class="col-md-6 form-password-toggle form-control-validation">
+                            <label class="form-label" for="currentPassword">Contraseña Actual</label>
+                            <div>
+                            <input class="form-control" type="password" name="currentPassword" id="currentPassword" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" required/>
+                            <!-- <span class="input-group-text cursor-pointer"><i class="icon-base ti tabler-eye-off icon-xs"></i></span> -->
+                            </div>
+                        </div>
+                        </div>
+                        <div class="row gy-sm-6 gy-2 mb-sm-0 mb-2">
+                        <div class="mb-6 col-md-6 form-password-toggle form-control-validation">
+                            <label class="form-label" for="newPassword">Nueva Contraseña</label>
+                            <div>
+                            <input class="form-control" type="password" id="newPassword" name="newPassword" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"  required minlength="8"/>
+                            </div>
+                        </div>
+
+                        <div class="mb-6 col-md-6 form-password-toggle form-control-validation">
+                            <label class="form-label" for="confirmPassword">Confirmar Nueva Contraseña</label>
+                            <div>
+                            <input class="form-control" type="password" name="confirmPassword" id="confirmPassword" placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"  required minlength="8"/>
+                            </div>
+                        </div>
+                        </div>
+                        <h6 class="text-body">Requisitos de Contraseña:</h6>
+                        <ul class="ps-4 mb-0">
+                            <li class="mb-4">Mínimo 8 carácteres de longitud</li>
+                        </ul>
+                        <div class="mt-6">
+                            <button type="submit" class="btn btn-primary me-3">Cambiar Contraseña</button>
+                        </div>
+                    </form>
+                    </div>
+                </div>
+                <!--/ Change Password -->
                 <div class="card">
                     <h5 class="card-header">Eliminar Cuenta</h5>
                     <div class="card-body">
@@ -82,4 +123,22 @@
         });
     }
 </script>
+@isset ($error)
+<script>
+    Swal.fire({
+        title: 'Error al enviar el formilario',
+        text: '{{ $error }}',
+        icon: 'error'
+    });
+</script>
+@endisset
+@isset ($success)
+<script>
+    Swal.fire({
+        title: 'Completado',
+        text: '{{ $success }}',
+        icon: 'success'
+    });
+</script>
+@endisset
 @endpush

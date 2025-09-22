@@ -44,18 +44,26 @@
                                     <td>{{ $file['name'] }}</td>
                                     <td>{{ $file['collection'] }}</td>
                                     <td>{{ $file['category'] }}</td>
-                                    @if (!Auth::user()->hasActivePlan())
+                                    @auth
+                                        @if (!Auth::user()->hasActivePlan())
+                                            <td>$ {{ $file['price'] }}</td>
+                                        @endif
+                                        <td>
+                                            @if (Auth::user()->hasActivePlan())
+                                                <a style="display: flex; width: 20px"
+                                                    href="">{{ svg('entypo-download') }}</a>
+                                            @else
+                                                <a style="display: flex; width: 20px"
+                                                    href="">{{ svg('vaadin-cart') }}</a>
+                                            @endif
+                                        </td>
+                                    @else
                                         <td>$ {{ $file['price'] }}</td>
-                                    @endif
-                                    <td>
-                                        @if (Auth::user()->hasActivePlan())
-                                            <a style="display: flex; width: 20px"
-                                                href="">{{ svg('entypo-download') }}</a>
-                                        @else
+                                        <td>
                                             <a style="display: flex; width: 20px"
                                                 href="">{{ svg('vaadin-cart') }}</a>
-                                        @endif
-                                    </td>
+                                        </td>
+                                    @endauth
                                     <th></th>
                                 </tr>
                             @endforeach

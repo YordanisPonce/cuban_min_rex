@@ -115,6 +115,24 @@
             top: 0;
             left: 0;
         }
+        @media(max-width: 386px){
+            .navbar-right{
+                width: 75%;
+            }
+            
+            .carousel-item {
+                height: 100vh;
+
+                img {
+                    height: 100%;
+                }
+            }
+        }
+        @media(max-width: 992px){
+            .mt-xs-10{
+                margin-top: 3.6rem;
+            }
+        }
     </style>
 
     @stack('styles')
@@ -148,6 +166,7 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/theme.js  -->
 
+    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>    
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>
