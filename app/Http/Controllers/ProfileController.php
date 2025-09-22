@@ -45,15 +45,15 @@ class ProfileController extends Controller
         $user->email = $request->email;
         try {
             $user->save();
+            $success = "Información modificada correctamente";
+            return view('profile.account', compact('categories', 'success'));
         } catch (\Throwable $th) {
             $error = "El correo asignado ya pertenece a otro usuario";
             return view('profile.account', compact('categories', 'error'));
         }
-
-        return Redirect::route('profile.edit');
     }
 
-    public function updateBilling(Request $request): RedirectResponse
+    public function updateBilling(Request $request)
     {
         $user = User::find(Auth::user()->id);
         $billing = $user->billing;
@@ -65,9 +65,15 @@ class ProfileController extends Controller
         $billing->address = $request->address;
         $billing->postal = $request->postal;
         $billing->country = $request->country;
-        $billing->save();
 
-        return Redirect::route('profile.edit');
+        try {
+            $billing->save();
+            $success = "Información modificada correctamente";
+            return view('profile.billing', compact('categories', 'success'));
+        } catch (\Throwable $th) {
+            $error = "La información no ha sido actualizada correctamente, por favor rellene todos los campos e introduzca una información válida.";
+            return view('profile.billing', compact('categories', 'error'));
+        }
     }
 
     public function updatePassword(Request $request)

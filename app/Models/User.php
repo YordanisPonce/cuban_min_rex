@@ -13,10 +13,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;  
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, Billable;
+    use HasFactory, Notifiable, Billable, SoftDeletes; 
 
     /**
      * The attributes that are mass assignable.

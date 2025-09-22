@@ -115,7 +115,7 @@
             top: 0;
             left: 0;
         }
-        @media(max-width: 386px){
+        @media(max-width: 450px){
             .navbar-right{
                 width: 75%;
             }

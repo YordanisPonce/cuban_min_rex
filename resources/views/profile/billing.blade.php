@@ -31,7 +31,7 @@
                     <h5 class="card-header">Plan Actual</h5>
                     <div class="card-body">
                         <div class="row row-gap-6">
-                            @if (Auth::user()->hasActivePlan() === true)
+                            @if (Auth::user()->hasActivePlan() && Auth::user()->currentPlan)
                             <div class="col-md-6 mb-1">
                                 <div class="mb-6">
                                     <h6 class="mb-1">Tu Plan Actual es {{Auth::user()->currentPlan->name}}</h6>
@@ -90,13 +90,26 @@
                                 <button class="btn btn-label-danger cancel-subscription"  onclick="mostrarAdvertencia()">Cancelar Suscripción</button>
                             </div>
                             @else
-                            <div class="alert alert-warning mb-6" role="alert">
-                                <h5 class="alert-heading mb-1 d-flex align-items-center">
-                                    <span class="alert-icon rounded"><i class="icon-base ti tabler-alert-triangle icon-md"></i></span>
-                                    <span>¡Actualmente no posee ningun plan activo!</span>
-                                </h5>
-                                <span class="ms-11 ps-1">Por favor adquiera un plan para poder disfrutar de sus beneficios.</span>
-                            </div>
+                                @if (Auth::user()->planExpirationDays()->days <= 0)
+                                <div class="alert alert-warning mb-6 h-fit" role="alert">
+                                    <h5 class="alert-heading mb-1 d-flex align-items-center">
+                                        <span class="alert-icon rounded"><i class="icon-base ti tabler-alert-triangle icon-md"></i></span>
+                                        <span>¡Actualmente no posee ningun plan activo!</span>
+                                    </h5>
+                                    <span class="ms-11 ps-1">Por favor adquiera un plan para poder disfrutar de sus beneficios.</span>
+                                </div>
+                                @else
+                                <div class="alert alert-success mb-6" role="alert">
+                                    <h5 class="alert-heading mb-1 d-flex align-items-center">
+                                        <span>¡Membresía activa!</span>
+                                    </h5>
+                                    @php
+                                    Carbon::setLocale('es');
+                                    $expDate = Carbon::parse(auth()->user()->plan_expires_at)->translatedFormat('d \d\e F \d\e Y');
+                                    @endphp
+                                    <span class="ps-1">Aún puedes disfrutar de todos los beneficios asociados a tu antiguo plan durante <strong>{{Auth::user()->planExpirationDays()->days}} días</strong>, por favor considere renovarla antes de <strong>{{$expDate}}</strong> o adquirir una nueva membresía.</span>
+                                </div>
+                                @endif
                             <div class="col-12 d-flex gap-2 flex-wrap">
                                 <button class="btn btn-primary me-2" data-bs-toggle="modal" data-bs-target="#pricingModal">Adquirir Plan</button>
                             </div>
@@ -281,9 +294,18 @@
             cancelButtonText: 'Cancelar'
         }).then((result) => {
             if (result.isConfirmed) {
+                document.querySelector('#loader').style.display = 'flex';
                 window.location.href = '/payment/cancel-subscription';
             }
         });
     }
+    
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function (e){
+            e.preventDefault();
+            document.querySelector('#loader').style.display = 'flex';
+            this.submit();
+        });
+    });
 </script>
 @endpush

@@ -122,11 +122,19 @@
             }
         });
     }
+
+    document.querySelectorAll('form').forEach(form => {
+        form.addEventListener('submit', function (e){
+            e.preventDefault();
+            document.querySelector('#loader').style.display = 'flex';
+            this.submit();
+        });
+    });
 </script>
 @isset ($error)
 <script>
     Swal.fire({
-        title: 'Error al enviar el formilario',
+        title: 'Error al enviar el formulario',
         text: '{{ $error }}',
         icon: 'error'
     });
