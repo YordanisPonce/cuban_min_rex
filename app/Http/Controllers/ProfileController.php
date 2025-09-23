@@ -43,14 +43,10 @@ class ProfileController extends Controller
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->email = $request->email;
-        try {
-            $user->save();
-            $success = "Información modificada correctamente";
-            return view('profile.account', compact('categories', 'success'));
-        } catch (\Throwable $th) {
-            $error = "El correo asignado ya pertenece a otro usuario";
-            return view('profile.account', compact('categories', 'error'));
-        }
+
+        $user->save();
+        $success = "Información modificada correctamente";
+        return redirect()->back()->with('success', $success);
     }
 
     public function updateBilling(Request $request)
@@ -66,14 +62,11 @@ class ProfileController extends Controller
         $billing->postal = $request->postal;
         $billing->country = $request->country;
 
-        try {
-            $billing->save();
-            $success = "Información modificada correctamente";
-            return view('profile.billing', compact('categories', 'success'));
-        } catch (\Throwable $th) {
-            $error = "La información no ha sido actualizada correctamente, por favor rellene todos los campos e introduzca una información válida.";
-            return view('profile.billing', compact('categories', 'error'));
-        }
+
+        $billing->save();
+        $success = "Información modificada correctamente";
+        return redirect()->back()->with('success', $success);
+
     }
 
     public function updatePassword(Request $request)
@@ -81,22 +74,22 @@ class ProfileController extends Controller
         $categories = Category::where('show_in_landing', true)->get();
 
         $user = Auth::user();
-        
-        if(Hash::check($request->currentPassword, $user->password)){
-            if($request->newPassword === $request->confirmPassword){
+
+        if (Hash::check($request->currentPassword, $user->password)) {
+            if ($request->newPassword === $request->confirmPassword) {
                 $user->password = Hash::make($request->newPassword);
                 $user->save();
             } else {
                 $error = "Por favor confirme correctamente la nueva contraseña";
-                return view('profile.account', compact('categories', 'error'));
+                return redirect()->back()->with('error', $error);
             }
-        }else{
+        } else {
             $error = "La contraseña actual introducida no es correcta";
-            return view('profile.account', compact('categories', 'error'));
+            return redirect()->back()->with('error', $error);
         }
 
         $success = "La contraseña ha sido cambiada correctamente";
-        return view('profile.account', compact('categories', 'success'));
+        return redirect()->back()->with('success', $success);
     }
 
     /**
