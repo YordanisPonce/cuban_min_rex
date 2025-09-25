@@ -28,7 +28,13 @@
                                 <th>Nombre</th>
                                 <th>Álbum</th>
                                 <th>Categoría</th>
-                                <th></th>
+                                @auth
+                                    @if (!Auth::user()->hasActivePlan())
+                                        <td></td>
+                                    @endif
+                                @else
+                                    <th></th>
+                                @endauth
                                 <th></th>
                             </tr>
                         </thead>
@@ -51,7 +57,7 @@
                                         <td>
                                             @if (Auth::user()->hasActivePlan())
                                                 <a style="display: flex; width: 20px"
-                                                    href="">{{ svg('entypo-download') }}</a>
+                                                    href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             @else
                                                 <a style="display: flex; width: 20px"
                                                     href="">{{ svg('vaadin-cart') }}</a>
@@ -64,7 +70,6 @@
                                                 href="">{{ svg('vaadin-cart') }}</a>
                                         </td>
                                     @endauth
-                                    <th></th>
                                 </tr>
                             @endforeach
                         </tbody>

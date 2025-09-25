@@ -7,6 +7,8 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CollectionController;
+use App\Http\Controllers\FileController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -69,8 +71,20 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 
-Route::get('/categories/{category}', [CategoryController::class, 'show'])
+Route::get('/categories/{category}/list', [CategoryController::class, 'show'])
     ->name('category.show');
+
+Route::get('/categories/{category}/collections', [CategoryController::class, 'showCollections'])
+    ->name('category.showCollections');
+
+Route::get('/collection/{collection}', [CollectionController::class, 'show'])
+    ->name('collection.show');
+    
+Route::get('/file/{file}', [FileController::class, 'download'])
+    ->name('file.download');
+
+Route::get('/collection/download/{collection}', [CollectionController::class, 'download'])
+    ->name('collection.download');
 
 // Webhook de Stripe
 Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])

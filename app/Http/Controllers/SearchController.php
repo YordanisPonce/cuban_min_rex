@@ -24,6 +24,7 @@ class SearchController extends Controller
             ->get()
             ->map(function ($file) {
                 return [
+                    'id' => $file->id,
                     'date' => $file->created_at,
                     'user' => $file->user->name,
                     'name' => $file->name,

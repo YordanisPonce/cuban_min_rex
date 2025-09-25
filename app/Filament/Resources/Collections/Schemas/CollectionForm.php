@@ -30,7 +30,6 @@ class CollectionForm
                 FileUpload::make('image')
                     ->label('Subir Foto')
                     ->image()
-                    ->avatar()
                     ->disk('public')
                     ->directory('images') 
                     ->preserveFilenames(),

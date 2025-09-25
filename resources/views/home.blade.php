@@ -87,7 +87,7 @@
   <!-- What people say slider: Start -->
   <div class="container">
     <div class="row align-items-center gx-0 gy-4 g-lg-5 mb-5 pb-md-5">
-      <div class="col-md-6 col-lg-5 col-xl-3">
+      <div class="col-md-12 flex flex-column align-items-center">
         <div class="mb-4">
           <span class="badge bg-label-primary">Artistas Destacados</span>
         </div>
@@ -96,59 +96,42 @@
             <img src="{{ asset('assets/img/front-pages/icon/section-title-icon.png') }}" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1">
           </span>
         </h4>
-        <p class="mb-5 mb-md-12">Escucha a los artistas más sonados<br class="d-none d-xl-block">y descubre tu próxima canción favorita.</p>
-        <div class="landing-reviews-btns">
-          <button id="reviews-previous-btn" class="btn btn-icon btn-label-primary reviews-btn me-3 waves-effect" type="button">
-            <i class="icon-base ti tabler-chevron-left icon-md scaleX-n1-rtl"></i>
-          </button>
-          <button id="reviews-next-btn" class="btn btn-icon btn-label-primary reviews-btn waves-effect" type="button">
-            <i class="icon-base ti tabler-chevron-right icon-md scaleX-n1-rtl"></i>
-          </button>
-        </div>
+        <p class="mb-5 mb-md-12">Escucha a los artistas más sonados y descubre tu próxima canción favorita.</p>
       </div>
-      <div class="col-md-6 col-lg-7 col-xl-9">
-        <div class="swiper-reviews-carousel overflow-hidden">
-          <div class="swiper swiper-initialized swiper-horizontal swiper-backface-hidden" id="swiper-reviews">
-            <div class="swiper-wrapper" id="swiper-wrapper-d5f7ff1684355bde" aria-live="off" style="transition-duration: 0ms; transform: translate3d(-560px, 0px, 0px); transition-delay: 0ms;">
-              
-            @for ($i = 0; $i < 10; $i++)
-              <div class="swiper-slide" role="group" aria-label="2 / 6" data-swiper-slide-index="2">
-                <div class="card h-100">
-                  <div class="card-body text-body d-flex flex-column justify-content-between h-100">
-                    <div class="mb-4">
-                      <img class="w-100" src="{{ asset('/assets/img/album/imagine-dragons.png') }}">
-                    </div>
-                    <div class="text-warning mb-8">
-                      <i class="icon-base ti tabler-star-filled"></i>
-                      <i class="icon-base ti tabler-star-filled"></i>
-                      <i class="icon-base ti tabler-star-filled"></i>
-                      <i class="icon-base ti tabler-star-filled"></i>
-                      <i class="icon-base ti tabler-star-filled"></i>
-                    </div>
-                    <div class="d-flex align-items-center">
-                      <div class="avatar me-3 avatar-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-music-player" viewBox="0 0 16 16">
-                          <path d="M4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm1 0v3h6V3zm3 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
-                          <path d="M11 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-3 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                          <path d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <h6 class="mb-0">Imagine Dragons</h6>
-                        <p class="small text-body-secondary mb-0">Banda</p>
-                      </div>
-                    </div>
-                  </div>
+      <div class="categories col-md-12">
+        @foreach ($ctgSlides as $category)
+          <h3 class="flex">{{$category->name}}
+            <small><a class="flex align-items-center" href="{{ route('category.showCollections', $category->id) }}">Explorar todos 
+              <i class="ms-1">
+                <svg fill="currentColor" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;" xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;"
+                  xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+                  width="15px" height="15px" viewBox="0 0 42 42" xml:space="preserve">
+                  <polygon fill-rule="evenodd" points="11,38.32 28.609,21 11,3.68 13.72,1 34,21.01 13.72,41 " />
+                </svg>
+              </i>
+            </a></small>
+          </h3>
+          <div class="swiper mb-4">
+            <div class="swiper-wrapper">
+              <!-- Slides -->
+              @foreach ($category->collections as $collection)
+                <div class="swiper-slide">
+                  <a class="card relative" href="{{ route('collection.show', $collection->id) }}" style="background-image: url('{{ $collection->image ? asset('storage/' . $collection->image) : asset('assets/img/front-pages/icon/collection.png') }}'); background-size: cover; height: 150px; background-color: rgba(0,0,0,.3); background-blend-mode: darken;">
+                    <h4 class="bottom-0 w-100 text-center" style="position: absolute;">{{$collection->name}}</h4>
+                    <div class="dark-screen d-none"></div>
+                  </a>
                 </div>
-              </div>
-            @endfor
-
+              @endforeach
             </div>
-            <div class="swiper-button-next d-none d-md-block" tabindex="0" role="button" aria-label="Next slide" aria-controls="swiper-wrapper-d5f7ff1684355bde"></div>
-            <div class="swiper-button-prev d-none d-md-block" tabindex="0" role="button" aria-label="Previous slide" aria-controls="swiper-wrapper-d5f7ff1684355bde"></div>
-            <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
+            <!-- If we need pagination -->
+            <!-- <div class="swiper-pagination"></div> -->
+
+            <!-- If we need navigation buttons -->
+            <div class="swiper-button-prev"></div>
+            <div class="swiper-button-next"></div>
+
           </div>
-        </div>
+        @endforeach
       </div>
     </div>
   </div>
@@ -304,6 +287,39 @@
   document.addEventListener('DOMContentLoaded', function() {
     // Inicializar sliders, tooltips, etc.
     console.log('Home page loaded');
+  });
+
+  const swiper = new Swiper('.swiper', {
+    // Optional parameters
+    direction: 'horizontal',
+
+    slidesPerView: 1,
+    spaceBetween: 5,
+
+    // Responsive breakpoints
+    breakpoints: {
+      400: {
+        slidesPerView: 2,
+        spaceBetween: 10
+      },
+      780: {
+        slidesPerView: 3,
+        spaceBetween: 10
+      },
+      1024: {
+        slidesPerView: 4,
+        spaceBetween: 10
+      },
+      1200: {
+        slidesPerView: 5,
+        spaceBetween: 10
+      }
+    },
+
+    navigation: {
+      nextEl: '.swiper-button-next',
+      prevEl: '.swiper-button-prev',
+    },
   });
 </script>
 @endpush

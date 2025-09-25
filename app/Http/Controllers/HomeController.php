@@ -13,8 +13,9 @@ class HomeController extends Controller
         $pageTitle = "Inicio";
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->get();
+        $ctgSlides = Category::take(10)->get();
 
-        return view('home', compact('pageTitle', 'plans', 'categories'));
+        return view('home', compact('pageTitle', 'plans', 'categories', 'ctgSlides'));
     }
 
     public function faq()

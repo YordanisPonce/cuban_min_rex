@@ -115,11 +115,54 @@
             top: 0;
             left: 0;
         }
-        @media(max-width: 450px){
-            .navbar-right{
+
+        .categories h3 {
+            cursor: pointer;
+            color: currentColor;
+        }
+        
+        .categories h3>small {
+            max-width: 0;
+            color: #54b9c5;
+            opacity: 0;
+            transform: translate(-100px);
+            transition: max-width 1s, opacity 1s, transform .75s;
+            white-space: nowrap;
+        }
+
+        .categories h3:hover>small {
+            max-width: 200px;
+            opacity: 1;
+            transform: translate(1vw);
+        }
+
+        .categories .card {
+            transition: all ease 1s;
+            max-width: 100%;
+        }
+
+        .categories .card:hover {
+            transform: scale(0.9);
+            cursor: pointer;
+        }
+
+        .categories .card .dark-screen {
+            height: 100% !important;
+        }
+
+        .categories .card:hover .dark-screen {
+            display: block !important;
+        }
+
+        .swiper-button-prev:after, .swiper-button-next:after {
+            font-size: 25px !important;
+        }
+
+        @media(max-width: 450px) {
+            .navbar-right {
                 width: 75%;
             }
-            
+
             .carousel-item {
                 height: 100vh;
 
@@ -128,8 +171,9 @@
                 }
             }
         }
-        @media(max-width: 992px){
-            .mt-xs-10{
+
+        @media(max-width: 992px) {
+            .mt-xs-10 {
                 margin-top: 3.6rem;
             }
         }
@@ -166,7 +210,7 @@
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/theme.js  -->
 
-    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>    
+    <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/popper/popper.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/bootstrap.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/node-waves/node-waves.js') }}"></script>

@@ -17,6 +17,7 @@ class CategoryController extends Controller
             ->get()
             ->map(function ($file) {
                 return [
+                    'id' => $file->id,
                     'date' => $file->created_at,
                     'user' => $file->user->name,
                     'name' => $file->name,
@@ -31,5 +32,12 @@ class CategoryController extends Controller
         });
             
         return view('search', compact('results', 'categories'));
+    }
+
+    public function showCollections(string $id){
+        $categories = Category::where('show_in_landing', true)->get();
+        $category = Category::find($id);
+
+        return view('category', compact('category', 'categories'));
     }
 }
