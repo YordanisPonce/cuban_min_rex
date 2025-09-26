@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Plan extends Model
 {
@@ -43,11 +45,21 @@ class Plan extends Model
         return $query->where('is_recommended', true);
     }
 
-    public function orders(): HasMany {
+    public function orders(): HasMany
+    {
         return $this->hasMany(Order::class);
     }
 
-    public function getPriceFormattedAttribute(): string {
+    public function getPriceFormattedAttribute(): string
+    {
         return number_format($this->price, 2);
     }
+    protected function image(): Attribute
+    {
+
+        return Attribute::make(
+            get: fn($item) => $item ? Storage::disk('public')->url($item) : $item
+        );
+    }
+
 }

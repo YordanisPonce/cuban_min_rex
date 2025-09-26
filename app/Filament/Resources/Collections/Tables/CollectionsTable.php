@@ -23,7 +23,8 @@ class CollectionsTable
                     ->searchable(),
                 ImageColumn::make('image')
                     ->label('Image')
-                    ->disk('public'),
+                    ->disk('public')
+                    ->url(fn($record) => $record?->image),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()

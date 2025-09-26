@@ -23,7 +23,7 @@ class PlansTable
                 // TextColumn::make('stripe_product_id')
                 //     ->searchable(),
                 // TextColumn::make('stripe_price_id')
-                    // ->searchable(),
+                // ->searchable(),
                 TextColumn::make('price')
                     ->label('Precio')
                     ->money()
@@ -35,7 +35,7 @@ class PlansTable
                 ImageColumn::make('image')
                     ->label('Image')
                     ->disk('public')
-                    ->url(fn ($record) => $record->image ? asset('storage/' . $record->image) : null),
+                    ->url(fn($record) => $record?->image),
                 IconColumn::make('is_recommended')
                     ->label('Recomendado')
                     ->boolean(),
