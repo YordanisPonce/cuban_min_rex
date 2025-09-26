@@ -122,18 +122,8 @@
         }
         
         .categories h3>small {
-            max-width: 0;
             color: #54b9c5;
-            opacity: 0;
-            transform: translate(-100px);
-            transition: max-width 1s, opacity 1s, transform .75s;
             white-space: nowrap;
-        }
-
-        .categories h3:hover>small {
-            max-width: 200px;
-            opacity: 1;
-            transform: translate(1vw);
         }
 
         .categories .card {

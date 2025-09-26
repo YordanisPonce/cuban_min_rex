@@ -54,7 +54,9 @@
                                         @if (!Auth::user()->hasActivePlan())
                                             <td>$ {{ $file['price'] }}</td>
                                         @endif
-                                        <td>
+                                        <td class="d-flex gap-2">
+                                            <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                >{{ svg('vaadin-play') }}</a>
                                             @if (Auth::user()->hasActivePlan())
                                                 <a style="display: flex; width: 20px"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
@@ -65,9 +67,11 @@
                                         </td>
                                     @else
                                         <td>$ {{ $file['price'] }}</td>
-                                        <td>
+                                        <td class="d-flex gap-2">
                                             <a style="display: flex; width: 20px"
                                                 href="">{{ svg('vaadin-cart') }}</a>
+                                            <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                >{{ svg('vaadin-play') }}</a>
                                         </td>
                                     @endauth
                                 </tr>
@@ -82,3 +86,51 @@
         </div>
     </section><!-- FAQ: End -->
 @endsection
+
+@push('scripts')
+<script>
+    let currentAudio = null;
+
+    function stopCurrentAudio() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
+        }
+    }
+
+    function playAudio(element){
+        let audio = document.createElement('audio');
+
+        let binaryData = element.dataset.url;
+
+        let byteCharacters = atob(binaryData);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        let blob = new Blob([byteArray], { type: 'audio/mpeg' });
+        let url = URL.createObjectURL(blob);
+        
+        audio.src = url;
+
+        if(element.dataset.state == "pause"){
+            stopCurrentAudio();
+            currentAudio = audio;
+            audio.play();
+            element.innerHTML = '{{ svg('vaadin-pause') }}';
+            element.dataset.state = "play";
+        } else {
+            element.innerHTML = '{{ svg('vaadin-play') }}';
+            stopCurrentAudio();
+            element.dataset.state = "pause";
+        }
+        
+        audio.addEventListener('ended', () => {
+            element.innerHTML = '{{ svg('vaadin-play') }}';
+            element.dataset.state = "pause";
+        });
+    }
+</script>
+@endpush

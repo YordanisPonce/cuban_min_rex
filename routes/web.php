@@ -77,8 +77,14 @@ Route::get('/categories/{category}/list', [CategoryController::class, 'show'])
 Route::get('/categories/{category}/collections', [CategoryController::class, 'showCollections'])
     ->name('category.showCollections');
 
+Route::get('/collections', [CollectionController::class, 'index'])
+    ->name('collection.index');
+
 Route::get('/collection/{collection}', [CollectionController::class, 'show'])
     ->name('collection.show');
+
+Route::get('/collection/{collection}/play/{file}', [FileController::class, 'play'])
+    ->name('file.play');
     
 Route::get('/file/{file}', [FileController::class, 'download'])
     ->name('file.download');

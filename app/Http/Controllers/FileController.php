@@ -19,4 +19,14 @@ class FileController extends Controller
 
         return Response::download($path);
     }
+
+    public function play(string $collectionId, string $id){
+        $file = File::find($id);
+        return response()->stream(function () use ($file) {
+            echo file_get_contents(storage_path('app/public/'.$file->file));
+        }, 200, [
+            'Content-Type' => 'audio/mpeg',
+            'Content-Disposition' => 'inline; filename="' . $file->name . '"',
+        ]);
+    }
 }

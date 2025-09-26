@@ -8,7 +8,7 @@
 
 @section('content')
     <!-- Hero: Start -->
-    <section id="hero-animation">
+    <section>
 
         <div id="demo" class="carousel slide" data-bs-ride="carousel">
 
@@ -63,30 +63,32 @@
                 </div>
             </div>
 
-            <button class="carousel-control-prev d-none d-md-block" type="button" data-bs-target="#demo"
-                data-bs-slide="prev">
-                <span>
-                    <svg fill="#000000" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;"
-                        xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" width="40px" height="40px"
-                        viewBox="0 0 42 42" xml:space="preserve">
-                        <polygon fill-rule="evenodd" points="31,38.32 13.391,21 31,3.68 28.279,1 8,21.01 28.279,41 " />
-                    </svg>
-                </span>
-            </button>
-            <button class="carousel-control-next d-none d-md-block" type="button" data-bs-target="#demo"
-                data-bs-slide="next">
-                <span>
-                    <svg fill="#000000" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;"
-                        xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" xmlns="http://www.w3.org/2000/svg"
-                        xmlns:xlink="http://www.w3.org/1999/xlink"
-                        xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" width="40px" height="40px"
-                        viewBox="0 0 42 42" xml:space="preserve">
-                        <polygon fill-rule="evenodd" points="11,38.32 28.609,21 11,3.68 13.72,1 34,21.01 13.72,41 " />
-                    </svg>
-                </span>
-            </button>
+            <div class="container">
+                <button class="carousel-control-prev" type="button" data-bs-target="#demo"
+                    data-bs-slide="prev">
+                    <span>
+                        <svg fill="#000000" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;"
+                            xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" width="40px" height="40px"
+                            viewBox="0 0 42 42" xml:space="preserve">
+                            <polygon fill-rule="evenodd" points="31,38.32 13.391,21 31,3.68 28.279,1 8,21.01 28.279,41 " />
+                        </svg>
+                    </span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#demo"
+                    data-bs-slide="next">
+                    <span>
+                        <svg fill="#000000" version="1.1" baseProfile="tiny" id="Layer_1" xmlns:x="&ns_extend;"
+                            xmlns:i="&ns_ai;" xmlns:graph="&ns_graphs;" xmlns="http://www.w3.org/2000/svg"
+                            xmlns:xlink="http://www.w3.org/1999/xlink"
+                            xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/" width="40px" height="40px"
+                            viewBox="0 0 42 42" xml:space="preserve">
+                            <polygon fill-rule="evenodd" points="11,38.32 28.609,21 11,3.68 13.72,1 34,21.01 13.72,41 " />
+                        </svg>
+                    </span>
+                </button>
+            </div>
         </div>
     </section>
     <!-- Hero: End -->
@@ -111,8 +113,9 @@
                 </div>
                 <div class="categories col-md-12">
                     @foreach ($ctgSlides as $category)
-                        <h3 class="flex">{{ $category->name }}
-                            <small><a class="flex align-items-center"
+                        <h3 class="flex justify-content-between">{{ $category->name }}
+                            <small>
+                                <a class="flex align-items-center"
                                     href="{{ route('category.showCollections', $category->id) }}">Explorar todos
                                     <i class="ms-1">
                                         <svg fill="currentColor" version="1.1" baseProfile="tiny" id="Layer_1"
@@ -124,14 +127,15 @@
                                                 points="11,38.32 28.609,21 11,3.68 13.72,1 34,21.01 13.72,41 " />
                                         </svg>
                                     </i>
-                                </a></small>
+                                </a>
+                            </small>
                         </h3>
-                        <div class="swiper mb-4">
+                        <div class="swiper mb-6">
                             <div class="swiper-wrapper">
                                 <!-- Slides -->
                                 @foreach ($category->collections as $collection)
                                     <div class="swiper-slide">
-                                        <a class="card relative" href="{{ route('collection.show', $collection->id) }}"
+                                        <a class="card relative overflow-hidden" href="{{ route('collection.show', $collection->id) }}"
                                             style="background-image: url('{{ $collection->image ? $collection->image : asset('assets/img/front-pages/icon/collection.png') }}'); background-size: cover; height: 150px; background-color: rgba(0,0,0,.3); background-blend-mode: darken;">
                                             <h4 class="bottom-0 w-100 text-center" style="position: absolute;">
                                                 {{ $collection->name }}</h4>

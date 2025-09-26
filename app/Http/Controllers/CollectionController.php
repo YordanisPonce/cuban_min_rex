@@ -21,6 +21,9 @@ class CollectionController extends Controller
             ->with(['collection'])
             ->get()
             ->map(function ($file) {
+                $content = file_get_contents(storage_path('app/public/' . $file->file)); 
+                $binaryContent = base64_encode($content);
+
                 return [
                     'id' => $file->id,
                     'date' => $file->created_at,
@@ -29,7 +32,7 @@ class CollectionController extends Controller
                     'collection' => $file->collection->name ?? null,
                     'category' => $file->collection->category->name ?? null,
                     'price' => $file->price,
-                    'url' => $file->file,
+                    'url' => $binaryContent,
                 ];
             });
         $results = $results->filter(function ($item) {
@@ -71,5 +74,12 @@ class CollectionController extends Controller
         }
         
         return Response::download($zipFilePath)->deleteFileAfterSend(true);
+    }
+
+    public function index() {
+        $collections = Collection::All();
+        $categories = Category::where('show_in_landing', true)->get();
+
+        return view('category', compact('collections', 'categories'));
     }
 }

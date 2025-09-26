@@ -56,6 +56,9 @@
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="/contact">Contacto</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Colecciones</a>
+                    </li>
                     @isset($categories)
                         @foreach ($categories as $category)
                             <li class="nav-item">

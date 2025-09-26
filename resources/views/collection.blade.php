@@ -49,24 +49,34 @@
                                     <div class="card mb-6">
                                         <ul class="list-group list-group-flush file-list">
                                             @foreach ($results as $file)
-                                                <li class="list-group-item d-flex justify-content-between">
-                                                    <spam class="text-nowrap">{{ $file['name'] }}</spam>
-                                                    <spam class="flex gap-sm-10 gap-1 text-nowrap">
-                                                        @auth
-                                                            @if (Auth::user()->hasActivePlan())
-                                                                <i><a style="display: flex; width: 20px"
-                                                                        href="{{ route('file.download', $file['id']) }}">{{ svg('entypo-download') }}</a></i>
-                                                            @else
-                                                                <i>$ {{ $file['price'] }}</i>
-                                                                <i><a style="display: flex; width: 20px"
-                                                                        href="">{{ svg('vaadin-cart') }}</a></i>
-                                                            @endif
-                                                        @else
-                                                            <i>$ {{ $file['price'] }}</i>
-                                                            <i><a style="display: flex; width: 20px"
-                                                                    href="">{{ svg('vaadin-cart') }}</a></i>
-                                                        @endauth
-                                                    </spam>
+                                                <li class="list-group-item">
+                                                    <div class=" row">
+                                                        <div class="col-9">
+                                                            <spam class="d-block w-100 text-nowrap overflow-hidden" style="text-overflow: ellipsis;">{{ $file['name'] }}</spam>
+                                                        </div>
+                                                        <div class="col-3">
+                                                            <spam class="flex gap-sm-10 gap-1 text-nowrap">
+                                                                @auth
+                                                                    @if (Auth::user()->hasActivePlan())
+                                                                        <i><a style="display: flex; width: 20px"
+                                                                                href="{{ route('file.download', $file['id']) }}">{{ svg('entypo-download') }}</a></i>
+                                                                    @else
+                                                                        <i>$ {{ $file['price'] }}</i>
+                                                                        <i><a style="display: flex; width: 20px"
+                                                                                href="">{{ svg('vaadin-cart') }}</a></i>
+                                                                        <i><a style="display: flex; width: 20px"
+                                                                                href="">{{ svg('vaadin-play') }}</a></i>
+                                                                    @endif
+                                                                @else
+                                                                    <i>$ {{ $file['price'] }}</i>
+                                                                    <i><a style="display: flex; width: 20px"
+                                                                            href="">{{ svg('vaadin-cart') }}</a></i>
+                                                                @endauth
+                                                                <i><a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                                    >{{ svg('vaadin-play') }}</a></i>
+                                                            </spam>
+                                                        </div>
+                                                    </div>
                                                 </li>
                                             @endforeach
                                         </ul>
@@ -84,3 +94,51 @@
         <!-- / Content -->
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    let currentAudio = null;
+
+    function stopCurrentAudio() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
+        }
+    }
+
+    function playAudio(element){
+        let audio = document.createElement('audio');
+
+        let binaryData = element.dataset.url;
+
+        let byteCharacters = atob(binaryData);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        let blob = new Blob([byteArray], { type: 'audio/mpeg' });
+        let url = URL.createObjectURL(blob);
+        
+        audio.src = url;
+
+        if(element.dataset.state == "pause"){
+            stopCurrentAudio();
+            currentAudio = audio;
+            audio.play();
+            element.innerHTML = '{{ svg('vaadin-pause') }}';
+            element.dataset.state = "play";
+        } else {
+            element.innerHTML = '{{ svg('vaadin-play') }}';
+            stopCurrentAudio();
+            element.dataset.state = "pause";
+        }
+        
+        audio.addEventListener('ended', () => {
+            element.innerHTML = '{{ svg('vaadin-play') }}';
+            element.dataset.state = "pause";
+        });
+    }
+</script>
+@endpush
