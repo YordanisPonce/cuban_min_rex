@@ -15,6 +15,10 @@ class HomeController extends Controller
         $categories = Category::where('show_in_landing', true)->get();
         $ctgSlides = Category::take(10)->get();
 
+        $ctgSlides = $ctgSlides->filter(function ($item) {
+            return $item->collections()->count() > 0;
+        });
+
         return view('home', compact('pageTitle', 'plans', 'categories', 'ctgSlides'));
     }
 

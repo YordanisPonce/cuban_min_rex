@@ -142,7 +142,6 @@
         }
 
         .categories .card:hover {
-            transform: scale(0.9);
             cursor: pointer;
         }
 
