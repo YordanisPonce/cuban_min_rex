@@ -222,9 +222,9 @@
     </p>
 
     <div class="row pt-lg-5">
-        @foreach($plans as $plan)
+      @foreach($plans as $plan)
         @php
-        $isActive = auth()->check() && auth()->user()->current_plan_id === $plan->id && auth()->user()->hasActivePlan();
+          $isActive = auth()->check() && auth()->user()->current_plan_id === $plan->id && auth()->user()->hasActivePlan();
         @endphp
         <div class="col-12 col-xl-4 col-lg-6">
           <div class="{{ $isActive ? 'card border border-primary shadow-xl' : 'card'}}">
@@ -255,21 +255,21 @@
               @endif
               <div class="d-grid mt-8">
                 @auth
-                @if($isActive)
-                <button class="btn btn-secondary" disabled>Ya lo tienes</button>
+                  @if($isActive)
+                  <button class="btn btn-secondary" disabled>Ya lo tienes</button>
+                  @else
+                  <a href="{{ route('payment.form', $plan->id) }}" class="btn btn-label-primary">Adquirir Plan</a>
+                  @endif
                 @else
-                <a href="{{ route('payment.form', $plan->id) }}" class="btn btn-label-primary">Adquirir Plan</a>
-                @endif
-                @else
-                <a href="{{ route('login') }}" class="btn btn-outline-primary">
-                  Inicia sesión para comprar
-                </a>
+                  <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                    Inicia sesión para comprar
+                  </a>
                 @endauth
               </div>
             </div>
           </div>
-        @endforeach
-      </div>
+        </div>
+      @endforeach
     </div>
   </div>
 </section>
