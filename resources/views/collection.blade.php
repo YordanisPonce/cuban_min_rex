@@ -55,25 +55,29 @@
                                                             <spam class="d-block w-100 text-nowrap overflow-hidden" style="text-overflow: ellipsis;">{{ $file['name'] }}</spam>
                                                         </div>
                                                         <div class="col-3">
-                                                            <spam class="flex gap-sm-10 gap-1 text-nowrap">
+                                                            <spam class="flex gap-sm-10 gap-1 text-nowrap justify-content-end">
                                                                 @auth
                                                                     @if (Auth::user()->hasActivePlan())
                                                                         <i><a style="display: flex; width: 20px"
-                                                                                href="{{ route('file.download', $file['id']) }}">{{ svg('entypo-download') }}</a></i>
+                                                                            href="{{ route('file.download', $file['id']) }}">{{ svg('entypo-download') }}</a></i>
                                                                     @else
                                                                         <i>$ {{ $file['price'] }}</i>
                                                                         <i><a style="display: flex; width: 20px"
-                                                                                href="">{{ svg('vaadin-cart') }}</a></i>
-                                                                        <i><a style="display: flex; width: 20px"
-                                                                                href="">{{ svg('vaadin-play') }}</a></i>
+                                                                            href="">{{ svg('vaadin-cart') }}</a></i>
                                                                     @endif
                                                                 @else
                                                                     <i>$ {{ $file['price'] }}</i>
                                                                     <i><a style="display: flex; width: 20px"
                                                                             href="">{{ svg('vaadin-cart') }}</a></i>
                                                                 @endauth
-                                                                <i><a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
-                                                                    >{{ svg('vaadin-play') }}</a></i>
+                                                                <i>
+                                                                    @if ($file['isZip'])
+                                                                    <a style="color: transparent">zip</a>
+                                                                    @else
+                                                                    <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                                    >{{ svg('vaadin-play') }}</a>
+                                                                    @endif
+                                                                </i>
                                                             </spam>
                                                         </div>
                                                     </div>
@@ -87,7 +91,32 @@
                     </div>
                 </div>
                 <div class="col-lg-4">
-
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h5 class="pb-1 mb-6">Colecciones Relacionadas</h5>
+                            <hr class="my-6" />
+                            <div class="row mb-12 g-6">
+                                @foreach ($relationeds as $coll)
+                                <div class="col-12">
+                                    <a class="card card-relationed relative" href="{{ route('collection.show', $coll->id) }}">
+                                        <div class="row g-0">
+                                            <div class="col-md-4">
+                                                <img class="card-img card-img-left w-100" style="max-height: 80px;" src="{{ $coll->image ? $coll->image : asset('assets/img/front-pages/icon/collection.png') }}" />
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="card-body p-3">
+                                                    <h5 class="card-title">{{$coll->name}}</h5>
+                                                    <p class="card-text"><small class="text-body-secondary">Subido por {{$coll->user->name}}</small></p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="dark-screen d-none"></div>
+                                    </a>
+                                </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

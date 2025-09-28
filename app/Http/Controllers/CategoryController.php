@@ -16,6 +16,10 @@ class CategoryController extends Controller
             ->with(['collection.category'])
             ->get()
             ->map(function ($file) {
+                $content = file_get_contents(storage_path('app/public/' . $file->file)); 
+                $binaryContent = base64_encode($content);
+                $isZip = pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION)!=='mp3';
+
                 return [
                     'id' => $file->id,
                     'date' => $file->created_at,
@@ -24,12 +28,10 @@ class CategoryController extends Controller
                     'collection' => $file->collection->name ?? null,
                     'category' => $file->collection->category->name ?? null,
                     'price' => $file->price,
-                    'url' => $file->file,
+                    'url' => $binaryContent,
+                    'isZip' => $isZip
                 ];
             });
-        $results = $results->filter(function ($item) {
-            return pathinfo('storage/public/files/'.$item['url'], PATHINFO_EXTENSION)!=='zip';
-        });
             
         return view('search', compact('results', 'categories'));
     }

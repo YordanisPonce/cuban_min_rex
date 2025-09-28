@@ -36,6 +36,7 @@
                                     <th></th>
                                 @endauth
                                 <th></th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
@@ -55,8 +56,6 @@
                                             <td>$ {{ $file['price'] }}</td>
                                         @endif
                                         <td class="d-flex gap-2">
-                                            <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
-                                                >{{ svg('vaadin-play') }}</a>
                                             @if (Auth::user()->hasActivePlan())
                                                 <a style="display: flex; width: 20px"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
@@ -70,10 +69,15 @@
                                         <td class="d-flex gap-2">
                                             <a style="display: flex; width: 20px"
                                                 href="">{{ svg('vaadin-cart') }}</a>
-                                            <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
-                                                >{{ svg('vaadin-play') }}</a>
+                                            
                                         </td>
                                     @endauth
+                                    <td>
+                                        @if (!$file['isZip'])
+                                        <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                >{{ svg('vaadin-play') }}</a>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -23,6 +23,7 @@ class CollectionController extends Controller
             ->map(function ($file) {
                 $content = file_get_contents(storage_path('app/public/' . $file->file)); 
                 $binaryContent = base64_encode($content);
+                $isZip = pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION)!=='mp3';
 
                 return [
                     'id' => $file->id,
@@ -33,13 +34,15 @@ class CollectionController extends Controller
                     'category' => $file->collection->category->name ?? null,
                     'price' => $file->price,
                     'url' => $binaryContent,
+                    'isZip' => $isZip
                 ];
             });
-        $results = $results->filter(function ($item) {
-            return pathinfo('storage/public/files/'.$item['url'], PATHINFO_EXTENSION)!=='zip';
+        $relationeds = Collection::where('category_id', $collection->category_id)->orWhere('user_id', $collection->user_id)->get();
+        $relationeds = $relationeds->filter(function ($item) use ($collection) {
+            return $item->id !== $collection->id && $item->files()->count() > 0;
         });
 
-        return view('collection', compact('results', 'categories', 'collection'));
+        return view('collection', compact('results', 'categories', 'collection', 'relationeds'));
     }
 
     public function download(string $id){
@@ -79,6 +82,10 @@ class CollectionController extends Controller
     public function index() {
         $collections = Collection::All();
         $categories = Category::where('show_in_landing', true)->get();
+
+        $collections = $collections->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         return view('category', compact('collections', 'categories'));
     }

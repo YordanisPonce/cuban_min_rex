@@ -147,6 +147,14 @@
             font-size: 25px !important;
         }
 
+        .card-relationed{
+            overflow: hidden;
+        }
+
+        .card-relationed:hover .dark-screen {
+            display: block !important;
+        }
+
         @media(max-width: 450px) {
             .navbar-right {
                 width: 75%;
@@ -158,6 +166,12 @@
                 img {
                     height: 100%;
                 }
+            }
+        }
+
+        @media(max-width: 767px) {
+            .card-relationed img{
+                max-height: 150px !important;
             }
         }
 
