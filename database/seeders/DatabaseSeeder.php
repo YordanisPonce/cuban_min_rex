@@ -16,10 +16,20 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'password' => Hash::make('12345678'),
+        try {
+            User::factory()->create([
+                'name' => 'Test User',
+                'email' => 'test@example.com',
+                'password' => Hash::make('12345678'),
+            ]);
+        } catch (\Throwable $th) {
+            //throw $th;
+        }
+
+        $this->call([
+            CategoriesSeeder::class,
+            CollectionSeeder::class,
+            FilesSeeder::class,
         ]);
     }
 }

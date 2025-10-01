@@ -85,7 +85,7 @@ Route::get('/collection/{collection}', [CollectionController::class, 'show'])
 
 Route::get('/collection/{collection}/play/{file}', [FileController::class, 'play'])
     ->name('file.play');
-    
+
 Route::get('/file/{file}', [FileController::class, 'download'])
     ->name('file.download');
 
@@ -97,5 +97,10 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
     ->name('stripe.webhook');
 
 Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
+
+// routes/web.php
+Route::get('/collections/{collection}/playlist', [\App\Http\Controllers\CollectionController::class, 'playlist'])
+    ->name('collections.playlist');
+
 
 require __DIR__ . '/auth.php';

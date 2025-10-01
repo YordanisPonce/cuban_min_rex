@@ -10,20 +10,20 @@ use ZipArchive;
 
 class CollectionController extends Controller
 {
-    
+
     public function show(string $id)
     {
         $collection = Collection::find($id);
         $categories = Category::where('show_in_landing', true)->get();
         $results = File::whereHas('collection', function ($query) use ($id) {
-                $query->where('id', $id);
-            })
+            $query->where('id', $id);
+        })
             ->with(['collection'])
             ->get()
             ->map(function ($file) {
-                $content = file_get_contents(storage_path('app/public/' . $file->file)); 
+                $content = file_get_contents(storage_path('app/public/' . $file->file));
                 $binaryContent = base64_encode($content);
-                $isZip = pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION)!=='mp3';
+                $isZip = pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) !== 'mp3';
 
                 return [
                     'id' => $file->id,
@@ -45,11 +45,12 @@ class CollectionController extends Controller
         return view('collection', compact('results', 'categories', 'collection', 'relationeds'));
     }
 
-    public function download(string $id){
+    public function download(string $id)
+    {
         $collection = Collection::find($id);
         $zip = new ZipArchive();
-        $zipFileName = ''.$collection->name.'.zip';
-        $zipFilePath = storage_path('app/public/files/zip'.$zipFileName);
+        $zipFileName = '' . $collection->name . '.zip';
+        $zipFilePath = storage_path('app/public/files/zip' . $zipFileName);
 
         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
             return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
@@ -58,28 +59,29 @@ class CollectionController extends Controller
         $files = File::where('collection_id', $id)->get();
 
         $files = $files->filter(function ($item) {
-            return pathinfo('storage/public/files/'.$item->file, PATHINFO_EXTENSION)!=='zip';
+            return pathinfo('storage/public/files/' . $item->file, PATHINFO_EXTENSION) !== 'zip';
         });
 
         foreach ($files as $file) {
-            $path = storage_path('app/public/'.$file->file);
+            $path = storage_path('app/public/' . $file->file);
             if (file_exists($path)) {
                 $zip->addFile($path, basename($path));
             } else {
-                return response()->json(['error' => 'El archivo '.$path.' no se ha encontrado.'], 500);
+                return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
             }
         }
 
         $zip->close();
 
         if (!file_exists($zipFilePath)) {
-            return response()->json(['error' => 'El archivo '.$zipFileName.' no se ha creado.'], 500);
+            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
         }
-        
+
         return Response::download($zipFilePath)->deleteFileAfterSend(true);
     }
 
-    public function index() {
+    public function index()
+    {
         $collections = Collection::All();
         $categories = Category::where('show_in_landing', true)->get();
 
@@ -89,4 +91,19 @@ class CollectionController extends Controller
 
         return view('category', compact('collections', 'categories'));
     }
+
+    public function playlist(\App\Models\Collection $collection)
+    {
+        // Trae sus files; si tu lógica "hereda" categoría desde la colección, no hace falta tocar aquí
+        $tracks = $collection->files()
+            ->orderBy('id')
+            ->get(['file as url', 'name as title'])
+            ->map(fn($f) => [
+                'url' => \Storage::disk('public')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'title' => $f->title ?? $f->name,
+            ]);
+
+        return response()->json($tracks);
+    }
+
 }
