@@ -63,12 +63,12 @@
                                                                     @else
                                                                         <i>$ {{ $file['price'] }}</i>
                                                                         <i><a style="display: flex; width: 20px"
-                                                                            href="">{{ svg('vaadin-cart') }}</a></i>
+                                                                            href="{{ route('file.pay', $file['id'])}}">{{ svg('vaadin-cart') }}</a></i>
                                                                     @endif
                                                                 @else
                                                                     <i>$ {{ $file['price'] }}</i>
                                                                     <i><a style="display: flex; width: 20px"
-                                                                            href="">{{ svg('vaadin-cart') }}</a></i>
+                                                                            href="{{ route('file.pay', $file['id'])}}">{{ svg('vaadin-cart') }}</a></i>
                                                                 @endauth
                                                                 <i>
                                                                     @if ($file['isZip'])

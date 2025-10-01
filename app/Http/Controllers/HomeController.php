@@ -16,7 +16,7 @@ class HomeController extends Controller
         $ctgSlides = Category::take(10)->get();
 
         $ctgSlides = $ctgSlides->filter(function ($item) {
-            return $item->collections()->count() > 0;
+            return $item->files()->count();
         });
 
         return view('home', compact('pageTitle', 'plans', 'categories', 'ctgSlides'));

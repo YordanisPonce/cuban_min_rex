@@ -19,7 +19,8 @@ class PaymentController extends Controller
         $plans = Plan::all();
         return view('payment.payment', [
             'planId' => $planId,
-            'plans' => $plans
+            'plans' => $plans,
+            'categories' => Category::where('show_in_landing', true)->get()
         ]);
     }
 
