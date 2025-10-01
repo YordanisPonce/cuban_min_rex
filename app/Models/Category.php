@@ -23,4 +23,8 @@ class Category extends Model
     public function collections(): HasMany{
         return $this->hasMany(Collection::class);
     }
+
+    public function files(): HasMany{
+        return $this->hasMany(File::class);
+    }
 }

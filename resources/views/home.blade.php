@@ -134,6 +134,7 @@
                             <div class="swiper-wrapper">
                                 <!-- Slides -->
                                 @foreach ($category->collections as $collection)
+                                    @if ($collection->files()->count() > 0)
                                     <div class="swiper-slide">
                                         <a class="card relative overflow-hidden" href="{{ route('collection.show', $collection->id) }}"
                                             style="background-image: url('{{ $collection->image ? $collection->image : asset('assets/img/front-pages/icon/collection.png') }}'); background-size: cover; height: 150px; background-color: rgba(0,0,0,.3); background-blend-mode: darken;">
@@ -142,6 +143,7 @@
                                             <div class="dark-screen d-none"></div>
                                         </a>
                                     </div>
+                                    @endif
                                 @endforeach
                             </div>
                             <!-- If we need pagination -->

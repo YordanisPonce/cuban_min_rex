@@ -61,14 +61,14 @@
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             @else
                                                 <a style="display: flex; width: 20px"
-                                                    href="">{{ svg('vaadin-cart') }}</a>
+                                                    href="{{ route('file.pay', $file['id'])}}">{{ svg('vaadin-cart') }}</a>
                                             @endif
                                         </td>
                                     @else
                                         <td>$ {{ $file['price'] }}</td>
                                         <td class="d-flex gap-2">
                                             <a style="display: flex; width: 20px"
-                                                href="">{{ svg('vaadin-cart') }}</a>
+                                                href="{{ route('file.pay', $file['id'])}}">{{ svg('vaadin-cart') }}</a>
                                             
                                         </td>
                                     @endauth

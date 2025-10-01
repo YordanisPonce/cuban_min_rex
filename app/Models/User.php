@@ -90,10 +90,7 @@ class User extends Authenticatable implements FilamentUser
     }
 
     public function planExpirationDays() {
-        if ($this->hasActivePlan()) {
-            $expirationDate = new DateTime($this->plan_expires_at);
-            return $expirationDate->diff(new DateTime());
-        }
+        return $this->hasActivePlan() ? new DateTime($this->plan_expires_at)->diff(new DateTime()) : new DateTime()->diff(new DateTime());
     }
 
     public function billing(){
