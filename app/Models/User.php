@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use DateInterval;
 use DateTime;
 
@@ -13,11 +14,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;  
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, Billable, SoftDeletes; 
+    use HasFactory, Notifiable, Billable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -72,13 +73,18 @@ class User extends Authenticatable implements FilamentUser
         return $this->avatar_url ?? null;
     }
 
-    public function orders(): HasMany { return $this->hasMany(Order::class); }
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
 
-    public function currentPlan(): BelongsTo {
+    public function currentPlan(): BelongsTo
+    {
         return $this->belongsTo(Plan::class, 'current_plan_id');
     }
 
-    public function hasActivePlan(): bool {
+    public function hasActivePlan(): bool
+    {
         $isFuture = false;
         if ($this->plan_expires_at) {
             $expirationDate = new DateTime($this->plan_expires_at);
@@ -89,19 +95,23 @@ class User extends Authenticatable implements FilamentUser
         return $isFuture;
     }
 
-    public function planExpirationDays() {
-        return $this->hasActivePlan() ? new DateTime($this->plan_expires_at)->diff(new DateTime()) : new DateTime()->diff(new DateTime());
+    public function planExpirationDays()
+    {
+        return $this->hasActivePlan() ? Carbon::parse($this->plan_expires_at)->diffInDays(Carbon::now()) : 0;
     }
 
-    public function billing(){
+    public function billing()
+    {
         return $this->hasOne(Billing::class);
     }
 
-    public function categories(){
+    public function categories()
+    {
         return $this->hasMany(Category::class);
     }
 
-    public function collections(){
+    public function collections()
+    {
         return $this->hasMany(Collection::class);
     }
 

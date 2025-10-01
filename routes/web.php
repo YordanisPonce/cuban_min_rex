@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -107,5 +108,22 @@ Route::post('/file/payment/process', [FileController::class, 'process'])->name('
 Route::get('/collections/{collection}/playlist', [\App\Http\Controllers\CollectionController::class, 'playlist'])
     ->name('collections.playlist');
 
+Route::get('files/download/{path}', function (string $path) {
+    if (!request()->hasValidSignature()) {
+        abort(403); // URL expiró o es inválida
+    }
+
+    return Storage::disk('local')->download($path);
+})->name('files.download');
+
+
+
+Route::get('public/files/{path}', function (string $path) {
+    if (!request()->hasValidSignature()) {
+        abort(403);
+    }
+    // Descargar o servir el archivo desde disco 'public'
+    return Storage::disk('public')->download($path);
+})->where('path', '.*')->name('public.files.download');
 
 require __DIR__ . '/auth.php';

@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\File;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class FileController extends Controller
 {
@@ -58,29 +59,30 @@ class FileController extends Controller
         }
 
         try {
-            $session = auth()->user()->checkout(
-                [
-                    'payment_method_types' => ['card'],
-                    'line_items' => [
+            $urlTemporal = Storage::disk('public')->temporaryUrl($file->file, now()->addHour());
+            $session = auth()->user()->checkout([
+                'payment_method_types' => ['card'],
+                'line_items' => [
+                    [
                         'price_data' => [
                             'currency' => 'usd',
                             'product_data' => [
                                 'name' => $file->name,
                             ],
-                            'unit_amount' => $file->price,
+                            'unit_amount' => $file->price, // precio en centavos
                         ],
                         'quantity' => 1,
-                    ],
-                    'mode' => 'payment',
-                    'success_url' => route('payment.ok'),
-                    'cancel_url' => route('file.pay', ['file' => $file->id]),
-                    'metadata' => [
-                        'file_id' => $file->id,
-                        'user_id' => $request->user()->id,
-                        'file_url' => storage_path('app/public/' . $file->file)
-                    ],
-                ]
-            );
+                    ]
+                ],
+                'mode' => 'payment',
+                'success_url' => route('payment.ok') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('file.pay', ['file' => $file->id]),
+                'metadata' => [
+                    'file_id' => $file->id,
+                    'user_id' => auth()->id(),
+                    'file_url' => $urlTemporal,
+                ],
+            ]);
 
             $billing = $request->user()->billing;
             if (!$billing) {
