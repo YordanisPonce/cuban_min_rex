@@ -51,10 +51,7 @@
                         <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-medium" href="/faq">Preguntas Frecuentes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="/contact">Contacto</a>
+                        <a class="nav-link fw-medium" href="#landingPricing">Membresias</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Colecciones</a>
@@ -67,6 +64,12 @@
                             </li>
                         @endforeach
                     @endisset
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/faq">FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/contact">Contacto</a>
+                    </li>
                 </ul>
             </div>
             <div class="landing-menu-overlay d-lg-none"></div>
@@ -86,8 +89,8 @@
                 <!-- navbar button: Start -->
                 @auth
                     <li class="nav-item dropdown ms-2">
-                        <a class="nav-link dropdown-toggle d-flex align-items-center hide-arrow"
-                            href="javascript:void(0);" data-bs-toggle="dropdown">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center hide-arrow" href="javascript:void(0);"
+                            data-bs-toggle="dropdown">
                             <div class="avatar avatar-online">
                                 <span
                                     class="avatar-initial rounded-circle bg-label-primary">{{ substr(Auth::user()->name, 0, 1) }}</span>
