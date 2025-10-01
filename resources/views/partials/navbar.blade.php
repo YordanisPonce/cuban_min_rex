@@ -76,7 +76,7 @@
             <!-- Menu wrapper: End -->
             <!-- Toolbar: Start -->
             <ul class="navbar-nav flex-row align-items-center ms-auto gap-4 navbar-right">
-                <li class="nav-item">
+             {{--    <li class="nav-item">
                     <form action="{{ route('search') }}" method="GET"
                         class="input-wrapper input-group input-group-merge position-relative mx-auto">
                         <span class="input-group-text" id="basic-addon1"><i
@@ -84,7 +84,7 @@
                         <input type="text" name="search" class="form-control" placeholder="Buscar"
                             aria-label="Search" aria-describedby="basic-addon1" />
                     </form>
-                </li>
+                </li> --}}
 
                 <!-- navbar button: Start -->
                 @auth
