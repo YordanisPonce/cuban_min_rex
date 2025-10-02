@@ -102,7 +102,6 @@ Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook']
     ->name('stripe.webhook');
 
 Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
-Route::post('/file/payment/process', [FileController::class, 'process'])->name('file.payment.process');
 
 // routes/web.php
 Route::get('/collections/{collection}/playlist', [\App\Http\Controllers\CollectionController::class, 'playlist'])

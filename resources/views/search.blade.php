@@ -60,15 +60,13 @@
                                                 <a style="display: flex; width: 20px"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             @else
-                                                <a style="display: flex; width: 20px"
-                                                    href="{{ route('file.pay', $file['id'])}}">{{ svg('vaadin-cart') }}</a>
+                                                <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                             @endif
                                         </td>
                                     @else
                                         <td>$ {{ $file['price'] }}</td>
                                         <td class="d-flex gap-2">
-                                            <a style="display: flex; width: 20px"
-                                                href="{{ route('file.pay', $file['id'])}}">{{ svg('vaadin-cart') }}</a>
+                                            <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                             
                                         </td>
                                     @endauth
@@ -134,6 +132,43 @@
         audio.addEventListener('ended', () => {
             element.innerHTML = '{{ svg('vaadin-play') }}';
             element.dataset.state = "pause";
+        });
+    }
+
+    function proccessPayment(rute) {
+        Swal.fire({
+            title: '¿Proceder con el pago?',
+            text: "Serás redirigido a Stripe para completar tu pago.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.querySelector('#loader').style.display = 'flex';
+                fetch(rute)
+                    .then(async res => {
+                        let data;
+                        
+                        try {
+                            data = await res.json();
+                        } catch {
+                            document.querySelector('#loader').style.display = 'none';
+                            throw new Error("Respuesta inesperada del servidor");
+                        }
+
+                        if (res.ok && data.url) {
+                            window.location.href = data.url;
+                        } else {
+                            document.querySelector('#loader').style.display = 'none';
+                            Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago", "error");
+                        }
+                    })
+                    .catch(err => {
+                        document.querySelector('#loader').style.display = 'none';
+                        Swal.fire("Error", err.message, "error");
+                    });
+            }
         });
     }
 </script>
