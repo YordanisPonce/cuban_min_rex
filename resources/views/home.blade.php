@@ -7,7 +7,7 @@
     {{-- =========================
        HERO compacto
     ========================== --}}
-    <section id="hero" class="py-6 py-lg-7 bg-body" style="margin-top: 85px;">
+    <section id="hero" class="py-6 py-lg-7 bg-body" style="margin-top: 125px;">
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
@@ -20,7 +20,7 @@
                     <form class="input-group input-group-lg" action="{{ route('search') }}" method="GET">
                         <span class="input-group-text"><i class="ti tabler-search"></i></span>
                         <input type="search" class="form-control" name="q"
-                               placeholder="Busca artistas, canciones o colecciones…">
+                            placeholder="Busca artistas, canciones o colecciones…">
                     </form>
 
                     <div class="d-flex align-items-center gap-3 mt-4">
@@ -31,8 +31,8 @@
 
                 <div class="col-lg-6">
                     <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
-                        <img src="{{ asset('assets/img/album/imagine-dragons.png') }}" alt="Arte destacado"
-                             class="w-100 h-100 object-fit-cover">
+                        <img src="{{ asset('assets/img/dj-portada.png') }}" alt="Arte destacado"
+                            class="w-100 h-100 object-fit-cover">
                     </div>
                 </div>
             </div>
@@ -48,16 +48,18 @@
                 <div>
                     <span class="badge bg-label-primary mb-2">Para ti</span>
                     <h2 class="h3 fw-bold mb-1">Hecho para ti</h2>
-                    <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más escuchas.</p>
+                    <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más escuchas.
+                    </p>
                 </div>
                 <a href="#" class="link-underline">Ver recomendaciones →</a>
             </div>
         </div>
+        @include('partials.collection')
 
-        @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
+        {{--    @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
 
-        @if ($hasRecommended)
-            @include('partials.collection', [
+        @if ($hasRecommended) --}}
+        {{--   @include('partials.collection', [
                 'id' => 'collections-recommended',
                 'badge' => 'Para ti',
                 'title' => 'Hecho para ti',
@@ -73,8 +75,8 @@
                 'playlistEndpoint' => isset($recommendedCollectionToPlay)
                     ? route('collections.playlist', $recommendedCollectionToPlay->id)
                     : null,
-            ])
-        @else
+            ]) --}}
+        {{--         @else
             <div class="container">
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">Aún no tenemos recomendaciones</h3>
@@ -82,7 +84,7 @@
                     <a href="{{ route('search') }}" class="btn btn-label-primary">Descubrir música</a>
                 </div>
             </div>
-        @endif
+        @endif --}}
     </section>
 
     {{-- =========================
@@ -94,7 +96,8 @@
                 <div>
                     <span class="badge bg-label-primary mb-2">Novedades</span>
                     <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
-                    <p class="text-body-secondary mb-0">Singles y álbumes recién salidos. Lo último de tus artistas favoritos.</p>
+                    <p class="text-body-secondary mb-0">Singles y álbumes recién salidos. Lo último de tus artistas
+                        favoritos.</p>
                 </div>
                 <a href="#" class="link-underline">Ver estrenos →</a>
             </div>
@@ -110,9 +113,9 @@
                 'subtitle' => 'Actualizado con lanzamientos fresquitos para que no te pierdas nada.',
                 'ctaText' => 'Ver estrenos',
                 'ctaHref' => '#',
-
+            
                 'items' => $newItems ?? null,
-
+            
                 'collectionId' => optional($newCollectionToPlay ?? null)->id,
                 'playlistEndpoint' => isset($newCollectionToPlay)
                     ? route('collections.playlist', $newCollectionToPlay->id)
@@ -138,7 +141,8 @@
                 <div>
                     <span class="badge bg-label-primary mb-2">Explorar</span>
                     <h2 class="h3 fw-bold mb-1">Colecciones de artistas</h2>
-                    <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.</p>
+                    <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
+                    </p>
                 </div>
                 <a href="#" class="link-underline">Explorar colecciones →</a>
             </div>
@@ -154,9 +158,9 @@
                 'subtitle' => 'Viaja por su historia musical: etapas, hits y mezclas imprescindibles.',
                 'ctaText' => 'Explorar colecciones',
                 'ctaHref' => '#',
-
+            
                 'items' => $artistCollections ?? null,
-
+            
                 'collectionId' => optional($artistCollectionToPlay ?? null)->id,
                 'playlistEndpoint' => isset($artistCollectionToPlay)
                     ? route('collections.playlist', $artistCollectionToPlay->id)
@@ -219,7 +223,7 @@
                         <div class="card h-100">
                             <div class="card-header text-center">
                                 <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}" class="mb-4"
-                                     style="width:64px;height:64px;object-fit:contain;">
+                                    style="width:64px;height:64px;object-fit:contain;">
                                 <h4 class="mb-1">{{ $plan->name }}</h4>
                                 <div class="d-flex align-items-center justify-content-center">
                                     <span class="h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
@@ -242,7 +246,7 @@
                                             <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
                                         @else
                                             <a href="{{ route('payment.form', $plan->id) }}"
-                                               class="btn btn-label-primary w-100">
+                                                class="btn btn-label-primary w-100">
                                                 Adquirir plan
                                             </a>
                                         @endif
@@ -259,70 +263,4 @@
             </div>
         </div>
     </section>
-
-    {{-- =========================
-       CONTACTO
-    ========================== --}}
-    <section id="home-contact" class="section-py bg-body">
-        <div class="container">
-            <div class="text-center mb-3">
-                <span class="badge bg-label-primary">Contacto</span>
-            </div>
-            <h2 class="text-center fw-bold mb-2">¿Necesitas ayuda?</h2>
-            <p class="text-center text-body-secondary mb-6">
-                Escríbenos y te respondemos muy pronto.
-            </p>
-
-            <div class="row g-5">
-                <div class="col-lg-5">
-                    <div class="p-4 border rounded-4 h-100">
-                        <div class="d-flex align-items-center mb-3">
-                            <div class="badge bg-label-primary rounded p-2 me-3"><i class="ti tabler-mail"></i></div>
-                            <div>
-                                <p class="mb-0 small text-body-secondary">Correo</p>
-                                <h6 class="mb-0"><a href="mailto:soporte@cubanmix.com"
-                                                    class="text-reset">soporte@cubanmix.com</a></h6>
-                            </div>
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <div class="badge bg-label-success rounded p-2 me-3"><i class="ti tabler-phone-call"></i></div>
-                            <div>
-                                <p class="mb-0 small text-body-secondary">Teléfono</p>
-                                <h6 class="mb-0"><a href="tel:+1234568963" class="text-reset">+1 234 568 963</a></h6>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-lg-7">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h4 class="mb-2">Escríbenos un mensaje</h4>
-                            <form>
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="contact-name">Nombre</label>
-                                        <input type="text" id="contact-name" class="form-control" placeholder="Tu nombre">
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="contact-email">Correo</label>
-                                        <input type="email" id="contact-email" class="form-control" placeholder="tucorreo@ejemplo.com">
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label" for="contact-message">Mensaje</label>
-                                        <textarea id="contact-message" class="form-control" rows="6" placeholder="Cuéntanos en qué te ayudamos"></textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary">Enviar consulta</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-    </section>
-
 @endsection
