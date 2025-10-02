@@ -16,8 +16,17 @@ class File extends Model
         'file',
     ];
 
-    public function user(): BelongsTo { return $this->belongsTo(User::class); }
-    public function collection(): BelongsTo { return $this->belongsTo(Collection::class); }
-    public function category(): BelongsTo { return $this->belongsTo(Category::class); }
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+    public function collection(): BelongsTo
+    {
+        return $this->belongsTo(Collection::class);
+    }
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
 
 }

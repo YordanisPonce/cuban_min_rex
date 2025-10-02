@@ -8,17 +8,22 @@ use Illuminate\Http\Request;
 
 class CategoryController extends Controller
 {
-    public function show($categoryId) {
+    public function show($categoryId)
+    {
         $categories = Category::where('show_in_landing', true)->get();
-        $results = File::whereHas('collection.category', function ($query) use ($categoryId) {
-                $query->where('id', $categoryId);
-            })
+        $results = File::where(function ($query) use ($categoryId) {
+            $query->whereHas('collection.category', function ($q) use ($categoryId) {
+                $q->where('id', $categoryId);
+            })->orWhereHas('category', function ($q) use ($categoryId) {
+                $q->where('categories.id', $categoryId);
+            });
+        })
             ->with(['collection.category'])
             ->get()
             ->map(function ($file) {
-                $content = file_get_contents(storage_path('app/public/' . $file->file)); 
+                $content = file_get_contents(storage_path('app/public/' . $file->file));
                 $binaryContent = base64_encode($content);
-                $isZip = pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION)!=='mp3';
+                $isZip = pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) !== 'mp3';
 
                 return [
                     'id' => $file->id,
@@ -32,11 +37,13 @@ class CategoryController extends Controller
                     'isZip' => $isZip
                 ];
             });
-            
+
+
         return view('search', compact('results', 'categories'));
     }
 
-    public function showCollections(string $id){
+    public function showCollections(string $id)
+    {
         $categories = Category::where('show_in_landing', true)->get();
         $category = Category::find($id);
 
