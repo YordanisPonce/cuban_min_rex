@@ -88,7 +88,7 @@ class FileController extends Controller
                         'quantity' => 1,
                     ]
                 ],
-                'success_url' => route('payment.ok') . '?session_id={CHECKOUT_SESSION_ID}',
+                'success_url' => route('payment.ok2') . '?session_id={CHECKOUT_SESSION_ID}',
                 'cancel_url' => route('file.pay', ['file' => $file->id]),
 
                 // Si no manejas customers en Stripe, usa el email

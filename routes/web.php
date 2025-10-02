@@ -65,6 +65,7 @@ Route::get('/{plan}/payment', [PaymentController::class, 'showForm'])
 
 
 Route::view('/payment_ok', 'payment.ok')->name('payment.ok');
+Route::view('/payment_ok2', 'payment.ok2')->name('payment.ok2');
 Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');

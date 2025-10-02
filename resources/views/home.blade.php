@@ -43,23 +43,11 @@
        RECOMENDADO
     ========================== --}}
     <section id="home-recommended" class="section-py bg-body">
-        <div class="container mb-3">
-            <div class="d-flex align-items-end justify-content-between">
-                <div>
-                    <span class="badge bg-label-primary mb-2">Para ti</span>
-                    <h2 class="h3 fw-bold mb-1">Hecho para ti</h2>
-                    <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más escuchas.
-                    </p>
-                </div>
-                <a href="#" class="link-underline">Ver recomendaciones →</a>
-            </div>
-        </div>
-        @include('partials.collection')
 
-        {{--    @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
+        @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
 
-        @if ($hasRecommended) --}}
-        {{--   @include('partials.collection', [
+        @if ($hasRecommended)
+            @include('partials.collection', [
                 'id' => 'collections-recommended',
                 'badge' => 'Para ti',
                 'title' => 'Hecho para ti',
@@ -75,8 +63,18 @@
                 'playlistEndpoint' => isset($recommendedCollectionToPlay)
                     ? route('collections.playlist', $recommendedCollectionToPlay->id)
                     : null,
-            ]) --}}
-        {{--         @else
+            ])
+        @else
+            <div class="container mb-3">
+                <div class="d-flex align-items-end justify-content-between">
+                    <div>
+                        <span class="badge bg-label-primary mb-2">Para ti</span>
+                        <h2 class="h3 fw-bold mb-1">Hecho para ti</h2>
+                        <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más escuchas.
+                        </p>
+                    </div>
+                </div>
+            </div>
             <div class="container">
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">Aún no tenemos recomendaciones</h3>
@@ -84,24 +82,13 @@
                     <a href="{{ route('search') }}" class="btn btn-label-primary">Descubrir música</a>
                 </div>
             </div>
-        @endif --}}
+        @endif
     </section>
 
     {{-- =========================
        NUEVOS LANZAMIENTOS
     ========================== --}}
     <section id="home-new" class="section-py bg-body">
-        <div class="container mb-3">
-            <div class="d-flex align-items-end justify-content-between">
-                <div>
-                    <span class="badge bg-label-primary mb-2">Novedades</span>
-                    <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
-                    <p class="text-body-secondary mb-0">Singles y álbumes recién salidos. Lo último de tus artistas
-                        favoritos.</p>
-                </div>
-                <a href="#" class="link-underline">Ver estrenos →</a>
-            </div>
-        </div>
 
         @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
 
@@ -122,6 +109,16 @@
                     : null,
             ])
         @else
+            <div class="container mb-3">
+                <div class="d-flex align-items-end justify-content-between">
+                    <div>
+                        <span class="badge bg-label-primary mb-2">Novedades</span>
+                        <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
+                        <p class="text-body-secondary mb-0">Singles y álbumes recién salidos. Lo último de tus artistas
+                            favoritos.</p>
+                    </div>
+                </div>
+            </div>
             <div class="container">
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">No hay lanzamientos recientes</h3>
@@ -136,17 +133,6 @@
        COLECCIONES DE ARTISTAS
     ========================== --}}
     <section id="home-collections" class="section-py bg-body">
-        <div class="container mb-3">
-            <div class="d-flex align-items-end justify-content-between">
-                <div>
-                    <span class="badge bg-label-primary mb-2">Explorar</span>
-                    <h2 class="h3 fw-bold mb-1">Colecciones de artistas</h2>
-                    <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
-                    </p>
-                </div>
-                <a href="#" class="link-underline">Explorar colecciones →</a>
-            </div>
-        </div>
 
         @php $hasArtists = isset($artistCollections) && count($artistCollections) > 0; @endphp
 
@@ -157,7 +143,7 @@
                 'title' => 'Colecciones de artistas',
                 'subtitle' => 'Viaja por su historia musical: etapas, hits y mezclas imprescindibles.',
                 'ctaText' => 'Explorar colecciones',
-                'ctaHref' => '#',
+                'ctaHref' => route('collection.index'),
             
                 'items' => $artistCollections ?? null,
             
@@ -167,6 +153,16 @@
                     : null,
             ])
         @else
+            <div class="container mb-3">
+                <div class="d-flex align-items-end justify-content-between">
+                    <div>
+                        <span class="badge bg-label-primary mb-2">Explorar</span>
+                        <h2 class="h3 fw-bold mb-1">Colecciones de artistas</h2>
+                        <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
+                        </p>
+                    </div>
+                </div>
+            </div>
             <div class="container">
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">Sin colecciones por ahora</h3>

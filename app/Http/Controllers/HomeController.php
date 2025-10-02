@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Plan;
 use Illuminate\Http\Request;
 
@@ -13,13 +14,11 @@ class HomeController extends Controller
         $pageTitle = "Inicio";
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->get();
-        $ctgSlides = Category::take(10)->get();
-
-        $ctgSlides = $ctgSlides->filter(function ($item) {
-            return $item->files()->count();
+        $artistCollections = Collection::all()->filter(function($item){
+            return $item->files()->count() > 0;
         });
 
-        return view('home', compact('pageTitle', 'plans', 'categories', 'ctgSlides'));
+        return view('home', compact('pageTitle', 'plans', 'categories', 'artistCollections'));
     }
 
     public function faq()

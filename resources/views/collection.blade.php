@@ -94,16 +94,16 @@
                                         @if (Auth::user()->hasActivePlan())
                                             <a style="display:flex;width:20px" title="Descargar Álbum Completo"
                                                 href="{{ route('collection.download', $collection->id) }}">
-                                                {!! svg('entypo-download') !!}
+                                                {{ svg('entypo-download') }}
                                             </a>
                                         @else
                                             <a style="display:flex;width:20px" title="Comprar colección" href="#">
-                                                {!! svg('vaadin-cart') !!}
+                                                {{ svg('vaadin-cart') }}
                                             </a>
                                         @endif
                                     @else
                                         <a style="display:flex;width:20px" title="Comprar colección" href="#">
-                                            {!! svg('vaadin-cart') !!}
+                                            {{ svg('vaadin-cart') }}
                                         </a>
                                     @endauth
                                 </div>
@@ -139,7 +139,7 @@
                                                                         <a style="display:flex;width:20px"
                                                                             title="Descargar archivo"
                                                                             href="{{ route('file.download', $file['id']) }}">
-                                                                            {!! svg('entypo-download') !!}
+                                                                            {{ svg('entypo-download') }}
                                                                         </a>
                                                                     @else
                                                                         <i class="small">$ {{ $file['price'] }}</i>
@@ -147,7 +147,7 @@
                                                                             style="display:flex;width:20px;cursor:pointer"
                                                                             onclick="proccessPayment(this.dataset.url)"
                                                                             title="Comprar archivo">
-                                                                            {!! svg('vaadin-cart') !!}
+                                                                            {{ svg('vaadin-cart') }}
                                                                         </a>
                                                                     @endif
                                                                 @else
@@ -156,19 +156,19 @@
                                                                         style="display:flex;width:20px;cursor:pointer"
                                                                         onclick="proccessPayment(this.dataset.url)"
                                                                         title="Comprar archivo">
-                                                                        {!! svg('vaadin-cart') !!}
+                                                                        {{ svg('vaadin-cart') }}
                                                                     </a>
                                                                 @endauth
 
-                                                                {{-- Nota: mantenemos tu preview si NO es zip --}}
+                                                                {{-- Nota: mantenemos tu preview si NO es zip
                                                                 @if (!$file['isZip'])
                                                                     <a style="display:flex;width:20px"
                                                                         class="cursor-pointer"
                                                                         data-url="{{ $file['url'] }}" data-state="pause"
                                                                         onclick="playAudio(this)" title="Escuchar preview">
-                                                                        {!! svg('vaadin-play') !!}
+                                                                        {{ svg('vaadin-play') }}
                                                                     </a>
-                                                                @endif
+                                                                @endif --}}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -212,7 +212,7 @@
                                             {{-- Overlay + flecha de entrar --}}
                                             <div class="dark-screen"></div>
                                             <div class="enter-arrow" aria-hidden="true" title="Entrar a la colección">
-                                                {!! svg('tabler-arrow-right') !!}
+                                                {{ svg('tabler-arrow-right') }}
                                             </div>
                                         </a>
                                     </div>

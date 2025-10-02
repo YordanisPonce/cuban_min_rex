@@ -17,8 +17,8 @@
                     <span class="app-brand-logo demo">
                         <span class="text-primary">
                             <!-- Reemplaza el SVG con tu imagen PNG -->
-                            <img src="{{ asset('assets/img/front-pages/icon/cubamix.svg') }}" alt="Cuban Mix Rex Logo"
-                                style="width: 32px; height: 22px; object-fit: contain;">
+                            <img src="{{ asset('assets/img/favicon/icon.jpeg') }}" alt="Cuban Mix Rex Logo"
+                                style="width: 80px; height: 80px; object-fit: contain; border-radius: 50%">
                         </span>
                     </span>
                     <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-lg-inline">Cuban Mix
@@ -34,8 +34,8 @@
                     <span class="app-brand-logo demo">
                         <span class="text-primary">
                             <!-- Reemplaza el SVG con tu imagen PNG -->
-                            <img src="{{ asset('assets/img/front-pages/icon/cubamix.svg') }}" alt="Cuban Mix Rex Logo"
-                                style="width: 32px; height: 22px; object-fit: contain;">
+                            <img src="{{ asset('assets/img/favicon/icon.jpeg') }}" alt="Cuban Mix Rex Logo"
+                                style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
                         </span>
                     </span>
                     <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-inline">Cuban Mix
