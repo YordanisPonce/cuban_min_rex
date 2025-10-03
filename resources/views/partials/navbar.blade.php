@@ -51,7 +51,7 @@
                         <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fw-medium" href="#landingPricing">Membresias</a>
+                        <a class="nav-link fw-medium" href="{{ route('plans') }}">Membresias</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Colecciones</a>

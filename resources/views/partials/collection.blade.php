@@ -64,7 +64,7 @@
                                                     <h6 class="mb-0 text-truncate">{{$item->name}}</h6>
                                                     <p class="small text-body-secondary mb-0">{{ $item->category() ? $item->category->name : 'Desconocido'}} • {{$item->files()->count()}} pistas</p>
                                                 </div>
-                                                <button class="btn btn-sm btn-label-primary ms-2" type="button" data-rute="{{ route('collections.playlist', $item)}}" onclick="playList(this.dataset.rute)">
+                                                <button class="btn btn-sm btn-label-primary ms-2 btn-play-collection" type="button" data-rute="{{ route('collections.playlist', $item)}}" data-state="paused" onclick="playList(this)">
                                                     <i class="ti tabler-player-play"></i>
                                                 </button>
                                             </div>
@@ -90,6 +90,7 @@
 @push('scripts')
     <script>
         let tracks = [];
+        let currentAudio = null;
 
         function playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource) {
             if (currentTrackIndex < tracks.length) {
@@ -108,13 +109,28 @@
             audioSource.type = 'audio/mpeg';
             audioPlayer.appendChild(audioSource);
             let currentTrackIndex = 0;
+            currentAudio = audioPlayer;
 
             playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource);
 
             audioPlayer.addEventListener('ended', ()=>{playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource);});
         }
 
-        function playList(rute){
+        function pauseCollection() {  
+            currentAudio.pause();
+        }
+
+        function playList(element){
+            const rute = element.dataset.rute;
+
+            document.querySelectorAll('.btn-play-collection').forEach( button => {
+                if(button.dataset.state === 'played' && button !== element){
+                    pauseCollection();
+                    button.dataset.state = 'paused';
+                    button.innerHTML = '<i class="ti tabler-player-play"></i>';
+                }
+            });
+
             fetch(rute, {
                 method: 'GET',
                 headers: {
@@ -124,7 +140,15 @@
             .then(response => response.json())
             .then(data => {
                 tracks = data.filter(item => item.url.endsWith('.mp3'));
-                playCollection();
+                if(element.dataset.state === 'paused'){
+                    playCollection();
+                    element.dataset.state = 'played';
+                    element.innerHTML = '<i class="ti tabler-player-pause"></i>';
+                } else {
+                    pauseCollection();
+                    element.dataset.state = 'paused';
+                    element.innerHTML = '<i class="ti tabler-player-play"></i>';
+                }
             })
             .catch(error => {
                 Swal.fire("Error", error.message, "error");

@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('amount', 8, 2);
+        Schema::table('collections', function (Blueprint $table) {
+            $table->integer('download_count')->default(0);
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('amount');
+        Schema::table('collections', function (Blueprint $table) {
+            $table->dropColumn('download_count');
         });
     }
 };

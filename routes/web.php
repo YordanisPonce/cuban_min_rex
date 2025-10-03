@@ -70,6 +70,7 @@ Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 

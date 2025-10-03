@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Plan;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class HomeController extends Controller
@@ -17,8 +18,9 @@ class HomeController extends Controller
         $artistCollections = Collection::all()->filter(function($item){
             return $item->files()->count() > 0;
         });
+        $newItems = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
 
-        return view('home', compact('pageTitle', 'plans', 'categories', 'artistCollections'));
+        return view('home', compact('pageTitle', 'plans', 'categories', 'artistCollections', 'newItems'));
     }
 
     public function faq()
@@ -33,6 +35,14 @@ class HomeController extends Controller
         $categories = Category::where('show_in_landing', true)->get();
 
         return view('contact', compact('categories'));
+    }
+
+    public function plan()
+    {
+        $categories = Category::where('show_in_landing', true)->get();
+        $plans = Plan::orderBy('price')->get();
+
+        return view('plans', compact('plans','categories'));
     }
 
     // Seccines del Home

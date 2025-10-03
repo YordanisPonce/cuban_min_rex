@@ -24,6 +24,9 @@ class FileController extends Controller
             abort(404);
         }
 
+        $file->download_count = $file->download_count + 1;
+        $file->save();
+        
         return Response::download($path);
     }
 

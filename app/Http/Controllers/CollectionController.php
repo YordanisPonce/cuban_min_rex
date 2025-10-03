@@ -77,6 +77,11 @@ class CollectionController extends Controller
             return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
         }
 
+        foreach ($files as $file) {
+            $file->download_count = $file->download_count + 1;
+            $file->save();
+        }
+
         return Response::download($zipFilePath)->deleteFileAfterSend(true);
     }
 

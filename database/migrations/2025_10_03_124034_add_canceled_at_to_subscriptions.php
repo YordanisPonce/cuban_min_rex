@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->decimal('amount', 8, 2);
+        Schema::table('subscriptions', function (Blueprint $table) {
+            $table->timestamp('canceled_at')->nullable();
         });
     }
 
@@ -21,8 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('orders', function (Blueprint $table) {
-            $table->dropColumn('amount');
+        Schema::table('subscriptions', function (Blueprint $table) {
+            $table->dropColumn('canceled_at');
         });
     }
 };

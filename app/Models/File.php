@@ -14,6 +14,7 @@ class File extends Model
         'user_id',
         'price',
         'file',
+        'download_count',
     ];
 
     public function user(): BelongsTo

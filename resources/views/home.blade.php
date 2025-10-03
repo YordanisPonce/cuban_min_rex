@@ -42,6 +42,7 @@
     {{-- =========================
        RECOMENDADO
     ========================== --}}
+    @auth
     <section id="home-recommended" class="section-py bg-body">
 
         @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
@@ -84,6 +85,7 @@
             </div>
         @endif
     </section>
+    @endauth
 
     {{-- =========================
        NUEVOS LANZAMIENTOS
