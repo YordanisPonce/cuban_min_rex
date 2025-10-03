@@ -1,26 +1,26 @@
 {{-- resources/views/partials/collection.blade.php --}}
 
-<section class="section-py bg-body landing-reviews pb-0 swiper" id="{{$id}}">
+<section class="section-py bg-body landing-reviews pb-0 swiper" id="{{ $id }}">
     <div class="container">
-        <a href="{{$ctaHref}}" class="link-underline float-end">{{$ctaText}} →</a>
+        <a href="{{ $ctaHref }}" class="link-underline float-end">{{ $ctaText }} →</a>
         <div class="row align-items-center gx-0 gy-4 g-lg-5 mb-5 pb-md-5 flex-lg-row-normal">
 
             {{-- Columna de textos y controles --}}
             <div class="col-md-6 col-lg-5 col-xl-3">
                 <div class="mb-4 d-flex align-items-center justify-content-between">
-                    <span class="badge bg-label-primary">{{$badge}}</span>
+                    <span class="badge bg-label-primary">{{ $badge }}</span>
                 </div>
 
                 <h4 class="mb-1">
                     <span class="position-relative fw-extrabold z-1">
-                        {{$title}}
+                        {{ $title }}
                         <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/section-title-icon.png"
                             alt="icon" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1">
                     </span>
                 </h4>
 
                 <p class="mb-5 mb-md-12">
-                    {{$subtitle}}
+                    {{ $subtitle }}
                 </p>
 
                 <div class="landing-reviews-btns">
@@ -41,17 +41,19 @@
                         <div class="swiper-wrapper" aria-live="off">
                             @foreach ($items as $item)
                                 <div class="swiper-slide" style="width: 254px; margin-right: 26px;">
-                                    <div class="card h-100 js-collection-card"
-                                        role="button" tabindex="0" aria-label="Reproducir Synth Nights">
-                                        <div class="card-body text-body d-flex flex-column justify-content-between h-100">
+                                    <div class="card h-100 js-collection-card" role="button" tabindex="0"
+                                        aria-label="Reproducir Synth Nights">
+                                        <div
+                                            class="card-body text-body d-flex flex-column justify-content-between h-100">
                                             <div class="mb-4">
                                                 <img src="{{ $item->image ? $item->image : asset('assets/img/front-pages/icon/collection.png') }}"
                                                     alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                             </div>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar me-3 avatar-sm">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
-                                                        fill="currentColor" class="bi bi-music-player" viewBox="0 0 16 16">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                        height="16" fill="currentColor" class="bi bi-music-player"
+                                                        viewBox="0 0 16 16">
                                                         <path
                                                             d="M4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm1 0v3h6V3zm3 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
                                                         <path
@@ -61,17 +63,21 @@
                                                     </svg>
                                                 </div>
                                                 <div class="flex-grow-1 text-truncate">
-                                                    <h6 class="mb-0 text-truncate">{{$item->name}}</h6>
-                                                    <p class="small text-body-secondary mb-0">{{ $item->category() ? $item->category->name : 'Desconocido'}} • {{$item->files()->count()}} pistas</p>
+                                                    <h6 class="mb-0 text-truncate">{{ $item->name }}</h6>
+                                                    <p class="small text-body-secondary mb-0">
+                                                        {{ $item->category() ? $item->category->name : 'Desconocido' }}
+                                                        • {{ $item->files()->count() }} pistas</p>
                                                 </div>
-                                                <button class="btn btn-sm btn-label-primary ms-2" type="button" data-rute="{{ route('collections.playlist', $item)}}" onclick="playList(this.dataset.rute)">
+                                                <button class="btn btn-sm btn-label-primary ms-2" type="button"
+                                                    data-rute="{{ route('collections.playlist', $item) }}"
+                                                    onclick="playList(event,this.dataset.rute)">
                                                     <i class="ti tabler-player-play"></i>
                                                 </button>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @endforeach                
+                            @endforeach
                         </div>
 
                         {{-- Flechas internas del swiper --}}
@@ -102,7 +108,7 @@
             }
         }
 
-        function playCollection() {  
+        function playCollection() {
             let audioPlayer = document.createElement('audio');
             let audioSource = document.createElement('source');
             audioSource.type = 'audio/mpeg';
@@ -111,24 +117,30 @@
 
             playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource);
 
-            audioPlayer.addEventListener('ended', ()=>{playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource);});
+            audioPlayer.addEventListener('ended', () => {
+                playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource);
+            });
         }
 
-        function playList(rute){
+        function playList(event, rute) {
+            const playButton = '<i class="ti tabler-player-play"></i>';
+            const pauseButton = '<i class="ti tabler-player-pause"></i>';
+
+            event.target.innerHTML = event.target.innerHTML.trim() == playButton ? pauseButton : playButton;
             fetch(rute, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                tracks = data.filter(item => item.url.endsWith('.mp3'));
-                playCollection();
-            })
-            .catch(error => {
-                Swal.fire("Error", error.message, "error");
-            });
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    tracks = data.filter(item => item.url.endsWith('.mp3'));
+                    playCollection();
+                })
+                .catch(error => {
+                    Swal.fire("Error", error.message, "error");
+                });
         }
     </script>
 @endpush
