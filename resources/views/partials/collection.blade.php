@@ -123,7 +123,7 @@
         }
 
         function playList(event, rute) {
-            const target = event.target
+            const target = event.currentTarget;
             const i = target.querySelector('i');
             if (i?.classList.contains('tabler-player-play')) {
                 i.classList.replace('tabler-player-play', 'tabler-player-pause');
