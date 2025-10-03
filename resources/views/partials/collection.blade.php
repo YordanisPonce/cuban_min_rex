@@ -60,7 +60,7 @@
                                                             d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
                                                     </svg>
                                                 </div>
-                                                <div class="flex-grow-1">
+                                                <div class="flex-grow-1 text-truncate">
                                                     <h6 class="mb-0 text-truncate">{{$item->name}}</h6>
                                                     <p class="small text-body-secondary mb-0">{{ $item->category() ? $item->category->name : 'Desconocido'}} • {{$item->files()->count()}} pistas</p>
                                                 </div>
