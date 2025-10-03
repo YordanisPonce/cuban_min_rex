@@ -123,10 +123,13 @@
         }
 
         function playList(event, rute) {
-            const playButton = '<i class="ti tabler-player-play"></i>';
-            const pauseButton = '<i class="ti tabler-player-pause"></i>';
-
-            event.target.innerHTML = event.target.innerHTML.trim() == playButton ? pauseButton : playButton;
+            const target = event.target
+            const i = target.querySelector('i');
+            if (i?.classList.contains('tabler-player-play')) {
+                i.classList.replace('tabler-player-play', 'tabler-player-pause');
+            } else {
+                i?.classList.replace('tabler-player-pause', 'tabler-player-play');
+            }
             fetch(rute, {
                     method: 'GET',
                     headers: {
