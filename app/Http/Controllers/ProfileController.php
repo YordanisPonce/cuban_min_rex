@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Billing;
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
@@ -22,15 +23,19 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         $categories = Category::where('show_in_landing', true)->get();
-        return view('profile.account', compact('categories'));
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        return view('profile.account', compact('categories', 'recentCategories', 'recentCollections'));
     }
 
     public function billing(Request $request): View
     {
         $categories = Category::where('show_in_landing', true)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
         $plans = Plan::orderBy('price')->get();
         $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
-        return view('profile.billing', compact('categories', 'plans', 'orders'));
+        return view('profile.billing', compact('categories', 'plans', 'orders', 'recentCategories', 'recentCollections'));
     }
 
     /**

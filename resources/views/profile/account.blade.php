@@ -15,7 +15,7 @@
     <div class="content-wrapper pt-10 bg-body">
         <!-- Content -->
         <div class="container-xxl flex-grow-1 container-p-y mt-10">
-            <div class="row">
+            <div class="row mt-3">
                 <div class="col-md-12">
                     <div class="nav-align-top">
                         <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">

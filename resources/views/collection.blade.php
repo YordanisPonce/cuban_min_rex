@@ -78,7 +78,7 @@
     <!-- Content wrapper -->
     <div class="content-wrapper bg-body">
         <!-- Content -->
-        <div class="container flex-grow-1 container-p-y mt-5">
+        <div class="container flex-grow-1 container-p-y mt-10">
             <div class="row g-6 mt-10">
                 <div class="col-lg-8">
                     <div class="card">
@@ -181,7 +181,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="col-lg-4">
                     <div class="card h-100">
                         <div class="card-body">
@@ -221,7 +220,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
         <!-- / Content -->

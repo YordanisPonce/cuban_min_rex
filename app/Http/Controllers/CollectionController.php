@@ -15,6 +15,8 @@ class CollectionController extends Controller
     {
         $collection = Collection::find($id);
         $categories = Category::where('show_in_landing', true)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
         $results = File::whereHas('collection', function ($query) use ($id) {
             $query->where('id', $id);
         })
@@ -42,7 +44,7 @@ class CollectionController extends Controller
             return $item->id !== $collection->id && $item->files()->count() > 0;
         });
 
-        return view('collection', compact('results', 'categories', 'collection', 'relationeds'));
+        return view('collection', compact('results', 'categories', 'collection', 'relationeds', 'recentCategories', 'recentCollections'));
     }
 
     public function download(string $id)
@@ -89,12 +91,14 @@ class CollectionController extends Controller
     {
         $collections = Collection::All();
         $categories = Category::where('show_in_landing', true)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
 
         $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;
         });
 
-        return view('category', compact('collections', 'categories'));
+        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections'));
     }
 
     public function playlist(\App\Models\Collection $collection)

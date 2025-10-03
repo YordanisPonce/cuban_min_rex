@@ -12,7 +12,7 @@
 
 @section('content')
     <!-- FAQ: Start -->
-    <section id="musicSearch" class="section-py bg-body" style="height: 100vh;">
+    <section id="musicSearch" class="section-py bg-body h-100">
         <div class="container" style="margin-top: 60px;">
             <div class="text-center mb-4">
                 <span class="badge bg-label-primary">🎶 Archivos Disponibles</span>
@@ -30,7 +30,7 @@
                                 <th>Categoría</th>
                                 @auth
                                     @if (!Auth::user()->hasActivePlan())
-                                        <td></td>
+                                        <th></th>
                                     @endif
                                 @else
                                     <th></th>
@@ -55,7 +55,7 @@
                                         @if (!Auth::user()->hasActivePlan())
                                             <td>$ {{ $file['price'] }}</td>
                                         @endif
-                                        <td class="d-flex gap-2">
+                                        <td>
                                             @if (Auth::user()->hasActivePlan())
                                                 <a style="display: flex; width: 20px"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
@@ -65,9 +65,8 @@
                                         </td>
                                     @else
                                         <td>$ {{ $file['price'] }}</td>
-                                        <td class="d-flex gap-2">
+                                        <td>
                                             <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
-                                            
                                         </td>
                                     @endauth
                                     <td>
@@ -80,6 +79,29 @@
                             @endforeach
                         </tbody>
                     </table>
+                    <nav class="mt-3">
+                        <ul class="pagination justify-content-center" style="--bs-pagination-border-radius: 0%;">
+                            @if ($results->onFirstPage())
+                                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
+                            @else
+                                <li class="page-item"><a class="page-link" href="{{ $results->previousPageUrl() }}">Anterior</a></li>
+                            @endif
+
+                            @for ($i = 1; $i <= $results->lastPage(); $i++)
+                                @if ($i == $results->currentPage())
+                                    <li class="page-item active"><span class="page-link">{{ $i }}</span></li>
+                                @else
+                                    <li class="page-item"><a class="page-link" href="{{ $results->url($i) }}">{{ $i }}</a></li>
+                                @endif
+                            @endfor
+
+                            @if ($results->hasMorePages())
+                                <li class="page-item"><a class="page-link" href="{{ $results->nextPageUrl() }}">Siguiente</a></li>
+                            @else
+                                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
+                            @endif
+                        </ul>
+                    </nav>
                 </div>
             </div>
             @if ($results->isEmpty())

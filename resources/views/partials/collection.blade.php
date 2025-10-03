@@ -69,6 +69,8 @@
                                                         • {{ $item->files()->count() }} pistas</p>
                                                 </div>
                                                 <button class="btn btn-sm btn-label-primary ms-2 btn-play-collection" type="button" data-rute="{{ route('collections.playlist', $item)}}" data-state="paused" onclick="playList(this)">
+                                                    <i class="ti tabler-player-play"></i>    
+                                                </button>
                                             </div>
                                         </div>
                                     </div>

@@ -26,7 +26,8 @@
     <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
         <span class="app-brand-logo demo text-primary">
             <!-- Aquí tu logo -->
-            <img src="{{ ('assets/img/front-pages/icon/cubamix.svg') }}" alt="Logo" height="40">
+            <img src="{{ asset('assets/img/favicon/icon.jpeg') }}" alt="Cuban Mix Rex Logo"
+                                style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
         </span>
         <span class="app-brand-text demo text-heading fw-bold">{{ config('app.name') }}</span>
     </a>

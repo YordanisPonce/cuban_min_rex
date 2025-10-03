@@ -189,8 +189,8 @@
             </div>
 
             <div class="d-flex flex-wrap gap-2">
-                @foreach (['Pop', 'Rock', 'Reggaetón', 'Hip-Hop', 'Electrónica', 'Indie', 'Latino', 'Baladas'] as $genre)
-                    <a href="#" class="btn btn-sm btn-outline-secondary rounded-pill px-3">{{ $genre }}</a>
+                @foreach ($ctg as $genre)
+                    <a href="{{route('category.show', $genre->id)}}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">{{ $genre->name }}</a>
                 @endforeach
             </div>
         </div>
