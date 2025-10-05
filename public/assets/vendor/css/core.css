@@ -138,7 +138,7 @@
     --bs-body-bg-rgb: 37, 41, 60;
     --bs-emphasis-color: #fff;
     --bs-emphasis-color-rgb: 255, 255, 255;
-    --bs-secondary-color: /*#76778e*/ #cacbd2;
+    --bs-secondary-color: /*#76778e*/ /*#cacbd2*/ #33999f;
     --bs-secondary-color-rgb: 118, 119, 142;
     --bs-secondary-bg: #76778e;
     --bs-secondary-bg-rgb: 118, 119, 142;
@@ -4648,7 +4648,7 @@ fieldset:disabled .btn {
 .dropdown-item:hover,
 .dropdown-item:focus {
     color: var(--bs-dropdown-link-hover-color);
-    background-color: var(--bs-dropdown-link-hover-bg)
+    background-color: var(/*--bs-dropdown-link-hover-bg*/--bs-primary)
 }
 
 .dropdown-item.active,
@@ -5701,7 +5701,7 @@ fieldset:disabled .btn {
     width: 100%;
     padding: var(--bs-accordion-btn-padding-y) var(--bs-accordion-btn-padding-x);
     font-size: 0.9375rem;
-    color: var(--bs-accordion-btn-color);
+    color: /*var(--bs-accordion-btn-color)*/ #fff;
     text-align: left;
     background-color: var(--bs-accordion-btn-bg);
     border: 0;
@@ -5717,7 +5717,7 @@ fieldset:disabled .btn {
 }
 
 .accordion-button:not(.collapsed) {
-    color: var(--bs-accordion-active-color);
+    color: /*var(--bs-accordion-active-color)*/ #fff;
     background-color: var(--bs-accordion-active-bg);
     box-shadow: inset 0 calc(-1*var(--bs-accordion-border-width)) 0 var(--bs-accordion-border-color)
 }
@@ -6189,7 +6189,7 @@ fieldset:disabled .btn {
     position: relative;
     display: block;
     padding: var(--bs-list-group-item-padding-y) var(--bs-list-group-item-padding-x);
-    color: var(--bs-list-group-color);
+    color: #fff;
     background-color: var(--bs-list-group-bg);
     border: var(--bs-list-group-border-width) solid var(--bs-list-group-border-color)
 }
@@ -9125,7 +9125,7 @@ fieldset:disabled .btn {
     --bs-gray-700: #acabc1;
     --bs-gray-800: #bdbcd3;
     --bs-gray-900: #cfcde4;
-    --bs-primary: /*#7367f0*/ #A4CBD3;
+    --bs-primary: /*#7367f0*/ #38717d;
     --bs-secondary: #808390;
     --bs-success: #28c76f;
     --bs-info: #00bad1;
@@ -9134,7 +9134,7 @@ fieldset:disabled .btn {
     --bs-light: #494a5d;
     --bs-dark: #6b6c9d;
     --bs-gray: #9293ae;
-    --bs-primary-rgb: 164, 203, 211;
+    --bs-primary-rgb: 56, 113, 125;
     --bs-secondary-rgb: 128, 131, 144;
     --bs-success-rgb: 40, 199, 111;
     --bs-info-rgb: 0, 186, 209;
@@ -9147,7 +9147,7 @@ fieldset:disabled .btn {
     --bs-border-subtle-amount: 61%;
     --bs-base-color: #e1def5;
     --bs-base-color-rgb: 225, 222, 245;
-    --bs-paper-bg: /*#2f3349*/ #761515;
+    --bs-paper-bg: /*#2f3349*/ /*#761515*/ #A4CBD3;
     --bs-paper-bg-rgb: 47, 51, 73;
     --bs-box-shadow: 0 0.1875rem 0.75rem 0 rgba(19, 17, 32, 0.2);
     --bs-box-shadow-xs: 0 0.0625rem 0.375rem 0 rgba(19, 17, 32, 0.16);
@@ -14594,7 +14594,7 @@ li:not(:first-child) .dropdown-item,
 }
 
 .accordion .accordion-button::after {
-    background: var(--bs-accordion-btn-color);
+    background: var(/*--bs-accordion-btn-color*/--bs-primary);
     mask-image: var(--bs-accordion-btn-icon);
     mask-repeat: no-repeat;
     mask-size: 100% 100%
