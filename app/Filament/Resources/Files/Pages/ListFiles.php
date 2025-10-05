@@ -28,11 +28,11 @@ class ListFiles extends ListRecords
                 ->schema([
                     FileUpload::make('file')
                         ->label('Cargar archivo ZIP')
-                        ->acceptedFileTypes(['application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
-                        ->maxSize(20480)
+                        ->acceptedFileTypes(['audio/mpeg','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->maxSize(512000)
                         ->required()
                         ->disk('public')
-                        ->directory('files/zip')
+                        ->directory('files')
                         ->downloadable()
                         ->preserveFilenames()
                         ->columnSpanFull(),
@@ -71,34 +71,36 @@ class ListFiles extends ListRecords
                     $file->user_id = Auth::user()->id;
                     $file->save();
 
-                    $zip = new ZipArchive;
-                    $path = storage_path('app/public/' . $file->file);
+                    if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'zip'){
+                        $zip = new ZipArchive;
+                        $path = storage_path('app/public/' . $file->file);
 
-                    if ($zip->open($path) === TRUE) {
+                        if ($zip->open($path) === TRUE) {
 
-                        $extractPath = storage_path('app/temp');
-                        $zip->extractTo($extractPath);
-                        $zip->close();
+                            $extractPath = storage_path('app/temp');
+                            $zip->extractTo($extractPath);
+                            $zip->close();
 
-                        $files = scandir($extractPath);
+                            $files = scandir($extractPath);
 
-                        foreach ($files as $f) {
-                            if ($f !== '.' && $f !== '..') {
-                                Storage::disk('public')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
-                                $file = new File();
-                                $file->name = $f;
-                                $file->file = 'files/' . $f;
-                                $file->collection_id = $data['collection_id'];
-                                $file->category_id = $data['category_id'];
-                                $file->user_id = Auth::user()->id;
-                                $file->save();
+                            foreach ($files as $f) {
+                                if ($f !== '.' && $f !== '..') {
+                                    Storage::disk('public')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
+                                    $file = new File();
+                                    $file->name = $f;
+                                    $file->file = 'files/' . $f;
+                                    $file->collection_id = $data['collection_id'];
+                                    $file->category_id = $data['category_id'];
+                                    $file->user_id = Auth::user()->id;
+                                    $file->save();
+                                }
                             }
-                        }
 
-                        array_map('unlink', glob("$extractPath/*.*"));
-                        rmdir($extractPath);
-                    } else {
-                        throw new \Exception('No se pudo abrir el archivo ZIP.');
+                            array_map('unlink', glob("$extractPath/*.*"));
+                            rmdir($extractPath);
+                        } else {
+                            throw new \Exception('No se pudo abrir el archivo ZIP.');
+                        }
                     }
                 }),
 

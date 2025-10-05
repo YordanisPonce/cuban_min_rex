@@ -1,6 +1,6 @@
 <footer class="landing-footer bg-body footer-text mt-auto">
-  <div class="footer-top position-relative overflow-hidden z-1">
-    <img src="{{ asset('assets/img/front-pages/backgrounds/footer-bg.png') }}" alt="footer bg" class="footer-bg banner-bg-img z-n1" />
+  <div class="footer-top position-relative overflow-hidden z-1 card">
+    <!-- <img src="{{ asset('assets/img/front-pages/backgrounds/footer-bg.png') }}" alt="footer bg" class="footer-bg banner-bg-img z-n1" /> -->
     <div class="container">
       <div class="row gx-0 gy-6 g-lg-10">
         <div class="col-lg-5">
@@ -42,9 +42,20 @@
           </ul>
         </div>
         <div class="col-lg-3 col-md-4">
-          <h6 class="footer-title mb-6">Únete a nosotros</h6>
-          <a href="{{route('register')}}" class="d-block btn btn-light mb-4"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>
-          <a href="{{route('login')}}" class="d-block btn btn-light"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span>  Acceder</a>
+          @auth
+            <a class="d-block btn btn-primary mb-4" href="{{ route('profile.edit') }}">
+              <i class="icon-base ti tabler-user me-2"></i>
+              <span class="align-middle">Perfil</span>
+            </a>
+            <a class="d-block btn btn-primary" href="/admin" target="_blank">
+              <i class="icon-base ti tabler-dashboard me-2"></i>
+              <span class="align-middle">Panel de Administración</span>
+            </a>
+          @else
+            <h6 class="footer-title mb-6">Únete a nosotros</h6>
+            <a href="{{route('register')}}" class="d-block btn btn-primary mb-4"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>
+            <a href="{{route('login')}}" class="d-block btn btn-primary"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span>  Acceder</a>
+          @endauth
         </div>
       </div>
     </div>

@@ -42,6 +42,10 @@ class SubscriptionChart extends ChartWidget
                     $query->where('created_at', '<=', $firstDay);
                 })
                 ->where(function($query) use ($lastDay) {
+                    $query->whereNull('ends_at')
+                          ->orWhere('ends_at', '>', $lastDay);
+                })
+                ->where(function($query) use ($lastDay) {
                     $query->whereNull('canceled_at')
                           ->orWhere('canceled_at', '>', $lastDay);
                 })

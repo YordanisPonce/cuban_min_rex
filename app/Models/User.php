@@ -115,5 +115,10 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Collection::class);
     }
 
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
 }
 
