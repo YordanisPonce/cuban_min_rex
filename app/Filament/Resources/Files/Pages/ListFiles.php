@@ -29,7 +29,6 @@ class ListFiles extends ListRecords
                     FileUpload::make('file')
                         ->label('Cargar archivo ZIP')
                         ->acceptedFileTypes(['audio/mpeg','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
-                        ->maxSize(512000)
                         ->required()
                         ->disk('public')
                         ->directory('files')
