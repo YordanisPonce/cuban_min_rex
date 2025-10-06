@@ -24,7 +24,7 @@ class CategoriesTable
                 IconColumn::make('show_in_landing')
                     ->label('Mostrar en Home')
                     ->boolean()
-                    ->visible(fn () => Auth::user()->role == 'admin'),
+                    ->visible(fn() => Auth::user()->role == 'admin'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
@@ -48,7 +48,7 @@ class CategoriesTable
                     DeleteBulkAction::make()->hidden(fn($record) => Auth::user()->id != $record?->user_id)->label('Eliminar marcados'),
                 ]),
             ])->modifyQueryUsing(
-                fn(EloquentBuilder $query) => $query->where('is_general', true)->orWhere('user_id', Auth::user()->id)
+                fn(EloquentBuilder $query) => !auth()->user()->is_admin ? $query->where('is_general', true)->orWhere('user_id', Auth::user()->id) : $query
             );
     }
 }
