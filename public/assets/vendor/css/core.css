@@ -9147,7 +9147,7 @@ fieldset:disabled .btn {
     --bs-border-subtle-amount: 61%;
     --bs-base-color: #e1def5;
     --bs-base-color-rgb: 225, 222, 245;
-    --bs-paper-bg: /*#2f3349*/ /*#761515*/ #A4CBD3;
+    --bs-paper-bg: /*#2f3349*/ /*#761515*/ /*#A4CBD3*/ #12131C;
     --bs-paper-bg-rgb: 47, 51, 73;
     --bs-box-shadow: 0 0.1875rem 0.75rem 0 rgba(19, 17, 32, 0.2);
     --bs-box-shadow-xs: 0 0.0625rem 0.375rem 0 rgba(19, 17, 32, 0.16);
