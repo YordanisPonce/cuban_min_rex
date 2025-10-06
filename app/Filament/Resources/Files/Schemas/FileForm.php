@@ -54,7 +54,6 @@ class FileForm
                 FileUpload::make('file')
                     ->label('Archivo Adjunto')
                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])
-                    ->maxSize(512000)
                     ->required()
                     ->disk('public')
                     ->directory('files')

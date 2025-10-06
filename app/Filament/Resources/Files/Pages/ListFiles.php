@@ -27,7 +27,7 @@ class ListFiles extends ListRecords
                 ->button()
                 ->schema([
                     FileUpload::make('file')
-                        ->label('Cargar archivo ZIP')
+                        ->label('Cargar archivo')
                         ->acceptedFileTypes(['audio/mpeg','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('public')
