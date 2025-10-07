@@ -9,7 +9,10 @@ use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
 use App\Models\Plan;
+use App\Models\Subscription;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class PaymentController extends Controller
 {
@@ -40,25 +43,6 @@ class PaymentController extends Controller
         }
 
         try {
-            $session = auth()->user()->checkout(
-                [$plan->stripe_price_id],
-                [
-                    'payment_method_types' => ['card'],
-                    'line_items' => [
-                        [
-                            'price' => $plan->stripe_price_id,
-                            'quantity' => 1,
-                        ]
-                    ],
-                    'mode' => 'subscription',
-                    'success_url' => route('payment.ok'),
-                    'cancel_url' => route('payment.form', ['plan' => $plan->id]),
-                    'metadata' => [
-                        'plan_id' => $plan->id,
-                        'user_id' => $request->user()->id,
-                    ],
-                ]
-            );
 
             $order = new Order();
             $order->user_id = $request->user()->id;
@@ -78,6 +62,27 @@ class PaymentController extends Controller
             $billing->country = $request->country;
             $billing->save();
 
+            $session = auth()->user()->checkout(
+                [$plan->stripe_price_id],
+                [
+                    'payment_method_types' => ['card'],
+                    'line_items' => [
+                        [
+                            'price' => $plan->stripe_price_id,
+                            'quantity' => 1,
+                        ]
+                    ],
+                    'mode' => 'subscription',
+                    'success_url' => route('payment.ok'),
+                    'cancel_url' => route('payment.form', ['plan' => $plan->id]),
+                    'metadata' => [
+                        'plan_id' => $plan->id,
+                        'user_id' => $request->user()->id,
+                        'order_id' => $order->id,
+                    ],
+                ]
+            );
+
             return response()->json(['url' => $session->url]);
         } catch (\Exception $e) {
             // ✅ Devolvemos JSON para que el front no rompa
@@ -95,6 +100,17 @@ class PaymentController extends Controller
 
         auth()->user()->current_plan_id = null;
         auth()->user()->save();
+
+        $userId = auth()->user()->id; 
+
+        $dataToUpdate = [
+            'canceled_at' => Carbon::now(),
+        ];
+        
+        DB::transaction(function () use ($userId, $dataToUpdate) {
+            Subscription::where('user_id', $userId)->whereNull('canceled_at')->update($dataToUpdate);
+        });
+
 
         $categories = Category::where('show_in_landing', true)->get();
         $plans = Plan::orderBy('price')->get();

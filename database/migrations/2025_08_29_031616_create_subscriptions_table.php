@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
-            $table->string('type');
+            $table->string('type')->nullable();
             $table->string('stripe_id')->unique();
-            $table->string('stripe_status');
+            $table->string('stripe_status')->nullable();
             $table->string('stripe_price')->nullable();
             $table->integer('quantity')->nullable();
             $table->timestamp('trial_ends_at')->nullable();
