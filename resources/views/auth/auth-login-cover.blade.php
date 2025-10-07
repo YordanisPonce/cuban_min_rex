@@ -85,7 +85,7 @@
     @stack('styles')
 </head>
 
-<body>
+<body style="background-color: #000 !important">
     <div class="authentication-wrapper authentication-cover">
         <!-- Logo -->
         <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
@@ -109,7 +109,7 @@
             </div>
 
             <!-- Login form -->
-            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6">
+            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6" style="background-color: #000 !important">
                 <div class="w-px-400 mx-auto mt-12 pt-5">
                     <h4 class="mb-1">Bienvenido a Cuban Mix Rex! 👋</h4>
                     <p class="mb-6">Por favor autentiquese para comenzar la experiencia.</p>

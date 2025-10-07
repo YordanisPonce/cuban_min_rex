@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\File;
+use App\Models\Plan;
 use App\Models\Sale;
 use App\Models\Subscription;
 use App\Models\User;
@@ -20,23 +21,25 @@ class StripeWebhookController extends CashierController
     {
         $session = $payload['data']['object'];
         $orderId = $session['metadata']['order_id'] ?? null;
-        if ($orderId) {
+        $userId = $session['metadata']['user_id'] ?? null;
+        $planId = $session['metadata']['plan_id'] ?? null;
+        if ($orderId && $userId && $planId) {
             $order = Order::find($orderId);
-            if ($order) {
+            $user = User::find($userId);
+            $plan = Plan::find($planId);
+            if ($order && $user && $plan) {
                 $order->status = 'paid';
-                $order->paid_at = now();
-                $order->expires_at = Carbon::now()->addMonths($order->plan->duration_months);
+                $order->paid_at = Carbon::now();
+                $order->expires_at = Carbon::now()->addMonths($plan->duration_months);
                 $order->save();
 
-                // Asignar plan al usuario
-                $user = $order->user;
-                $user->current_plan_id = $order->plan_id;
-                $user->plan_expires_at = $order->expires_at;
+                $user->current_plan_id = $plan->id;
+                $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
                 $user->save();
 
                 $subscripction = new Subscription();
                 $subscripction->user_id = $user->id;
-                $subscripction->ends_at = $order->expires_at;
+                $subscripction->ends_at = Carbon::now()->addMonths($plan->duration_months);
                 $subscripction->save();
             }
         }

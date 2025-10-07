@@ -20,7 +20,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
 </head>
 
-<body>
+<body style="background-color: #000 !important">
 <div class="authentication-wrapper authentication-cover">
     <!-- Logo -->
     <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
@@ -45,7 +45,7 @@
         </div>
 
         <!-- Texto principal -->
-        <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-6 p-sm-12">
+        <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-6 p-sm-12" style="background-color: #000 !important">
             <div class="w-px-400 mx-auto mt-5">
                 <h4 class="mb-1">Verifica tu correo ✉️</h4>
                 <p class="text-start mb-0">

@@ -1,4 +1,8 @@
 @extends('layouts.app')
+@php
+    $success = session('success');
+    $error = session('error');
+@endphp
 
 @section('title', 'Página de Contacto')
 
@@ -59,19 +63,20 @@
                             ¿Problemas con tu cuenta, compras de canciones o playlists personalizadas?<br class="d-none d-lg-block">
                             Déjanos tu mensaje y nuestro equipo musical te ayudará.
                         </p>
-                        <form>
+                        <form action="{{ route('contact.form') }}" method="POST">
+                            @csrf
                             <div class="row g-4">
                                 <div class="col-md-6">
                                     <label class="form-label" for="contact-form-fullname">Nombre</label>
-                                    <input type="text" class="form-control" id="contact-form-fullname" placeholder="john">
+                                    <input type="text" class="form-control" id="contact-form-fullname" name="fullname" placeholder="john" required>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="contact-form-email">Correo</label>
-                                    <input type="text" id="contact-form-email" class="form-control" placeholder="johndoe@gmail.com">
+                                    <input type="text" id="contact-form-email" class="form-control" name="email" placeholder="johndoe@gmail.com" required>
                                 </div>
                                 <div class="col-12">
                                     <label class="form-label" for="contact-form-message">Mensaje</label>
-                                    <textarea id="contact-form-message" class="form-control" rows="7" placeholder="Write a message"></textarea>
+                                    <textarea id="contact-form-message" class="form-control" rows="7" name="message" placeholder="Write a message" required></textarea>
                                 </div>
                                 <div class="col-12">
                                     <button type="submit" class="btn btn-primary waves-effect waves-light">📩 Enviar consulta</button>
@@ -86,3 +91,24 @@
 </section>
 <!-- Contact Us: End -->
 @endsection
+
+@push('scripts')
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: 'Error al enviar el formulario',
+                text: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
+    @isset($success)
+        <script>
+            Swal.fire({
+                title: 'Completado',
+                text: '{{ $success }}',
+                icon: 'success'
+            });
+        </script>
+    @endisset
+@endpush

@@ -29,8 +29,8 @@ class UsersTable
                 TextColumn::make('role')
                     ->label('Rol')
                     ->searchable(),
-                IconColumn::make('is_admin')
-                    ->label('Permiso de Admnistración')
+                IconColumn::make('currentPlan.name')
+                    ->label('Subscripción Activa')
                     ->boolean(),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')

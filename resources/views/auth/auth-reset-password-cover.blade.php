@@ -45,7 +45,7 @@
     @filamentStyles
 </head>
 
-<body>
+<body style="background-color: #000 !important">
     <!-- Content -->
     <div class="authentication-wrapper authentication-cover">
         <!-- Logo -->
@@ -71,7 +71,7 @@
             <!-- /Left Text -->
 
             <!-- Reset Password -->
-            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-6 p-sm-12">
+            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-6 p-sm-12" style="background-color: #000 !important">
                 <div class="w-px-400 mx-auto mt-12 pt-5">
                     <h4 class="mb-1">Reset Password 🔒</h4>
                     <p class="mb-6"><span class="fw-medium">Your new password must be different from previously used passwords</span></p>

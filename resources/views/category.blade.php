@@ -27,7 +27,7 @@
                     </h4>
                     @else
                     <div class="mb-4">
-                        <span class="badge bg-label-primary">Colecciones</span>
+                        <span class="badge bg-label-primary">{{ $badge }}</span>
                     </div>
                     @endisset
                 </div>

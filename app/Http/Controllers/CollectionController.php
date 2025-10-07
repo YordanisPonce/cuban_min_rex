@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 use ZipArchive;
 
@@ -98,7 +99,41 @@ class CollectionController extends Controller
             return $item->files()->count() > 0;
         });
 
-        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections'));
+        $badge = 'Colecciones';
+
+        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+    }
+
+    public function news()
+    {
+        $collections = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
+        $categories = Category::where('show_in_landing', true)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+
+        $collections = $collections->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $badge = 'Estrenos de la Semana';
+
+        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+    }
+
+    public function recommended()
+    {
+        $collections = Collection::orderBy('created_at', 'desc')->get();
+        $categories = Category::where('show_in_landing', true)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+
+        $collections = $collections->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $badge = 'Hecho para ti';
+
+        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
     }
 
     public function playlist(\App\Models\Collection $collection)

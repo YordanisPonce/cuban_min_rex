@@ -54,7 +54,7 @@
                 'title' => 'Hecho para ti',
                 'subtitle' => 'Listas personalizadas y selecciones que encajan con tu historial.',
                 'ctaText' => 'Ver recomendaciones',
-                'ctaHref' => '#',
+                'ctaHref' => route('collection.recommended'),
 
                 // contenido para las cards del carrusel (si tu partial las usa)
                 'items' => $recommendedItems ?? null,
@@ -101,7 +101,7 @@
                 'title' => 'Estrenos de la semana',
                 'subtitle' => 'Actualizado con lanzamientos fresquitos para que no te pierdas nada.',
                 'ctaText' => 'Ver estrenos',
-                'ctaHref' => '#',
+                'ctaHref' => route('collection.news'),
             
                 'items' => $newItems ?? null,
             

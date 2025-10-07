@@ -21,8 +21,7 @@
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
                         </span>
                     </span>
-                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-lg-inline">Cuban Mix
-                        Rex</span>
+                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-lg-inline">{{ config('app.name') }}</span>
                 </a>
             </div>
             <!-- Menu logo wrapper: End -->
@@ -38,8 +37,7 @@
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
                         </span>
                     </span>
-                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-inline">Cuban Mix
-                        Rex</span>
+                    <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-inline">{{ config('app.name') }}</span>
                 </button>
                 <button class="navbar-toggler border-0 text-heading position-absolute end-0 top-0 scaleX-n1-rtl p-2"
                     type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"

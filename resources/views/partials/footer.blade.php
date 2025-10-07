@@ -13,7 +13,7 @@
               </span>
               </span>
             </span>
-            <span class="app-brand-text demo footer-link fw-bold ms-2 ps-1">Cuban Mix Rex</span>
+            <span class="app-brand-text demo footer-link fw-bold ms-2 ps-1">{{ config('app.name') }}</span>
           </a>
           <p class="footer-text footer-logo-description mb-6">Sube, descarga y compra: haz que cada momento suene.</p>
         </div>

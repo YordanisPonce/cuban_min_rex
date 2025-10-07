@@ -211,7 +211,7 @@
                                             {{-- Overlay + flecha de entrar --}}
                                             <div class="dark-screen"></div>
                                             <div class="enter-arrow" aria-hidden="true" title="Entrar a la colección">
-                                                {{ svg('tabler-arrow-right') }}
+                                                <i class="ti tabler-arrow-right"></i> 
                                             </div>
                                         </a>
                                     </div>

@@ -76,7 +76,7 @@
     @stack('styles')
 </head>
 
-<body>
+<body style="background-color: #000 !important">
     @if(env('APP_ENV') == 'production')
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5J3LMKC" height="0" width="0" style="display: none; visibility: hidden"></iframe></noscript>
     @endif
@@ -104,7 +104,7 @@
             </div>
 
             <!-- Register form -->
-            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6">
+            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6" style="background-color: #000 !important">
                 <div class="w-px-400 mx-auto mt-12 pt-5">
                     <h4 class="mb-1">¡La aventura comienza aquí! 🚀</h4>
                     <p class="mb-6">Haga que la gestión de su aplicación sea fácil y divertida.</p>

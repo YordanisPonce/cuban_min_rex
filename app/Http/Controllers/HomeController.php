@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\Plan;
+use App\Models\User;
+use App\Notifications\ContactNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
@@ -18,14 +20,16 @@ class HomeController extends Controller
         $artistCollections = Collection::all()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        $newItems = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
-
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $newItems = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get()->filter(function($item){
+            return $item->files()->count() > 0;
+        });
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function($item){
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();        
         $ctg = Category::all()->filter(function($item){
             return $item->files()->count() > 0;
         });
-
         return view('home', compact('pageTitle', 'plans', 'ctg', 'categories', 'artistCollections', 'newItems', 'recentCategories', 'recentCollections'));
     }
 
@@ -60,20 +64,22 @@ class HomeController extends Controller
         return view('plans', compact('plans','categories', 'recentCategories', 'recentCollections'));
     }
 
-    // Seccines del Home
-    public function dashboard()
-    {
-        return view('dashboard');
-    }
+    public function sendContactForm(Request $request){
 
-    public function about()
-    {
-        $pageTitle = "Acerca de nosotros";
-        $teamMembers = [
-            ["name" => "Ana García", "role" => "CEO"],
-            ["name" => "Carlos López", "role" => "Desarrollador"]
-        ];
+        $name = $request->fullname ?? 'Anónimo';
+        $email = $request->email ?? 'Desconocido';
+        $message = $request->message ?? 'Mensaje vacío';
 
-        return view('about', compact('pageTitle', 'teamMembers'));
+        try{
+            $admins = User::where('role', 'admin')->get();
+            
+            foreach ($admins as $admin) {
+                $admin->notify(new ContactNotification($name, $email, $message));
+            }
+        } catch (\Throwable $e){
+            return redirect()->back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->back()->with('success', 'Se ha enviado el formulario exitosamente, el personal de soporte se pondra en contacto con usted.');
     }
 }

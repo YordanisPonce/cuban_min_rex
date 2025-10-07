@@ -27,6 +27,7 @@ class PlanForm
                     ->prefix('$'),
                 Textarea::make('description')
                     ->label('Descripción')
+                    ->required()
                     ->columnSpanFull(),
                 TextInput::make('duration_months')
                     ->label('Meses de Duración')

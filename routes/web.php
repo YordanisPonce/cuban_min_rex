@@ -70,6 +70,7 @@ Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
 Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
+Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
 Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
@@ -82,6 +83,10 @@ Route::get('/categories/{category}/collections', [CategoryController::class, 'sh
 
 Route::get('/collections', [CollectionController::class, 'index'])
     ->name('collection.index');
+Route::get('/collections/news', [CollectionController::class, 'news'])
+    ->name('collection.news');
+Route::get('/collections/recommended', [CollectionController::class, 'recommended'])
+    ->name('collection.recommended');
 
 Route::get('/collection/{collection}', [CollectionController::class, 'show'])
     ->name('collection.show');
