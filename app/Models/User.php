@@ -97,7 +97,9 @@ class User extends Authenticatable implements FilamentUser
 
     public function planExpirationDays()
     {
-        return $this->hasActivePlan() ? Carbon::parse($this->plan_expires_at)->diffInDays(Carbon::now()) : 0;
+        return (object) [
+            'days' => $this->hasActivePlan() ? Carbon::parse($this->plan_expires_at)->diffInDays(Carbon::now()) : 0
+        ];
     }
 
     public function billing()
