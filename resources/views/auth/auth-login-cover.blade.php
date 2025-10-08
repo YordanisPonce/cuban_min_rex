@@ -95,7 +95,7 @@
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
                 </span>
             </span>
-            <span class="app-brand-text demo text-heading fw-bold">Cuban Mix Rex</span>
+            <span class="app-brand-text demo text-heading fw-bold">{{ config('app.name') }}</span>
         </a>
         <!-- /Logo -->
 
@@ -111,7 +111,7 @@
             <!-- Login form -->
             <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6" style="background-color: #000 !important">
                 <div class="w-px-400 mx-auto mt-12 pt-5">
-                    <h4 class="mb-1">Bienvenido a Cuban Mix Rex! 👋</h4>
+                    <h4 class="mb-1">Bienvenido a {{ config('app.name') }}! 👋</h4>
                     <p class="mb-6">Por favor autentiquese para comenzar la experiencia.</p>
 
                     <form id="formAuthentication" class="mb-6" action="{{ route('login') }}" method="POST">

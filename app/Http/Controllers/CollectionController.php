@@ -16,8 +16,12 @@ class CollectionController extends Controller
     {
         $collection = Collection::find($id);
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
         $results = File::whereHas('collection', function ($query) use ($id) {
             $query->where('id', $id);
         })
@@ -92,8 +96,12 @@ class CollectionController extends Controller
     {
         $collections = Collection::All();
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -108,8 +116,12 @@ class CollectionController extends Controller
     {
         $collections = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -124,8 +136,12 @@ class CollectionController extends Controller
     {
         $collections = Collection::orderBy('created_at', 'desc')->get();
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;

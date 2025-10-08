@@ -121,60 +121,54 @@
                                     <hr class="my-6" />
                                     <h5>Lista</h5>
                                     <div class="card mb-6">
-                                        <ul class="list-group list-group-flush file-list">
-                                            @foreach ($results as $file)
-                                                <li class="list-group-item">
-                                                    <div class="row align-items-center">
-                                                        <div class="col-9">
+                                        <table class="datatables-basic table">
+                                            <tbody>
+                                                @foreach ($results as $file)
+                                                    <tr>
+                                                        <td class="w-75">
                                                             <span class="d-block w-100 text-nowrap overflow-hidden"
                                                                 style="text-overflow:ellipsis;">
                                                                 {{ $file['name'] }}
                                                             </span>
-                                                        </div>
-                                                        <div class="col-3">
-                                                            <span
-                                                                class="d-flex gap-2 justify-content-end align-items-center text-nowrap">
-                                                                @auth
-                                                                    @if (Auth::user()->hasActivePlan())
-                                                                        <a style="display:flex;width:20px"
-                                                                            title="Descargar archivo"
-                                                                            href="{{ route('file.download', $file['id']) }}">
-                                                                            {{ svg('entypo-download') }}
-                                                                        </a>
-                                                                    @else
-                                                                        <i class="small">$ {{ $file['price'] }}</i>
-                                                                        <a data-url="{{ route('file.pay', $file['id']) }}"
-                                                                            style="display:flex;width:20px;cursor:pointer"
-                                                                            onclick="proccessPayment(this.dataset.url)"
-                                                                            title="Comprar archivo">
-                                                                            {{ svg('vaadin-cart') }}
-                                                                        </a>
-                                                                    @endif
+                                                        </td>
+                                                        @auth
+                                                            @if (!Auth::user()->hasActivePlan())
+                                                                <td>
+                                                                    <span class="d-block w-100 text-nowrap overflow-hidden"
+                                                                        style="text-overflow:ellipsis;">
+                                                                        $ {{ $file['price'] }}
+                                                                    </span>
+                                                                </td>
+                                                            @endif
+                                                            <td>
+                                                                @if (Auth::user()->hasActivePlan())
+                                                                    <a style="display: flex; width: 20px"
+                                                                        href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                                                 @else
-                                                                    <i class="small">$ {{ $file['price'] }}</i>
-                                                                    <a data-url="{{ route('file.pay', $file['id']) }}"
-                                                                        style="display:flex;width:20px;cursor:pointer"
-                                                                        onclick="proccessPayment(this.dataset.url)"
-                                                                        title="Comprar archivo">
-                                                                        {{ svg('vaadin-cart') }}
-                                                                    </a>
-                                                                @endauth
-
-                                                                {{-- Nota: mantenemos tu preview si NO es zip
-                                                                @if (!$file['isZip'])
-                                                                    <a style="display:flex;width:20px"
-                                                                        class="cursor-pointer"
-                                                                        data-url="{{ $file['url'] }}" data-state="pause"
-                                                                        onclick="playAudio(this)" title="Escuchar preview">
-                                                                        {{ svg('vaadin-play') }}
-                                                                    </a>
-                                                                @endif --}}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </li>
-                                            @endforeach
-                                        </ul>
+                                                                    <a style="display: flex; width: 20px; cursor: pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                                @endif
+                                                            </td>
+                                                        @else
+                                                            <td>
+                                                                <span class="d-block w-100 text-nowrap overflow-hidden"
+                                                                    style="text-overflow:ellipsis;">
+                                                                    $ {{ $file['price'] }}
+                                                                </span>
+                                                            </td>
+                                                            <td>
+                                                                <a style="display: flex; width: 20px; cursor: pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                            </td>
+                                                        @endauth
+                                                        <td>
+                                                            @if (!$file['isZip'])
+                                                            <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                                    >{{ svg('vaadin-play') }}</a>
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
                                     </div>
                                 </div>
                             </div> {{-- /card content --}}
@@ -225,3 +219,88 @@
         <!-- / Content -->
     </div>
 @endsection
+
+@push('scripts')
+<script>
+    let currentAudio = null;
+
+    function stopCurrentAudio() {
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+            currentAudio = null;
+        }
+    }
+
+    function playAudio(element){
+        let audio = document.createElement('audio');
+
+        let binaryData = element.dataset.url;
+
+        let byteCharacters = atob(binaryData);
+        let byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        let byteArray = new Uint8Array(byteNumbers);
+        let blob = new Blob([byteArray], { type: 'audio/mpeg' });
+        let url = URL.createObjectURL(blob);
+        
+        audio.src = url;
+
+        if(element.dataset.state == "pause"){
+            stopCurrentAudio();
+            currentAudio = audio;
+            audio.play();
+            element.innerHTML = '{{ svg('vaadin-pause') }}';
+            element.dataset.state = "play";
+        } else {
+            element.innerHTML = '{{ svg('vaadin-play') }}';
+            stopCurrentAudio();
+            element.dataset.state = "pause";
+        }
+        
+        audio.addEventListener('ended', () => {
+            element.innerHTML = '{{ svg('vaadin-play') }}';
+            element.dataset.state = "pause";
+        });
+    }
+
+    function proccessPayment(rute) {
+        Swal.fire({
+            title: '¿Proceder con el pago?',
+            text: "Serás redirigido a Stripe para completar tu pago.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Sí, continuar',
+            cancelButtonText: 'Cancelar'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                document.querySelector('#loader').style.display = 'flex';
+                fetch(rute)
+                    .then(async res => {
+                        let data;
+                        
+                        try {
+                            data = await res.json();
+                        } catch {
+                            document.querySelector('#loader').style.display = 'none';
+                            throw new Error("Respuesta inesperada del servidor");
+                        }
+
+                        if (res.ok && data.url) {
+                            window.location.href = data.url;
+                        } else {
+                            document.querySelector('#loader').style.display = 'none';
+                            Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago", "error");
+                        }
+                    })
+                    .catch(err => {
+                        document.querySelector('#loader').style.display = 'none';
+                        Swal.fire("Error", err.message, "error");
+                    });
+            }
+        });
+    }
+</script>
+@endpush

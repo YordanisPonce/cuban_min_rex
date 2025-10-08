@@ -6,6 +6,7 @@ use App\Models\Collection;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\File;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,19 +23,9 @@ class FileDownloadWidget extends BaseWidget
         $collectionMoreDownload = Collection::where('user_id', $userId)
                    ->orderBy('download_count', 'desc')
                    ->first();
-        $activeSubscriptions = DB::table('subscriptions')
-                ->where(function($query) {
-                    $query->where('created_at', '<=', Carbon::now());
-                })
-                ->where(function($query) {
-                    $query->whereNull('ends_at')
-                          ->orWhere('ends_at', '>', Carbon::now());
-                })
-                ->where(function($query) {
-                    $query->whereNull('canceled_at')
-                          ->orWhere('canceled_at', '>', Carbon::now());
-                })
-                ->count();
+        $activeSubscriptions = User::all()->filter(function($item) {
+            $item->hasActivePlan();
+        })->count();
         $salesCount = Auth()->user()->sales()->count();
 
         $stats = [

@@ -12,8 +12,12 @@ class CategoryController extends Controller
     public function show($categoryId)
     {
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
         
         $results = File::where(function ($query) use ($categoryId) {
                 $query->whereHas('collection.category', function ($q) use ($categoryId) {
@@ -50,8 +54,12 @@ class CategoryController extends Controller
     public function showCollections(string $id)
     {
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
         $category = Category::find($id);
 
         return view('category', compact('category', 'categories', 'recentCategories', 'recentCollections'));

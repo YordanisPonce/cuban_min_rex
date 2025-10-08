@@ -53,7 +53,10 @@
                                     <td>{{ $file['category'] }}</td>
                                     @auth
                                         @if (!Auth::user()->hasActivePlan())
-                                            <td>$ {{ $file['price'] }}</td>
+                                            <td><span class="d-block w-100 text-nowrap overflow-hidden"
+                                                style="text-overflow:ellipsis;">
+                                                $ {{ $file['price'] }}
+                                            </span></td>
                                         @endif
                                         <td>
                                             @if (Auth::user()->hasActivePlan())
@@ -64,7 +67,10 @@
                                             @endif
                                         </td>
                                     @else
-                                        <td>$ {{ $file['price'] }}</td>
+                                        <td><span class="d-block w-100 text-nowrap overflow-hidden"
+                                            style="text-overflow:ellipsis;">
+                                            $ {{ $file['price'] }}
+                                        </span></td>
                                         <td>
                                             <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                         </td>

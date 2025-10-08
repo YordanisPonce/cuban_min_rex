@@ -23,10 +23,12 @@ class HomeController extends Controller
         $newItems = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function($item){
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();        
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });        
         $ctg = Category::all()->filter(function($item){
             return $item->files()->count() > 0;
         });
@@ -37,8 +39,12 @@ class HomeController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         return view('faq', compact('categories', 'recentCategories', 'recentCollections'));
     }
@@ -47,8 +53,12 @@ class HomeController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         return view('contact', compact('categories', 'recentCategories', 'recentCollections'));
     }
@@ -58,8 +68,12 @@ class HomeController extends Controller
         $categories = Category::where('show_in_landing', true)->get();
         $plans = Plan::orderBy('price')->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
 
         return view('plans', compact('plans','categories', 'recentCategories', 'recentCollections'));
     }

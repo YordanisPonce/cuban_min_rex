@@ -23,16 +23,24 @@ class ProfileController extends Controller
     public function edit(Request $request): View
     {
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
         return view('profile.account', compact('categories', 'recentCategories', 'recentCollections'));
     }
 
     public function billing(Request $request): View
     {
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
         $plans = Plan::orderBy('price')->get();
         $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
         return view('profile.billing', compact('categories', 'plans', 'orders', 'recentCategories', 'recentCollections'));

@@ -12,8 +12,12 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $categories = Category::where('show_in_landing', true)->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get();
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
         $word = $request->search;
         $results = File::where('name', 'like', '%' . $word . '%')
             ->orWhereHas('collection', function ($query) use ($word) {

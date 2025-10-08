@@ -59,7 +59,7 @@
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
           </span>
         </span>
-        <span class="app-brand-text demo text-heading fw-bold">Cuban Mix Rex</span>
+        <span class="app-brand-text demo text-heading fw-bold">{{ config('app.name') }}</span>
       </a>
       <!-- /Logo -->
 
