@@ -80,6 +80,15 @@ class PaymentController extends Controller
                         'user_id' => $request->user()->id,
                         'order_id' => $order->id,
                     ],
+                    'subscription_data' => [
+                        'metadata' => [
+                            'plan_id' => $plan->id,
+                            'user_id' => $request->user()->id,
+                            'order_id' => $order->id,
+                            // ... cualquier otro dato
+                        ]
+                    ]
+
                 ]
             );
 
@@ -101,12 +110,12 @@ class PaymentController extends Controller
         auth()->user()->current_plan_id = null;
         auth()->user()->save();
 
-        $userId = auth()->user()->id; 
+        $userId = auth()->user()->id;
 
         $dataToUpdate = [
             'canceled_at' => Carbon::now(),
         ];
-        
+
         DB::transaction(function () use ($userId, $dataToUpdate) {
             Subscription::where('user_id', $userId)->whereNull('canceled_at')->update($dataToUpdate);
         });
