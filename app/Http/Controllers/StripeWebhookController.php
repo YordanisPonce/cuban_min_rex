@@ -23,6 +23,7 @@ class StripeWebhookController extends CashierController
         $orderId = $session['metadata']['order_id'] ?? null;
         $userId = $session['metadata']['user_id'] ?? null;
         $planId = $session['metadata']['plan_id'] ?? null;
+        Log::info('Payload', $payload);
         if ($orderId && $userId && $planId) {
             $order = Order::find($orderId);
             $user = User::find($userId);
@@ -45,14 +46,15 @@ class StripeWebhookController extends CashierController
         }
     }
 
-    public function handlePaymentIntentSucceeded(array $payload){
+    public function handlePaymentIntentSucceeded(array $payload)
+    {
         $session = $payload['data']['object'];
         $file_id = $session['metadata']['file_id'] ?? null;
         $user_id = $session['metadata']['user_id'] ?? null;
-        if($file_id && $user_id){
+        if ($file_id && $user_id) {
             $file = File::find($file_id);
             $user = User::find($user_id);
-            if($file && $user){
+            if ($file && $user) {
                 $sale = new Sale();
                 $sale->user_id = $user->id;
                 $sale->file_id = $file->id;
