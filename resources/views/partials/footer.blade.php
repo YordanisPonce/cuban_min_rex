@@ -47,10 +47,12 @@
               <i class="icon-base ti tabler-user me-2"></i>
               <span class="align-middle">Perfil</span>
             </a>
+            @if (Auth()->user()->role !== 'user')
             <a class="d-block btn btn-primary" href="/admin" target="_blank">
               <i class="icon-base ti tabler-dashboard me-2"></i>
               <span class="align-middle">Panel de Administración</span>
             </a>
+            @endif
           @else
             <h6 class="footer-title mb-6">Únete a nosotros</h6>
             <a href="{{route('register')}}" class="d-block btn btn-primary mb-4"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>

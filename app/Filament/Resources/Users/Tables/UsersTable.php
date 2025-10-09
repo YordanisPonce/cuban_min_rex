@@ -29,9 +29,8 @@ class UsersTable
                 TextColumn::make('role')
                     ->label('Rol')
                     ->searchable(),
-                IconColumn::make('currentPlan.name')
-                    ->label('Subscripción Activa')
-                    ->boolean(),
+                TextColumn::make('currentPlan.name')
+                    ->label('Subscripción Activa'),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

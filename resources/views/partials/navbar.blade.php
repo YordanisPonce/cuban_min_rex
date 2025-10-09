@@ -102,12 +102,14 @@
                                     <span class="align-middle">Perfil</span>
                                 </a>
                             </li>
+                            @if (Auth()->user()->role !== 'user')
                             <li>
                                 <a class="dropdown-item" href="/admin" target="_blank">
                                     <i class="icon-base ti tabler-dashboard me-2"></i>
                                     <span class="align-middle">Panel de Administración</span>
                                 </a>
                             </li>
+                            @endif
                             <li>
                                 <form method="POST" action="{{ route('logout') }}">
                                     @csrf

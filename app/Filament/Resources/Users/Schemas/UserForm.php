@@ -30,9 +30,6 @@ class UserForm
                     ->label('Rol')
                     ->required()
                     ->default('user'),
-                Toggle::make('is_admin')
-                    ->label('Permiso de Administración')
-                    ->required(),
                 TextInput::make('stripe_id'),
                 TextInput::make('pm_type'),
                 TextInput::make('pm_last_four'),

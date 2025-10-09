@@ -159,35 +159,48 @@
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        let formData = new FormData(form);
-                        document.querySelector('#loader').style.display = 'flex';
-                        fetch(form.action, {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
-                            },
-                            body: formData
-                        })
-                        .then(async res => {
-                            let data;
-                            try {
-                                data = await res.json();
-                            } catch {
-                                document.querySelector('#loader').style.display = 'none';
-                                throw new Error("Respuesta inesperada del servidor");
-                            }
+                        const requiredFields = form.querySelectorAll('[required]');
+                        let allFilled = true;
 
-                            if (res.ok && data.url) {
-                                window.location.href = data.url;
-                            } else {
-                                document.querySelector('#loader').style.display = 'none';
-                                Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago", "error");
-                            }
-                        })
-                        .catch(err => {
-                            document.querySelector('#loader').style.display = 'none';
-                            Swal.fire("Error", err.message, "error");
+                        requiredFields.forEach(field => {
+                            if (!field.value.trim()) {
+                                allFilled = false;
+                            } 
                         });
+
+                        if (allFilled) {
+                            let formData = new FormData(form);
+                            document.querySelector('#loader').style.display = 'flex';
+                            fetch(form.action, {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRF-TOKEN": document.querySelector('input[name="_token"]').value
+                                },
+                                body: formData
+                            })
+                            .then(async res => {
+                                let data;
+                                try {
+                                    data = await res.json();
+                                } catch {
+                                    document.querySelector('#loader').style.display = 'none';
+                                    throw new Error("Respuesta inesperada del servidor");
+                                }
+
+                                if (res.ok && data.url) {
+                                    window.location.href = data.url;
+                                } else {
+                                    document.querySelector('#loader').style.display = 'none';
+                                    Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago", "error");
+                                }
+                            })
+                            .catch(err => {
+                                document.querySelector('#loader').style.display = 'none';
+                                Swal.fire("Error", err.message, "error");
+                            });
+                        } else {
+                            Swal.fire("Error", "Por favor, rellene todos los campos del formulario de facturación.", "error");
+                        }
                     }
                 });
             });
