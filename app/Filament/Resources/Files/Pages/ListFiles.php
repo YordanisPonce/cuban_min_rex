@@ -12,6 +12,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
@@ -35,6 +36,10 @@ class ListFiles extends ListRecords
                         ->downloadable()
                         ->preserveFilenames()
                         ->columnSpanFull(),
+                    TextInput::make('price')
+                        ->label('Precio')
+                        ->numeric()
+                        ->prefix('$'),
                     Select::make('collection_id')
                         ->label('Selecciona una Colección')
                         ->options(function () {
@@ -68,6 +73,9 @@ class ListFiles extends ListRecords
                     $file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
+                    if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'mp3'){
+                        $file->price = $data['price'] ?? 0;
+                    }
                     $file->save();
 
                     if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'zip'){
@@ -82,6 +90,8 @@ class ListFiles extends ListRecords
 
                             $files = scandir($extractPath);
 
+                            $filePrice = $data['price'] ? $data['price']/$file->count() : 0;
+
                             foreach ($files as $f) {
                                 if ($f !== '.' && $f !== '..') {
                                     Storage::disk('public')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
@@ -91,6 +101,7 @@ class ListFiles extends ListRecords
                                     $file->collection_id = $data['collection_id'];
                                     $file->category_id = $data['category_id'];
                                     $file->user_id = Auth::user()->id;
+                                    $file->price = $filePrice;
                                     $file->save();
                                 }
                             }

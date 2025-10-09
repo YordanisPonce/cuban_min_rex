@@ -62,9 +62,9 @@
                             </li>
                         @endforeach
                     @endisset
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" href="/faq">FAQ</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="/contact">Contacto</a>
                     </li>

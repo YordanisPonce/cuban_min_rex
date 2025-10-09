@@ -45,14 +45,14 @@ class FilesTable
                 //
             ])
             ->recordActions([
-                Action::make('download')
-                    ->label('Descargar')
-                    ->hidden(fn($record) => Auth::user()->id != $record->user_id)
-                    ->icon(svg('entypo-download'))
-                    ->action(function ($record) {
-                        $path = storage_path('app/public/'.$record->file);
-                        return Response::download($path);
-                    }),
+                // Action::make('download')
+                //     ->label('Descargar')
+                //     ->hidden(fn($record) => Auth::user()->id != $record->user_id)
+                //     ->icon(svg('entypo-download'))
+                //     ->action(function ($record) {
+                //         $path = storage_path('app/public/'.$record->file);
+                //         return Response::download($path);
+                //     }),
                 EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Editar'),
                 DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Eliminar'),
             ])
