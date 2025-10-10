@@ -33372,3 +33372,23 @@ body:not(.modal-open) .layout-content-navbar .layout-navbar {
     --bs-footer-brand-hover-color: color-mix(in sRGB, var(--bs-pure-black) 84%, var(--bs-dark-contrast));
     --bs-footer-link-hover-color: color-mix(in sRGB, var(--bs-pure-black) 84%, var(--bs-dark-contrast))
 }
+
+.window-notice {
+  background: rgba(33, 41, 52, .85);
+  left: 0;
+  bottom: 0;
+  right: 0;
+  top: 0;
+  display: none;
+  position: fixed;
+  z-index: 999;
+}
+
+.window-notice .content {
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  max-width: 86%;
+  padding: 1rem;
+  font-size: 1.3rem;
+}

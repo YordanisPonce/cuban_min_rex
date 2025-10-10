@@ -28,9 +28,7 @@ class CollectionController extends Controller
             ->with(['collection'])
             ->get()
             ->map(function ($file) {
-                $content = file_get_contents(storage_path('app/public/' . $file->file));
-                $binaryContent = base64_encode($content);
-                $isZip = pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) !== 'mp3';
+                $isZip = pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION)  === 'zip';
 
                 return [
                     'id' => $file->id,
@@ -40,7 +38,7 @@ class CollectionController extends Controller
                     'collection' => $file->collection->name ?? null,
                     'category' => $file->collection->category->name ?? null,
                     'price' => $file->price,
-                    'url' => $binaryContent,
+                    'url' => route('file.play', [$file->collection->id, $file->id]),
                     'isZip' => $isZip
                 ];
             });

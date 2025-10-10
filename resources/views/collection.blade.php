@@ -161,7 +161,7 @@
                                                         @endauth
                                                         <td>
                                                             @if (!$file['isZip'])
-                                                            <a style="display: flex; width: 20px" class="cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                                            <a id="{{ $file['id'] }}" style="display: flex; width: 20px" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
                                                                     >{{ svg('vaadin-play') }}</a>
                                                             @endif
                                                         </td>
@@ -216,7 +216,27 @@
                 </div>
             </div>
         </div>
-        <!-- / Content -->
+        <div class="window-notice" id="video-player">
+            <div class="content">
+                <div class="container-xxl flex-grow-1 container-p-y w-100">
+                    <div class="row gy-6">
+                        <!-- Video Player -->
+                        <div class="col-12">
+                            <div class="card" style="position: relative">
+                                <h5 class="card-header d-block text-nowrap overflow-hidden"
+                                    style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
+                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
+                                <div class="card-body">
+                                    <video class="w-100" id="plyr-video-player" oncontextmenu="return false;" playsinline>
+                                    </video>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Video Player -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection
 
@@ -232,37 +252,70 @@
         }
     }
 
+    function stopVideo(){
+        document.getElementById('plyr-video-player').pause();
+        document.getElementById('video-player').style.display = 'none';
+    }
+
+    function playVideo(title){
+        document.getElementById('video-player').style.display = 'flex';
+        document.getElementById('video-title').innerHTML = title;
+        document.getElementById('plyr-video-player').play();
+    }
+
     function playAudio(element){
         let audio = document.createElement('audio');
 
-        let binaryData = element.dataset.url;
-
-        let byteCharacters = atob(binaryData);
-        let byteNumbers = new Array(byteCharacters.length);
-        for (let i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        let byteArray = new Uint8Array(byteNumbers);
-        let blob = new Blob([byteArray], { type: 'audio/mpeg' });
-        let url = URL.createObjectURL(blob);
+        const rute = element.dataset.url;
         
-        audio.src = url;
-
-        if(element.dataset.state == "pause"){
-            stopCurrentAudio();
-            currentAudio = audio;
-            audio.play();
-            element.innerHTML = '{{ svg('vaadin-pause') }}';
-            element.dataset.state = "play";
-        } else {
-            element.innerHTML = '{{ svg('vaadin-play') }}';
-            stopCurrentAudio();
-            element.dataset.state = "pause";
-        }
-        
-        audio.addEventListener('ended', () => {
-            element.innerHTML = '{{ svg('vaadin-play') }}';
-            element.dataset.state = "pause";
+        fetch(rute, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            track = data.filter(item => item.id === parseInt(element.id));
+            if(track[0].url.endsWith('.mp3')){
+                audio.src = track[0].url;
+                if(element.dataset.state == "pause"){
+                    stopCurrentAudio();
+                    document.querySelectorAll('.play-button').forEach(button => {
+                        if(button.dataset.state === "play" && button !== element){
+                            button.innerHTML = '{{ svg('vaadin-play') }}';
+                            button.dataset.state = "pause";
+                        }
+                    });
+                    currentAudio = audio;
+                    audio.play();
+                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                    element.dataset.state = "play";
+                } else {
+                    element.innerHTML = '{{ svg('vaadin-play') }}';
+                    stopCurrentAudio();
+                    element.dataset.state = "pause";
+                }
+                
+                audio.addEventListener('ended', () => {
+                    element.innerHTML = '{{ svg('vaadin-play') }}';
+                    element.dataset.state = "pause";
+                });
+            } else {
+                stopVideo();
+                stopCurrentAudio();
+                document.querySelectorAll('.play-button').forEach(button => {
+                    if(button.dataset.state === "play" && button !== element){
+                        button.innerHTML = '{{ svg('vaadin-play') }}';
+                        button.dataset.state = "pause";
+                    }
+                });
+                document.getElementById('plyr-video-player').src = track[0].url;
+                playVideo(track[0].title);
+            }
+        })
+        .catch(error => {
+            Swal.fire("Error", error.message, "error");
         });
     }
 

@@ -29,7 +29,7 @@ class ListFiles extends ListRecords
                 ->schema([
                     FileUpload::make('file')
                         ->label('Cargar archivo')
-                        ->acceptedFileTypes(['audio/mpeg','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->acceptedFileTypes(['audio/mpeg', 'video/mp4', 'video/avi','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('public')
                         ->directory('files')
@@ -73,7 +73,7 @@ class ListFiles extends ListRecords
                     $file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
-                    if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'mp3'){
+                    if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) !== 'zip'){
                         $file->price = $data['price'] ?? 0;
                     }
                     $file->save();

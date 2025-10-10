@@ -33,12 +33,14 @@ class FileController extends Controller
     public function play(string $collectionId, string $id)
     {
         $file = File::find($id);
-        return response()->stream(function () use ($file) {
-            echo file_get_contents(storage_path('app/public/' . $file->file));
-        }, 200, [
-            'Content-Type' => 'audio/mpeg',
-            'Content-Disposition' => 'inline; filename="' . $file->name . '"',
-        ]);
+        $track = $file->get()
+            ->map(fn($f) => [
+                'id' => $f->id,
+                'url' => \Storage::disk('public')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'title' => $f->title ?? $f->name,
+            ]);
+
+        return response()->json($track);
     }
 
     public function pay(string $id)
