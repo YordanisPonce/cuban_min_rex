@@ -9,7 +9,11 @@ class Sale extends Model
 {
     protected $fillable = [
         'user_id',
-        'file_id'
+        'file_id',
+        'amount',
+        'user_amount',
+        'admin_amount',
+        'status'
     ];
 
     

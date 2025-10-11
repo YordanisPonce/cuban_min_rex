@@ -73,9 +73,7 @@ class ListFiles extends ListRecords
                     $file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
-                    if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) !== 'zip'){
-                        $file->price = $data['price'] ?? 0;
-                    }
+                    $file->price = $data['price'] ?? 0;
                     $file->save();
 
                     if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'zip'){

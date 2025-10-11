@@ -36,7 +36,7 @@
                             <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}">
                                 @csrf
                                 <div class="row gy-4 gx-6 mb-6">
-                                    <div class="col-md-6 form-control-validation">
+                                    <div class="col-md-12 form-control-validation">
                                         <label for="firstName" class="form-label">Nombre</label>
                                         <input class="form-control" type="text" id="name" name="name"
                                             value="{{ Auth::user()->name }}" autofocus />
@@ -45,6 +45,11 @@
                                         <label for="email" class="form-label">E-mail</label>
                                         <input class="form-control" type="text" id="email" name="email"
                                             value="{{ Auth::user()->email }}" placeholder="john.doe@example.com" />
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="email" class="form-label">PayPal E-mail</label>
+                                        <input class="form-control" type="text" id="email" name="paypal_email"
+                                            value="{{ Auth::user()->paypal_email }}" placeholder="john.doe@example.com" />
                                     </div>
                                 </div>
                                 <div class="mt-2">

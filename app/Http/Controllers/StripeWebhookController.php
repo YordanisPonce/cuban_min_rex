@@ -58,6 +58,9 @@ class StripeWebhookController extends CashierController
                 $sale = new Sale();
                 $sale->user_id = $user->id;
                 $sale->file_id = $file->id;
+                $sale->amount = $file->price;
+                $sale->user_amount = $file->price * 0.3;
+                $sale->admin_amount = $file->price * 0.7;
                 $sale->save();
 
                 //Aqui configurar para enviar el correo al cliente

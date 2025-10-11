@@ -56,6 +56,7 @@ class ProfileController extends Controller
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->paypal_email = $request->paypal_email;
 
         $user->save();
         $success = "Información modificada correctamente";

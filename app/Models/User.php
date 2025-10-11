@@ -31,6 +31,7 @@ class User extends Authenticatable implements FilamentUser
         'password',
         'avatar_url',
         'is_admin',
+        'paypal_email',
     ];
 
     /**
@@ -120,6 +121,11 @@ class User extends Authenticatable implements FilamentUser
     public function sales()
     {
         return $this->hasMany(Sale::class);
+    }
+
+    public function payments()
+    {
+        return $this->hasMany(Payment::class);
     }
 
 }
