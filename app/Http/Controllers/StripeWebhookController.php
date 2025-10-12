@@ -51,16 +51,23 @@ class StripeWebhookController extends CashierController
         $session = $payload['data']['object'];
         $file_id = $session['metadata']['file_id'] ?? null;
         $user_id = $session['metadata']['user_id'] ?? null;
-        if ($file_id && $user_id) {
+        $orderId = $session['metadata']['order_id'] ?? null;
+        Log::info('Payload', $payload);
+        if ($file_id && $user_id && $orderId) {
             $file = File::find($file_id);
             $user = User::find($user_id);
-            if ($file && $user) {
+            $order = Order::find($orderId);
+            if ($file && $user && $order) {
+                $order->status = 'paid';
+                $order->paid_at = Carbon::now();
+                $order->save();
+
                 $sale = new Sale();
                 $sale->user_id = $user->id;
                 $sale->file_id = $file->id;
                 $sale->amount = $file->price;
-                $sale->user_amount = $file->price * 0.3;
-                $sale->admin_amount = $file->price * 0.7;
+                $sale->user_amount = $file->price * 0.7;
+                $sale->admin_amount = $file->price * 0.3;
                 $sale->save();
 
                 //Aqui configurar para enviar el correo al cliente

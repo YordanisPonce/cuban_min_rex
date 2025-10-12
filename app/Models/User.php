@@ -30,6 +30,7 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'avatar_url',
+        'role',
         'is_admin',
         'paypal_email',
     ];

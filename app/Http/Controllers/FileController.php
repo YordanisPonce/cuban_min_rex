@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Billing;
 use App\Models\Category;
 use App\Models\File;
+use App\Models\Order;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -61,6 +62,14 @@ class FileController extends Controller
         }
 
         try {
+
+            $order = new Order();
+            $order->user_id = auth()->user()->id;
+            $order->file_id = $file->id;
+            $order->amount = $file->price;
+            $order->status = 'pending';
+            $order->save();
+
             // Configura tu clave secreta (recomendado: en AppServiceProvider::boot)
             Stripe::setApiKey(config('services.stripe.secret_key'));
 
@@ -75,6 +84,7 @@ class FileController extends Controller
                 'file_id' => (string) $file->id,
                 'user_id' => (string) auth()->id(),
                 'file_url' => (string) $urlTemporal,
+                'order_id' => (string) $order->id,
             ];
 
             // Crea la sesión de Checkout

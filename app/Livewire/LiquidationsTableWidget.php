@@ -37,6 +37,7 @@ class LiquidationsTableWidget extends TableWidget
                     SUM(CASE WHEN sales.status = "paid" THEN sales.admin_amount ELSE 0 END) as total_generated
                 ')
                 ->leftJoin('sales', 'users.id', '=', 'sales.user_id')
+                ->whereNot('role', 'user')
                 ->groupBy('users.id', 'users.name', 'users.paypal_email')
             )
             ->columns([
@@ -69,6 +70,7 @@ class LiquidationsTableWidget extends TableWidget
                 Action::make('Pagar')
                     ->color('success')
                     ->icon('heroicon-m-currency-dollar')
+                    ->disabled(fn($record) => !($record->pending_amount > 0))
                     ->action(function ($record) {
                         if (!$record->paypal_email) {
                             Notification::make()
@@ -107,11 +109,8 @@ class LiquidationsTableWidget extends TableWidget
                     ->modalDescription('¿Estás seguro de que deseas proceder con el pago?')
                     ->modalSubmitActionLabel('Sí, proceder a pagar')
                     ->modalCancelActionLabel('No, cancelar'),
-                Action::make('Ver')
-                    ->color('info')
-                    ->icon('heroicon-m-eye'),
                 Action::make('Ver Pagos')
-                    ->color('success')
+                    ->color('info')
                     ->icon('heroicon-m-eye')
             ])
             ->toolbarActions([

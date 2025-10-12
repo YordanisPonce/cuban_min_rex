@@ -33,6 +33,16 @@
                     <div class="card mb-6">
                         <!-- Account -->
                         <div class="card-body pt-4">
+                            @if (Auth::user()->role !== 'user' && !Auth::user()->paypal_email)
+                            <div class="alert alert-danger mb-6" role="alert">
+                                <h5 class="alert-heading mb-1 d-flex align-items-center">
+                                    <span class="alert-icon rounded"><i
+                                            class="icon-base ti tabler-alert-triangle icon-md"></i></span>
+                                    <span>¡Necesitamos tu atención!</span>
+                                </h5>
+                                <span class="ms-11 ps-1">No tienes Definido un Paypal E-mail, no podrás recibir pagos hasta que lo definas.</span>
+                            </div>
+                            @endif
                             <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}">
                                 @csrf
                                 <div class="row gy-4 gx-6 mb-6">
@@ -46,11 +56,13 @@
                                         <input class="form-control" type="text" id="email" name="email"
                                             value="{{ Auth::user()->email }}" placeholder="john.doe@example.com" />
                                     </div>
+                                    @if (Auth::user()->role !== 'user')
                                     <div class="col-md-6">
                                         <label for="email" class="form-label">PayPal E-mail</label>
-                                        <input class="form-control" type="text" id="email" name="paypal_email"
+                                        <input class="form-control" type="text" id="email" name="paypal_email" style="{{ Auth::user()->paypal_email ? '' : 'border-color: var(--bs-danger);' }}"
                                             value="{{ Auth::user()->paypal_email }}" placeholder="john.doe@example.com" />
                                     </div>
+                                    @endif
                                 </div>
                                 <div class="mt-2">
                                     <button type="submit" class="btn btn-primary me-3">Guardar Cambios</button>

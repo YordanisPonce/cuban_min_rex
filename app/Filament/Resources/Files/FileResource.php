@@ -18,7 +18,7 @@ class FileResource extends Resource
 {
     protected static ?string $model = File::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::MusicalNote;
 
     protected static ?string $recordTitleAttribute = 'File';
     

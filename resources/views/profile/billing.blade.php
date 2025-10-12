@@ -210,7 +210,7 @@
                                 <thead>
                                     <tr>
                                         <th></th>
-                                        <th>Plan</th>
+                                        <th>Compra</th>
                                         <th>Cantidad Pagada</th>
                                         <th class="text-truncate">Fecha de Pago</th>
                                         <th>Estado</th>
@@ -221,7 +221,7 @@
                                     @foreach ($orders as $order)
                                         <tr>
                                             <td></td>
-                                            <td>{{ $order->plan->name }}</td>
+                                            <td>{{ $order->plan ? 'Plan: '.$order->plan->name : 'Archivo: '.$order->file->name }}</td>
                                             <td>{{ $order->amount }}</td>
                                             <td>{{ $order->status === 'paid' ? $order->paid_at : $order->created_at }}</td>
                                             <td>{{ $order->status === 'paid' ? 'Pagado' : ($order->status === 'pending' ? 'Pendiente' : 'Fallida') }}
