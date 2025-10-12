@@ -82,7 +82,7 @@ class LiquidationsTableWidget extends TableWidget
 
                                 $payment = new Payment();
                                 $payment->user_id = $record->id;
-                                $payment->response_json = $response['paypal_response'];
+                                $payment->paypal_response = $response['paypal_response'];
                                 $payment->item_id = $response['item_id'];
                                 $payment->sender_batch_id = $response['sender_batch_id'];
                                 $payment->amount = $response['amount'];
