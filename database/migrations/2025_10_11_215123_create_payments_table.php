@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->string('paypal_response');
+            $table->json('paypal_response');
             $table->string('item_id');
             $table->string('sender_batch_id');
             $table->decimal('amount', 8, 2);
