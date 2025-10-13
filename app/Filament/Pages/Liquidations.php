@@ -3,10 +3,10 @@
 namespace App\Filament\Pages;
 
 use App\Livewire\LiquidationsTableWidget;
+use App\Livewire\TabsWidget;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
-use Filament\Actions\Action;
 
 class Liquidations extends Page
 {
@@ -31,7 +31,7 @@ class Liquidations extends Page
     protected function getHeaderWidgets(): array
     {
         return [
-            LiquidationsTableWidget::class
+            TabsWidget::class,
         ];
     }
 

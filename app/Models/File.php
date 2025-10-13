@@ -33,4 +33,8 @@ class File extends Model
     {
         return $this->hasMany(Sale::class);
     }
+    public function downloads()
+    {
+        return $this->hasMany(Download::class);
+    }
 }

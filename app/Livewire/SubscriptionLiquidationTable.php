@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Models\Download;
 use App\Models\Payment;
 use App\Models\User;
 use App\Services\PaypalService;
@@ -14,50 +15,39 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 
-class LiquidationsTableWidget extends TableWidget
+class SubscriptionLiquidationTable extends TableWidget
 {
     public function table(Table $table): Table
     {
         return $table
             ->query(fn (): Builder => User::query()
                 ->select('users.id', 'users.name', 'users.paypal_email')
-                ->withCount([
-                    'sales as pending' => function ($query) {
-                        $query->where('status', 'pending');
-                    },
-                    'sales as paid_total' => function ($query) {
-                        $query->where('status', 'paid');
-                    },
-                    'sales as generated_total' => function ($query) {
-                        $query->where('status', 'paid');
-                    }
-                ])
-                ->selectRaw('
-                    SUM(CASE WHEN sales.status = "pending" THEN sales.user_amount ELSE 0 END) as pending_amount,
-                    SUM(CASE WHEN sales.status = "paid" THEN sales.user_amount ELSE 0 END) as total_paid,
-                    SUM(CASE WHEN sales.status = "paid" THEN sales.admin_amount ELSE 0 END) as total_generated
-                ')
-                ->leftJoin('sales', 'users.id', '=', 'sales.user_id')
                 ->whereNot('role', 'user')
-                ->groupBy('users.id', 'users.name', 'users.paypal_email')
             )
             ->columns([
                 TextColumn::make('name')
                     ->label('Nombre'),
                 TextColumn::make('paypal_email')
                     ->label('Corre de PayPal'),
+                TextColumn::make('downloads_count')
+                    ->label('Descargas')
+                    ->numeric()
+                    ->default(fn ($record) => $record->totalUnliquidatedDownloads()),
                 TextColumn::make('pending_amount')
                     ->label('Pendiente a pago')
                     ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->default(fn ($record) => $record->pendingSubscriptionLiquidation()),
                 TextColumn::make('total_paid')
                     ->label('Total pagado')
                     ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->default(fn ($record) => $record->paidSubscriptionLiquidation()),
                 TextColumn::make('total_generated')
                     ->label('Total generado')
                     ->money()
-                    ->sortable(),
+                    ->sortable()
+                    ->default(fn ($record) => $record->generatedToSubscriptionLiquidation()),
             ])
             ->filters([
                 //
@@ -69,7 +59,7 @@ class LiquidationsTableWidget extends TableWidget
                 Action::make('Pagar')
                     ->color('success')
                     ->icon('heroicon-m-currency-dollar')
-                    ->disabled(fn($record) => !($record->pending_amount > 0))
+                    ->disabled(fn($record) => !($record->pendingSubscriptionLiquidation() > 0))
                     ->action(function ($record) {
                         if (!$record->paypal_email) {
                             Notification::make()
@@ -79,7 +69,7 @@ class LiquidationsTableWidget extends TableWidget
                         } else {
                             $paypal = new PaypalService();
                             try {
-                                $response = $paypal->sendPayout($record->paypal_email,$record->pending_amount,'USD','Liquidación por ventas del mes '.Carbon::now()->month.' del año '.Carbon::now()->year.'.');
+                                $response = $paypal->sendPayout($record->paypal_email,$record->pendingSubscriptionLiquidation(),'USD','Liquidación por subscripciones del mes '.Carbon::now()->month.' del año '.Carbon::now()->year.'.');
 
                                 $payment = new Payment();
                                 $payment->user_id = $record->id;
@@ -92,7 +82,12 @@ class LiquidationsTableWidget extends TableWidget
                                 $payment->note = $response['note'];
                                 $payment->save();
 
-                                User::find($record->id)->sales()->where('status', 'pending')->update(['status' => 'paid']);
+                                $id = $record->id;
+                                Download::whereHas('file', function($query) use ($id) {
+                                    $query->where('user_id', $id);
+                                })
+                                ->where('liquidated', false)
+                                ->update(['liquidated' => true]);
 
                             } catch (\Throwable $th) {
                                 Notification::make()
@@ -118,6 +113,6 @@ class LiquidationsTableWidget extends TableWidget
                     //
                 ]),
             ])
-            ->heading('Liquidación de Ventas');
+            ->heading('Liquidación por Subscripciones');;
     }
 }

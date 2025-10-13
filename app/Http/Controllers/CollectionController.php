@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Download;
 use App\Models\Collection;
 use App\Models\File;
 use Carbon\Carbon;
@@ -85,6 +86,11 @@ class CollectionController extends Controller
         foreach ($files as $file) {
             $file->download_count = $file->download_count + 1;
             $file->save();
+
+            $download = new Download();
+            $download->user_id = auth()->user()->id;
+            $download->file_id = $file->id;
+            $download->save();
         }
 
         return Response::download($zipFilePath)->deleteFileAfterSend(true);

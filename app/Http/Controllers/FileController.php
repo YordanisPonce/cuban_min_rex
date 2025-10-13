@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Billing;
-use App\Models\Category;
+use App\Models\Download;
 use App\Models\File;
 use App\Models\Order;
 use Illuminate\Support\Facades\Response;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
@@ -27,6 +25,11 @@ class FileController extends Controller
 
         $file->download_count = $file->download_count + 1;
         $file->save();
+
+        $download = new Download();
+        $download->user_id = auth()->user()->id;
+        $download->file_id = $file->id;
+        $download->save();
         
         return Response::download($path);
     }
