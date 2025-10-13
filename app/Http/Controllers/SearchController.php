@@ -23,10 +23,10 @@ class SearchController extends Controller
             ->orWhereHas('collection', function ($query) use ($word) {
                 $query->where('name', 'like', '%' . $word . '%');
             })
-            ->orWhereHas('collection.category', function ($query) use ($word) {
+            ->orWhereHas('category', function ($query) use ($word) {
                 $query->where('name', 'like', '%' . $word . '%');
             })
-            ->with(['collection', 'collection.category']) // Carga las relaciones
+            ->with(['collection', 'category']) // Carga las relaciones
             ->paginate(10);
 
         $results->getCollection()->transform(function ($file) {

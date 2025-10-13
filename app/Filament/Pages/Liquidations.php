@@ -15,6 +15,11 @@ class Liquidations extends Page
     protected static ?string $title = 'Liquidaciones';
     
     protected static BackedEnum|string|null $navigationIcon = Heroicon::CurrencyDollar;
+    
+    protected function canView(): bool
+    {
+        return auth()->user() && auth()->user()->role === 'admin';
+    }
 
     protected function getHeaderActions(): array
     {

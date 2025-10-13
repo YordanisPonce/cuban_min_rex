@@ -19,7 +19,7 @@
 
                     <form class="input-group input-group-lg" action="{{ route('search') }}" method="GET">
                         <span class="input-group-text"><i class="ti tabler-search"></i></span>
-                        <input type="search" class="form-control" name="q"
+                        <input type="search" class="form-control" name="search"
                             placeholder="Busca artistas, canciones o colecciones…">
                     </form>
 

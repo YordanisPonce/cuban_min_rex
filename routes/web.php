@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Pages\UserPayments;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SearchController;
@@ -72,6 +73,8 @@ Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
 Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
+
+Route::get('/filament/user-payments/{id}', UserPayments::class)->name('user.payments');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 

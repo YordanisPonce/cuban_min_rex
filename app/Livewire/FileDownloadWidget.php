@@ -23,9 +23,7 @@ class FileDownloadWidget extends BaseWidget
         $collectionMoreDownload = Collection::where('user_id', $userId)
                    ->orderBy('download_count', 'desc')
                    ->first();
-        $activeSubscriptions = User::all()->filter(function($item) {
-            $item->hasActivePlan();
-        })->count();
+        $activeSubscriptions = User::get()->filter(fn($item) => $item->hasActivePlan())->count();
         $salesCount = Auth()->user()->sales()->count();
 
         $stats = [

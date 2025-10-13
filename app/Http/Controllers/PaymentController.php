@@ -6,11 +6,11 @@ use App\Models\Billing;
 use App\Models\Category;
 use App\Models\Order;
 use Illuminate\Http\Request;
-use Stripe\Stripe;
-use Stripe\Checkout\Session as StripeSession;
 use App\Models\Plan;
 use App\Models\Subscription;
+use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -126,6 +126,14 @@ class PaymentController extends Controller
         $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
 
         return redirect()->back()->with('success', 'Membresia cancelada satisfactoriamente');
+
+    }
+
+    public function showPaymentHistory(string $userId) {
+
+        return view('filament.pages.user-payments', [
+            "payments" => User::find($userId)->payments(),
+        ]);
 
     }
 }

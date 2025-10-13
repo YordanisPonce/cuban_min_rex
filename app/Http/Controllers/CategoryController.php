@@ -39,7 +39,7 @@ class CategoryController extends Controller
                 'collection' => $file->collection->name ?? null,
                 'category' => $file->collection->category->name ?? null,
                 'price' => $file->price,
-                'url' => route('file.play', [$file->collection->id, $file->id]),
+                'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
                 'isZip' => $isZip
             ];
         });
