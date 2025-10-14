@@ -101,7 +101,6 @@ Route::get('/file/{file}', [FileController::class, 'download'])
     ->name('file.download');
 
 Route::get('/file/{file}/payment', [FileController::class, 'pay'])
-    ->middleware('auth')
     ->name('file.pay');
 
 Route::get('/collection/download/{collection}', [CollectionController::class, 'download'])

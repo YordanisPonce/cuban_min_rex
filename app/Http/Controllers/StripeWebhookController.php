@@ -48,10 +48,17 @@ class StripeWebhookController extends CashierController
 
     public function handlePaymentIntentSucceeded(array $payload)
     {
+        $pi = $payload['data']['object'];
         $session = $payload['data']['object'];
         $file_id = $session['metadata']['file_id'] ?? null;
         $user_id = $session['metadata']['user_id'] ?? null;
         $orderId = $session['metadata']['order_id'] ?? null;
+        $email = null;
+        try {
+            $email = $pi['charges']['data'][0]['billing_details']['email'] ?? $pi['receipt_email'] ?? null;
+        } catch (\Throwable $th) {
+            Log::error("Fallo en el intento de obtener el correo " . $th->getMessage());
+        }
         Log::info('Payload', $payload);
         if ($file_id && $user_id && $orderId) {
             $file = File::find($file_id);
@@ -60,11 +67,13 @@ class StripeWebhookController extends CashierController
             if ($file && $user && $order) {
                 $order->status = 'paid';
                 $order->paid_at = Carbon::now();
+                $order->customer_email = $email;
                 $order->save();
 
                 $sale = new Sale();
-                $sale->user_id = $user->id;
+                $sale->user_id = $user?->id;
                 $sale->file_id = $file->id;
+                $sale->customer_email = $email;
                 $sale->amount = $file->price;
                 $sale->user_amount = $file->price * 0.7;
                 $sale->admin_amount = $file->price * 0.3;

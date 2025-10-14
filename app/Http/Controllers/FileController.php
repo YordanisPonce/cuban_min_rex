@@ -65,9 +65,9 @@ class FileController extends Controller
         }
 
         try {
-            
+
             $order = new Order();
-            $order->user_id = auth()->user()->id;
+            $order->user_id = auth()->user()?->id;
             $order->file_id = $file->id;
             $order->amount = $file->price;
             $order->status = 'pending';
@@ -85,7 +85,7 @@ class FileController extends Controller
             // Metadatos para rastrear compra
             $metadata = [
                 'file_id' => (string) $file->id,
-                'user_id' => (string) auth()->id(),
+                'user_id' => auth()->check() ? (string) auth()->id() : null,
                 'file_url' => (string) $urlTemporal,
                 'order_id' => (string) $order->id,
             ];
