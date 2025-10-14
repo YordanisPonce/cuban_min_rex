@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Payment;
+use App\Models\Sale;
 use App\Models\User;
 use App\Services\PaypalService;
 use Carbon\Carbon;
@@ -99,7 +100,10 @@ class LiquidationsTableWidget extends TableWidget
                                 $payment->note = $response['note'];
                                 $payment->save();
 
-                                User::find($record->id)->sales()->where('status', 'pending')->update(['status' => 'paid']);
+                                $id = $record->id;
+                                Sale::whereHas('file', function ($query) use ($id) {
+                                    $query->where('user_id', $id);
+                                })->update(['status' => 'paid']);
 
                             } catch (\Throwable $th) {
                                 Notification::make()
