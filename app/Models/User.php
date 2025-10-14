@@ -139,16 +139,20 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Download::class);
     }
 
-    public function totalUnliquidatedDownloads() {
-        $totalUnliquidatedDownloads = $this->files()->with(['downloads' => function ($query) {
-            $query->where('liquidated', false)->whereMonth('created_at', Carbon::now()->month);
-        }])->get()->sum(function ($file) {
+    public function totalUnliquidatedDownloads()
+    {
+        $totalUnliquidatedDownloads = $this->files()->with([
+            'downloads' => function ($query) {
+                $query->where('liquidated', false)->whereMonth('created_at', Carbon::now()->month);
+            }
+        ])->get()->sum(function ($file) {
             return $file->downloads->count();
         });
         return $totalUnliquidatedDownloads;
     }
 
-    public function pendingSubscriptionLiquidation() {
+    public function pendingSubscriptionLiquidation()
+    {
         $pendingToPay = 0;
         $users = User::all();
         foreach ($users as $user) {
@@ -156,21 +160,27 @@ class User extends Authenticatable implements FilamentUser
                 $plan = Plan::find($user->current_plan_id);
                 $planAmount = $plan->price / $plan->duration_months * 0.7;
                 $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                $downloadsToDJ =  Download::whereHas('file', callback: function ($query) {
+                $downloadsToDJ = Download::whereHas('file', callback: function ($query) {
                     $query->where('user_id', $this->id)->where('liquidated', false);
                 })
-                ->where('user_id', $user->id)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->distinct('file_id')
-                ->count('file_id');
-                $amountToPay = $planAmount * ($downloadsToDJ/$downloads);
+                    ->where('user_id', $user->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->distinct('file_id')
+                    ->count('file_id');
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+
+                }
                 $pendingToPay += $amountToPay;
             }
         }
         return $pendingToPay;
     }
 
-    public function paidSubscriptionLiquidation() {
+    public function paidSubscriptionLiquidation()
+    {
         $totalPaid = 0;
         $users = User::all();
         foreach ($users as $user) {
@@ -178,21 +188,22 @@ class User extends Authenticatable implements FilamentUser
                 $plan = Plan::find($user->current_plan_id);
                 $planAmount = $plan->price / $plan->duration_months * 0.7;
                 $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                $downloadsToDJ =  Download::whereHas('file', function ($query) {
+                $downloadsToDJ = Download::whereHas('file', function ($query) {
                     $query->where('user_id', $this->id)->where('liquidated', true);
                 })
-                ->where('user_id', $user->id)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->distinct('file_id')
-                ->count('file_id');
-                $amountToPay = $planAmount * ($downloadsToDJ/$downloads);
+                    ->where('user_id', $user->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->distinct('file_id')
+                    ->count('file_id');
+                $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
                 $totalPaid += $amountToPay;
             }
         }
         return $totalPaid;
     }
 
-    public function generatedToSubscriptionLiquidation() {
+    public function generatedToSubscriptionLiquidation()
+    {
         $totalGenerated = 0;
         $users = User::all();
         foreach ($users as $user) {
@@ -200,14 +211,14 @@ class User extends Authenticatable implements FilamentUser
                 $plan = Plan::find($user->current_plan_id);
                 $planAmount = $plan->price / $plan->duration_months * 0.3;
                 $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                $downloadsToDJ =  Download::whereHas('file', function ($query) {
+                $downloadsToDJ = Download::whereHas('file', function ($query) {
                     $query->where('user_id', $this->id)->andWhere('liquidated', true);
                 })
-                ->where('user_id', $user->id)
-                ->whereMonth('created_at', Carbon::now()->month)
-                ->distinct('file_id')
-                ->count('file_id');
-                $amountToPay = $planAmount * ($downloadsToDJ/$downloads);
+                    ->where('user_id', $user->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->distinct('file_id')
+                    ->count('file_id');
+                $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
                 $totalGenerated += $amountToPay;
             }
         }
