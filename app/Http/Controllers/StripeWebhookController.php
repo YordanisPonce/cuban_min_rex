@@ -10,9 +10,11 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\FilePaid;
 use App\Services\StripeService;
+use Filament\Livewire\Notifications;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Stripe\Webhook;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 
@@ -57,6 +59,7 @@ class StripeWebhookController extends CashierController
         $pi = $payload['data']['object'];
         $session = $payload['data']['object'];
         $file_id = $session['metadata']['file_id'] ?? null;
+        $file_url = $session['metadata']['file_url'] ?? null;
         $user_id = $session['metadata']['user_id'] ?? null;
         $orderId = $session['metadata']['order_id'] ?? null;
         $email = null;
@@ -97,7 +100,10 @@ class StripeWebhookController extends CashierController
                 $sale->save();
 
                 //Aqui configurar para enviar el correo al cliente
-                $user && $user->notify(new FilePaid(route('file.download', $file->id)));
+                $user && $user->notify(new FilePaid($file_url ?? route('file.download', $file->id)));
+                if ($email) {
+                    Notification::route('mail', $email)->notify(new FilePaid($file_url ?? route('file.download', $file->id)));
+                }
             }
         }
     }
