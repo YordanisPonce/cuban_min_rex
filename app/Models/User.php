@@ -195,7 +195,12 @@ class User extends Authenticatable implements FilamentUser
                     ->whereMonth('created_at', Carbon::now()->month)
                     ->distinct('file_id')
                     ->count('file_id');
-                $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                }
+
                 $totalPaid += $amountToPay;
             }
         }
@@ -218,7 +223,13 @@ class User extends Authenticatable implements FilamentUser
                     ->whereMonth('created_at', Carbon::now()->month)
                     ->distinct('file_id')
                     ->count('file_id');
-                $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                }
+
                 $totalGenerated += $amountToPay;
             }
         }
