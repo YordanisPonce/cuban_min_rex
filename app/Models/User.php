@@ -217,7 +217,7 @@ class User extends Authenticatable implements FilamentUser
                 $planAmount = $plan->price / $plan->duration_months * 0.3;
                 $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
                 $downloadsToDJ = Download::whereHas('file', function ($query) {
-                    $query->where('user_id', $this->id)->andWhere('liquidated', true);
+                    $query->where('user_id', $this->id)->where('liquidated', true);
                 })
                     ->where('user_id', $user->id)
                     ->whereMonth('created_at', Carbon::now()->month)
