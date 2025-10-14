@@ -79,9 +79,9 @@ class StripeWebhookController extends CashierController
         Log::info('Payload', $payload);
         if ($file_id && $orderId) {
             $file = File::find($file_id);
-            $user = User::find($user_id);
+            $user = User::where('id', $user_id)->orWhere('email', $email)->first();
             $order = Order::find($orderId);
-            if ($file && $user && $order) {
+            if ($file && $order) {
                 $order->status = 'paid';
                 $order->paid_at = Carbon::now();
                 $order->customer_email = $email;
