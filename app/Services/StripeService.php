@@ -18,7 +18,7 @@ class StripeService
     {
 
         if ($plan->stripe_price_id) {
-            
+
             $product = $this->client->products->update($plan->stripe_product_id, [
                 'name' => $plan->name,
                 'description' => $plan->description,
@@ -43,7 +43,7 @@ class StripeService
         $interval = $this->mapInterval($plan->duration_months);
 
         $price = $this->client->prices->create([
-            'unit_amount' => (int)($plan->price * 100),
+            'unit_amount' => (int) ($plan->price * 100),
             'currency' => 'eur',
             'recurring' => ['interval' => $interval],
             'product' => $product->id,
@@ -62,8 +62,15 @@ class StripeService
     {
         return match ($durationMonths) {
             12 => 'year',
-            1  => 'month',
+            1 => 'month',
             default => 'month',
         };
+    }
+
+
+    public function getClient()
+    {
+
+        return $this->client;
     }
 }

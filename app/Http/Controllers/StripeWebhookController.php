@@ -9,6 +9,7 @@ use App\Models\Sale;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\FilePaid;
+use App\Services\StripeService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
@@ -17,6 +18,11 @@ use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
 
 class StripeWebhookController extends CashierController
 {
+
+    public function __construct(private readonly StripeService $stripeService)
+    {
+        parent::__construct();
+    }
     public function handleCustomerSubscriptionCreated(array $payload)
     {
         $session = $payload['data']['object'];
@@ -55,7 +61,18 @@ class StripeWebhookController extends CashierController
         $orderId = $session['metadata']['order_id'] ?? null;
         $email = null;
         try {
-            $email = $pi['charges']['data'][0]['billing_details']['email'] ?? $pi['receipt_email'] ?? null;
+            if (isset($pi['latest_charge'])) {
+                $charge = $this->stripeService->getClient()->charges->retrieve($pi['latest_charge']);
+                $email = $charge->receipt_email
+                    ?? ($charge->billing_details->email ?? null);
+            }
+
+            if (!$email && !empty($pi['payment_method'])) {
+                $pm = $this->stripeService->getClient()->paymentMethods->retrieve($pi['payment_method']);
+                $email = $pm->billing_details->email ?? null;
+            }
+
+
         } catch (\Throwable $th) {
             Log::error("Fallo en el intento de obtener el correo " . $th->getMessage());
         }
