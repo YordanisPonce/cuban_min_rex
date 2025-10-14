@@ -22,14 +22,20 @@ class LiquidationsTableWidget extends TableWidget
             ->query(fn (): Builder => User::query()
                 ->select('users.id', 'users.name', 'users.paypal_email')
                 ->withCount([
-                    'sales as pending' => function ($query) {
-                        $query->where('status', 'pending');
+                    'files as pending' => function ($query) {
+                        $query->whereHas('sales', function ($query) {
+                            $query->where('status', 'pending');
+                        });
                     },
-                    'sales as paid_total' => function ($query) {
-                        $query->where('status', 'paid');
+                    'files as paid_total' => function ($query) {
+                        $query->whereHas('sales', function ($query) {
+                            $query->where('status', 'paid');
+                        });
                     },
-                    'sales as generated_total' => function ($query) {
-                        $query->where('status', 'paid');
+                    'files as generated_total' => function ($query) {
+                        $query->whereHas('sales', function ($query) {
+                            $query->where('status', 'paid');
+                        });
                     }
                 ])
                 ->selectRaw('
@@ -37,7 +43,8 @@ class LiquidationsTableWidget extends TableWidget
                     SUM(CASE WHEN sales.status = "paid" THEN sales.user_amount ELSE 0 END) as total_paid,
                     SUM(CASE WHEN sales.status = "paid" THEN sales.admin_amount ELSE 0 END) as total_generated
                 ')
-                ->leftJoin('sales', 'users.id', '=', 'sales.user_id')
+                ->leftJoin('files', 'users.id', '=', 'files.user_id')
+                ->leftJoin('sales', 'files.id', '=', 'sales.file_id')
                 ->whereNot('role', 'user')
                 ->groupBy('users.id', 'users.name', 'users.paypal_email')
             )

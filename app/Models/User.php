@@ -155,7 +155,7 @@ class User extends Authenticatable implements FilamentUser
             if ($user->hasActivePlan() && $user->currentPlan()) {
                 $plan = Plan::find($user->current_plan_id);
                 $planAmount = $plan->price / $plan->duration_months * 0.7;
-                $downloads = $user->downloads->whereMonth('created_at', Carbon::now()->month)->count();
+                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
                 $downloadsToDJ =  Download::whereHas('file', function ($query) {
                     $query->where('user_id', $this->id)->andWhere('liquidated', false);
                 })
@@ -177,7 +177,7 @@ class User extends Authenticatable implements FilamentUser
             if ($user->hasActivePlan() && $user->currentPlan()) {
                 $plan = Plan::find($user->current_plan_id);
                 $planAmount = $plan->price / $plan->duration_months * 0.7;
-                $downloads = $user->downloads->whereMonth('created_at', Carbon::now()->month)->count();
+                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
                 $downloadsToDJ =  Download::whereHas('file', function ($query) {
                     $query->where('user_id', $this->id)->andWhere('liquidated', true);
                 })
@@ -199,7 +199,7 @@ class User extends Authenticatable implements FilamentUser
             if ($user->hasActivePlan() && $user->currentPlan()) {
                 $plan = Plan::find($user->current_plan_id);
                 $planAmount = $plan->price / $plan->duration_months * 0.3;
-                $downloads = $user->downloads->whereMonth('created_at', Carbon::now()->month)->count();
+                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
                 $downloadsToDJ =  Download::whereHas('file', function ($query) {
                     $query->where('user_id', $this->id)->andWhere('liquidated', true);
                 })

@@ -65,7 +65,7 @@ class FileController extends Controller
         }
 
         try {
-
+            
             $order = new Order();
             $order->user_id = auth()->user()->id;
             $order->file_id = $file->id;

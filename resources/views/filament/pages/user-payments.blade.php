@@ -11,7 +11,7 @@
             <spam style="width: 20%; text-overflow: ellipsis; white-space: nowrap; display: block; overflow: hidden">{{$payment->created_at}}</spam>
             <spam style="width: 25%; text-overflow: ellipsis; white-space: nowrap; display: block; overflow: hidden">{{$payment->amount}}</spam>
             <spam style="width: 25%; text-overflow: ellipsis; white-space: nowrap; display: block; overflow: hidden">{{$payment->currency}}</spam>
-            <spam style="width: 30%; text-overflow: ellipsis; white-space: nowrap; display: block; overflow: hidden">{{$payment->paypal_responce['batch_header']['payout_batch_id']}}</spam>
+            <spam style="width: 30%; text-overflow: ellipsis; white-space: nowrap; display: block; overflow: hidden">{{$payment->paypal_responce['batch_header']['payout_batch_id'] ?? 'No definido'}}</spam>
         </div>
         @endforeach
     </x-filament::card>
