@@ -77,7 +77,7 @@ class StripeWebhookController extends CashierController
             Log::error("Fallo en el intento de obtener el correo " . $th->getMessage());
         }
         Log::info('Payload', $payload);
-        if ($file_id && $user_id && $orderId) {
+        if ($file_id && $orderId) {
             $file = File::find($file_id);
             $user = User::find($user_id);
             $order = Order::find($orderId);
