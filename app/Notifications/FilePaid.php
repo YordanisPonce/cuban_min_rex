@@ -37,9 +37,9 @@ class FilePaid extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->line('El pago ha sido recibido con éxito. Ahora puede descargar el archivo en el enlace de abajo.')
-            ->action('Descargar Archivo', $this->file_url)
-            ->line('¡Gracias por usar nuestra aplicación!');
+            ->view('notification', [
+                'file_url' => $this->file_url
+            ])->subject('Archivo Comprado.');
     }
 
     /**
