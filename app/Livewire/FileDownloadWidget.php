@@ -25,10 +25,13 @@ class FileDownloadWidget extends BaseWidget
                    ->first();
         $activeSubscriptions = User::get()->filter(fn($item) => $item->hasActivePlan())->count();
         $salesCount = Auth()->user()->sales()->count();
+        $totalEarningsAtSubscription = (float) Auth()->user()->paidSubscriptionLiquidation();
+        $totalEarningsAtSales = (float) Auth()->user()->paidSaleLiquidation();
+        $totalEarning = (float) ($totalEarningsAtSubscription + $totalEarningsAtSales);
 
         $stats = [
             Stat::make('Cantidad de Descargas', $downloadCounts),
-            Stat::make('Comisión por descargas', '21%'),
+            Stat::make('Ganancia Total', '$ '.$totalEarning),
             Stat::make('Cantidad de Ventas', $salesCount),
             Stat::make('Archivo más descargado', $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido'),
             Stat::make('Colección más descargada', $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido'),

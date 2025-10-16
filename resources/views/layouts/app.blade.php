@@ -166,10 +166,6 @@
         }
 
         @media(max-width: 450px) {
-            .navbar-right {
-                width: 75%;
-            }
-
             .carousel-item {
                 height: 100vh;
 

@@ -235,5 +235,41 @@ class User extends Authenticatable implements FilamentUser
         }
         return $totalGenerated;
     }
+    
+    public function pendingSaleLiquidation()
+    {
+        $totalPaid = 0;
+        $sales = Sale::whereHas('file', function ($query) {
+            $query->where('user_id', $this->id)->where('status', 'pending');
+        })->get();
+        foreach ($sales as $sale) {
+            $totalPaid += $sale->user_amount;
+        }
+        return $totalPaid;
+    }
+
+    public function paidSaleLiquidation()
+    {
+        $totalPaid = 0;
+        $sales = Sale::whereHas('file', function ($query) {
+            $query->where('user_id', $this->id)->where('status', 'paid');
+        })->get();
+        foreach ($sales as $sale) {
+            $totalPaid += $sale->user_amount;
+        }
+        return $totalPaid;
+    }
+
+    public function generatedToSaleLiquidation()
+    {
+        $totalPaid = 0;
+        $sales = Sale::whereHas('file', function ($query) {
+            $query->where('user_id', $this->id)->where('status', 'paid');
+        })->get();
+        foreach ($sales as $sale) {
+            $totalPaid += $sale->admin_amount;
+        }
+        return $totalPaid;
+    }
 }
 

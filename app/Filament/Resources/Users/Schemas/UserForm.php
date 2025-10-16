@@ -23,10 +23,6 @@ class UserForm
                     ->required(),
                 DateTimePicker::make('email_verified_at')
                     ->label('Verificación del Correo'),
-                TextInput::make('password')
-                    ->label('Contraseña')
-                    ->password()
-                    ->required(),
                 Select::make('role')
                     ->label('Rol')
                     ->required()

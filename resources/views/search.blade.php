@@ -52,13 +52,17 @@
                                     <td>{{ $file['category'] }}</td>
                                     @auth
                                         @if (!Auth::user()->hasActivePlan())
+                                            @if ($file['price'] > 0)
                                             <td><span class="d-block w-100 text-nowrap overflow-hidden"
                                                 style="text-overflow:ellipsis;">
                                                 $ {{ $file['price'] }}
                                             </span></td>
+                                            @else
+                                            <td></td>
+                                            @endif
                                         @endif
                                         <td>
-                                            @if (Auth::user()->hasActivePlan())
+                                            @if (Auth::user()->hasActivePlan() || !($file['price'] > 0))
                                                 <a style="display: flex; width: 20px"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             @else

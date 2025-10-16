@@ -28,7 +28,7 @@ class SubscriptionLiquidationTable extends TableWidget
                 TextColumn::make('name')
                     ->label('Nombre'),
                 TextColumn::make('paypal_email')
-                    ->label('Corre de PayPal'),
+                    ->label('Correo de PayPal'),
                 TextColumn::make('downloads_count')
                     ->label('Descargas')
                     ->numeric()

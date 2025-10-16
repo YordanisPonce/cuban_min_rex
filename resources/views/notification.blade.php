@@ -138,10 +138,10 @@
         }
 
         :root {
-            --Base-White: #000;
-            --Primary-200: #FFF;
-            --Primary-800: #FFF;
-            --Primary-600: #FFF;
+            --Base-White: #FFF;
+            --Primary-200: #000;
+            --Primary-800: #000;
+            --Primary-600: #000;
         }
 
         main {

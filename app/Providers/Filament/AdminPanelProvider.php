@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Http\Middleware\CheckUserAccess;
+use App\Livewire\DownloadsChart;
 use App\Livewire\FileDownloadWidget;
 use App\Livewire\SubscriptionChart;
 use App\Livewire\NewSubscriptionChart;
@@ -46,6 +47,7 @@ class AdminPanelProvider extends PanelProvider
                 FileDownloadWidget::class,
                 SubscriptionChart::class,
                 NewSubscriptionChart::class,
+                DownloadsChart::class,
             ])
             ->plugins([ ])
             ->middleware([

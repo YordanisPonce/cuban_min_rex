@@ -1,14 +1,14 @@
 {{-- resources/views/partials/collection.blade.php --}}
 
 <section class="section-py bg-body landing-reviews pb-0 swiper" id="{{ $id }}">
-    <div class="container">
-        <a href="{{ $ctaHref }}" class="link-underline float-end">{{ $ctaText }} →</a>
+    <div class="container" style="position: relative;">
+        <a href="{{ $ctaHref }}" class="link-underline d-none d-md-block" style="position: absolute; right: 16px">{{ $ctaText }} →</a>
         <div class="row align-items-center gx-0 gy-4 g-lg-5 mb-5 pb-md-5 flex-lg-row-normal">
-
             {{-- Columna de textos y controles --}}
             <div class="col-md-6 col-lg-5 col-xl-3">
                 <div class="mb-4 d-flex align-items-center justify-content-between">
                     <span class="badge bg-label-primary">{{ $badge }}</span>
+                    <a href="{{ $ctaHref }}" class="link-underline float-end d-md-none">{{ $ctaText }} →</a>
                 </div>
 
                 <h4 class="mb-1">
@@ -45,10 +45,10 @@
                                         aria-label="Reproducir Synth Nights">
                                         <div
                                             class="card-body text-body d-flex flex-column justify-content-between h-100">
-                                            <div class="mb-4">
+                                            <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
                                                 <img src="{{ $item->image ? $item->image : asset('assets/img/front-pages/icon/collection.png') }}"
                                                     alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
-                                            </div>
+                                            </a>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar me-3 avatar-sm">
                                                     <svg xmlns="http://www.w3.org/2000/svg" width="16"
