@@ -35,7 +35,10 @@ class UserPaymentsTable extends TableWidget
                     ->label('Cantidad Pagada')
                     ->money()
                     ->sortable(),
-                TextColumn::make("paypal_response['batch_header']['payout_batch_id']")
+                TextColumn::make("paypal_response_id")
+                    ->getStateUsing(function (Payment $record) {
+                        return $record->paypal_response['batch_header']['payout_batch_id'];
+                    })
                     ->label('Transacción')
                     ->default('No definido'),
                 TextColumn::make('note')
