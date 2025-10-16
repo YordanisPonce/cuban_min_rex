@@ -25,4 +25,12 @@ class UserPayments extends Page
     {
         $this->user = User::findOrFail($record);
     }
+
+    // Agregar este método para pasar datos a la vista
+    protected function getViewData(): array
+    {
+        return [
+            'userId' => $this->user->id,
+        ];
+    }
 }
