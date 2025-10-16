@@ -17,9 +17,9 @@ class UserPayments extends Page
 
     public User $user;
 
-    public function mount($id)
+    public function mount($record)
     {
-        $this->user = User::findOrFail($id);
+        $this->user = User::findOrFail($record);
     }
 
 }
