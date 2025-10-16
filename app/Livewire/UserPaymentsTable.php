@@ -26,7 +26,7 @@ class UserPaymentsTable extends TableWidget
         }
 
 
-        return $table
+        return $table->paginated(false)
             ->query(fn(): Builder => Payment::where('user_id', $userId)->orderBy('created_at', 'desc'))
             ->columns([
                 TextColumn::make('created_at')
