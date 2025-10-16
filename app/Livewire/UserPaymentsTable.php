@@ -17,7 +17,14 @@ class UserPaymentsTable extends TableWidget
     public function table(Table $table): Table
     {
 
-        $userId = request()->route('record');
+        $record = request()->route('record');
+        if ($record) {
+            $userId = session("current_user_id_" . auth()->id() . "_" . $record) ?? request()->route('record');
+            session(["current_user_id_" . auth()->id() . "_" . $record => $userId]);
+        } else {
+            $userId = session()->get("current_user_id_" . auth()->id() . "_" . $record);
+        }
+
 
         return $table
             ->query(fn(): Builder => Payment::where('user_id', $userId)->orderBy('created_at', 'desc'))
