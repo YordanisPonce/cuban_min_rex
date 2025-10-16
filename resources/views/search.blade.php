@@ -70,13 +70,21 @@
                                             @endif
                                         </td>
                                     @else
-                                        <td><span class="d-block w-100 text-nowrap overflow-hidden"
-                                            style="text-overflow:ellipsis;">
-                                            $ {{ $file['price'] }}
-                                        </span></td>
-                                        <td>
-                                            <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
-                                        </td>
+                                        @if ($file['price'] > 0)
+                                            <td><span class="d-block w-100 text-nowrap overflow-hidden"
+                                                style="text-overflow:ellipsis;">
+                                                $ {{ $file['price'] }}
+                                            </span></td>
+                                            <td>
+                                                <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                            </td>
+                                        @else
+                                            <td></td>
+                                            <td>
+                                                <a style="display: flex; width: 20px"
+                                                    href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
+                                            </td>
+                                        @endif
                                     @endauth
                                     <td>
                                         @if (!$file['isZip'])

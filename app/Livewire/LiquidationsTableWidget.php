@@ -122,7 +122,7 @@ class LiquidationsTableWidget extends TableWidget
                 Action::make('Ver Pagos')
                     ->color('info')
                     ->icon('heroicon-m-eye')
-                    ->url(fn($record) => route('user.payments', $record->id)),
+                    ->url(fn($record) => route('user.payments', $record)),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

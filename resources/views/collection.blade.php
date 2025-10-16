@@ -147,15 +147,22 @@
                                                         @endif
                                                     </div>
                                                 @else
-                                                    <div class="col-3 col-sm-2">
-                                                        <span class="d-block w-100 text-nowrap overflow-hidden"
-                                                            style="text-overflow:ellipsis;">
-                                                            $ {{ $file['price'] }}
-                                                        </span>
-                                                    </div>
-                                                    <div class="col-1">
-                                                        <a style="display: flex; width: 20px; cursor: pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
-                                                    </div>
+                                                    @if ($file['price'] > 0)
+                                                        <div class="col-3 col-sm-2">
+                                                            <span class="d-block w-100 text-nowrap overflow-hidden"
+                                                                style="text-overflow:ellipsis;">
+                                                                $ {{ $file['price'] }}
+                                                            </span>
+                                                        </div>
+                                                        <div class="col-1">
+                                                            <a style="display: flex; width: 20px; cursor: pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                        </div>
+                                                    @else
+                                                        <div class="col-1">
+                                                            <a style="display: flex; width: 20px"
+                                                                href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
+                                                        </div>
+                                                    @endif
                                                 @endauth
                                                 <div class="col-1">
                                                     @if (!$file['isZip'])
