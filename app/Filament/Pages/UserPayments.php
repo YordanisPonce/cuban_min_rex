@@ -9,7 +9,7 @@ use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 
 class UserPayments extends Page
 {
-    use InteractsWithRecord;
+
     protected string $view = 'filament.pages.user-payments';
 
     protected static ?string $title = ' ';
@@ -20,8 +20,9 @@ class UserPayments extends Page
 
     public User $user;
 
+
     public function mount(int|string $record): void
     {
-        $this->user = User::find($record);
+        $this->user = User::findOrFail($record);
     }
 }
