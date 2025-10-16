@@ -12,17 +12,15 @@ use Filament\Tables\Columns\TextColumn;
 
 class UserPaymentsTable extends TableWidget
 {
-    protected int $userId;
 
-    public function mount(int $userId)
-    {
-        $this->userId = $userId;
-    }
 
     public function table(Table $table): Table
     {
+
+        $userId = request()->route('record');
+
         return $table
-            ->query(fn (): Builder => Payment::where('user_id', $this->userId)->orderBy('created_at', 'desc'))
+            ->query(fn(): Builder => Payment::where('user_id', $userId)->orderBy('created_at', 'desc'))
             ->columns([
                 TextColumn::make('created_at')
                     ->label('Fecha'),
@@ -50,6 +48,6 @@ class UserPaymentsTable extends TableWidget
                     //
                 ]),
             ])
-            ->heading(fn() => 'Pagos Realizados a '. User::find($this->userId)->name);
+            ->heading(fn() => 'Pagos Realizados a ' . User::find($this->userId)->name);
     }
 }
