@@ -101,7 +101,7 @@ class StripeWebhookController extends CashierController
 
                 //Aqui configurar para enviar el correo al cliente
                 $user && $user->notify(new FilePaid($file_url ?? route('file.download', $file->id)));
-                if ($email) {
+                if ($email && !$user) {
                     Notification::route('mail', $email)->notify(new FilePaid($file_url ?? route('file.download', $file->id)));
                 }
             }

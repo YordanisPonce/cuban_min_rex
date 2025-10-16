@@ -4,22 +4,23 @@ namespace App\Filament\Pages;
 
 use App\Models\User;
 use Filament\Pages\Page;
+use Filament\Resources\Pages\Concerns\InteractsWithRecord;
 
 class UserPayments extends Page
 {
+    use InteractsWithRecord;
     protected string $view = 'filament.pages.user-payments';
 
     protected static ?string $title = 'Pagos realizados';
 
     protected static ?string $navigationLabel = null; // No mostrar en la navegación
-    
+
     protected static bool $shouldRegisterNavigation = false; // No registrar en la navegación
 
     public User $user;
 
-    public function mount($id)
+    public function mount(int|string $record): void
     {
-        $this->user = User::findOrFail($id);
+        $this->user = User::find($record);
     }
-
 }
