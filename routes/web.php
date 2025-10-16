@@ -74,7 +74,7 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
 Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
 
-Route::get('/filament/user-payments/{id}', UserPayments::class)->name('user.payments');
+Route::get('/admin/user-payments/{id}', UserPayments::class)->name('user.payments');
 
 Route::get('/search', [SearchController::class, 'search'])->name('search');
 

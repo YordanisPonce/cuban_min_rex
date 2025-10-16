@@ -123,14 +123,14 @@
                                     <div class="card mb-6">
                                         @foreach ($results as $file)
                                             <div class="row py-2">
-                                                <div class="{{Auth::user()?->hasActivePlan() ? 'col-10 mb-3' : 'col-7 col-sm-8 mb-3'}}">
+                                                <div class="{{Auth::user()?->hasActivePlan() || !($file['price'] > 0) ? 'col-10 mb-3' : 'col-7 col-sm-8 mb-3'}}">
                                                     <span class="d-block w-100 text-nowrap overflow-hidden"
                                                         style="text-overflow:ellipsis;">
                                                         {{ $file['name'] }}
                                                     </span>
                                                 </div>
                                                 @auth
-                                                    @if (!Auth::user()?->hasActivePlan())
+                                                    @if (!Auth::user()?->hasActivePlan() && ($file['price'] > 0))
                                                         <div class="col-3 col-sm-2">
                                                             <span class="d-block w-100 text-nowrap overflow-hidden"
                                                                 style="text-overflow:ellipsis;">
@@ -139,7 +139,7 @@
                                                         </div>
                                                     @endif
                                                     <div class="col-1">
-                                                        @if (Auth::user()?->hasActivePlan())
+                                                        @if (Auth::user()?->hasActivePlan() || !($file['price'] > 0))
                                                             <a style="display: flex; width: 20px"
                                                                 href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                                         @else

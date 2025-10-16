@@ -2,11 +2,11 @@
 
 namespace App\Filament\Pages;
 
-use App\Livewire\LiquidationsTableWidget;
 use App\Livewire\TabsWidget;
 use BackedEnum;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
+use Illuminate\Support\Facades\Auth;
 
 class Liquidations extends Page
 {
@@ -16,9 +16,9 @@ class Liquidations extends Page
     
     protected static BackedEnum|string|null $navigationIcon = Heroicon::CurrencyDollar;
     
-    protected function canView(): bool
+    public static function canAccess(): bool
     {
-        return auth()->user() && auth()->user()->role === 'admin';
+        return auth()->user()->role === 'admin';
     }
 
     protected function getHeaderActions(): array

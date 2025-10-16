@@ -176,7 +176,71 @@
                                         <select id="country" class="form-select select2" name="country" required>
                                             <option value="">Seleccionar</option>
                                             @php
-                                                $countries = ['España', 'México', 'Argentina', 'Colombia'];
+                                                $countries = [
+                                                    'Alemania',
+                                                    'Andorra',
+                                                    'Argentina',
+                                                    'Armenia',
+                                                    'Australia',
+                                                    'Austria',
+                                                    'Bélgica',
+                                                    'Bolivia',
+                                                    'Bosnia y Herzegovina',
+                                                    'Brasil',
+                                                    'Canadá',
+                                                    'Chile',
+                                                    'China',
+                                                    'Colombia',
+                                                    'Costa Rica',
+                                                    'Cuba',
+                                                    'Dinamarca',
+                                                    'Ecuador',
+                                                    'Egipto',
+                                                    'El Salvador',
+                                                    'Emiratos Árabes Unidos',
+                                                    'España',
+                                                    'Estados Unidos',
+                                                    'Estonia',
+                                                    'Etiopía',
+                                                    'Filipinas',
+                                                    'Francia',
+                                                    'Ghana',
+                                                    'Grecia',
+                                                    'Guatemala',
+                                                    'Honduras',
+                                                    'India',
+                                                    'Indonesia',
+                                                    'Irak',
+                                                    'Irán',
+                                                    'Italia',
+                                                    'Japón',
+                                                    'Kenia',
+                                                    'Malasia',
+                                                    'Marruecos',
+                                                    'México',
+                                                    'Nicaragua',
+                                                    'Noruega',
+                                                    'Nigeria',
+                                                    'Panamá',
+                                                    'Paraguay',
+                                                    'Perú',
+                                                    'Polonia',
+                                                    'Portugal',
+                                                    'República Checa',
+                                                    'República Dominicana',
+                                                    'Rumanía',
+                                                    'Rusia',
+                                                    'Reino Unido',
+                                                    'Sudáfrica',
+                                                    'Suecia',
+                                                    'Suiza',
+                                                    'Tailandia',
+                                                    'Tanzania',
+                                                    'Uganda',
+                                                    'Uruguay',
+                                                    'Venezuela',
+                                                    'Vietnam',
+                                                ];
                                             @endphp
                                             @foreach ($countries as $country)
                                                 <option value="{{ $country }}"
@@ -280,7 +344,9 @@
                                                     <span class="price-monthly h2 text-primary fw-extrabold mb-0">$
                                                         {{ $plan->price_formatted }}</span>
                                                     <!-- <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">$ {{ $plan->price_formatted * 0.75 }}</span> -->
-                                                    <sub class="h6 text-body-secondary mb-n1 ms-1">/mes</sub>
+                                                    <sub class="h6 text-body-secondary mb-n1 ms-1">
+                                                        {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
+                                                    </sub>
                                                 </div>
                                                 <!-- <div class="position-relative pt-2">
                                                     <div class="price-yearly text-body-secondary price-yearly-toggle d-none">$ {{ $plan->price_formatted * 12 * 0.75 }} / año</div>
