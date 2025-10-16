@@ -48,6 +48,6 @@ class UserPaymentsTable extends TableWidget
                     //
                 ]),
             ])
-            ->heading(fn() => 'Pagos Realizados a ' . User::find($this->userId)->name);
+            ->heading(fn() => 'Pagos Realizados a ' . User::find($userId)->name);
     }
 }
