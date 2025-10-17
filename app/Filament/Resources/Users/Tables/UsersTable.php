@@ -4,11 +4,14 @@ namespace App\Filament\Resources\Users\Tables;
 
 // use Filament\Actions\BulkActionGroup;
 // use Filament\Actions\DeleteBulkAction;
+
+use App\Models\User;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class UsersTable
 {
@@ -28,7 +31,8 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('role')
                     ->label('Rol')
-                    ->searchable(),
+                    ->searchable()
+                    ->getStateUsing(fn($record) => $record->role === 'admin' ? 'Administrador' : ($record->role === 'worker' ? 'Trabajador' : 'Usuario')),
                 TextColumn::make('currentPlan.name')
                     ->label('Subscripción Activa'),
                 TextColumn::make('created_at')
@@ -53,6 +57,9 @@ class UsersTable
                 // BulkActionGroup::make([
                 //     DeleteBulkAction::make(),
                 // ]),
-            ]);
+            ])
+            ->modifyQueryUsing(
+                fn(): Builder => User::query()->orderBy('id', 'desc')
+            );
     }
 }

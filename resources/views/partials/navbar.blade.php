@@ -57,6 +57,9 @@
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('djs') }}">DJs</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="{{ route('remixes') }}">REMIXES</a>
+                    </li>
                     @isset($categories)
                         @foreach ($categories as $category)
                             <li class="nav-item">

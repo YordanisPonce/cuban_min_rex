@@ -23,7 +23,7 @@
                             <tr>
                                 <th></th>
                                 <th>Fecha</th>
-                                <th>Subido por</th>
+                                <th>{{ isset($remixes) ? 'REMIXERS' :'Subido por'}}</th>
                                 <th>Nombre</th>
                                 <th>Álbum</th>
                                 <th>Categoría</th>
@@ -42,7 +42,10 @@
                             @foreach ($results as $file)
                                 @php
                                     $date = Carbon::parse($file['date'])->translatedFormat('d \d\e F \d\e Y H:i');
+                                    $visible = true;
+                                    if( isset($file['ext']) && $file['ext'] !== 'mp3') $visible = false;
                                 @endphp
+                                @if ($visible)
                                 <tr>
                                     <td></td>
                                     <td>{{ $date }}</td>
@@ -101,6 +104,7 @@
                                         @endif
                                     </td>
                                 </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>

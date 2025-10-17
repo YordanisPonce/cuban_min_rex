@@ -58,8 +58,9 @@ class CategoryController extends Controller
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
-        $category = Category::find($id);
+        $ctgName = Category::find($id)->name;
+        $collections = Category::find($id)->collections()->paginate(12);
 
-        return view('category', compact('category', 'categories', 'recentCategories', 'recentCollections'));
+        return view('category', compact('ctgName', 'collections', 'categories', 'recentCategories', 'recentCollections'));
     }
 }

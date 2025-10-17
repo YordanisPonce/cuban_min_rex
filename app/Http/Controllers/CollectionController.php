@@ -100,16 +100,15 @@ class CollectionController extends Controller
 
     public function index()
     {
-        $collections = Collection::All();
+        $collections = Collection::paginate(12);
+
         $categories = Category::where('show_in_landing', true)->get();
+
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
-        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-            return $item->files()->count() > 0;
-        });
 
-        $collections = $collections->filter(function ($item) {
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
 
@@ -160,16 +159,12 @@ class CollectionController extends Controller
 
     public function dj(string $id)
     {
-        $collections = Collection::where('user_id', $id)->orderBy('created_at', 'desc')->get();
+        $collections = Collection::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(12);
         $categories = Category::where('show_in_landing', true)->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-            return $item->files()->count() > 0;
-        });
-
-        $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;
         });
 

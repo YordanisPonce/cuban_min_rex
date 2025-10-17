@@ -3,22 +3,24 @@
 @section('title', 'Inicio – Cuban Mix Rex')
 
 @section('content')
-<section class="section-py bg-body">
+<section class="section-py bg-body mt-10">
     @php $hasDjs = isset($djs) && count($djs) > 0; @endphp
 
     @if ($hasDjs)
         @foreach($djs as $dj)
-            @include('partials.collection', [
-                'id' => $dj->id,
-                'badge' => 'DJ',
-                'title' => $dj->name,
-                'subtitle' => 'Algo sobre el DJ',
-                'ctaText' => 'Ver Más',
-                'ctaHref' => route('collection.dj', $dj->id),
+            @if ($dj->collections()->count() > 0)
+                @include('partials.collection', [
+                    'id' => $dj->id,
+                    'badge' => 'DJ',
+                    'title' => $dj->name,
+                    'subtitle' => 'Algo sobre el DJ',
+                    'ctaText' => 'Ver Más',
+                    'ctaHref' => route('collection.dj', $dj->id),
 
-                'items' => $dj->collections()->take(10)->get(),
+                    'items' => $dj->collections()->take(10)->get(),
 
-            ])
+                ])
+            @endif
         @endforeach
         <nav class="container mt-3" style="margin: auto;">
             <ul class="pagination" style="--bs-pagination-border-radius: 0%;">

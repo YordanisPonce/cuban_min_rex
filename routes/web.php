@@ -74,6 +74,7 @@ Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
 Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
 Route::get('/djs', [HomeController::class, 'dj'])->name('djs');
+Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
 
 Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
 
