@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Download;
 use App\Models\Collection;
 use App\Models\File;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
 use ZipArchive;
@@ -152,6 +153,26 @@ class CollectionController extends Controller
         });
 
         $badge = 'Hecho para ti';
+
+        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+    }
+
+    public function dj(string $id)
+    {
+        $collections = Collection::where('user_id', $id)->orderBy('created_at', 'desc')->get();
+        $categories = Category::where('show_in_landing', true)->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $collections = $collections->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $badge = 'DJ '.User::find($id)->name;
 
         return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
     }

@@ -12,11 +12,11 @@
                 </div>
 
                 <h4 class="mb-1">
-                    <span class="position-relative fw-extrabold z-1">
+                    <a class="position-relative fw-extrabold z-1" href="{{ $ctaHref }}">
                         {{ $title }}
                         <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/section-title-icon.png"
                             alt="icon" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1">
-                    </span>
+                    </a>
                 </h4>
 
                 <p class="mb-5 mb-md-12">

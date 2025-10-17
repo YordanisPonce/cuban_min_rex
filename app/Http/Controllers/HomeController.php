@@ -78,6 +78,22 @@ class HomeController extends Controller
         return view('plans', compact('plans','categories', 'recentCategories', 'recentCollections'));
     }
 
+    public function dj()
+    {
+        $categories = Category::where('show_in_landing', true)->get();
+        
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $djs = User::where('role', 'worker')->paginate(10);
+
+        return view('djs', compact('djs','categories', 'recentCategories', 'recentCollections'));
+    }
+
     public function sendContactForm(Request $request){
 
         $name = $request->fullname ?? 'Anónimo';

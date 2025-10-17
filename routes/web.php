@@ -73,6 +73,7 @@ Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
 Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
 Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
 Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
+Route::get('/djs', [HomeController::class, 'dj'])->name('djs');
 
 Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
 
@@ -90,6 +91,8 @@ Route::get('/collections/news', [CollectionController::class, 'news'])
     ->name('collection.news');
 Route::get('/collections/recommended', [CollectionController::class, 'recommended'])
     ->name('collection.recommended');
+Route::get('/collections/DJ/{dj}', [CollectionController::class, 'dj'])
+    ->name('collection.dj');
 
 Route::get('/collection/{collection}', [CollectionController::class, 'show'])
     ->name('collection.show');

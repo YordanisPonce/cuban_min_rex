@@ -29,7 +29,7 @@ class FilesTable
                 TextColumn::make('category.name')
                     ->label('Categoría'),
                 TextColumn::make('collection.name')
-                    ->label('Coleccion'),
+                    ->label('Colección'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
