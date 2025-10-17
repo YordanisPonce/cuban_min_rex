@@ -37,6 +37,7 @@ class CollectionController extends Controller
                     'date' => $file->created_at,
                     'user' => $file->user->name,
                     'name' => $file->name,
+                    'bpm' => $file->bpm,
                     'collection' => $file->collection->name ?? null,
                     'category' => $file->collection->category->name ?? null,
                     'price' => $file->price,

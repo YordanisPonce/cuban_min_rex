@@ -125,9 +125,12 @@
                                             <div class="row py-2">
                                                 <div class="{{Auth::user()?->hasActivePlan() || !($file['price'] > 0) ? 'col-10 mb-3' : 'col-7 col-sm-8 mb-3'}}">
                                                     <span class="d-block w-100 text-nowrap overflow-hidden"
-                                                        style="text-overflow:ellipsis;">
+                                                            style="text-overflow:ellipsis;">
                                                         {{ $file['name'] }}
                                                     </span>
+                                                    <spam><strong>
+                                                        BPM: {{ $file['bpm'] ?? 'No definido' }}
+                                                    </strong></spam>
                                                 </div>
                                                 @auth
                                                     @if (!Auth::user()?->hasActivePlan() && ($file['price'] > 0))

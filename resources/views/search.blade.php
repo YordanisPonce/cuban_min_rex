@@ -47,7 +47,15 @@
                                     <td></td>
                                     <td>{{ $date }}</td>
                                     <td>{{ $file['user'] }}</td>
-                                    <td>{{ $file['name'] }}</td>
+                                    <td>
+                                        <span class="d-block w-100 text-nowrap overflow-hidden"
+                                                style="text-overflow:ellipsis;">
+                                            {{ $file['name'] }}
+                                        </span>
+                                        <spam><strong>
+                                            BPM: {{ $file['bpm'] ?? 'No definido' }}
+                                        </strong></spam>
+                                    </td>
                                     <td>{{ $file['collection'] }}</td>
                                     <td>{{ $file['category'] }}</td>
                                     @auth

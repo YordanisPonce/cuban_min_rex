@@ -13,6 +13,7 @@ class File extends Model
         'category_id',
         'user_id',
         'price',
+        'bpm',
         'file',
         'download_count',
     ];

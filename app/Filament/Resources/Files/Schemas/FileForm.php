@@ -20,7 +20,8 @@ class FileForm
                 Hidden::make('user_id')->default(Auth::user()->id),
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
                 Select::make('collection_id')
                     ->label('Selecciona una Colección')
                     ->options(function () {
@@ -51,6 +52,9 @@ class FileForm
                     ->label('Precio')
                     ->numeric()
                     ->prefix('$'),
+                TextInput::make('bpm')
+                    ->label('BPM')
+                    ->required(),
                 FileUpload::make('file')
                     ->label('Archivo Adjunto')
                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])

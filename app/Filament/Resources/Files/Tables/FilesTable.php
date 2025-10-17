@@ -22,6 +22,9 @@ class FilesTable
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
+                TextColumn::make('bpm')
+                    ->label('BPM')
+                    ->searchable(),
                 TextColumn::make('price')
                     ->label('Precio')
                     ->money()

@@ -40,6 +40,9 @@ class ListFiles extends ListRecords
                         ->label('Precio')
                         ->numeric()
                         ->prefix('$'),
+                    TextInput::make('bpm')
+                        ->label('BPM')
+                        ->required(),
                     Select::make('collection_id')
                         ->label('Selecciona una Colección')
                         ->options(function () {
@@ -74,6 +77,7 @@ class ListFiles extends ListRecords
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
                     $file->price = $data['price'] ?? 0;
+                    $file->bpm = $data['bpm'];
                     $file->save();
 
                     if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'zip'){
@@ -100,6 +104,7 @@ class ListFiles extends ListRecords
                                     $file->category_id = $data['category_id'];
                                     $file->user_id = Auth::user()->id;
                                     $file->price = $filePrice;
+                                    $file->bpm = $data['bpm'];
                                     $file->save();
                                 }
                             }
