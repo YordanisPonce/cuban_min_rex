@@ -7,6 +7,7 @@ use App\Livewire\DownloadsChart;
 use App\Livewire\FileDownloadWidget;
 use App\Livewire\SubscriptionChart;
 use App\Livewire\NewSubscriptionChart;
+use App\Livewire\SaleChart;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -48,8 +49,9 @@ class AdminPanelProvider extends PanelProvider
                 SubscriptionChart::class,
                 NewSubscriptionChart::class,
                 DownloadsChart::class,
+                SaleChart::class
             ])
-            ->plugins([ ])
+            ->plugins([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,
@@ -65,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->globalSearch(false);;
+            ->globalSearch(false);
+        ;
     }
 }
