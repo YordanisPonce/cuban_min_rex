@@ -161,4 +161,43 @@
             });
         }
     </script>
+    <script>
+        var swiper = new Swiper("#collections-demo-swiper", {
+            slidesPerView: 1,
+            spaceBetween: 20,
+
+            pagination: {
+                el: ".swiper-pagination",
+                clickable: true,
+            },
+
+            breakpoints: {
+
+                480: {
+                    slidesPerView: 2,
+                    spaceBetween: 20
+                },
+
+                1200: {
+                    slidesPerView: 3,
+                    spaceBetween: 20
+                },
+
+                1400: {
+                    slidesPerView: 4,
+                    spaceBetween: 20
+                },
+            },
+
+            navigation: {
+                nextEl: '#collections-demo-next',
+                prevEl: '#collections-demo-prev',
+            },
+
+            pagination: {
+                el: '.swiper-pagination',
+                type: 'bullets',
+            },
+        });
+    </script>
 @endpush
