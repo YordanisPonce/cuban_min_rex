@@ -1,9 +1,9 @@
 {{-- resources/views/partials/collection.blade.php --}}
 
-<section class="section-py bg-body landing-reviews pb-0 swiper" id="{{ $id }}">
+<section class="swiper pt-5" id="{{ $id }}">
     <div class="container" style="position: relative;">
-        <a href="{{ $ctaHref }}" class="link-underline d-none d-md-block" style="position: absolute; right: 16px">{{ $ctaText }} →</a>
-        <div class="row align-items-center gx-0 gy-4 g-lg-5 mb-5 pb-md-5 flex-lg-row-normal">
+        <a href="{{ $ctaHref }}" class="link-underline d-none d-md-block" style="position: absolute; right: 25px; top: 16px; z-index: 9999">{{ $ctaText }} →</a>
+        <div class="row align-items-center gx-0 gy-4 g-lg-5 flex-lg-row-normal">
             {{-- Columna de textos y controles --}}
             <div class="col-md-6 col-lg-5 col-xl-3">
                 <div class="mb-4 d-flex align-items-center justify-content-between">
@@ -38,7 +38,7 @@
             <div class="col-md-6 col-lg-7 col-xl-9">
                 <div class="swiper-reviews-carousel overflow-hidden">
                     <div class="swiper swiper-horizontal js-swiper" id="collections-{{ $id }}-swiper">
-                        <div class="swiper-wrapper" aria-live="off">
+                        <div class="swiper-wrapper mt-5 mb-5" aria-live="off">
                             @foreach ($items as $item)
                                 <div class="swiper-slide" style="width: 254px; margin-right: 26px;">
                                     <div class="card h-100 js-collection-card" role="button" tabindex="0"
@@ -47,7 +47,7 @@
                                             class="card-body text-body d-flex flex-column justify-content-between h-100">
                                             <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
                                                 <img src="{{ $item->image ? $item->image : asset('assets/img/front-pages/icon/collection.png') }}"
-                                                    alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
+                                                    alt="Synth Nights" class="w-100 rounded" style="max-height: 150px">
                                             </a>
                                             <div class="d-flex align-items-center">
                                                 <div class="avatar me-3 avatar-sm">
@@ -77,18 +77,11 @@
                                 </div>
                             @endforeach
                         </div>
-
-                        {{-- Flechas internas del swiper --}}
-                        <div class="swiper-button-next" tabindex="0" role="button" aria-label="Siguiente"></div>
-                        <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Anterior"></div>
-                        <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
-    <hr class="m-0 mt-6 mt-md-12">
 </section>
 
 @push('scripts')
