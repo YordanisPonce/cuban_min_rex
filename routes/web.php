@@ -19,7 +19,6 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 
-Route::group(['middleware' => 'softDeleted'], function () {
 
 
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -141,5 +140,5 @@ Route::group(['middleware' => 'softDeleted'], function () {
         // Descargar o servir el archivo desde disco 'public'
         return Storage::disk('public')->download($path);
     })->where('path', '.*')->name('public.files.download');
-});
+
 require __DIR__ . '/auth.php';
