@@ -96,15 +96,7 @@
                                                 href="{{ route('collection.download', $collection->id) }}">
                                                 {{ svg('entypo-download') }}
                                             </a>
-                                        @else
-                                            <a style="display:flex;width:20px" title="Comprar colección" href="#">
-                                                {{ svg('vaadin-cart') }}
-                                            </a>
                                         @endif
-                                    @else
-                                        <a style="display:flex;width:20px" title="Comprar colección" href="#">
-                                            {{ svg('vaadin-cart') }}
-                                        </a>
                                     @endauth
                                 </div>
                             </div>
@@ -123,17 +115,18 @@
                                     <div class="card mb-6">
                                         @foreach ($results as $file)
                                             <div class="row py-2">
-                                                <div class="{{Auth::user()?->hasActivePlan() || !($file['price'] > 0) ? 'col-10 mb-3' : 'col-7 col-sm-8 mb-3'}}">
+                                                <div
+                                                    class="{{ Auth::user()?->hasActivePlan() || !($file['price'] > 0) ? 'col-10 mb-3' : 'col-7 col-sm-8 mb-3' }}">
                                                     <span class="d-block w-100 text-nowrap overflow-hidden"
-                                                            style="text-overflow:ellipsis;">
+                                                        style="text-overflow:ellipsis;">
                                                         {{ $file['name'] }}
                                                     </span>
                                                     <spam><strong>
-                                                        BPM: {{ $file['bpm'] ?? 'No definido' }}
-                                                    </strong></spam>
+                                                            BPM: {{ $file['bpm'] ?? 'No definido' }}
+                                                        </strong></spam>
                                                 </div>
                                                 @auth
-                                                    @if (!Auth::user()?->hasActivePlan() && ($file['price'] > 0))
+                                                    @if (!Auth::user()?->hasActivePlan() && $file['price'] > 0)
                                                         <div class="col-3 col-sm-2">
                                                             <span class="d-block w-100 text-nowrap overflow-hidden"
                                                                 style="text-overflow:ellipsis;">
@@ -144,9 +137,11 @@
                                                     <div class="col-1">
                                                         @if (Auth::user()?->hasActivePlan() || !($file['price'] > 0))
                                                             <a style="display: flex; width: 20px"
-                                                                href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
+                                                                href="{{ route('file.download', $file['id']) }}">{{ svg('entypo-download') }}</a>
                                                         @else
-                                                            <a style="display: flex; width: 20px; cursor: pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                            <a style="display: flex; width: 20px; cursor: pointer"
+                                                                data-url="{{ route('file.pay', $file['id']) }}"
+                                                                onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                                         @endif
                                                     </div>
                                                 @else
@@ -158,19 +153,23 @@
                                                             </span>
                                                         </div>
                                                         <div class="col-1">
-                                                            <a style="display: flex; width: 20px; cursor: pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                            <a style="display: flex; width: 20px; cursor: pointer"
+                                                                data-url="{{ route('file.pay', $file['id']) }}"
+                                                                onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                                         </div>
                                                     @else
                                                         <div class="col-1">
                                                             <a style="display: flex; width: 20px"
-                                                                href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
+                                                                href="{{ route('file.download', $file['id']) }}">{{ svg('entypo-download') }}</a>
                                                         </div>
                                                     @endif
                                                 @endauth
                                                 <div class="col-1">
                                                     @if (!$file['isZip'])
-                                                    <a id="{{ $file['id'] }}" style="display: flex; width: 20px" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
-                                                            >{{ svg('vaadin-play') }}</a>
+                                                        <a id="{{ $file['id'] }}" style="display: flex; width: 20px"
+                                                            class="play-button cursor-pointer"
+                                                            data-url="{{ $file['url'] }}" data-state="pause"
+                                                            onclick="playAudio(this)">{{ svg('vaadin-play') }}</a>
                                                     @endif
                                                 </div>
                                             </div>
@@ -211,7 +210,7 @@
                                             {{-- Overlay + flecha de entrar --}}
                                             <div class="dark-screen"></div>
                                             <div class="enter-arrow" aria-hidden="true" title="Entrar a la colección">
-                                                <i class="ti tabler-arrow-right"></i> 
+                                                <i class="ti tabler-arrow-right"></i>
                                             </div>
                                         </a>
                                     </div>
@@ -231,7 +230,8 @@
                             <div class="card" style="position: relative">
                                 <h5 class="card-header d-block text-nowrap overflow-hidden"
                                     style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
-                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
+                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer"
+                                    onclick="stopVideo()">✖️</spam>
                                 <div class="card-body">
                                     <video class="w-100" id="plyr-video-player" oncontextmenu="return false;" playsinline>
                                     </video>
@@ -247,119 +247,120 @@
 @endsection
 
 @push('scripts')
-<script>
-    let currentAudio = null;
+    <script>
+        let currentAudio = null;
 
-    function stopCurrentAudio() {
-        if (currentAudio) {
-            currentAudio.pause();
-            currentAudio.currentTime = 0;
-            currentAudio = null;
+        function stopCurrentAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
         }
-    }
 
-    function stopVideo(){
-        document.getElementById('plyr-video-player').pause();
-        document.getElementById('video-player').style.display = 'none';
-    }
+        function stopVideo() {
+            document.getElementById('plyr-video-player').pause();
+            document.getElementById('video-player').style.display = 'none';
+        }
 
-    function playVideo(title){
-        document.getElementById('video-player').style.display = 'flex';
-        document.getElementById('video-title').innerHTML = title;
-        document.getElementById('plyr-video-player').play();
-    }
+        function playVideo(title) {
+            document.getElementById('video-player').style.display = 'flex';
+            document.getElementById('video-title').innerHTML = title;
+            document.getElementById('plyr-video-player').play();
+        }
 
-    function playAudio(element){
-        let audio = document.createElement('audio');
+        function playAudio(element) {
+            let audio = document.createElement('audio');
 
-        const rute = element.dataset.url;
-        
-        fetch(rute, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            track = data.filter(item => item.id === parseInt(element.id));
-            if(track[0].url.endsWith('.mp3')){
-                audio.src = track[0].url;
-                if(element.dataset.state == "pause"){
-                    stopCurrentAudio();
-                    document.querySelectorAll('.play-button').forEach(button => {
-                        if(button.dataset.state === "play" && button !== element){
-                            button.innerHTML = '{{ svg('vaadin-play') }}';
-                            button.dataset.state = "pause";
-                        }
-                    });
-                    currentAudio = audio;
-                    audio.play();
-                    element.innerHTML = '{{ svg('vaadin-pause') }}';
-                    element.dataset.state = "play";
-                } else {
-                    element.innerHTML = '{{ svg('vaadin-play') }}';
-                    stopCurrentAudio();
-                    element.dataset.state = "pause";
-                }
-                
-                audio.addEventListener('ended', () => {
-                    element.innerHTML = '{{ svg('vaadin-play') }}';
-                    element.dataset.state = "pause";
-                });
-            } else {
-                stopVideo();
-                stopCurrentAudio();
-                document.querySelectorAll('.play-button').forEach(button => {
-                    if(button.dataset.state === "play" && button !== element){
-                        button.innerHTML = '{{ svg('vaadin-play') }}';
-                        button.dataset.state = "pause";
+            const rute = element.dataset.url;
+
+            fetch(rute, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
                     }
-                });
-                document.getElementById('plyr-video-player').src = track[0].url;
-                playVideo(track[0].title);
-            }
-        })
-        .catch(error => {
-            Swal.fire("Error", error.message, "error");
-        });
-    }
-
-    function proccessPayment(rute) {
-        Swal.fire({
-            title: '¿Proceder con el pago?',
-            text: "Serás redirigido a Stripe para completar tu pago.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Sí, continuar',
-            cancelButtonText: 'Cancelar'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                document.querySelector('#loader').style.display = 'flex';
-                fetch(rute)
-                    .then(async res => {
-                        let data;
-                        
-                        try {
-                            data = await res.json();
-                        } catch {
-                            document.querySelector('#loader').style.display = 'none';
-                            throw new Error("Respuesta inesperada del servidor");
-                        }
-
-                        if (res.ok && data.url) {
-                            window.location.href = data.url;
+                })
+                .then(response => response.json())
+                .then(data => {
+                    track = data.filter(item => item.id === parseInt(element.id));
+                    if (track[0].url.endsWith('.mp3')) {
+                        audio.src = track[0].url;
+                        if (element.dataset.state == "pause") {
+                            stopCurrentAudio();
+                            document.querySelectorAll('.play-button').forEach(button => {
+                                if (button.dataset.state === "play" && button !== element) {
+                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.dataset.state = "pause";
+                                }
+                            });
+                            currentAudio = audio;
+                            audio.play();
+                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.dataset.state = "play";
                         } else {
-                            document.querySelector('#loader').style.display = 'none';
-                            Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago", "error");
+                            element.innerHTML = '{{ svg('vaadin-play') }}';
+                            stopCurrentAudio();
+                            element.dataset.state = "pause";
                         }
-                    })
-                    .catch(err => {
-                        document.querySelector('#loader').style.display = 'none';
-                        Swal.fire("Error", err.message, "error");
-                    });
-            }
-        });
-    }
-</script>
+
+                        audio.addEventListener('ended', () => {
+                            element.innerHTML = '{{ svg('vaadin-play') }}';
+                            element.dataset.state = "pause";
+                        });
+                    } else {
+                        stopVideo();
+                        stopCurrentAudio();
+                        document.querySelectorAll('.play-button').forEach(button => {
+                            if (button.dataset.state === "play" && button !== element) {
+                                button.innerHTML = '{{ svg('vaadin-play') }}';
+                                button.dataset.state = "pause";
+                            }
+                        });
+                        document.getElementById('plyr-video-player').src = track[0].url;
+                        playVideo(track[0].title);
+                    }
+                })
+                .catch(error => {
+                    Swal.fire("Error", error.message, "error");
+                });
+        }
+
+        function proccessPayment(rute) {
+            Swal.fire({
+                title: '¿Proceder con el pago?',
+                text: "Serás redirigido a Stripe para completar tu pago.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.querySelector('#loader').style.display = 'flex';
+                    fetch(rute)
+                        .then(async res => {
+                            let data;
+
+                            try {
+                                data = await res.json();
+                            } catch {
+                                document.querySelector('#loader').style.display = 'none';
+                                throw new Error("Respuesta inesperada del servidor");
+                            }
+
+                            if (res.ok && data.url) {
+                                window.location.href = data.url;
+                            } else {
+                                document.querySelector('#loader').style.display = 'none';
+                                Swal.fire("Error", data.error ?? "No se pudo generar la sesión de pago",
+                                    "error");
+                            }
+                        })
+                        .catch(err => {
+                            document.querySelector('#loader').style.display = 'none';
+                            Swal.fire("Error", err.message, "error");
+                        });
+                }
+            });
+        }
+    </script>
 @endpush
