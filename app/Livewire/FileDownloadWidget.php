@@ -37,11 +37,7 @@ class FileDownloadWidget extends BaseWidget
             Stat::make('Cantidad de Ventas', $salesCount),
             Stat::make('Archivo más descargado', '')
                 ->extraAttributes(['class' => 'max-w-full']) // ancho contenedor
-                ->description(new HtmlString("
-                <div class=\"truncate\" title=\" $fileMoreDownload\">
-              $fileMoreDownload
-                </div>
-                ")),
+                ->description($this->ellipsis($fileMoreDownload, 40)),
             //  Stat::make('Archivo más descargado', $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido'),
             Stat::make('Colección más descargada', $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido'),
         ];
@@ -51,5 +47,13 @@ class FileDownloadWidget extends BaseWidget
         }
 
         return $stats;
+    }
+    public function ellipsis(string $text, int $limit = 40): string
+    {
+        $text = trim($text);
+        if (mb_strlen($text, 'UTF-8') <= $limit) {
+            return $text;
+        }
+        return rtrim(mb_substr($text, 0, $limit - 3, 'UTF-8')) . '...';
     }
 }
