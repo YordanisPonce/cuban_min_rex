@@ -10,6 +10,7 @@ use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\HtmlString;
 
 class FileDownloadWidget extends BaseWidget
 {
@@ -29,18 +30,19 @@ class FileDownloadWidget extends BaseWidget
         $totalEarningsAtSales = (float) Auth()->user()->paidSaleLiquidation();
         $totalEarning = (float) ($totalEarningsAtSubscription + $totalEarningsAtSales);
 
-        $downloadName = $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido';
+        $fileMoreDownload = $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido';
         $stats = [
             Stat::make('Cantidad de Descargas', $downloadCounts),
             Stat::make('Ganancia Total', '$ ' . $totalEarning),
             Stat::make('Cantidad de Ventas', $salesCount),
             Stat::make('Archivo más descargado', '')
                 ->extraAttributes(['class' => 'max-w-full']) // ancho contenedor
-                ->description("
-                <div class=\"truncate\" title=\"$downloadName\">
-                    $downloadName
+                ->description(new HtmlString("
+                <div class=\"truncate\" title=\" $fileMoreDownload\">
+              $fileMoreDownload
                 </div>
-                "),
+                ")),
+            //  Stat::make('Archivo más descargado', $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido'),
             Stat::make('Colección más descargada', $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido'),
         ];
 
