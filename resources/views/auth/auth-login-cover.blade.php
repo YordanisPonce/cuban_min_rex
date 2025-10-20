@@ -91,7 +91,7 @@
         <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
             <span class="app-brand-logo demo">
                 <span class="text-primary">
-                    <img src="{{ asset('assets/img/favicon/icon.png') }}" alt="{{ config('app.name') }}"
+                    <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
                 </span>
             </span>
