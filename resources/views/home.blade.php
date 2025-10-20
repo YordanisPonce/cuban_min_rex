@@ -2,12 +2,34 @@
 
 @section('title', 'Inicio – Cuban Mix Rex')
 
+@push('styles')
+<style> 
+    body {
+        /* The image used */
+        background-image: url("{{ asset('assets/img/front-pages/backgrounds/bg-main.PNG') }}");
+        background-color: rgba( 0, 0, 0, 0.5) !important;
+
+        background-blend-mode: darken;
+
+        /* Create the parallax scrolling effect */
+        background-attachment: fixed;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+    }
+
+    .bg-body{
+        background-color: transparent !important;
+    }
+</style>
+@endpush
+
 @section('content')
 
     {{-- =========================
        HERO compacto
     ========================== --}}
-    <section id="hero" class="py-6 py-lg-7 bg-body" style="margin-top: 125px;">
+    <section id="hero" class="py-6 py-lg-7" style="margin-top: 125px;">
         <div class="container">
             <div class="row align-items-center g-5">
                 <div class="col-lg-6">
@@ -43,7 +65,7 @@
        RECOMENDADO
     ========================== --}}
     @auth
-    <section id="home-recommended" class="section-py bg-body">
+    <section id="home-recommended" class="section-py">
 
         @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
 
@@ -90,7 +112,7 @@
     {{-- =========================
        NUEVOS LANZAMIENTOS
     ========================== --}}
-    <section id="home-new" class="section-py bg-body">
+    <section id="home-new" class="section-py">
 
         @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
 
@@ -134,7 +156,7 @@
     {{-- =========================
        COLECCIONES DE ARTISTAS
     ========================== --}}
-    <section id="home-collections" class="section-py bg-body">
+    <section id="home-collections" class="section-py">
 
         @php $hasArtists = isset($artistCollections) && count($artistCollections) > 0; @endphp
 
@@ -178,7 +200,7 @@
     {{-- =========================
        GÉNEROS POPULARES
     ========================== --}}
-    <section id="home-genres" class="section-py bg-body">
+    <section id="home-genres" class="section-py">
         <div class="container">
             <div class="d-flex align-items-end justify-content-between mb-3">
                 <div>
@@ -196,10 +218,12 @@
         </div>
     </section>
 
+    <hr class="m-0 mt-6 mt-md-12">
+    
     {{-- =========================
        PLANES
     ========================== --}}
-    <section id="home-pricing" class="section-py bg-body landing-pricing">
+    <section id="home-pricing" class="section-py landing-pricing">
         <div class="container">
             <div class="text-center mb-3">
                 <span class="badge bg-label-primary">Planes de suscripción</span>
@@ -264,3 +288,11 @@
         </div>
     </section>
 @endsection
+
+@push('scripts')
+<script>
+    window.addEventListener('DOMContentLoaded', function() {
+        document.body.classList.remove('bg-body');
+    })
+</script>
+@endpush
