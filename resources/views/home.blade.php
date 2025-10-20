@@ -6,10 +6,7 @@
 <style> 
     body {
         /* The image used */
-        background-image: url("{{ asset('assets/img/front-pages/backgrounds/bg-main.PNG') }}");
-        background-color: rgba( 0, 0, 0, 0.5) !important;
-
-        background-blend-mode: darken;
+        background-image: linear-gradient(rgba(0,0,0,.9), rgba(0,0,0,.9)),url("{{ asset('assets/img/front-pages/backgrounds/bg-main.PNG') }}");
 
         /* Create the parallax scrolling effect */
         background-attachment: fixed;
@@ -53,8 +50,9 @@
 
                 <div class="col-lg-6">
                     <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
-                        <img src="{{ asset('assets/img/dj-portada.png') }}" alt="Arte destacado"
+                        <img src="{{ asset('assets/img/front-pages/backgrounds/bg-main.PNG') }}" alt="Arte destacado"
                             class="w-100 h-100 object-fit-cover">
+                        <div class="dark-screen" style="opacity: 0.5;"></div>
                     </div>
                 </div>
             </div>
@@ -219,7 +217,7 @@
     </section>
 
     <hr class="m-0 mt-6 mt-md-12">
-    
+
     {{-- =========================
        PLANES
     ========================== --}}
