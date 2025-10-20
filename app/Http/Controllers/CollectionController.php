@@ -119,16 +119,12 @@ class CollectionController extends Controller
 
     public function news()
     {
-        $collections = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
+        $collections = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->paginate(12);
         $categories = Category::where('show_in_landing', true)->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-            return $item->files()->count() > 0;
-        });
-
-        $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;
         });
 
@@ -139,16 +135,12 @@ class CollectionController extends Controller
 
     public function recommended()
     {
-        $collections = Collection::orderBy('created_at', 'desc')->get();
+        $collections = Collection::orderBy('created_at', 'desc')->paginate(12);
         $categories = Category::where('show_in_landing', true)->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-            return $item->files()->count() > 0;
-        });
-
-        $collections = $collections->filter(function ($item) {
             return $item->files()->count() > 0;
         });
 
