@@ -32,6 +32,10 @@ class PlansTable
                     ->label('Meses de duración')
                     ->numeric()
                     ->sortable(),
+                TextColumn::make('downloads')
+                    ->label('Descargas Mensuales')
+                    ->numeric()
+                    ->sortable(),
                 ImageColumn::make('image')
                     ->label('Image')
                     ->disk('public')

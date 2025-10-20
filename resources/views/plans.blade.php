@@ -52,6 +52,14 @@
                                     </ul>
                                 @endif
 
+                                @if ($plan->downloads)
+                                    <ul class="list-unstyled small text-body mb-4">
+                                        <li class="mb-2 d-flex">
+                                            <i class="ti tabler-check me-2"></i>Descargas al mes: {{ $plan->downloads }}
+                                        </li>
+                                    </ul>
+                                @endif
+
                                 <div class="mt-auto">
                                     @auth
                                         @if ($isActive)

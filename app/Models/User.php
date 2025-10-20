@@ -272,5 +272,9 @@ class User extends Authenticatable implements FilamentUser
         }
         return $totalPaid;
     }
+
+    public function getCurrentMonthDownloads() {
+        return $this->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+    }
 }
 

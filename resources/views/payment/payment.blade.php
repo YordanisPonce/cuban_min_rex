@@ -9,8 +9,8 @@
 @section('content')
 
     <!-- Sección de Checkout -->
-    <section class="section-py bg-body first-section-pt">
-        <div class="container">
+    <section class="section-py bg-body mt-10 mt-md-1">
+        <div class="container mt-5">
             <div class="card px-3">
                 <div class="row">
                     <!-- Detalles de Facturación -->
@@ -154,7 +154,9 @@
                             @isset($planId)
                                 @foreach($plans as $plan)
                                     @if($plan->id == $planId)
+                                        <h3>{{$plan->name}}</h3>
                                         <p>{{$plan->description}}</p>
+                                        <p>Cantidad de descargas: {{$plan->downloads}}</p>
                                         <div class="d-flex align-items-center mb-4">
                                             <h1 class="text-heading mb-0">$ {{$plan->price}}</h1>
                                             <sub class="h6 text-body mb-n3">/mes</sub>

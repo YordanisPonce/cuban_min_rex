@@ -106,6 +106,31 @@
                                             <small>{{ Auth::user()->planExpirationDays()->days }} días restantes hasta que
                                                 tu plan requiera actualización</small>
                                         </div>
+                                        <div class="plan-statistics">
+                                            <div class="d-flex justify-content-between">
+                                                <h6 class="mb-1">Descargas Realizadas</h6>
+                                                <h6 class="mb-1">
+                                                    {{ Auth::user()->getCurrentMonthDownloads() }}
+                                                    de {{ Auth::user()->currentPlan->downloads }} este mes.</h6>
+                                            </div>
+                                            <div class="progress rounded mb-1">
+                                                @php
+                                                    $percent =
+                                                        Auth::user()->currentPlan->downloads > 0
+                                                            ? Auth::user()->getCurrentMonthDownloads() /
+                                                                    Auth::user()->currentPlan->downloads *
+                                                                100
+                                                            : '100';
+                                                @endphp
+                                                <div class="progress-bar rounded" style="width: {{ $percent }}%"
+                                                    role="progressbar"
+                                                    aria-valuenow="{{ Auth::user()->getCurrentMonthDownloads() }}"
+                                                    aria-valuemin="0"
+                                                    aria-valuemax="{{ Auth::user()->currentPlan->downloads }}">
+                                                </div>
+                                            </div>
+                                            <small>{{ Auth::user()->currentPlan->downloads - Auth::user()->getCurrentMonthDownloads() }} días restantes este mes.</small>
+                                        </div>
                                     </div>
                                     <div class="col-12 d-flex gap-2 flex-wrap">
                                         <button class="btn btn-primary me-2" data-bs-toggle="modal"
@@ -311,21 +336,16 @@
                 <div class="modal-body">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     <!-- Pricing Plans -->
-                    <div class="rounded-top">
-                        <div class="text-center mb-4">
-                            <span class="badge bg-label-primary">🎶 Planes de Suscripción</span>
+                    <div class="container mt-5">
+                        <div class="text-center mb-3">
+                            <span class="badge bg-label-primary">Planes de suscripción</span>
                         </div>
-                        <h4 class="text-center mb-1">
-                            <span class="position-relative fw-extrabold z-1">
-                                Elige tu plan musical ideal
-                            </span>
-                        </h4>
-                        <p class="text-center pb-2 mb-7">
-                            Disfruta de toda la música que amas, con beneficios que se adaptan a ti. 🎧<br>
-                            <!-- Paga mensual o ahorra con el plan anual  -->
+                        <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
+                        <p class="text-center text-body-secondary mb-6">
+                            Disfruta sin límites con beneficios a tu medida.
                         </p>
 
-                        <div class="row gy-6">
+                        <div class="row gy-4">
                             @foreach ($plans as $plan)
                                 @php
                                     $isActive =
@@ -334,48 +354,48 @@
                                         auth()->user()->hasActivePlan();
                                 @endphp
                                 <div class="col-xl-4 col-lg-6">
-                                    <div class="{{ $isActive ? 'card border border-primary shadow-xl' : 'card' }}">
-                                        <div class="card-header">
-                                            <div class="text-center">
-                                                <img src="{{ $plan->image }}" alt="paper airplane icon"
-                                                    class="mb-8 pb-2 w-25" />
-                                                <h4 class="mb-0">{{ $plan->name }}</h4>
-                                                <div class="d-flex align-items-center justify-content-center">
-                                                    <span class="price-monthly h2 text-primary fw-extrabold mb-0">$
-                                                        {{ $plan->price_formatted }}</span>
-                                                    <!-- <span class="price-yearly h2 text-primary fw-extrabold mb-0 d-none">$ {{ $plan->price_formatted * 0.75 }}</span> -->
-                                                    <sub class="h6 text-body-secondary mb-n1 ms-1">
-                                                        {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
-                                                    </sub>
-                                                </div>
-                                                <!-- <div class="position-relative pt-2">
-                                                    <div class="price-yearly text-body-secondary price-yearly-toggle d-none">$ {{ $plan->price_formatted * 12 * 0.75 }} / año</div>
-                                                    </div> -->
+                                    <div class="card h-100">
+                                        <div class="card-header text-center">
+                                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}" class="mb-4"
+                                                style="width:64px;height:64px;object-fit:contain;">
+                                            <h4 class="mb-1">{{ $plan->name }}</h4>
+                                            <div class="d-flex align-items-center justify-content-center">
+                                                <span class="h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
+                                                <sub class="h6 text-body-secondary mb-n1 ms-1">
+                                                    {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
+                                                </sub>
                                             </div>
                                         </div>
-                                        <div class="card-body">
+
+                                        <div class="card-body d-flex flex-column">
                                             @if ($plan->description)
-                                                <ul class="list-unstyled pricing-list">
-                                                    <li>
-                                                        <h6 class="d-flex align-items-center mb-3">
-                                                            <span
-                                                                class="badge badge-center rounded-pill bg-label-primary p-0 me-3"><i
-                                                                    class="icon-base ti tabler-check icon-12px"></i></span>
-                                                            {{ $plan->description }}
-                                                        </h6>
+                                                <ul class="list-unstyled small text-body mb-4">
+                                                    <li class="mb-2 d-flex">
+                                                        <i class="ti tabler-check me-2"></i> {{ $plan->description }}
                                                     </li>
                                                 </ul>
                                             @endif
-                                            <div class="d-grid mt-8">
+
+                                            @if ($plan->downloads)
+                                                <ul class="list-unstyled small text-body mb-4">
+                                                    <li class="mb-2 d-flex">
+                                                        <i class="ti tabler-check me-2"></i>Descargas al mes: {{ $plan->downloads }}
+                                                    </li>
+                                                </ul>
+                                            @endif
+
+                                            <div class="mt-auto">
                                                 @auth
                                                     @if ($isActive)
-                                                        <button class="btn btn-secondary" disabled>Ya lo tienes</button>
+                                                        <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
                                                     @else
                                                         <a href="{{ route('payment.form', $plan->id) }}"
-                                                            class="btn btn-label-primary">Adquirir Plan</a>
+                                                            class="btn btn-label-primary w-100">
+                                                            Adquirir plan
+                                                        </a>
                                                     @endif
                                                 @else
-                                                    <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                                                    <a href="{{ route('login') }}" class="btn btn-outline-primary w-100">
                                                         Inicia sesión para comprar
                                                     </a>
                                                 @endauth

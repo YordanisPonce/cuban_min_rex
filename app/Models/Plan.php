@@ -16,6 +16,7 @@ class Plan extends Model
         'price',
         'description',
         'duration_months',
+        'downloads',
         'is_recommended',
         'image',
     ];

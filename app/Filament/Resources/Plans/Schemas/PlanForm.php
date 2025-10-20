@@ -34,6 +34,11 @@ class PlanForm
                     ->required()
                     ->numeric()
                     ->default(1),
+                TextInput::make('downloads')
+                    ->label('Descargas Mensuales')
+                    ->required()
+                    ->numeric()
+                    ->default(1),
                 Toggle::make('is_recommended')
                     ->required()
                     ->label('Recomendado')
@@ -54,8 +59,7 @@ class PlanForm
                     ->label('Subir Foto')
                     ->required()
                     ->disk('s3')
-                    ->directory('images') 
-                    ->preserveFilenames(),
+                    ->directory('images'),
             ]);
     }
 }
