@@ -17,9 +17,9 @@ class FileController extends Controller
 
         $file = File::find($id);
 
-        $path = storage_path('app/public/' . $file->file);
+        $path = \Storage::disk('s3')->url($file->url ?? $file->file);
 
-        if (!file_exists($path)) {
+        if (!Storage::disk('s3')->exists($path)) {
             abort(404);
         }
 
@@ -40,7 +40,7 @@ class FileController extends Controller
         $track = $file->get()
             ->map(fn($f) => [
                 'id' => $f->id,
-                'url' => \Storage::disk('public')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'url' => \Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
                 'title' => $f->title ?? $f->name,
             ]);
 

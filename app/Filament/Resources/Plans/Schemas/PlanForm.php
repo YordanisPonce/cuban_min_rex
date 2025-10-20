@@ -53,7 +53,7 @@ class PlanForm
                     ->avatar()
                     ->label('Subir Foto')
                     ->required()
-                    ->disk('public')
+                    ->disk('s3')
                     ->directory('images') 
                     ->preserveFilenames(),
             ]);

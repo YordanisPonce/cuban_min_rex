@@ -9,6 +9,7 @@ use App\Models\File;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Storage;
 use ZipArchive;
 
 class CollectionController extends Controller
@@ -30,7 +31,7 @@ class CollectionController extends Controller
             ->with(['collection'])
             ->get()
             ->map(function ($file) {
-                $isZip = pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION)  === 'zip';
+                $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION)  === 'zip';
 
                 return [
                     'id' => $file->id,
@@ -67,12 +68,12 @@ class CollectionController extends Controller
         $files = File::where('collection_id', $id)->get();
 
         $files = $files->filter(function ($item) {
-            return pathinfo('storage/public/files/' . $item->file, PATHINFO_EXTENSION) !== 'zip';
+            return pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) !== 'zip';
         });
 
         foreach ($files as $file) {
-            $path = storage_path('app/public/' . $file->file);
-            if (file_exists($path)) {
+            $path = Storage::disk('s3')->url($file->url ?? $file->file);
+            if (Storage::disk('s3')->exists($path)) {
                 $zip->addFile($path, basename($path));
             } else {
                 return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
@@ -172,7 +173,7 @@ class CollectionController extends Controller
             ->orderBy('id')
             ->get(['file as url', 'name as title'])
             ->map(fn($f) => [
-                'url' => \Storage::disk('public')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'url' => \Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
                 'title' => $f->title ?? $f->name,
             ]);
 

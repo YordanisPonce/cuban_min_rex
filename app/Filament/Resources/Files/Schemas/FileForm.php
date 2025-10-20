@@ -59,7 +59,7 @@ class FileForm
                     ->label('Archivo Adjunto')
                     ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])
                     ->required()
-                    ->disk('public')
+                    ->disk('s3')
                     ->directory('files')
                     ->downloadable()
                     ->columnSpanFull(),

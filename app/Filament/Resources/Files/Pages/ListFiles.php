@@ -31,7 +31,7 @@ class ListFiles extends ListRecords
                         ->label('Cargar archivo')
                         ->acceptedFileTypes(['audio/mpeg', 'video/mp4', 'video/avi','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
-                        ->disk('public')
+                        ->disk('s3')
                         ->directory('files')
                         ->downloadable()
                         ->preserveFilenames()
@@ -71,7 +71,7 @@ class ListFiles extends ListRecords
                         ->default(fn($get) => $get('dinamic_category_id')),
                 ])->action(function (array $data): void {
                     $file = new File();
-                    $file->name = basename('public/files' . $data['file']);
+                    $file->name = basename( Storage::disk('s3')->url($data['file']));
                     $file->file = $data['file'];
                     $file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
@@ -80,9 +80,9 @@ class ListFiles extends ListRecords
                     $file->bpm = $data['bpm'];
                     $file->save();
 
-                    if(pathinfo('storage/public/files/' . $file->file, PATHINFO_EXTENSION) === 'zip'){
+                    if(pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip'){
                         $zip = new ZipArchive;
-                        $path = storage_path('app/public/' . $file->file);
+                        $path = Storage::disk('s3')->url($file->url ?? $file->file);
 
                         if ($zip->open($path) === TRUE) {
 
@@ -96,7 +96,7 @@ class ListFiles extends ListRecords
 
                             foreach ($files as $f) {
                                 if ($f !== '.' && $f !== '..') {
-                                    Storage::disk('public')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
+                                    Storage::disk('s3')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
                                     $file = new File();
                                     $file->name = $f;
                                     $file->file = 'files/' . $f;

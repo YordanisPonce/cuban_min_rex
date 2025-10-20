@@ -30,7 +30,7 @@ class CollectionForm
                 FileUpload::make('image')
                     ->label('Subir Foto')
                     ->image()
-                    ->disk('public')
+                    ->disk('s3')
                     ->directory('images') 
                     ->preserveFilenames(),
             ]);

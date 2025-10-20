@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SearchController extends Controller
 {
@@ -30,7 +31,7 @@ class SearchController extends Controller
             ->paginate(10);
 
         $results->getCollection()->transform(function ($file) {
-            $isZip = pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION) === 'zip';
+            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
             return [
                 'id' => $file->id,
                 'date' => $file->created_at,

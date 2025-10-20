@@ -35,7 +35,7 @@ class Collection extends Model
     {
 
         return Attribute::make(
-            get: fn($item) => $item ? Storage::disk('public')->url($item) : $item
+            get: fn($item) => $item ? Storage::disk('s3')->url($item) : $item
         );
     }
 }

@@ -10,6 +10,7 @@ use App\Models\User;
 use App\Notifications\ContactNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
 {
@@ -91,7 +92,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        $djs = User::whereNot('role', 'user')->paginate(10);
+        $djs = User::where('role', 'worker')->paginate(10);
 
         return view('djs', compact('djs','categories', 'recentCategories', 'recentCollections'));
     }
@@ -128,7 +129,7 @@ class HomeController extends Controller
         $results = File::paginate(10);
 
         $results->getCollection()->transform(function ($file) {
-            $isZip = pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION) === 'zip';
+            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
             return [
                 'id' => $file->id,
                 'date' => $file->created_at,
@@ -140,7 +141,7 @@ class HomeController extends Controller
                 'price' => $file->price,
                 'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
                 'isZip' => $isZip,
-                'ext' => pathinfo('storage/public/files/'.$file->file, PATHINFO_EXTENSION),
+                'ext' => pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION),
             ];
         });
 

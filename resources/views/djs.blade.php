@@ -47,6 +47,7 @@
             </ul>
         </nav>
     @else
+    <section class="section-py">
         <div class="container">
             <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                 <h3 class="h5 fw-bold mb-2">Aún no tenemos Djs destacados</h3>
@@ -54,6 +55,7 @@
                 <a href="{{ route('home') }}" class="btn btn-label-primary">Regresar</a>
             </div>
         </div>
+    </section>
     @endif
 </section>
 @endsection
