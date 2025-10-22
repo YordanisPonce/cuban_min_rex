@@ -18,6 +18,12 @@
     .bg-body{
         background-color: transparent !important;
     }
+
+    @media (max-width: 500px) {
+        body{
+            background-image: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.75)),url("{{ asset('assets/img/front-pages/backgrounds/bg-mobile.PNG') }}");
+        }
+    }
 </style>
 @endpush
 
