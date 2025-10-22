@@ -198,6 +198,7 @@
         .then(response => response.json())
         .then(data => {
             track = data.filter(item => item.id === parseInt(element.id));
+            console.log(track[0].url);
             if(track[0].url.endsWith('.mp3')){
                 audio.src = track[0].url;
                 if(element.dataset.state == "pause"){

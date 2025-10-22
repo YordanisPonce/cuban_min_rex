@@ -47,10 +47,16 @@ class FileController extends Controller
     public function play(string $collectionId, string $id)
     {
         $file = File::find($id);
+        $path = Storage::disk('s3')->url($file->file);
+        try{
+            Storage::disk('s3')->exists($path);
+        } catch (\Throwable $th) {
+            $path = env('AWS_URL').'/'.env('AWS_BUCKET').'/'.$file->file;
+        }
         $track = $file->get()
             ->map(fn($f) => [
                 'id' => $f->id,
-                'url' => \Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'url' => $path,
                 'title' => $f->title ?? $f->name,
             ]);
 
@@ -87,7 +93,7 @@ class FileController extends Controller
             Stripe::setApiKey(config('services.stripe.secret_key'));
 
             // URL temporal al archivo
-            $urlTemporal = Storage::disk('public')->temporaryUrl($file->file, now()->addHour());
+            $urlTemporal = Storage::disk('s3')->temporaryUrl($file->file, now()->addHour());
 
             // Monto en centavos
             $amountInCents = (int) round($price * 100);
