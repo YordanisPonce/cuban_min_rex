@@ -18,7 +18,7 @@ class FileController extends Controller
         if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan()) {
             $plan = auth()->user()->currentPlan();
 
-            if(auth()->user()->getCurrentMonthDownloads() <= $plan->downloads){
+            if (auth()->user()->getCurrentMonthDownloads() <= $plan->downloads) {
                 $file = File::find($id);
 
                 $path = \Storage::disk('s3')->url($file->url ?? $file->file);
@@ -34,10 +34,10 @@ class FileController extends Controller
                 $download->user_id = auth()->user()->id;
                 $download->file_id = $file->id;
                 $download->save();
-                
+
                 return Response::download($path);
             }
-            
+
             return response()->json([
                 'error' => 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'
             ], 422);
@@ -47,16 +47,10 @@ class FileController extends Controller
     public function play(string $collectionId, string $id)
     {
         $file = File::find($id);
-        $path = Storage::disk('s3')->url($file->file);
-        try{
-            Storage::disk('s3')->exists($path);
-        } catch (\Throwable $th) {
-            $path = env('AWS_URL').'/'.env('AWS_BUCKET').'/'.$file->file;
-        }
         $track = $file->get()
             ->map(fn($f) => [
                 'id' => $f->id,
-                'url' => $path,
+                'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
                 'title' => $f->title ?? $f->name,
             ]);
 
