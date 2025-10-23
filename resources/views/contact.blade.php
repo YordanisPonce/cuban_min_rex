@@ -30,7 +30,7 @@
             <div class="col-lg-5">
                 <div class="contact-img-box position-relative border p-2 h-100">
                     <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/contact-border.png" alt="contact border" class="contact-border-img position-absolute d-none d-lg-block scaleX-n1-rtl">
-                    <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/landing-page/contact-customer-service.png" alt="contact customer service" class="contact-img w-100 scaleX-n1-rtl">
+                    <img src="{{ asset('assets/img/front-pages/landing-page/contact-form.jpeg') }}" alt="contact customer service" class="contact-img w-100 scaleX-n1-rtl">
                     <div class="p-4 pb-2">
                         <div class="row g-4">
                             <div class="col-md-6 col-lg-12 col-xl-6">
