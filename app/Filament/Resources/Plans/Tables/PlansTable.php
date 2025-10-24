@@ -17,6 +17,11 @@ class PlansTable
     {
         return $table
             ->columns([
+                ImageColumn::make('image')
+                    ->circular()
+                    ->label('Image')
+                    ->disk('s3')
+                    ->url(fn($record) => $record?->image),
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
@@ -36,10 +41,6 @@ class PlansTable
                     ->label('Descargas Mensuales')
                     ->numeric()
                     ->sortable(),
-                ImageColumn::make('image')
-                    ->label('Image')
-                    ->disk('public')
-                    ->url(fn($record) => $record?->image),
                 IconColumn::make('is_recommended')
                     ->label('Recomendado')
                     ->boolean(),

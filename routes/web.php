@@ -138,7 +138,7 @@ use Illuminate\Support\Facades\Storage;
             abort(403);
         }
         // Descargar o servir el archivo desde disco 'public'
-        return Storage::disk('public')->download($path);
+        return Storage::disk('s3')->download($path);
     })->where('path', '.*')->name('public.files.download');
 
 require __DIR__ . '/auth.php';
