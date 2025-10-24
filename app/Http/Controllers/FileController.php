@@ -21,7 +21,7 @@ class FileController extends Controller
             if (auth()->user()->getFileCurrentMonthDownloads($id) <= $plan->downloads) {
                 $file = File::find($id);
 
-                $path = \Storage::disk('s3')->url($file->url ?? $file->file);
+                $path = $file->url ?? $file->file;
 
                 if (!Storage::disk('s3')->exists($path)) {
                     abort(404);
