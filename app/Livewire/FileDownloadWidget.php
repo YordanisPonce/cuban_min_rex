@@ -35,8 +35,6 @@ class FileDownloadWidget extends BaseWidget
             Stat::make('Cantidad de Descargas', $downloadCounts),
             Stat::make('Ganancia Total', '$ ' . $totalEarning),
             Stat::make('Cantidad de Ventas', $salesCount),
-            Stat::make('Archivo más descargado', $this->ellipsis($fileMoreDownload, 40)),
-            //  Stat::make('Archivo más descargado', $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido'),
             Stat::make('Colección más descargada', $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido'),
         ];
 

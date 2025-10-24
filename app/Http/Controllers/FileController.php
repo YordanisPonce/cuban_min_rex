@@ -15,13 +15,13 @@ class FileController extends Controller
     public function download(string $id)
     {
 
-        if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan()) {
+        if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
             $plan = auth()->user()->currentPlan;
 
             if (auth()->user()->getFileCurrentMonthDownloads($id) <= $plan->downloads) {
                 $file = File::find($id);
 
-                $path = $file->url ?? $file->file;
+                $path = $file->file;
 
                 if (!Storage::disk('s3')->exists($path)) {
                     abort(404);
@@ -34,14 +34,18 @@ class FileController extends Controller
                 $download->user_id = auth()->user()->id;
                 $download->file_id = $file->id;
                 $download->save();
-
-                return Response::download(Storage::disk('s3')->url($path));
+                $downloadName = basename($path);
+                return Storage::disk('s3')->download($path, $downloadName);
             }
 
             return response()->json([
                 'error' => 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'
             ], 422);
         }
+
+        return response()->json([
+            'error' => 'Usted no tiene permisos para descargar el archivo seleccionado'
+        ], 422);
     }
 
     public function play(string $collectionId, string $id)
