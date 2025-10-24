@@ -8,6 +8,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Plan;
+use Filament\Forms\Components\RichEditor;
 
 class PlanForm
 {
@@ -25,7 +26,7 @@ class PlanForm
                     ->required()
                     ->numeric()
                     ->prefix('$'),
-                Textarea::make('description')
+                RichEditor::make('description')
                     ->label('Descripción')
                     ->required()
                     ->columnSpanFull(),

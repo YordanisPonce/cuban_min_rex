@@ -3,8 +3,8 @@
 @section('title', 'Página de Planes')
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
-<link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
 @endpush
 
 @section('content')
@@ -38,27 +38,25 @@
                                 <div class="d-flex align-items-center justify-content-center">
                                     <span class="h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
                                     <sub class="h6 text-body-secondary mb-n1 ms-1">
-                                        {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
+                                        {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
                                     </sub>
                                 </div>
                             </div>
 
                             <div class="card-body d-flex flex-column">
                                 @if ($plan->description)
-                                    <ul class="list-unstyled small text-body mb-4">
-                                        <li class="mb-2 d-flex">
-                                            <i class="ti tabler-check me-2"></i> {{ $plan->description }}
-                                        </li>
-                                    </ul>
+                                    <div class="list-unstyled small text-body mb-4">
+                                        {!! $plan->description !!}
+                                    </div>
                                 @endif
 
-                                @if ($plan->downloads)
+{{--                                 @if ($plan->downloads)
                                     <ul class="list-unstyled small text-body mb-4">
                                         <li class="mb-2 d-flex">
                                             <i class="ti tabler-check me-2"></i>Descargas al mes: {{ $plan->downloads }}
                                         </li>
                                     </ul>
-                                @endif
+                                @endif --}}
 
                                 <div class="mt-auto">
                                     @auth
