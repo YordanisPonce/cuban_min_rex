@@ -128,7 +128,7 @@ use Illuminate\Support\Facades\Storage;
             abort(403); // URL expiró o es inválida
         }
 
-        return Storage::disk('local')->download($path);
+        return Storage::disk('s3')->download($path);
     })->name('files.download');
 
 
