@@ -32,7 +32,7 @@
                     <div class="col-xl-4 col-lg-6">
                         <div class="card h-100">
                             <div class="card-header text-center">
-                                <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}" class="mb-4"
+                                <img src="{{ $plan->image }}" alt="{{ $plan->name }}" class="mb-4"
                                     style="width:64px;height:64px;object-fit:contain;">
                                 <h4 class="mb-1">{{ $plan->name }}</h4>
                                 <div class="d-flex align-items-center justify-content-center">
@@ -50,7 +50,7 @@
                                     </div>
                                 @endif
 
-{{--                                 @if ($plan->downloads)
+                                {{--                                 @if ($plan->downloads)
                                     <ul class="list-unstyled small text-body mb-4">
                                         <li class="mb-2 d-flex">
                                             <i class="ti tabler-check me-2"></i>Descargas al mes: {{ $plan->downloads }}
