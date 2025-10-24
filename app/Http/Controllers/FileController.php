@@ -35,7 +35,7 @@ class FileController extends Controller
                 $download->file_id = $file->id;
                 $download->save();
 
-                return Response::download(Storage::disk('s3')->path($path));
+                return Response::download(Storage::disk('s3')->url($path));
             }
 
             return response()->json([
