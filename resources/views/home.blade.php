@@ -252,7 +252,7 @@
                                     style="width:64px;height:64px;object-fit:contain;">
                                 <h4 class="mb-1">{{ $plan->name }}</h4>
                                 <div class="d-flex align-items-center justify-content-center">
-                                    <span class="h2 text-primary fw-extrabold mb-0">€{{ $plan->price_formatted }}</span>
+                                    <span class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
                                     <sub class="h6 text-body-secondary mb-n1 ms-1">
                                         {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
                                     </sub>

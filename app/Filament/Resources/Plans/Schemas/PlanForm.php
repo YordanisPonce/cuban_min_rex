@@ -9,6 +9,7 @@ use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Plan;
 use Filament\Forms\Components\RichEditor;
+use Illuminate\Support\Facades\Storage;
 
 class PlanForm
 {
@@ -60,7 +61,12 @@ class PlanForm
                     ->label('Subir Foto')
                     ->required()
                     ->disk('s3')
-                    ->directory('images'),
+                    ->directory('images')->formatStateUsing(function ($state) {
+                        if (!$state)
+                            return null;
+                        $base = Storage::disk('s3')->url('');
+                        return str_starts_with($state, 'http') ? str_replace($base, '', $state) : $state;
+                    }),
             ]);
     }
 }
