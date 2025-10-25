@@ -136,7 +136,7 @@
                                     <div class="col-12 d-flex gap-2 flex-wrap">
                                         <button class="btn btn-primary me-2" data-bs-toggle="modal"
                                             data-bs-target="#pricingModal">Actualizar Plan</button>
-                                        <a class="btn btn-dark me-2" href="{{ route('profile.billingLink') }}">Billing Portal</a>
+                                        <a class="btn btn-dark me-2" href="{{ route('profile.billingLink') }}">Gestionar suscripción</a>
                                         <button class="btn btn-label-danger cancel-subscription"
                                             onclick="mostrarAdvertencia()">Cancelar Suscripción</button>
                                     </div>

@@ -68,7 +68,7 @@ class PlanForm
                         ->label('Característica')
                         ->required()->columnSpanFull()
                         ->maxLength(255),
-                ])
+                ])->addActionLabel('Agregar Característica')
             ]);
     }
 }
