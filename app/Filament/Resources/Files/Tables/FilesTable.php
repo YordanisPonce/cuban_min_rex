@@ -65,7 +65,7 @@ class FilesTable
                 ]),
             ])
             ->modifyQueryUsing(
-                fn(EloquentBuilder $query) => !auth()->user()->is_admin ? $query->where('user_id', Auth::user()->id): $query
+                fn(EloquentBuilder $query) => !auth()->user()->role='admin' ? $query->where('user_id', Auth::user()->id): $query
             );
     }
 }

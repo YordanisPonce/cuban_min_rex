@@ -27,6 +27,8 @@ class ListFiles extends ListRecords
             Action::make('Importar Archivos')
                 ->button()
                 ->schema([
+                    TextInput::make('name')
+                        ->label('Nombre'),
                     FileUpload::make('file')
                         ->label('Cargar archivo')
                         ->acceptedFileTypes(['audio/mpeg', 'video/mp4', 'video/avi','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
@@ -71,7 +73,7 @@ class ListFiles extends ListRecords
                         ->default(fn($get) => $get('dinamic_category_id')),
                 ])->action(function (array $data): void {
                     $file = new File();
-                    $file->name = basename( Storage::disk('s3')->url($data['file']));
+                    $file->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
                     $file->file = $data['file'];
                     $file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
