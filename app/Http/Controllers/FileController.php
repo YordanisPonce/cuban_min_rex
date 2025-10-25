@@ -18,7 +18,7 @@ class FileController extends Controller
         if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
             $plan = auth()->user()->currentPlan;
 
-            if (auth()->user()->getFileCurrentMonthDownloads($id) <= $plan->downloads) {
+            if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
                 $file = File::find($id);
 
                 $path = $file->file;
