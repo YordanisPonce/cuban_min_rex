@@ -8,6 +8,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Plan;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,6 +32,13 @@ class PlanForm
                     ->label('Descripción')
                     ->required()
                     ->columnSpanFull(),
+                FileUpload::make('image')
+                    ->image()
+                    ->columnSpanFull()
+                    ->label('Subir Foto')
+                    ->required()
+                    ->disk('s3')
+                    ->directory('images'),
                 TextInput::make('duration_months')
                     ->label('Meses de Duración')
                     ->required()
@@ -55,18 +63,12 @@ class PlanForm
                             }
                         },
                     ]),
-                FileUpload::make('image')
-                    ->image()
-                    ->avatar()
-                    ->label('Subir Foto')
-                    ->required()
-                    ->disk('s3')
-                    ->directory('images')->formatStateUsing(function ($state) {
-                        if (!$state)
-                            return null;
-                        $base = Storage::disk('s3')->url('');
-                        return str_starts_with($state, 'http') ? str_replace($base, '', $state) : $state;
-                    }),
+                Repeater::make('features')->columnSpanFull()->reorderableWithButtons()->schema([
+                    TextInput::make('value')
+                        ->label('Característica')
+                        ->required()->columnSpanFull()
+                        ->maxLength(255),
+                ])
             ]);
     }
 }

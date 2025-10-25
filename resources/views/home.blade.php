@@ -69,48 +69,50 @@
        RECOMENDADO
     ========================== --}}
     @auth
-    <section id="home-recommended" class="section-py">
+        <section id="home-recommended" class="section-py">
 
-        @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
+            @php $hasRecommended = isset($recommendedItems) && count($recommendedItems) > 0; @endphp
 
-        @if ($hasRecommended)
-            @include('partials.collection', [
-                'id' => 'collections-recommended',
-                'badge' => 'Para ti',
-                'title' => 'Hecho para ti',
-                'subtitle' => 'Listas personalizadas y selecciones que encajan con tu historial.',
-                'ctaText' => 'Ver recomendaciones',
-                'ctaHref' => route('collection.recommended'),
-
-                // contenido para las cards del carrusel (si tu partial las usa)
-                'items' => $recommendedItems ?? null,
-
-                // reproducción de colección completa (opcional)
-                'collectionId' => optional($recommendedCollectionToPlay ?? null)->id,
-                'playlistEndpoint' => isset($recommendedCollectionToPlay)
-                    ? route('collections.playlist', $recommendedCollectionToPlay->id)
-                    : null,
-            ])
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <span class="badge bg-label-primary mb-2">Para ti</span>
-                        <h2 class="h3 fw-bold mb-1">Hecho para ti</h2>
-                        <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más escuchas.
-                        </p>
+            @if ($hasRecommended)
+                @include('partials.collection', [
+                    'id' => 'collections-recommended',
+                    'badge' => 'Para ti',
+                    'title' => 'Hecho para ti',
+                    'subtitle' => 'Listas personalizadas y selecciones que encajan con tu historial.',
+                    'ctaText' => 'Ver recomendaciones',
+                    'ctaHref' => route('collection.recommended'),
+                
+                    // contenido para las cards del carrusel (si tu partial las usa)
+                    'items' => $recommendedItems ?? null,
+                
+                    // reproducción de colección completa (opcional)
+                    'collectionId' => optional($recommendedCollectionToPlay ?? null)->id,
+                    'playlistEndpoint' => isset($recommendedCollectionToPlay)
+                        ? route('collections.playlist', $recommendedCollectionToPlay->id)
+                        : null,
+                ])
+            @else
+                <div class="container mb-3">
+                    <div class="d-flex align-items-end justify-content-between">
+                        <div>
+                            <span class="badge bg-label-primary mb-2">Para ti</span>
+                            <h2 class="h3 fw-bold mb-1">Hecho para ti</h2>
+                            <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más
+                                escuchas.
+                            </p>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">Aún no tenemos recomendaciones</h3>
-                    <p class="text-body-secondary mb-3">Escucha algunas canciones y vuelve para recibir sugerencias a tu medida.</p>
-                    <a href="{{ route('search') }}" class="btn btn-label-primary">Descubrir música</a>
+                <div class="container">
+                    <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
+                        <h3 class="h5 fw-bold mb-2">Aún no tenemos recomendaciones</h3>
+                        <p class="text-body-secondary mb-3">Escucha algunas canciones y vuelve para recibir sugerencias a tu
+                            medida.</p>
+                        <a href="{{ route('search') }}" class="btn btn-label-primary">Descubrir música</a>
+                    </div>
                 </div>
-            </div>
-        @endif
-    </section>
+            @endif
+        </section>
     @endauth
 
     {{-- =========================
@@ -260,19 +262,18 @@
                             </div>
 
                             <div class="card-body d-flex flex-column">
-                                @if ($plan->description)
-                                    <ul class="list-unstyled small text-body mb-4">
-                                        <li class="mb-2 d-flex">
-                                            <i class="ti tabler-check me-2"></i> {{ $plan->description }}
-                                        </li>
-                                    </ul>
-                                @endif
+                                {!! $plan->description ?? '' !!}
 
-                                @if ($plan->downloads)
+                                @if ($plan->features)
                                     <ul class="list-unstyled small text-body mb-4">
-                                        <li class="mb-2 d-flex">
-                                            <i class="ti tabler-check me-2"></i>Descargas al mes: {{ $plan->downloads }}
-                                        </li>
+                                        @foreach ($plan->features as $item)
+                                            <li class="mb-2 d-flex">
+                                                <i class="ti tabler-check me-2"></i>
+                                                <span>
+                                                    {{ $item['value'] }}
+                                                </span>
+                                            </li>
+                                        @endforeach
                                     </ul>
                                 @endif
 

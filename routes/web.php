@@ -11,6 +11,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Middleware\IsUserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -19,8 +20,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Storage;
 
 
-
-
+Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login'); // mostrar login
@@ -142,4 +142,7 @@ use Illuminate\Support\Facades\Storage;
         return Storage::disk('s3')->download($path);
     })->where('path', '.*')->name('public.files.download');
 
-require __DIR__ . '/auth.php';
+    require __DIR__ . '/auth.php';
+});
+
+

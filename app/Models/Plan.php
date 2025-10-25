@@ -21,6 +21,13 @@ class Plan extends Model
         'image',
     ];
 
+    protected function casts()
+    {
+        return [
+            'features' => 'array'
+        ];
+    }
+
     protected static function booted()
     {
         static::saving(function ($plan) {
@@ -58,8 +65,10 @@ class Plan extends Model
     protected function image(): Attribute
     {
 
+        $isFrontend = request()->input('is_frontend');
+
         return Attribute::make(
-            get: fn($item) => $item ? Storage::disk('s3')->url($item) : $item
+            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
         );
     }
 

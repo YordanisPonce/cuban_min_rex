@@ -38,7 +38,7 @@
                                     <div class="col-md-6 mb-1">
                                         <div class="mb-6">
                                             <h6 class="mb-1">Tu Plan Actual es {{ Auth::user()->currentPlan->name }}</h6>
-                                            <p>{{ Auth::user()->currentPlan->description }}</p>
+                                            {!! Auth::user()->currentPlan->description !!}
                                         </div>
                                         <div class="mb-6">
                                             @php
@@ -113,12 +113,12 @@
                                                     {{ Auth::user()->getCurrentMonthDownloads() }}
                                                     de {{ Auth::user()->currentPlan->downloads }} este mes.</h6>
                                             </div>
-                                            <div class="progress rounded mb-1">
+                                            {{--    <div class="progress rounded mb-1">
                                                 @php
                                                     $percent =
                                                         Auth::user()->currentPlan->downloads > 0
-                                                            ? Auth::user()->getCurrentMonthDownloads() /
-                                                                    Auth::user()->currentPlan->downloads *
+                                                            ? (Auth::user()->getCurrentMonthDownloads() /
+                                                                    Auth::user()->currentPlan->downloads) *
                                                                 100
                                                             : '100';
                                                 @endphp
@@ -129,7 +129,8 @@
                                                     aria-valuemax="{{ Auth::user()->currentPlan->downloads }}">
                                                 </div>
                                             </div>
-                                            <small>{{ Auth::user()->currentPlan->downloads - Auth::user()->getCurrentMonthDownloads() }} días restantes este mes.</small>
+                                            <small>{{ Auth::user()->currentPlan->downloads - Auth::user()->getCurrentMonthDownloads() }}
+                                                días restantes este mes.</small> --}}
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex gap-2 flex-wrap">
@@ -311,7 +312,8 @@
                                     @foreach ($orders as $order)
                                         <tr>
                                             <td></td>
-                                            <td>{{ $order->plan ? 'Plan: '.$order->plan->name : 'Archivo: '.$order->file->name }}</td>
+                                            <td>{{ $order->plan ? 'Plan: ' . $order->plan->name : 'Archivo: ' . $order->file->name }}
+                                            </td>
                                             <td>{{ $order->amount }}</td>
                                             <td>{{ $order->status === 'paid' ? $order->paid_at : $order->created_at }}</td>
                                             <td>{{ $order->status === 'paid' ? 'Pagado' : ($order->status === 'pending' ? 'Pendiente' : 'Fallida') }}
@@ -357,31 +359,30 @@
                                 <div class="col-xl-4 col-lg-6">
                                     <div class="card h-100">
                                         <div class="card-header text-center">
-                                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}" class="mb-4"
-                                                style="width:64px;height:64px;object-fit:contain;">
+                                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}"
+                                                class="mb-4" style="width:64px;height:64px;object-fit:contain;">
                                             <h4 class="mb-1">{{ $plan->name }}</h4>
                                             <div class="d-flex align-items-center justify-content-center">
-                                                <span class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
+                                                <span
+                                                    class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
                                                 <sub class="h6 text-body-secondary mb-n1 ms-1">
-                                                    {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
+                                                    {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
                                                 </sub>
                                             </div>
                                         </div>
 
                                         <div class="card-body d-flex flex-column">
-                                            @if ($plan->description)
+                                            {!! $plan->description ?? '' !!}
+                                            @if ($plan->features)
                                                 <ul class="list-unstyled small text-body mb-4">
-                                                    <li class="mb-2 d-flex">
-                                                        <i class="ti tabler-check me-2"></i> {{ $plan->description }}
-                                                    </li>
-                                                </ul>
-                                            @endif
-
-                                            @if ($plan->downloads)
-                                                <ul class="list-unstyled small text-body mb-4">
-                                                    <li class="mb-2 d-flex">
-                                                        <i class="ti tabler-check me-2"></i>Descargas al mes: {{ $plan->downloads }}
-                                                    </li>
+                                                    @foreach ($plan->features as $item)
+                                                        <li class="mb-2 d-flex">
+                                                            <i class="ti tabler-check me-2"></i>
+                                                            <span>
+                                                                {{ $item['value'] }}
+                                                            </span>
+                                                        </li>
+                                                    @endforeach
                                                 </ul>
                                             @endif
 
