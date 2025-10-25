@@ -50,6 +50,7 @@ use Illuminate\Support\Facades\Storage;
         Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
         Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.changePassword');
         Route::get('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
+        Route::get('/profile/billing-link', [ProfileController::class, 'getBillingLink'])->name('profile.billingLink');
     });
 
     // Crear orden y redirigir a Stripe

@@ -122,4 +122,12 @@ class ProfileController extends Controller
 
         return Redirect::to('/');
     }
+
+    public function getBillingLink(Request $request)
+    {
+        $user = $request->user();
+        $user->createOrGetStripeCustomer();
+        $url = $user->billingPortalUrl(route('profile.billing'));
+        return redirect()->away($url);
+    }
 }
