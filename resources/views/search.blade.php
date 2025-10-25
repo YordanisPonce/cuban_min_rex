@@ -3,7 +3,7 @@
     use Carbon\Carbon;
     Carbon::setLocale('es');
 @endphp
-@section('title', 'Página de Resultados de Busqueda')
+@section('title', isset($remixes) ? 'Remixes - '.config('app.name') : 'Página de Resultados de Busqueda')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />

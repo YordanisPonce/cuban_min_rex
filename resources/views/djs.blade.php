@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Inicio – Cuban Mix Rex')
+@section('title', "Djs – ".config('app.name'))
 
 @section('content')
 <section class="section-py bg-body mt-10 mt-md-0">

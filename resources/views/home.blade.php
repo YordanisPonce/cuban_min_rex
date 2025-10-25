@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Inicio – Cuban Mix Rex')
+@section('title', "Inicio – ".config('app.name'))
 
 @push('styles')
 <style> 
