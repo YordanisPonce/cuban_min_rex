@@ -19,6 +19,7 @@ class Plan extends Model
         'downloads',
         'is_recommended',
         'image',
+        'features',
     ];
 
     protected function casts()
