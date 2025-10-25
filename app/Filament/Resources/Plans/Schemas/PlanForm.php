@@ -45,7 +45,7 @@ class PlanForm
                     ->numeric()
                     ->default(1),
                 TextInput::make('downloads')
-                    ->label('Descargas Mensuales')
+                    ->label('Descargas por usuario')
                     ->required()
                     ->numeric()
                     ->default(1),

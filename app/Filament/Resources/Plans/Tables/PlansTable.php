@@ -38,7 +38,7 @@ class PlansTable
                     ->numeric()
                     ->sortable(),
                 TextColumn::make('downloads')
-                    ->label('Descargas Mensuales')
+                    ->label('Descargas por usuario')
                     ->numeric()
                     ->sortable(),
                 IconColumn::make('is_recommended')
