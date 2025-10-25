@@ -363,4 +363,14 @@
             });
         }
     </script>
+    
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: 'Error al descargar el archivo',
+                text: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
 @endpush

@@ -37,15 +37,9 @@ class FileController extends Controller
                 $downloadName = basename($path);
                 return Storage::disk('s3')->download($path, $downloadName);
             }
-
-            return response()->json([
-                'error' => 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'
-            ], 422);
+            return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
         }
-
-        return response()->json([
-            'error' => 'Usted no tiene permisos para descargar el archivo seleccionado'
-        ], 422);
+        return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
     }
 
     public function play(string $collectionId, string $id)
