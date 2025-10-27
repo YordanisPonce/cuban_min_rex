@@ -61,12 +61,26 @@ class SearchController extends Controller
                 'isZip' => $isZip
             ];
         });
+        
+        $playList = []; 
+
+        foreach ($results as $f) {
+            $file = File::find($f['id']);
+            $track = $file->get()
+                ->map(fn($f) => [
+                    'id' => $f->id,
+                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                    'title' => $f->title ?? $f->name,
+                ]);
+            array_push($playList, $track);
+        }
+
 
         $allCategories = Category::all();
         $allRemixers = User::whereHas('files', function ($query) use ($word) {
             $query->where('name', 'like', '%' . $word . '%');
         })->get();
 
-        return view('search', compact('results', 'categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers'));
+        return view('search', compact('results', 'categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
     }
 }

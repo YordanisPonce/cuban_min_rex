@@ -62,13 +62,27 @@ class CategoryController extends Controller
         });
 
         $category = Category::find($categoryId);
+        
+        $playList = []; 
+
+        foreach ($results as $f) {
+            $file = File::find($f['id']);
+            $track = $file->get()
+                ->map(fn($f) => [
+                    'id' => $f->id,
+                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                    'title' => $f->title ?? $f->name,
+                ]);
+            array_push($playList, $track);
+        }
+
 
         $allCategories = Category::all();
         $allRemixers = User::whereHas('files', function ($query) use ($categoryId) {
             $query->where('category_id', $categoryId);
         })->get();
 
-        return view('search', compact('category','results', 'categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers'));
+        return view('search', compact('category','results', 'categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
     }
 
     public function showCollections(string $id)

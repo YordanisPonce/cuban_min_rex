@@ -124,9 +124,7 @@ class HomeController extends Controller
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
-        });
-        
-        $playList = [];   
+        });  
 
         $results = File::paginate(10);
 
@@ -163,6 +161,8 @@ class HomeController extends Controller
         });
 
         $remixes = true;
+        
+        $playList = []; 
 
         foreach ($results as $f) {
             $file = File::find($f['id']);
