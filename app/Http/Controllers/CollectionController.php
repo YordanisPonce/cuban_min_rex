@@ -171,10 +171,11 @@ class CollectionController extends Controller
         // Trae sus files; si tu lógica "hereda" categoría desde la colección, no hace falta tocar aquí
         $tracks = $collection->files()
             ->orderBy('id')
-            ->get(['file as url', 'name as title'])
+            ->get(['file as url', 'name as title', 'id as id'])
             ->map(fn($f) => [
                 'url' => \Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
                 'title' => $f->title ?? $f->name,
+                'id' => $f->id,
             ]);
 
         return response()->json($tracks);

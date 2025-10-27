@@ -28,7 +28,8 @@ class ListFiles extends ListRecords
                 ->button()
                 ->schema([
                     TextInput::make('name')
-                        ->label('Nombre'),
+                        ->label('Nombre')
+                        ->required(),
                     FileUpload::make('file')
                         ->label('Cargar archivo')
                         ->acceptedFileTypes(['audio/mpeg', 'video/mp4', 'video/avi','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
@@ -45,20 +46,20 @@ class ListFiles extends ListRecords
                     TextInput::make('bpm')
                         ->label('BPM')
                         ->required(),
-                    Select::make('collection_id')
-                        ->label('Selecciona una Colección')
-                        ->options(function () {
-                            return Collection::where('user_id', Auth::user()->id)
-                                ->pluck('name', 'id');
-                        })->reactive()
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            if (Collection::find($state)) {
-                                $set('dinamic_category_id', Collection::find($state)->category->id);
-                                $set('category_id', Collection::find($state)->category->id);
-                            } else {
-                                $set('dinamic_category_id', $state);
-                            }
-                        }),
+                    // Select::make('collection_id')
+                    //     ->label('Selecciona una Colección')
+                    //     ->options(function () {
+                    //         return Collection::where('user_id', Auth::user()->id)
+                    //             ->pluck('name', 'id');
+                    //     })->reactive()
+                    //     ->afterStateUpdated(function ($state, callable $set) {
+                    //         if (Collection::find($state)) {
+                    //             $set('dinamic_category_id', Collection::find($state)->category->id);
+                    //             $set('category_id', Collection::find($state)->category->id);
+                    //         } else {
+                    //             $set('dinamic_category_id', $state);
+                    //         }
+                    //     }),
                     Select::make('dinamic_category_id')
                         ->label('Selecciona una Categoría')
                         ->options(function () {
@@ -75,7 +76,7 @@ class ListFiles extends ListRecords
                     $file = new File();
                     $file->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
                     $file->file = $data['file'];
-                    $file->collection_id = $data['collection_id'];
+                    //$file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
                     $file->price = $data['price'] ?? 0;
@@ -83,6 +84,13 @@ class ListFiles extends ListRecords
                     $file->save();
 
                     if(pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip'){
+
+                        $collection = new Collection();
+                        $collection->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
+                        $collection->category_id = $data['category_id'];
+                        $collection->user_id = Auth::user()->id;
+                        $collection->save();
+
                         $zip = new ZipArchive;
                         $path = Storage::disk('s3')->url($file->url ?? $file->file);
 
@@ -102,7 +110,7 @@ class ListFiles extends ListRecords
                                     $file = new File();
                                     $file->name = $f;
                                     $file->file = 'files/' . $f;
-                                    $file->collection_id = $data['collection_id'];
+                                    $file->collection_id = $collection->id;
                                     $file->category_id = $data['category_id'];
                                     $file->user_id = Auth::user()->id;
                                     $file->price = $filePrice;
@@ -118,9 +126,6 @@ class ListFiles extends ListRecords
                         }
                     }
                 }),
-
-            CreateAction::make()
-                ->label('Nuevo archivo'),
         ];
     }
 }

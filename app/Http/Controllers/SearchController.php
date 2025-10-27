@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -30,6 +31,21 @@ class SearchController extends Controller
             ->with(['collection', 'category']) // Carga las relaciones
             ->paginate(10);
 
+        $name = request()->get("search");
+        $category = request()->get("categories");
+        $remixers = request()->get("remixers");
+        if ($name || $category || $remixers) {
+            $results = File::where('name', 'like', '%' . $name . '%')
+                ->whereHas('category', function ($query) use ($category) {
+                    $query->where('name', 'like', '%' . $category . '%');
+                })
+                ->whereHas('user', function ($query) use ($remixers) {
+                    $query->where('name', 'like', '%' . $remixers . '%');
+                })
+                ->with(['user', 'category']) // Carga las relaciones
+                ->paginate(10);
+        }
+
         $results->getCollection()->transform(function ($file) {
             $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
             return [
@@ -39,13 +55,18 @@ class SearchController extends Controller
                 'name' => $file->name,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection->name ?? null,
-                'category' => $file->collection->category->name ?? null,
+                'category' => $file->category->name ?? null,
                 'price' => $file->price,
                 'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
                 'isZip' => $isZip
             ];
         });
 
-        return view('search', compact('results', 'categories', 'recentCategories', 'recentCollections'));
+        $allCategories = Category::all();
+        $allRemixers = User::whereHas('files', function ($query) use ($word) {
+            $query->where('name', 'like', '%' . $word . '%');
+        })->get();
+
+        return view('search', compact('results', 'categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers'));
     }
 }

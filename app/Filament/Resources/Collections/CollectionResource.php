@@ -23,6 +23,10 @@ class CollectionResource extends Resource
     protected static ?string $recordTitleAttribute = 'Collection';
     
     protected static string|null $label = 'Colecciones';
+        
+    protected static ?string $navigationLabel = null;
+    
+    protected static bool $shouldRegisterNavigation = false; 
 
     public static function form(Schema $schema): Schema
     {

@@ -3,21 +3,74 @@
     use Carbon\Carbon;
     Carbon::setLocale('es');
 @endphp
-@section('title', isset($remixes) ? 'Remixes - '.config('app.name') : 'Página de Resultados de Busqueda')
+@section('title', isset($remixes) ? 'Remixes - '.config('app.name') : 'Página de Resultados de Búsqueda')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
+    <style>
+        section#audioPlayer{
+            transition: all 0.3s ease-in;
+            transform: translateY(160px);
+        }
+        .landing-footer .footer-top {
+            border-top-left-radius: 0rem !important;
+            border-top-right-radius: 0rem !important;
+        }
+        .audio-player-controls:hover{
+            transform: scale(1.5);
+        }
+
+    </style>
 @endpush
 
 @section('content')
-    <section id="musicSearch" class="section-py bg-body h-100">
+    <section id="musicSearch" class="section-py bg-body">
         <div class="container" style="margin-top: 60px;">
             <div class="text-center mb-4">
-                <span class="badge bg-label-primary">🎶 Archivos Disponibles</span>
+                <span class="badge bg-label-primary">🎶 Archivos Disponibles{{isset($category) ? ' de la categoría '.$category->name : ''}}</span>
             </div>
             <div class="card">
                 <div class="card-datatable table-responsive pt-0">
+                    <form id="filter-form" class="row mx-3 my-0 justify-content-between" action="">
+                        <div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto">
+                            <div class="me-2 my-6">Filtros: </div>
+                            @isset($category)
+                            @else
+                            <div class="dt-length me-md-4 my-6">
+                                <select class="form-select" id="dt-filter-1" name="categories" onchange="filter()">
+                                    <option value="" selected>Todas las categorías</option>
+                                    @isset($allCategories)
+                                        @foreach ($allCategories as $category)
+                                            <option value="{{ $category->name }}"
+                                                {{ request()->query('categories') ? (request()->query('categories')===$category->name ? 'selected' : '' ) : ''}}
+                                            >{{ $category->name }}</option>
+                                        @endforeach
+                                    @endisset
+                                </select>
+                            </div>
+                            @endisset
+                            <div class="dt-length my-6">
+                                <select class="form-select" name="remixers" id="dt-filter-2" onchange="filter()">
+                                    <option value="" selected>Todos los Remixers</option>
+                                    @isset($allRemixers)
+                                        @foreach ($allRemixers as $remixer)
+                                            <option value="{{ $remixer->name }}"
+                                            {{ request()->query('remixers') ? (request()->query('remixers')===$remixer->name ? 'selected' : '' ) : ''}}
+                                            >{{ $remixer->name }}</option>
+                                        @endforeach
+                                    @endisset
+                                </select>
+                            </div>
+                         </div>
+                        <div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
+                            <div class="dt-search my-6">
+                                <input type="search" name="search" class="form-control" id="dt-search" placeholder="Buscar canción" onchange="filter()"
+                                value="{{ request()->query('search') ?? '' }}">
+                            </div>
+                        </div>
+                    </form>
                     <table class="datatables-basic table">
                         <thead>
                             <tr>
@@ -25,7 +78,7 @@
                                 <th>Fecha</th>
                                 <th>{{ isset($remixes) ? 'REMIXERS' :'Subido por'}}</th>
                                 <th>Nombre</th>
-                                <th>Álbum</th>
+                                <th>BPM</th>
                                 <th>Categoría</th>
                                 @auth
                                     @if (!Auth::user()->hasActivePlan())
@@ -46,7 +99,7 @@
                                     if( isset($file['ext']) && $file['ext'] !== 'mp3') $visible = false;
                                 @endphp
                                 @if ($visible)
-                                <tr>
+                                <tr class="result" data-remixer="{{ $file['user'] }}" data-category="{{ $file['category'] }}" data-name="{{ $file['name'] }}">
                                     <td></td>
                                     <td>{{ $date }}</td>
                                     <td>{{ $file['user'] }}</td>
@@ -55,11 +108,8 @@
                                                 style="text-overflow:ellipsis;">
                                             {{ $file['name'] }}
                                         </span>
-                                        <spam><strong>
-                                            BPM: {{ $file['bpm'] ?? 'No definido' }}
-                                        </strong></spam>
                                     </td>
-                                    <td>{{ $file['collection'] }}</td>
+                                    <td>{{ $file['bpm'] }}</td>
                                     <td>{{ $file['category'] }}</td>
                                     @auth
                                         @if (!Auth::user()->hasActivePlan())
@@ -99,7 +149,7 @@
                                     @endauth
                                     <td>
                                         @if (!$file['isZip'])
-                                        <a id="{{$file['id']}}" style="display: flex; width: 20px" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-state="pause" onclick="playAudio(this)"
+                                        <a id="{{$file['id']}}" style="display: flex; width: 20px" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-name="{{$file['name']}}" data-state="pause" onclick="playAudio(this)"
                                                 >{{ svg('vaadin-play') }}</a>
                                         @endif
                                     </td>
@@ -148,8 +198,7 @@
                                     style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
                                 <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
                                 <div class="card-body">
-                                    <video class="w-100" id="plyr-video-player" oncontextmenu="return false;" playsinline>
-                                    </video>
+                                    <video class="w-100" id="plyr-video-player" oncontextmenu="return false;" playsinline controls></video>
                                 </div>
                             </div>
                         </div>
@@ -159,11 +208,57 @@
             </div>
         </div>
     </section>
+    <section id="audioPlayer" class="bg-body">
+        <div class="container">
+            <div class="row">
+                <!-- Audio Player -->
+                <div class="col-12">
+                    <div class="card">
+                        <h5 class="card-header d-flex justify-content-between">
+                            <span class="cursor-pointer audio-player-controls" onclick="playPrevAudio()"><i class="icon-base ti tabler-chevron-left icon-md scaleX-n1-rtl"></i></span>
+                            <span id="plyr-audio-name" class="d-block w-100 text-nowrap overflow-hidden"
+                                style="text-overflow:ellipsis; text-align:center">Audio</span>
+                            <span class="cursor-pointer audio-player-controls" onclick="playNextAudio()"><i class="icon-base ti tabler-chevron-right icon-md scaleX-n1-rtl"></i></span>
+                        </h5>
+                        <div class="card-body">
+                            <audio class="w-100" id="plyr-audio-player" type="audio/mp3" src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3" controls></audio>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Audio Player -->
+            </div>
+        </div>
+    </section>
 @endsection
 
 @push('scripts')
+<script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
+<script>
+    new Plyr("#plyr-video-player"),new Plyr("#plyr-audio-player");
+</script>
 <script>
     let currentAudio = null;
+    let currentTrack = 0;
+
+    const tracks = [];
+    let music;
+    
+    @foreach ($playList[0] as $track)
+        music = {
+            'id' : {{$track['id']}},
+            'url' : "{{ str_replace('\\', '/', $track['url']) }}",
+            'title' : "{{$track['title']}}",
+        }
+        if(document.getElementById("{{$track['id']}}")!= null){
+            tracks.push(music);
+        }
+    @endforeach
+    
+    if (tracks.length === 1) {
+        document.querySelectorAll('.audio-player-controls').forEach(control => {
+            control.style.display="none";
+        });
+    }
 
     function stopCurrentAudio() {
         if (currentAudio) {
@@ -185,23 +280,41 @@
     }
 
     function playAudio(element){
-        let audio = document.createElement('audio');
-
-        const rute = element.dataset.url;
-        
-        fetch(rute, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            track = data.filter(item => item.id === parseInt(element.id));
-            console.log(track[0].url);
-            if(track[0].url.endsWith('.mp3')){
-                audio.src = track[0].url;
-                if(element.dataset.state == "pause"){
+        let audio = document.getElementById('plyr-audio-player');
+        let index = 0;
+        tracks.forEach(track => {
+            if (track.id === parseInt(element.id)) {
+                if(track.url.endsWith('.mp3')){
+                    console.log(track.url);
+                    audio.src = track.url;
+                    if(element.dataset.state == "pause"){
+                        stopCurrentAudio();
+                        document.querySelectorAll('.play-button').forEach(button => {
+                            if(button.dataset.state === "play" && button !== element){
+                                button.innerHTML = '{{ svg('vaadin-play') }}';
+                                button.dataset.state = "pause";
+                            }
+                        });
+                        document.getElementById('audioPlayer').style.transform = 'translateY(0)';
+                        document.getElementById('plyr-audio-name').innerText = track.title;
+                        currentAudio = audio;
+                        currentTrack = index;
+                        audio.play();
+                        element.innerHTML = '{{ svg('vaadin-pause') }}';
+                        element.dataset.state = "play";
+                    } else {
+                        element.innerHTML = '{{ svg('vaadin-play') }}';
+                        stopCurrentAudio();
+                        element.dataset.state = "pause";
+                        document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                    }
+                    
+                    audio.addEventListener('ended', () => {
+                        element.innerHTML = '{{ svg('vaadin-play') }}';
+                        element.dataset.state = "pause";
+                    });
+                } else {
+                    stopVideo();
                     stopCurrentAudio();
                     document.querySelectorAll('.play-button').forEach(button => {
                         if(button.dataset.state === "play" && button !== element){
@@ -209,35 +322,131 @@
                             button.dataset.state = "pause";
                         }
                     });
-                    currentAudio = audio;
-                    audio.play();
-                    element.innerHTML = '{{ svg('vaadin-pause') }}';
-                    element.dataset.state = "play";
-                } else {
-                    element.innerHTML = '{{ svg('vaadin-play') }}';
-                    stopCurrentAudio();
-                    element.dataset.state = "pause";
+                    document.getElementById('plyr-video-player').src = track.url;
+                    playVideo(track.title);
                 }
-                
-                audio.addEventListener('ended', () => {
-                    element.innerHTML = '{{ svg('vaadin-play') }}';
-                    element.dataset.state = "pause";
-                });
-            } else {
-                stopVideo();
-                stopCurrentAudio();
-                document.querySelectorAll('.play-button').forEach(button => {
-                    if(button.dataset.state === "play" && button !== element){
-                        button.innerHTML = '{{ svg('vaadin-play') }}';
-                        button.dataset.state = "pause";
-                    }
-                });
-                document.getElementById('plyr-video-player').src = track[0].url;
-                playVideo(track[0].title);
             }
-        })
-        .catch(error => {
-            Swal.fire("Error", error.message, "error");
+            index++;
+        });
+    }
+    
+
+    function playNextAudio(){
+        let audio = document.getElementById('plyr-audio-player');
+        let index = 0;
+        let loaded = false;
+        tracks.forEach(track => {
+            if(!loaded){
+                if(currentTrack < tracks.length - 1){
+                    if (index === currentTrack + 1) {
+                        if(track.url.endsWith('.mp3')){
+                            element = document.getElementById(track.id);
+                            document.querySelectorAll('.play-button').forEach(button => {
+                                if(button.dataset.state === "play" && button !== element){
+                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.dataset.state = "pause";
+                                }
+                            });
+                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.dataset.state = "play";
+
+                            audio.src = track.url;
+                            stopCurrentAudio();
+                            document.getElementById('plyr-audio-name').innerText = track.title;
+                            currentAudio = audio;
+                            currentTrack = index;
+                            audio.play();
+
+                            loaded = true;
+                        }
+                    }
+                } else {
+                    if (index === 0) {
+                        if(track.url.endsWith('.mp3')){
+                            
+                            element = document.getElementById(track.id);
+                            document.querySelectorAll('.play-button').forEach(button => {
+                                if(button.dataset.state === "play" && button !== element){
+                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.dataset.state = "pause";
+                                }
+                            });
+                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.dataset.state = "play";
+
+                            audio.src = track.url;
+                            stopCurrentAudio();
+                            document.getElementById('plyr-audio-name').innerText = track.title;
+                            currentAudio = audio;
+                            currentTrack = index;
+                            audio.play();
+
+                            loaded = true;
+                        }
+                    }
+                }
+            }
+            index++;
+        });
+    }
+
+    function playPrevAudio(){
+        let audio = document.getElementById('plyr-audio-player');
+        let index = 0;
+        let loaded = false;
+        tracks.forEach(track => {
+            if(!loaded){
+                if(currentTrack > 0){
+                    if (index === currentTrack - 1) {
+                        if(track.url.endsWith('.mp3')){
+                            
+                            element = document.getElementById(track.id);
+                            document.querySelectorAll('.play-button').forEach(button => {
+                                if(button.dataset.state === "play" && button !== element){
+                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.dataset.state = "pause";
+                                }
+                            });
+                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.dataset.state = "play";
+
+                            audio.src = track.url;
+                            stopCurrentAudio();
+                            document.getElementById('plyr-audio-name').innerText = track.title;
+                            currentAudio = audio;
+                            currentTrack = index;
+                            audio.play();
+
+                            loaded = true;
+                        }
+                    }
+                } else {
+                    if (index === tracks.length - 1) {
+                        if(track.url.endsWith('.mp3')){
+                            
+                            element = document.getElementById(track.id);
+                            document.querySelectorAll('.play-button').forEach(button => {
+                                if(button.dataset.state === "play" && button !== element){
+                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.dataset.state = "pause";
+                                }
+                            });
+                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.dataset.state = "play";
+
+                            audio.src = track.url;
+                            stopCurrentAudio();
+                            document.getElementById('plyr-audio-name').innerText = track.title;
+                            currentAudio = audio;
+                            currentTrack = index;
+                            audio.play();
+
+                            loaded = true;
+                        }
+                    }
+                }
+            }
+            index++;
         });
     }
 
@@ -276,6 +485,10 @@
                     });
             }
         });
+    }
+
+    function filter() {
+        document.getElementById('filter-form').submit();
     }
 </script>
 

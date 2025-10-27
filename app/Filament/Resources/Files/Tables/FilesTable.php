@@ -22,17 +22,15 @@ class FilesTable
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
-                TextColumn::make('bpm')
-                    ->label('BPM')
-                    ->searchable(),
                 TextColumn::make('price')
                     ->label('Precio')
                     ->money()
                     ->sortable(),
+                TextColumn::make('bpm')
+                    ->label('BPM')
+                    ->searchable(),
                 TextColumn::make('category.name')
                     ->label('Categoría'),
-                TextColumn::make('collection.name')
-                    ->label('Colección'),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
@@ -65,7 +63,7 @@ class FilesTable
                 ]),
             ])
             ->modifyQueryUsing(
-                fn(EloquentBuilder $query) => !auth()->user()->role='admin' ? $query->where('user_id', Auth::user()->id): $query
+                fn(EloquentBuilder $query) => auth()->user()->role!=='admin' ? $query->where('user_id', Auth::user()->id): $query
             );
     }
 }

@@ -22,7 +22,7 @@ class FileForm
                     ->label('Nombre')
                     ->required()
                     ->columnSpanFull(),
-                Select::make('collection_id')
+                /*Select::make('collection_id')
                     ->label('Selecciona una Colección')
                     ->options(function () {
                         return Collection::where('user_id', Auth::user()->id)
@@ -35,7 +35,7 @@ class FileForm
                         } else {
                             $set('dinamic_category_id', $state);
                         }
-                    }),
+                    }),*/
                 Select::make('dinamic_category_id')
                     ->label('Selecciona una Categoría')
                     ->options(function () {

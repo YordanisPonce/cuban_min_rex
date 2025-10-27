@@ -6,7 +6,20 @@
 @section('title', 'Página de Resultados de Busqueda')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
     <style>
+        section#audioPlayer{
+            transition: all 0.3s ease-in;
+            transform: translateY(160px);
+        }
+        .landing-footer .footer-top {
+            border-top-left-radius: 0rem !important;
+            border-top-right-radius: 0rem !important;
+        }
+        .audio-player-controls:hover{
+            transform: scale(1.5);
+        }
+
         /* Card “Relacionadas” clickable + overlay + flecha de entrar */
         .card-relationed {
             position: relative;
@@ -168,6 +181,7 @@
                                                     @if (!$file['isZip'])
                                                         <a id="{{ $file['id'] }}" style="display: flex; width: 20px"
                                                             class="play-button cursor-pointer"
+                                                            data-name="{{ $file['name'] }}"
                                                             data-url="{{ $file['url'] }}" data-state="pause"
                                                             onclick="playAudio(this)">{{ svg('vaadin-play') }}</a>
                                                     @endif
@@ -183,7 +197,7 @@
                 <div class="col-lg-4">
                     <div class="card h-100">
                         <div class="card-body">
-                            <h5 class="pb-1 mb-6">Colecciones Relacionadas</h5>
+                            <h5 class="pb-1 mb-6">Packs Relacionados</h5>
                             <hr class="my-6" />
                             <div class="row mb-12 g-6">
                                 @foreach ($relationeds as $coll)
@@ -244,11 +258,37 @@
             </div>
         </div>
     </div>
+    <section id="audioPlayer" class="bg-body">
+        <div class="container">
+            <div class="row">
+                <!-- Audio Player -->
+                <div class="col-12">
+                    <div class="card">
+                        <h5 class="card-header d-flex justify-content-between">
+                            <span class="cursor-pointer audio-player-controls" onclick="playPrevAudio()"><i class="icon-base ti tabler-chevron-left icon-md scaleX-n1-rtl"></i></span>
+                            <span id="plyr-audio-name" class="d-block w-100 text-nowrap overflow-hidden"
+                                style="text-overflow:ellipsis; text-align:center">Audio</span>
+                            <span class="cursor-pointer audio-player-controls" onclick="playNextAudio()"><i class="icon-base ti tabler-chevron-right icon-md scaleX-n1-rtl"></i></span>
+                        </h5>
+                        <div class="card-body">
+                            <audio class="w-100" id="plyr-audio-player" type="audio/mp3" src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3" controls></audio>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Audio Player -->
+            </div>
+        </div>
+    </section>
 @endsection
 
 @push('scripts')
+    <script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
+    <script>
+        new Plyr("#plyr-video-player"),new Plyr("#plyr-audio-player");
+    </script>
     <script>
         let currentAudio = null;
+        let currentTrack = 0;
 
         function stopCurrentAudio() {
             if (currentAudio) {
@@ -269,60 +309,219 @@
             document.getElementById('plyr-video-player').play();
         }
 
-        function playAudio(element) {
-            let audio = document.createElement('audio');
+        function playAudio(element){
+            let audio = document.getElementById('plyr-audio-player');
 
-            const rute = element.dataset.url;
+            const rute = "{{ route('collections.playlist', $collection->id)}}";
 
             fetch(rute, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    track = data.filter(item => item.id === parseInt(element.id));
-                    if (track[0].url.endsWith('.mp3')) {
-                        audio.src = track[0].url;
-                        if (element.dataset.state == "pause") {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let index = 0;
+                data.forEach(track => {
+                    if (track.id === parseInt(element.id)) {
+                        if(track.url.endsWith('.mp3')){
+                            audio.src = track.url;
+                            if(element.dataset.state == "pause"){
+                                stopCurrentAudio();
+                                document.querySelectorAll('.play-button').forEach(button => {
+                                    if(button.dataset.state === "play" && button !== element){
+                                        button.innerHTML = '{{ svg('vaadin-play') }}';
+                                        button.dataset.state = "pause";
+                                    }
+                                });
+                                document.getElementById('audioPlayer').style.transform = 'translateY(0)';
+                                document.getElementById('plyr-audio-name').innerText = track.title;
+                                currentAudio = audio;
+                                currentTrack = index;
+                                audio.play();
+                                element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                element.dataset.state = "play";
+                            } else {
+                                element.innerHTML = '{{ svg('vaadin-play') }}';
+                                stopCurrentAudio();
+                                element.dataset.state = "pause";
+                                document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                            }
+                            
+                            audio.addEventListener('ended', () => {
+                                element.innerHTML = '{{ svg('vaadin-play') }}';
+                                element.dataset.state = "pause";
+                            });
+                        } else {
+                            stopVideo();
                             stopCurrentAudio();
                             document.querySelectorAll('.play-button').forEach(button => {
-                                if (button.dataset.state === "play" && button !== element) {
+                                if(button.dataset.state === "play" && button !== element){
                                     button.innerHTML = '{{ svg('vaadin-play') }}';
                                     button.dataset.state = "pause";
                                 }
                             });
-                            currentAudio = audio;
-                            audio.play();
-                            element.innerHTML = '{{ svg('vaadin-pause') }}';
-                            element.dataset.state = "play";
-                        } else {
-                            element.innerHTML = '{{ svg('vaadin-play') }}';
-                            stopCurrentAudio();
-                            element.dataset.state = "pause";
+                            document.getElementById('plyr-video-player').src = track.url;
+                            playVideo(track.title);
                         }
-
-                        audio.addEventListener('ended', () => {
-                            element.innerHTML = '{{ svg('vaadin-play') }}';
-                            element.dataset.state = "pause";
-                        });
-                    } else {
-                        stopVideo();
-                        stopCurrentAudio();
-                        document.querySelectorAll('.play-button').forEach(button => {
-                            if (button.dataset.state === "play" && button !== element) {
-                                button.innerHTML = '{{ svg('vaadin-play') }}';
-                                button.dataset.state = "pause";
-                            }
-                        });
-                        document.getElementById('plyr-video-player').src = track[0].url;
-                        playVideo(track[0].title);
                     }
-                })
-                .catch(error => {
-                    Swal.fire("Error", error.message, "error");
+                    index++;
                 });
+            })
+            .catch(error => {
+                Swal.fire("Error", error.message, "error");
+            });
+        }
+
+        function playNextAudio(){
+            let audio = document.getElementById('plyr-audio-player');
+
+            const rute = "{{ route('collections.playlist', $collection->id)}}";
+
+            fetch(rute, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let index = 0;
+                let loaded = false;
+                data.forEach(track => {
+                    if(!loaded){
+                        if(currentTrack < data.length - 1){
+                            if (index === currentTrack + 1) {
+                                if(track.url.endsWith('.mp3')){
+                                    
+                                    element = document.getElementById(track.id);
+                                    document.querySelectorAll('.play-button').forEach(button => {
+                                        if(button.dataset.state === "play" && button !== element){
+                                            button.innerHTML = '{{ svg('vaadin-play') }}';
+                                            button.dataset.state = "pause";
+                                        }
+                                    });
+                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.dataset.state = "play";
+
+                                    audio.src = track.url;
+                                    stopCurrentAudio();
+                                    document.getElementById('plyr-audio-name').innerText = track.title;
+                                    currentAudio = audio;
+                                    currentTrack = index;
+                                    audio.play();
+
+                                    loaded = true;
+                                }
+                            }
+                        } else {
+                            if (index === 0) {
+                                if(track.url.endsWith('.mp3')){
+                                    
+                                    element = document.getElementById(track.id);
+                                    document.querySelectorAll('.play-button').forEach(button => {
+                                        if(button.dataset.state === "play" && button !== element){
+                                            button.innerHTML = '{{ svg('vaadin-play') }}';
+                                            button.dataset.state = "pause";
+                                        }
+                                    });
+                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.dataset.state = "play";
+
+                                    audio.src = track.url;
+                                    stopCurrentAudio();
+                                    document.getElementById('plyr-audio-name').innerText = track.title;
+                                    currentAudio = audio;
+                                    currentTrack = index;
+                                    audio.play();
+
+                                    loaded = true;
+                                }
+                            }
+                        }
+                    }
+                    index++;
+                });
+            })
+            .catch(error => {
+                Swal.fire("Error", error.message, "error");
+            });
+        }
+
+        function playPrevAudio(){
+            let audio = document.getElementById('plyr-audio-player');
+
+            const rute = "{{ route('collections.playlist', $collection->id)}}";
+
+            fetch(rute, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let index = 0;
+                let loaded = false;
+                data.forEach(track => {
+                    if(!loaded){
+                        if(currentTrack > 0){
+                            if (index === currentTrack - 1) {
+                                if(track.url.endsWith('.mp3')){
+                                    
+                                    element = document.getElementById(track.id);
+                                    document.querySelectorAll('.play-button').forEach(button => {
+                                        if(button.dataset.state === "play" && button !== element){
+                                            button.innerHTML = '{{ svg('vaadin-play') }}';
+                                            button.dataset.state = "pause";
+                                        }
+                                    });
+                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.dataset.state = "play";
+
+                                    audio.src = track.url;
+                                    stopCurrentAudio();
+                                    document.getElementById('plyr-audio-name').innerText = track.title;
+                                    currentAudio = audio;
+                                    currentTrack = index;
+                                    audio.play();
+
+                                    loaded = true;
+                                }
+                            }
+                        } else {
+                            if (index === data.length - 1) {
+                                if(track.url.endsWith('.mp3')){
+                                    
+                                    element = document.getElementById(track.id);
+                                    document.querySelectorAll('.play-button').forEach(button => {
+                                        if(button.dataset.state === "play" && button !== element){
+                                            button.innerHTML = '{{ svg('vaadin-play') }}';
+                                            button.dataset.state = "pause";
+                                        }
+                                    });
+                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.dataset.state = "play";
+
+                                    audio.src = track.url;
+                                    stopCurrentAudio();
+                                    document.getElementById('plyr-audio-name').innerText = track.title;
+                                    currentAudio = audio;
+                                    currentTrack = index;
+                                    audio.play();
+
+                                    loaded = true;
+                                }
+                            }
+                        }
+                    }
+                    index++;
+                });
+            })
+            .catch(error => {
+                Swal.fire("Error", error.message, "error");
+            });
         }
 
         function proccessPayment(rute) {

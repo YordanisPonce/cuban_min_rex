@@ -39,18 +39,18 @@
                     <span class="badge bg-label-primary mb-3">Descubre música</span>
                     <h1 class="display-6 fw-bold mb-2">Tu próxima canción favorita, a un clic</h1>
                     <p class="text-body-secondary mb-4">
-                        Explora artistas, colecciones y lanzamientos hechos para ti.
+                        Explora artistas y lanzamientos hechos para ti.
                     </p>
 
                     <form class="input-group input-group-lg" action="{{ route('search') }}" method="GET">
                         <span class="input-group-text"><i class="ti tabler-search"></i></span>
                         <input type="search" class="form-control" name="search"
-                            placeholder="Busca artistas, canciones o colecciones…">
+                            placeholder="Busca artistas o canciones…">
                     </form>
 
                     <div class="d-flex align-items-center gap-3 mt-4">
                         <a href="#home-recommended" class="btn btn-primary">Reproducir ahora</a>
-                        <a href="#home-collections" class="btn btn-outline-secondary">Ver colecciones</a>
+                        <a href="#home-collections" class="btn btn-outline-secondary">Ver packs</a>
                     </div>
                 </div>
 
@@ -97,7 +97,7 @@
                         <div>
                             <span class="badge bg-label-primary mb-2">Para ti</span>
                             <h2 class="h3 fw-bold mb-1">Hecho para ti</h2>
-                            <p class="text-body-secondary mb-0">Tu dosis diaria con colecciones y mixes según lo que más
+                            <p class="text-body-secondary mb-0">Tu dosis diaria con packs y mixes según lo que más
                                 escuchas.
                             </p>
                         </div>
@@ -144,7 +144,7 @@
                     <div>
                         <span class="badge bg-label-primary mb-2">Novedades</span>
                         <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
-                        <p class="text-body-secondary mb-0">Singles y álbumes recién salidos. Lo último de tus artistas
+                        <p class="text-body-secondary mb-0">Singles y packs recién salidos. Lo último de tus artistas
                             favoritos.</p>
                     </div>
                 </div>
@@ -160,7 +160,7 @@
     </section>
 
     {{-- =========================
-       COLECCIONES DE ARTISTAS
+       packs DE ARTISTAS
     ========================== --}}
     <section id="home-collections" class="section-py">
 
@@ -170,9 +170,9 @@
             @include('partials.collection', [
                 'id' => 'collections-artists',
                 'badge' => 'Explorar',
-                'title' => 'Colecciones de artistas',
+                'title' => 'Packs de artistas',
                 'subtitle' => 'Viaja por su historia musical: etapas, hits y mezclas imprescindibles.',
-                'ctaText' => 'Explorar colecciones',
+                'ctaText' => 'Explorar packs',
                 'ctaHref' => route('collection.index'),
             
                 'items' => $artistCollections ?? null,
@@ -187,7 +187,7 @@
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
                         <span class="badge bg-label-primary mb-2">Explorar</span>
-                        <h2 class="h3 fw-bold mb-1">Colecciones de artistas</h2>
+                        <h2 class="h3 fw-bold mb-1">Packs de artistas</h2>
                         <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
                         </p>
                     </div>
@@ -195,7 +195,7 @@
             </div>
             <div class="container">
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">Sin colecciones por ahora</h3>
+                    <h3 class="h5 fw-bold mb-2">Sin packs por ahora</h3>
                     <p class="text-body-secondary mb-3">Estamos preparando nuevas selecciones por artista y estilo.</p>
                     <a href="{{ route('search') }}" class="btn btn-outline-secondary">Buscar artistas</a>
                 </div>

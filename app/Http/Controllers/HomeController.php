@@ -126,7 +126,24 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
         
+        $playList = [];   
+
         $results = File::paginate(10);
+
+        $name = request()->get("search");
+        $category = request()->get("categories");
+        $remixers = request()->get("remixers");
+        if ($name || $category || $remixers) {
+            $results = File::where('name', 'like', '%' . $name . '%')
+                ->whereHas('category', function ($query) use ($category) {
+                    $query->where('name', 'like', '%' . $category . '%');
+                })
+                ->whereHas('user', function ($query) use ($remixers) {
+                    $query->where('name', 'like', '%' . $remixers . '%');
+                })
+                ->with(['user', 'category']) // Carga las relaciones
+                ->paginate(10);
+        }
 
         $results->getCollection()->transform(function ($file) {
             $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
@@ -137,7 +154,7 @@ class HomeController extends Controller
                 'name' => $file->name,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection->name ?? null,
-                'category' => $file->collection->category->name ?? null,
+                'category' => $file->category->name ?? null,
                 'price' => $file->price,
                 'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
                 'isZip' => $isZip,
@@ -147,6 +164,22 @@ class HomeController extends Controller
 
         $remixes = true;
 
-        return view('search', compact('results', 'remixes','categories', 'recentCategories', 'recentCollections'));
+        foreach ($results as $f) {
+            $file = File::find($f['id']);
+            $track = $file->get()
+                ->map(fn($f) => [
+                    'id' => $f->id,
+                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                    'title' => $f->title ?? $f->name,
+                ]);
+            array_push($playList, $track);
+        }
+
+        $allCategories = Category::all();
+        $allRemixers = User::whereHas('files', function ($query) {
+            $query->where('name', 'like', '%%');
+        })->get();
+
+        return view('search', compact('results', 'remixes','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
     }
 }
