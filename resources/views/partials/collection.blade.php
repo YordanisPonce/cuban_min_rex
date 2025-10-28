@@ -46,7 +46,7 @@
                                         <div
                                             class="card-body text-body d-flex flex-column justify-content-between h-100">
                                             <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
-                                                <img src="{{ $item->image ? $item->image : asset('assets/img/front-pages/icon/collection.png') }}"
+                                                <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
                                                     alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                             </a>
                                             <div class="d-flex align-items-center">

@@ -39,6 +39,11 @@ class ListFiles extends ListRecords
                         ->downloadable()
                         ->preserveFilenames()
                         ->columnSpanFull(),
+                    FileUpload::make('image')
+                        ->label('Subir Foto del Pack')
+                        ->image()
+                        ->disk('s3')
+                        ->directory('images'),
                     TextInput::make('price')
                         ->label('Precio')
                         ->numeric()
@@ -88,6 +93,7 @@ class ListFiles extends ListRecords
                         $collection = new Collection();
                         $collection->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
                         $collection->category_id = $data['category_id'];
+                        $collection->image = $data['image'];
                         $collection->user_id = Auth::user()->id;
                         $collection->save();
 

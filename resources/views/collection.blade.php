@@ -102,6 +102,7 @@
                                     <p class="mb-0">Autor. <span
                                             class="fw-medium text-heading">{{ $collection->user->name }}</span></p>
                                 </div>
+                                {{--
                                 <div class="d-flex align-items-center gap-3">
                                     @auth
                                         @if (Auth::user()?->hasActivePlan())
@@ -112,13 +113,14 @@
                                         @endif
                                     @endauth
                                 </div>
+                                --}}
                             </div>
 
                             <div class="card academy-content shadow-none border">
                                 <div class="p-2">
                                     <div class="cursor-pointer d-flex justify-content-center">
-                                        <img class="w-75" style="max-height:400px"
-                                            src="{{ $collection->image ? $collection->image : asset('assets/img/front-pages/icon/collection.png') }}" />
+                                        <img class="w-auto" style="max-height:400px"
+                                            src="{{ $collection->image ? $collection->image : asset('assets/img/favicon/icon.PNG') }}" />
                                     </div>
                                 </div>
 
@@ -208,7 +210,7 @@
                                                 <div class="col-md-4">
                                                     <img class="card-img card-img-left w-100"
                                                         style="max-height:80px;object-fit:cover"
-                                                        src="{{ $coll->image ? $coll->image : asset('assets/img/front-pages/icon/collection.png') }}" />
+                                                        src="{{ $coll->image ? $coll->image : asset('assets/img/favicon/icon.PNG') }}" />
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body p-3">

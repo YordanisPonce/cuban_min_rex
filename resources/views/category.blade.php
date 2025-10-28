@@ -37,7 +37,7 @@
                             @if ($collection->files()->count() > 0)
                                 <div class="col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-6">
                                     <a class="card relative overflow-hidden" href="{{ route('collection.show', $collection->id) }}"
-                                        style="background-image: url('{{ $collection->image ? $collection->image : asset('assets/img/front-pages/icon/collection.png') }}'); background-size: cover; height: 150px; background-color: rgba(0,0,0,.5); background-blend-mode: darken;">
+                                        style="background-image: url('{{ $collection->image ? $collection->image : asset('assets/img/favicon/icon.PNG') }}'); background-size: cover; height: 150px; background-color: rgba(0,0,0,.5); background-blend-mode: darken;">
                                         <h4 class="bottom-0 w-100 text-center" style="position: absolute;">
                                             {{ $collection->name }}</h4>
                                         <div class="dark-screen d-none"></div>
