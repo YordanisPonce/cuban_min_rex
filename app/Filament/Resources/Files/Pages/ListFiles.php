@@ -32,7 +32,7 @@ class ListFiles extends ListRecords
                         ->required(),
                     FileUpload::make('file')
                         ->label('Cargar archivo')
-                        ->acceptedFileTypes(['audio/mpeg', 'video/mp4', 'video/avi','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('s3')
                         ->directory('files')

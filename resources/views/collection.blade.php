@@ -287,6 +287,9 @@
         new Plyr("#plyr-video-player"),new Plyr("#plyr-audio-player");
     </script>
     <script>
+        const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+        const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+
         let currentAudio = null;
         let currentTrack = 0;
 
@@ -324,8 +327,9 @@
             .then(data => {
                 let index = 0;
                 data.forEach(track => {
+                    const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
                     if (track.id === parseInt(element.id)) {
-                        if(track.url.endsWith('.mp3')){
+                        if(audioExtensions.includes(extension)){
                             audio.src = track.url;
                             if(element.dataset.state == "pause"){
                                 stopCurrentAudio();
@@ -390,10 +394,11 @@
                 let index = 0;
                 let loaded = false;
                 data.forEach(track => {
+                    const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
                     if(!loaded){
                         if(currentTrack < data.length - 1){
                             if (index === currentTrack + 1) {
-                                if(track.url.endsWith('.mp3')){
+                                if(audioExtensions.includes(extension)){
                                     
                                     element = document.getElementById(track.id);
                                     document.querySelectorAll('.play-button').forEach(button => {
@@ -417,7 +422,7 @@
                             }
                         } else {
                             if (index === 0) {
-                                if(track.url.endsWith('.mp3')){
+                                if(audioExtensions.includes(extension)){
                                     
                                     element = document.getElementById(track.id);
                                     document.querySelectorAll('.play-button').forEach(button => {
@@ -465,10 +470,11 @@
                 let index = 0;
                 let loaded = false;
                 data.forEach(track => {
+                    const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
                     if(!loaded){
                         if(currentTrack > 0){
                             if (index === currentTrack - 1) {
-                                if(track.url.endsWith('.mp3')){
+                                if(audioExtensions.includes(extension)){
                                     
                                     element = document.getElementById(track.id);
                                     document.querySelectorAll('.play-button').forEach(button => {
@@ -492,7 +498,7 @@
                             }
                         } else {
                             if (index === data.length - 1) {
-                                if(track.url.endsWith('.mp3')){
+                                if(audioExtensions.includes(extension)){
                                     
                                     element = document.getElementById(track.id);
                                     document.querySelectorAll('.play-button').forEach(button => {

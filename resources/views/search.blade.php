@@ -239,6 +239,8 @@
 <script>
     let currentAudio = null;
     let currentTrack = 0;
+    const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+    const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
 
     const tracks = [];
     let music;
@@ -283,8 +285,9 @@
         let audio = document.getElementById('plyr-audio-player');
         let index = 0;
         tracks.forEach(track => {
+            const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
             if (track.id === parseInt(element.id)) {
-                if(track.url.endsWith('.mp3')){
+                if(audioExtensions.includes(extension)){
                     console.log(track.url);
                     audio.src = track.url;
                     if(element.dataset.state == "pause"){
@@ -336,10 +339,11 @@
         let index = 0;
         let loaded = false;
         tracks.forEach(track => {
+            const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
             if(!loaded){
                 if(currentTrack < tracks.length - 1){
                     if (index === currentTrack + 1) {
-                        if(track.url.endsWith('.mp3')){
+                        if(audioExtensions.includes(extension)){
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
                                 if(button.dataset.state === "play" && button !== element){
@@ -362,7 +366,7 @@
                     }
                 } else {
                     if (index === 0) {
-                        if(track.url.endsWith('.mp3')){
+                        if(audioExtensions.includes(extension)){
                             
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
@@ -395,10 +399,11 @@
         let index = 0;
         let loaded = false;
         tracks.forEach(track => {
+            const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
             if(!loaded){
                 if(currentTrack > 0){
                     if (index === currentTrack - 1) {
-                        if(track.url.endsWith('.mp3')){
+                        if(audioExtensions.includes(extension)){
                             
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
@@ -422,7 +427,7 @@
                     }
                 } else {
                     if (index === tracks.length - 1) {
-                        if(track.url.endsWith('.mp3')){
+                        if(audioExtensions.includes(extension)){
                             
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
