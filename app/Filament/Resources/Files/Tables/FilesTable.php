@@ -63,7 +63,7 @@ class FilesTable
                 ]),
             ])
             ->modifyQueryUsing(
-                fn(EloquentBuilder $query) => auth()->user()->role!=='admin' ? $query->where('user_id', Auth::user()->id): $query
+                fn(EloquentBuilder $query) => auth()->user()->role!=='admin' ? $query->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc') : $query->orderBy('created_at', 'desc')
             );
     }
 }

@@ -1,6 +1,6 @@
 {{-- resources/views/partials/collection.blade.php --}}
 
-<section class="section-py bg-body landing-reviews pb-0 swiper" id="{{ $id }}">
+<section class="bg-body landing-reviews pb-0 swiper" id="{{ $id }}">
     <div class="container" style="position: relative;">
         <a href="{{ $ctaHref }}" class="link-underline d-none d-md-block" style="position: absolute; right: 16px">{{ $ctaText }} →</a>
         <div class="row align-items-center gx-0 gy-4 g-lg-5 mb-5 pb-md-5 flex-lg-row-normal">

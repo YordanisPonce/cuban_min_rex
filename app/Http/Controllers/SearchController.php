@@ -29,7 +29,8 @@ class SearchController extends Controller
                 $query->where('name', 'like', '%' . $word . '%');
             })
             ->with(['collection', 'category']) // Carga las relaciones
-            ->paginate(10);
+            ->orderBy('created_at', 'desc')
+            ->paginate(30);
 
         $name = request()->get("search");
         $category = request()->get("categories");
@@ -43,7 +44,8 @@ class SearchController extends Controller
                     $query->where('name', 'like', '%' . $remixers . '%');
                 })
                 ->with(['user', 'category']) // Carga las relaciones
-                ->paginate(10);
+                ->orderBy('created_at', 'desc')
+                ->paginate(30);
         }
 
         $results->getCollection()->transform(function ($file) {

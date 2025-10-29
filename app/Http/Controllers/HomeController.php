@@ -126,7 +126,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });  
 
-        $results = File::paginate(10);
+        $results = File::orderBy('created_at', 'desc')->paginate(30);;
 
         $name = request()->get("search");
         $category = request()->get("categories");
@@ -140,7 +140,8 @@ class HomeController extends Controller
                     $query->where('name', 'like', '%' . $remixers . '%');
                 })
                 ->with(['user', 'category']) // Carga las relaciones
-                ->paginate(10);
+                ->orderBy('created_at', 'desc')
+                ->paginate(30);
         }
 
         $results->getCollection()->transform(function ($file) {

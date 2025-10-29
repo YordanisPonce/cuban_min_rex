@@ -36,8 +36,7 @@ class ListFiles extends ListRecords
                         ->required()
                         ->disk('s3')
                         ->directory('files')
-                        ->downloadable()
-                        ->preserveFilenames()
+                        ->maxSize(512000)
                         ->columnSpanFull(),
                     FileUpload::make('image')
                         ->label('Subir Foto del Pack')

@@ -20,6 +20,17 @@
             transform: scale(1.5);
         }
 
+        #audioPlayer{
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        footer{
+            z-index: 11;
+        }
+
         /* Card “Relacionadas” clickable + overlay + flecha de entrar */
         .card-relationed {
             position: relative;
@@ -346,7 +357,7 @@
                                 currentAudio = audio;
                                 currentTrack = index;
                                 audio.play();
-                                element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                element.innerHTML = '{{ svg('vaadin-close') }}';
                                 element.dataset.state = "play";
                             } else {
                                 element.innerHTML = '{{ svg('vaadin-play') }}';
@@ -409,7 +420,7 @@
                                             button.dataset.state = "pause";
                                         }
                                     });
-                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.innerHTML = '{{ svg('vaadin-close') }}';
                                     element.dataset.state = "play";
 
                                     audio.src = track.url;
@@ -433,7 +444,7 @@
                                             button.dataset.state = "pause";
                                         }
                                     });
-                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.innerHTML = '{{ svg('vaadin-close') }}';
                                     element.dataset.state = "play";
 
                                     audio.src = track.url;
@@ -485,7 +496,7 @@
                                             button.dataset.state = "pause";
                                         }
                                     });
-                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.innerHTML = '{{ svg('vaadin-close') }}';
                                     element.dataset.state = "play";
 
                                     audio.src = track.url;
@@ -509,7 +520,7 @@
                                             button.dataset.state = "pause";
                                         }
                                     });
-                                    element.innerHTML = '{{ svg('vaadin-pause') }}';
+                                    element.innerHTML = '{{ svg('vaadin-close') }}';
                                     element.dataset.state = "play";
 
                                     audio.src = track.url;

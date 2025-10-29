@@ -28,7 +28,8 @@ class CategoryController extends Controller
                 });
             })
             ->with(['collection.category'])
-            ->paginate(10);
+            ->orderBy('created_at', 'desc')
+            ->paginate(30);
         
         $name = request()->get("search");
         $category = request()->get("categories");
@@ -42,7 +43,8 @@ class CategoryController extends Controller
                     $query->where('name', 'like', '%' . $remixers . '%');
                 })
                 ->with(['user', 'category']) // Carga las relaciones
-                ->paginate(10);
+                ->orderBy('created_at', 'desc')
+                ->paginate(30);
         }
 
         $results->getCollection()->transform(function ($file) {

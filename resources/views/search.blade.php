@@ -22,6 +22,16 @@
             transform: scale(1.5);
         }
 
+        #audioPlayer{
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        footer{
+            z-index: 11;
+        }
     </style>
 @endpush
 
@@ -208,7 +218,7 @@
             </div>
         </div>
     </section>
-    <section id="audioPlayer" class="bg-body">
+    <section id="audioPlayer">
         <div class="container">
             <div class="row">
                 <!-- Audio Player -->
@@ -303,7 +313,7 @@
                         currentAudio = audio;
                         currentTrack = index;
                         audio.play();
-                        element.innerHTML = '{{ svg('vaadin-pause') }}';
+                        element.innerHTML = '{{ svg('vaadin-close') }}';
                         element.dataset.state = "play";
                     } else {
                         element.innerHTML = '{{ svg('vaadin-play') }}';
@@ -334,7 +344,7 @@
     }
     
 
-    function playNextAudio(){
+    function playPrevAudio(){
         let audio = document.getElementById('plyr-audio-player');
         let index = 0;
         let loaded = false;
@@ -351,7 +361,7 @@
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.innerHTML = '{{ svg('vaadin-close') }}';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
@@ -375,7 +385,7 @@
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.innerHTML = '{{ svg('vaadin-close') }}';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
@@ -394,7 +404,7 @@
         });
     }
 
-    function playPrevAudio(){
+    function playNextAudio(){
         let audio = document.getElementById('plyr-audio-player');
         let index = 0;
         let loaded = false;
@@ -412,7 +422,7 @@
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.innerHTML = '{{ svg('vaadin-close') }}';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
@@ -436,7 +446,7 @@
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-pause') }}';
+                            element.innerHTML = '{{ svg('vaadin-close') }}';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
