@@ -255,6 +255,7 @@
     const tracks = [];
     let music;
     
+    @isset($playList[0])
     @foreach ($playList[0] as $track)
         music = {
             'id' : {{$track['id']}},
@@ -265,6 +266,7 @@
             tracks.push(music);
         }
     @endforeach
+    @endisset
     
     if (tracks.length === 1) {
         document.querySelectorAll('.audio-player-controls').forEach(control => {
