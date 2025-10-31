@@ -8,16 +8,17 @@
 
     @if ($hasDjs)
         @foreach($djs as $dj)
-            @if ($dj->collections()->count() > 0)
+            @if ($dj->files()->count() > 0)
                 @include('partials.dj', [
                     'id' => $dj->id,
                     'badge' => 'DJ',
                     'title' => $dj->name,
                     'subtitle' => ' ',
                     'ctaText' => 'Ver Más',
-                    'ctaHref' => route('collection.dj', $dj->id),
+                    'ctaHref' => route('search', ['categories' => '','remixers' => $dj->name, 'search' => '']),
 
-                    'items' => $dj->collections()->take(10)->get(),
+                    'packs' => $dj->collections()->take(10)->get(),
+                    'singles' => $dj->files()->orderBy('created_at', 'desc')->take(10)->get(),
 
                 ])
             @endif

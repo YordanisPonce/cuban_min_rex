@@ -161,7 +161,7 @@
                 'ctaText' => 'Ver estrenos',
                 'ctaHref' => route('collection.news'),
             
-                'items' => $newItems ?? null,
+                'newSingles' => $newItems ?? null,
             
                 'collectionId' => optional($newCollectionToPlay ?? null)->id,
                 'playlistEndpoint' => isset($newCollectionToPlay)
@@ -190,7 +190,7 @@
     </section>
 
     {{-- =========================
-       packs DE ARTISTAS
+       PACKS DE ARTISTAS
     ========================== --}}
     <section id="home-collections" class="section-py">
 

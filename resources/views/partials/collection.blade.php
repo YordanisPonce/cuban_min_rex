@@ -39,43 +39,82 @@
                 <div class="swiper-reviews-carousel overflow-hidden">
                     <div class="swiper swiper-horizontal js-swiper" id="collections-{{ $id }}-swiper">
                         <div class="swiper-wrapper" aria-live="off">
-                            @foreach ($items as $item)
-                                <div class="swiper-slide" style="width: 254px; margin-right: 26px;">
-                                    <div class="card h-100 js-collection-card" role="button" tabindex="0"
-                                        aria-label="Reproducir Synth Nights">
-                                        <div
-                                            class="card-body text-body d-flex flex-column justify-content-between h-100">
-                                            <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
-                                                <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
-                                                    alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
-                                            </a>
-                                            <div class="d-flex align-items-center">
-                                                <div class="avatar me-3 avatar-sm">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" width="16"
-                                                        height="16" fill="currentColor" class="bi bi-music-player"
-                                                        viewBox="0 0 16 16">
-                                                        <path
-                                                            d="M4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm1 0v3h6V3zm3 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
-                                                        <path
-                                                            d="M11 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-3 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
-                                                        <path
-                                                            d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
-                                                    </svg>
+                            @isset($newSingles)
+                                @foreach ($newSingles as $item)
+                                    <div class="swiper-slide" style="width: 254px; margin-right: 26px;">
+                                        <div class="card h-100 js-collection-card" role="button" tabindex="0"
+                                            aria-label="Reproducir Synth Nights">
+                                            <div
+                                                class="card-body text-body d-flex flex-column justify-content-between h-100">
+                                                <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
+                                                    <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
+                                                        alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
+                                                </a>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3 avatar-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                            height="16" fill="currentColor" class="bi bi-music-player"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm1 0v3h6V3zm3 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+                                                            <path
+                                                                d="M11 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-3 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                                                            <path
+                                                                d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-grow-1 text-truncate">
+                                                        <h6 class="mb-0 text-truncate">{{ $item->name }}</h6>
+                                                        <p class="small text-body-secondary mb-0">
+                                                            {{ $item->category() ? $item->category->name : 'Sin Categoría' }}</p>
+                                                    </div>
+                                                    <button id="{{ $item->id }}" class="btn btn-sm btn-label-primary ms-2 btn-play-collection" type="button" data-rute="{{ route('file.play', [ 'none' , $item->id])}}" data-state="paused" onclick="playAudio(this)">
+                                                        <i class="ti tabler-player-play"></i>    
+                                                    </button>
                                                 </div>
-                                                <div class="flex-grow-1 text-truncate">
-                                                    <h6 class="mb-0 text-truncate">{{ $item->name }}</h6>
-                                                    <p class="small text-body-secondary mb-0">
-                                                        {{ $item->category() ? $item->category->name : 'Desconocido' }}
-                                                        • {{ $item->files()->count() }} pistas</p>
-                                                </div>
-                                                <button class="btn btn-sm btn-label-primary ms-2 btn-play-collection" type="button" data-rute="{{ route('collections.playlist', $item)}}" data-state="paused" onclick="playList(this)">
-                                                    <i class="ti tabler-player-play"></i>    
-                                                </button>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
-                            @endforeach
+                                @endforeach
+                            @else
+                                @foreach ($items as $item)
+                                    <div class="swiper-slide" style="width: 254px; margin-right: 26px;">
+                                        <div class="card h-100 js-collection-card" role="button" tabindex="0"
+                                            aria-label="Reproducir Synth Nights">
+                                            <div
+                                                class="card-body text-body d-flex flex-column justify-content-between h-100">
+                                                <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
+                                                    <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
+                                                        alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
+                                                </a>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="avatar me-3 avatar-sm">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="16"
+                                                            height="16" fill="currentColor" class="bi bi-music-player"
+                                                            viewBox="0 0 16 16">
+                                                            <path
+                                                                d="M4 3a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1zm1 0v3h6V3zm3 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2" />
+                                                            <path
+                                                                d="M11 11a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-3 2a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                                                            <path
+                                                                d="M2 2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2zm2-1a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="flex-grow-1 text-truncate">
+                                                        <h6 class="mb-0 text-truncate">{{ $item->name }}</h6>
+                                                        <p class="small text-body-secondary mb-0">
+                                                            {{ $item->category() ? $item->category->name : 'Desconocido' }}
+                                                            • {{ $item->files()->count() }} pistas</p>
+                                                    </div>
+                                                    <button class="btn btn-sm btn-label-primary ms-2 btn-play-collection" type="button" data-rute="{{ route('collections.playlist', $item)}}" data-state="paused" onclick="playList(this)">
+                                                        <i class="ti tabler-player-play"></i>    
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @endisset
                         </div>
 
                         {{-- Flechas internas del swiper --}}
@@ -94,7 +133,20 @@
 @push('scripts')
     <script>
         let tracks = [];
+        
+        const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+        const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+
         let currentAudio = null;
+        let currentTrack = 0;
+
+        function stopCurrentAudio() {
+            if (currentAudio) {
+                currentAudio.pause();
+                currentAudio.currentTime = 0;
+                currentAudio = null;
+            }
+        }
 
         function playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource) {
             if (currentTrackIndex < tracks.length) {
@@ -145,7 +197,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                tracks = data.filter(item => item.url.endsWith('.mp3'));
+                tracks = data.filter(item => audioExtensions.includes(item.url.substring(item.url.lastIndexOf('.')).toLowerCase()));
                 if(element.dataset.state === 'paused'){
                     playCollection();
                     element.dataset.state = 'played';
@@ -154,6 +206,48 @@
                     pauseCollection();
                     element.dataset.state = 'paused';
                     element.innerHTML = '<i class="ti tabler-player-play"></i>';
+                }
+            })
+            .catch(error => {
+                Swal.fire("Error", error.message, "error");
+            });
+        }
+
+        function playAudio(element){
+            let audio = document.createElement('audio');
+
+            const rute = element.dataset.rute;
+
+            document.querySelectorAll('.btn-play-collection').forEach( button => {
+                if(button.dataset.state === 'played' && button !== element){
+                    pauseCollection();
+                    button.dataset.state = 'paused';
+                    button.innerHTML = '<i class="ti tabler-player-play"></i>';
+                }
+            });
+
+            fetch(rute, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                data = data.filter(item => item.id === parseInt(element.id));
+                if(audioExtensions.includes(data[0].url.substring(data[0].url.lastIndexOf('.')).toLowerCase())){
+                    if(element.dataset.state === 'paused'){
+                        stopCurrentAudio();
+                        audio.src = data[0].url;
+                        audio.play();
+                        currentAudio = audio;
+                        element.dataset.state = 'played';
+                        element.innerHTML = '<i class="ti tabler-player-pause"></i>';
+                    } else {
+                        stopCurrentAudio();
+                        element.dataset.state = 'paused';
+                        element.innerHTML = '<i class="ti tabler-player-play"></i>';
+                    }
                 }
             })
             .catch(error => {

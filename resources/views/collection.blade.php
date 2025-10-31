@@ -2,6 +2,8 @@
 @php
     use Carbon\Carbon;
     Carbon::setLocale('es');
+    $success = session('success');
+    $error = session('error');
 @endphp
 @section('title', 'Página de Resultados de Busqueda')
 

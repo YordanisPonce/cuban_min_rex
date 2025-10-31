@@ -2,6 +2,8 @@
 @php
     use Carbon\Carbon;
     Carbon::setLocale('es');
+    $success = session('success');
+    $error = session('error');
 @endphp
 @section('title', isset($remixes) ? 'Remixes - '.config('app.name') : 'Página de Resultados de Búsqueda')
 

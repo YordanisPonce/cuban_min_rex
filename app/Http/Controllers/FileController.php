@@ -15,30 +15,30 @@ class FileController extends Controller
     public function download(string $id)
     {
 
-        if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
-            $plan = auth()->user()->currentPlan;
+        // if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
+        //     $plan = auth()->user()->currentPlan;
 
-            if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
-                $file = File::find($id);
+        //     if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
+        //         $file = File::find($id);
 
-                $path = $file->file;
+        //         $path = $file->file;
 
-                if (!Storage::disk('s3')->exists($path)) {
-                    abort(404);
-                }
+        //         if (!Storage::disk('s3')->exists($path)) {
+        //             abort(404);
+        //         }
 
-                $file->download_count = $file->download_count + 1;
-                $file->save();
+        //         $file->download_count = $file->download_count + 1;
+        //         $file->save();
 
-                $download = new Download();
-                $download->user_id = auth()->user()->id;
-                $download->file_id = $file->id;
-                $download->save();
-                $downloadName = basename($path);
-                return Storage::disk('s3')->download($path, $downloadName);
-            }
-            return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
-        }
+        //         $download = new Download();
+        //         $download->user_id = auth()->user()->id;
+        //         $download->file_id = $file->id;
+        //         $download->save();
+        //         $downloadName = basename($path);
+        //         return Storage::disk('s3')->download($path, $downloadName);
+        //     }
+        //     return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
+        // }
         return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
     }
 

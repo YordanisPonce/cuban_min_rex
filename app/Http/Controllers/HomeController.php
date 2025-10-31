@@ -22,9 +22,7 @@ class HomeController extends Controller
         $artistCollections = Collection::all()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        $newItems = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get()->filter(function($item){
-            return $item->files()->count() > 0;
-        });
+        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -92,7 +90,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        $djs = User::where('role', 'worker')->paginate(10);
+        $djs = User::paginate(10);
 
         return view('djs', compact('djs','categories', 'recentCategories', 'recentCollections'));
     }

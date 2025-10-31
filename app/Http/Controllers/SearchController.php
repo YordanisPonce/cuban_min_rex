@@ -37,11 +37,11 @@ class SearchController extends Controller
         $remixers = request()->get("remixers");
         if ($name || $category || $remixers) {
             $results = File::where('name', 'like', '%' . $name . '%')
-                ->whereHas('category', function ($query) use ($category) {
-                    $query->where('name', 'like', '%' . $category . '%');
-                })
                 ->whereHas('user', function ($query) use ($remixers) {
                     $query->where('name', 'like', '%' . $remixers . '%');
+                })
+                ->whereHas('category', function ($query) use ($category) {
+                    $query->where('name', 'like', '%' . $category . '%');
                 })
                 ->with(['user', 'category']) // Carga las relaciones
                 ->orderBy('created_at', 'desc')
