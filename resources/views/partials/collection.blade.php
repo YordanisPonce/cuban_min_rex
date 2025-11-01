@@ -46,7 +46,7 @@
                                             aria-label="Reproducir Synth Nights">
                                             <div
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
-                                                <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
+                                                <a class="mb-4">
                                                     <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
                                                         alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                                 </a>
