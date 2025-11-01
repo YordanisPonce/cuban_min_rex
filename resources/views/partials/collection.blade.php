@@ -66,7 +66,7 @@
                                                     <div class="flex-grow-1 text-truncate">
                                                         <h6 class="mb-0 text-truncate">{{ $item->name }}</h6>
                                                         <p class="small text-body-secondary mb-0">
-                                                            {{ $item->category() ? $item->category->name : 'Sin Categoría' }}</p>
+                                                            {{ $item->category ? $item->category->name : 'Sin Categoría' }}</p>
                                                     </div>
                                                     <button id="{{ $item->id }}" class="btn btn-sm btn-label-primary ms-2 btn-play-collection" type="button" data-rute="{{ route('file.play', [ 'none' , $item->id])}}" data-state="paused" onclick="playAudio(this)">
                                                         <i class="ti tabler-player-play"></i>    
