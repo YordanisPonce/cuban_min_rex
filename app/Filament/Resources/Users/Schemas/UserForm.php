@@ -32,11 +32,6 @@ class UserForm
                         'worker' => 'Trabajador',
                     ])
                     ->default('user'),
-                // TextInput::make('stripe_id'),
-                // TextInput::make('pm_type'),
-                // TextInput::make('pm_last_four'),
-                DateTimePicker::make('trial_ends_at')
-                    ->label('Final de la Prueba'),
             ]);
     }
 }
