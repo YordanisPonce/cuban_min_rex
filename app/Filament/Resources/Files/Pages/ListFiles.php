@@ -88,6 +88,7 @@ class ListFiles extends ListRecords
                     $file = new File();
                     $file->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
                     $file->file = $data['file'];
+                    $file->original_file = $data['original_file'];
                     //$file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
@@ -123,6 +124,7 @@ class ListFiles extends ListRecords
                                     $file = new File();
                                     $file->name = $f;
                                     $file->file = 'files/' . $f;
+                                    $file->original_file = 'files/' . $f;
                                     $file->collection_id = $collection->id;
                                     $file->category_id = $data['category_id'];
                                     $file->user_id = Auth::user()->id;
