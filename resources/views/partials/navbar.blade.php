@@ -45,9 +45,9 @@
                     <i class="icon-base ti tabler-x icon-lg"></i>
                 </button>
                 <ul class="navbar-nav me-auto mt-xs-10">
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
-                    </li>
+                    </li> -->
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('plans') }}">Membresias</a>
                     </li>
@@ -71,6 +71,9 @@
                     <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" href="/faq">FAQ</a>
                     </li> -->
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="/radio">Emisora</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="/contact">Contacto</a>
                     </li>

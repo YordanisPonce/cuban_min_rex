@@ -63,6 +63,20 @@ class HomeController extends Controller
         return view('contact', compact('categories', 'recentCategories', 'recentCollections'));
     }
 
+    public function radio()
+    {
+        $categories = Category::where('show_in_landing', true)->get();
+        
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        return view('radio', compact('categories', 'recentCategories', 'recentCollections'));
+    }
+
     public function plan()
     {
         $categories = Category::where('show_in_landing', true)->get();

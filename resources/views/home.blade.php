@@ -1,4 +1,8 @@
 @extends('layouts.app')
+@php
+    $success = session('success');
+    $error = session('error');
+@endphp
 
 @section('title', "Inicio – ".config('app.name'))
 
@@ -64,30 +68,6 @@
                             class="w-100 h-100 object-fit-cover">
                         <div class="dark-screen" style="opacity: 0.5;"></div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <hr class="m-0 mt-6 mt-md-12">
-    
-    <section>
-        <div class="container">
-            <div class="row align-items-center g-10 mt-5">
-                <div class="col-lg-6">
-                    <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
-                        <img src="{{ asset('assets/img/front-pages/landing-page/contact-form.jpeg') }}" alt="Arte destacado"
-                            class="w-100 h-100 object-fit-cover">
-                        <div class="dark-screen" style="opacity: 0.5;"></div>
-                    </div>
-                </div>
-                <div class="col-lg-6">
-                    <span class="badge bg-label-primary mb-3">Radio</span>
-                    <h1 class="display-6 fw-bold mb-2">Nuestra Emisora</h1>
-                    <p class="text-body-secondary mb-4">
-                        Escucha música a tu gusto directamente desde nuestra emisora.
-                    </p>
-                    <iframe src="https://public-player-widget.webradiosite.com/?cover=1&current_track=1&schedules=1&link=1&popup=1&share=1&embed=0&auto_play=1&source=10382&theme=dark&color=4&link_to=cubandjsproradio.com&identifier=CubanDjsPro%20Radio&info=https%3A%2F%2Fpublic-player-widget.webradiosite.com%2Fapp%2Fplayer%2Finfo%2F247079%3Fhash%3D7beeef43d3d82f9110c118b97c8e149829ddb4ad&locale=es-es" border="0" scrolling="no" frameborder="0" allow="autoplay; clipboard-write" allowtransparency="true" style="background-color: unset; width: 100%;" height="auto"></iframe>
                 </div>
             </div>
         </div>
@@ -327,6 +307,87 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+        </div>
+    </section>
+    
+    <hr class="m-0 mt-6 mt-md-12">
+
+    {{-- =========================
+       CONTACTO
+    ========================== --}}
+    <section id="landingContact" class="section-py bg-body landing-contact">
+        <div class="container" style="margin-top: 60px;">
+            <div class="text-center mb-4">
+                <span class="badge bg-label-primary">🎶 Contáctanos</span>
+            </div>
+            <h4 class="text-center mb-1">
+                <span class="position-relative fw-extrabold z-1">¿Necesitas ayuda con tu música?
+                    <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1">
+                </span>
+
+            </h4>
+            <p class="text-center mb-12 pb-md-4">Estamos aquí para resolver tus dudas sobre canciones, playlists, compras o licencias 🎧</p>
+            <div class="row g-6">
+                <div class="col-lg-5">
+                    <div class="contact-img-box position-relative border p-2 h-100">
+                        <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/contact-border.png" alt="contact border" class="contact-border-img position-absolute d-none d-lg-block scaleX-n1-rtl">
+                        <img src="{{ asset('assets/img/front-pages/landing-page/contact-form.jpeg') }}" alt="contact customer service" class="contact-img w-100 scaleX-n1-rtl">
+                        <div class="p-4 pb-2">
+                            <div class="row g-4">
+                                <div class="col-md-6 col-lg-12 col-xl-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="badge bg-label-primary rounded p-1_5 me-3"><i class="icon-base ti tabler-mail icon-lg"></i></div>
+                                        <div>
+                                            <p class="mb-0">Correo</p>
+                                            <h6 class="mb-0"><a href="mailto:{{ config('contact.email') }}" class="text-heading">{{ config('contact.email') }}</a></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 col-lg-12 col-xl-6">
+                                    <div class="d-flex align-items-center">
+                                        <div class="badge bg-label-success rounded p-1_5 me-3"><i class="icon-base ti tabler-phone-call icon-lg"></i></div>
+                                        <div>
+                                            <p class="mb-0">Teléfono</p>
+                                            <h6 class="mb-0"><a href="tel:{{ config('contact.phone') }}" class="text-heading">{{ config('contact.phone') }}</a></h6>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-7">
+                    <div class="card h-100">
+                        <div class="card-body">
+                            <h4 class="mb-2">🎵 Escríbenos un mensaje</h4>
+                            <p class="mb-6">
+                                ¿Problemas con tu cuenta, compras de canciones o playlists personalizadas?<br class="d-none d-lg-block">
+                                Déjanos tu mensaje y nuestro equipo musical te ayudará.
+                            </p>
+                            <form action="{{ route('contact.form') }}" method="POST">
+                                @csrf
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="contact-form-fullname">Nombre</label>
+                                        <input type="text" class="form-control" id="contact-form-fullname" name="fullname" placeholder="john" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" for="contact-form-email">Correo</label>
+                                        <input type="text" id="contact-form-email" class="form-control" name="email" placeholder="johndoe@gmail.com" required>
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="form-label" for="contact-form-message">Mensaje</label>
+                                        <textarea id="contact-form-message" class="form-control" rows="7" name="message" placeholder="Write a message" required></textarea>
+                                    </div>
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary waves-effect waves-light">📩 Enviar consulta</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>

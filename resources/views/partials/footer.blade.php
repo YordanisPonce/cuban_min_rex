@@ -16,6 +16,8 @@
             <span class="app-brand-text demo footer-link fw-bold ms-2 ps-1">{{ config('app.name') }}</span>
           </a>
           <p class="footer-text footer-logo-description mb-6">Sube, descarga y compra: haz que cada momento suene.</p>
+          <p><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</p>
+          <p><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</p>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
           <h6 class="footer-title mb-6">Categorías</h6>
@@ -30,7 +32,7 @@
           </ul>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-          <h6 class="footer-title mb-6">Colecciones</h6>
+          <h6 class="footer-title mb-6">Packs</h6>
           <ul class="list-unstyled">
             @isset($recentCollections)
               @foreach ($recentCollections as $collection)

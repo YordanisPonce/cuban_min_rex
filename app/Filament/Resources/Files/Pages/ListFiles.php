@@ -31,7 +31,15 @@ class ListFiles extends ListRecords
                         ->label('Nombre')
                         ->required(),
                     FileUpload::make('file')
-                        ->label('Cargar archivo')
+                        ->label('Subir vista previa del archivo')
+                        ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->required()
+                        ->disk('s3')
+                        ->directory('files')
+                        ->maxSize(512000)
+                        ->columnSpanFull(),
+                    FileUpload::make('original_file')
+                        ->label('Subir archivo completo')
                         ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('s3')

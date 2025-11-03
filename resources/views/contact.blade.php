@@ -38,7 +38,7 @@
                                     <div class="badge bg-label-primary rounded p-1_5 me-3"><i class="icon-base ti tabler-mail icon-lg"></i></div>
                                     <div>
                                         <p class="mb-0">Correo</p>
-                                        <h6 class="mb-0"><a href="mailto:example@gmail.com" class="text-heading">soporte@cubanmix.com</a></h6>
+                                        <h6 class="mb-0"><a href="mailto:{{ config('contact.email') }}" class="text-heading">{{ config('contact.email') }}</a></h6>
                                     </div>
                                 </div>
                             </div>
@@ -47,7 +47,7 @@
                                     <div class="badge bg-label-success rounded p-1_5 me-3"><i class="icon-base ti tabler-phone-call icon-lg"></i></div>
                                     <div>
                                         <p class="mb-0">Teléfono</p>
-                                        <h6 class="mb-0"><a href="tel:+1234-568-963" class="text-heading">+1234 568 963</a></h6>
+                                        <h6 class="mb-0"><a href="tel:{{ config('contact.phone') }}" class="text-heading">{{ config('contact.phone') }}</a></h6>
                                     </div>
                                 </div>
                             </div>

@@ -74,6 +74,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
     Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
+    Route::get('/radio', [HomeController::class, 'radio'])->name('radio');
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
     Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
     Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
