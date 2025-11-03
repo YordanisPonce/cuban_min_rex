@@ -13,7 +13,7 @@
             <div class="row align-items-center g-10 mt-5">
                 <div class="col-lg-6">
                     <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
-                        <img src="{{ asset('assets/img/front-pages/landing-page/contact-form.jpeg') }}" alt="Arte destacado"
+                        <img src="{{ asset('assets/img/front-pages/landing-page/radio.jpeg') }}" alt="Arte destacado"
                             class="w-100 h-100 object-fit-cover">
                         <div class="dark-screen" style="opacity: 0.5;"></div>
                     </div>
