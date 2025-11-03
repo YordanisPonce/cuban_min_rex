@@ -56,12 +56,20 @@ class FileForm
                     ->label('BPM')
                     ->required(),
                 FileUpload::make('file')
-                    ->label('Archivo Adjunto')
-                    ->acceptedFileTypes(['audio/mpeg', 'audio/wav', 'video/mp4', 'video/avi'])
+                    ->label('Subir vista previa del archivo')
+                    ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
                     ->directory('files')
-                    ->downloadable()
+                    ->maxSize(512000)
+                    ->columnSpanFull(),
+                FileUpload::make('original_file')
+                    ->label('Subir archivo completo')
+                    ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                    ->required()
+                    ->disk('s3')
+                    ->directory('files')
+                    ->maxSize(512000)
                     ->columnSpanFull(),
             ]);
     }
