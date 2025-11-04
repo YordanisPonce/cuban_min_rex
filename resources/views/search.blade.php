@@ -106,7 +106,7 @@
                         <tbody>
                             @foreach ($results as $file)
                                 @php
-                                    $date = Carbon::parse($file['date'])->translatedFormat('d \d\e F \d\e Y H:i');
+                                    $date = Carbon::parse($file['date'])->format('d/m/Y');
                                     $visible = true;
                                     if( isset($file['ext']) && $file['ext'] !== 'mp3') $visible = false;
                                 @endphp
