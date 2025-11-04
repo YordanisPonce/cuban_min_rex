@@ -198,10 +198,10 @@
             </div>
 
             <div class="row mt-5 ">
-                <div class="col-md-6 d-md-flex justify-content-around">
-                    <div class="mb-6 mb-md-0"><h4><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') ?? 'Sin definir' }}</a></h4></div>
-                    <div class="mb-6 mb-md-0"><h4><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') ??  'Sin definir' }}</a></h4></div>
-                    <div class="mb-6 mb-md-0"><h4><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></h4></div>
+                <div class="col-md-6 d-md-flex">
+                    <div class="mb-6 mb-md-0 ml-4"><h4><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') ?? 'Sin definir' }}</a></h4></div>
+                    <div class="mb-6 mb-md-0 ml-4"><h4><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') ??  'Sin definir' }}</a></h4></div>
+                    <div class="mb-6 mb-md-0 ml-4"><h4><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></h4></div>
                 </div>
             </div>
         </div>
