@@ -40,7 +40,7 @@
 
     {{-- =========================
        HERO compacto
-    ========================== --}}
+    ========================== 
     <section id="hero" class="py-6 py-lg-7" style="margin-top: 125px;">
         <div class="container">
             <div class="row align-items-center g-5">
@@ -73,6 +73,95 @@
         </div>
     </section>
 
+    <hr class="m-0 mt-6 mt-md-12">--}}
+    
+    {{-- =========================
+       PLANES
+    ========================== --}}
+    <section id="home-pricing" class="section-py landing-pricing mt-10">
+        <div class="container">
+            <div class="text-center mb-3">
+                <span class="badge bg-label-primary">Planes de suscripción</span>
+            </div>
+            <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
+            <p class="text-center text-body-secondary mb-6">
+                Disfruta sin límites con beneficios a tu medida.
+            </p>
+
+            <div class="row gy-4 justify-content-center">
+                @foreach ($plans as $plan)
+                    @php
+                        $isActive =
+                            auth()->check() &&
+                            auth()->user()->current_plan_id === $plan->id &&
+                            auth()->user()->hasActivePlan();
+                    @endphp
+                    <div class="col-xl-4 col-lg-6">
+                        <div class="card h-100">
+                            <div class="card-header text-center">
+                                <img src="{{ $plan->image }}" alt="{{ $plan->name }}" class="mb-4"
+                                    style="width:64px;height:64px;object-fit:contain;">
+                                <h4 class="mb-1">{{ $plan->name }}</h4>
+                                <div class="d-flex align-items-center justify-content-center">
+                                    <span class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
+                                    <sub class="h6 text-body-secondary mb-n1 ms-1">
+                                        {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
+                                    </sub>
+                                </div>
+                            </div>
+
+                            <div class="card-body d-flex flex-column">
+                                @if ($plan->description)
+                                    <div class="list-unstyled small text-body mb-4">
+                                        {!! $plan->description ?? '' !!}
+                                    </div>
+                                @endif
+
+                                @if ($plan->features)
+                                    <ul class="list-unstyled small text-body mb-4">
+                                        @foreach ($plan->features as $item)
+                                            <li class="mb-2 d-flex">
+                                                <i class="ti tabler-check me-2"></i>
+                                                <span>
+                                                    {{ $item['value'] }}
+                                                </span>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
+                                <div class="mt-auto">
+                                    @auth
+                                        @if ($isActive)
+                                            <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
+                                        @else
+                                            <a href="{{ route('payment.form', $plan->id) }}"
+                                                class="btn btn-label-primary w-100">
+                                                Adquirir plan
+                                            </a>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100">
+                                            Inicia sesión para comprar
+                                        </a>
+                                    @endauth
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            <div class="row mt-5 ">
+                <div class="col-md-6 d-md-flex justify-content-around">
+                    <div class="mb-6 mb-md-0"><h4><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') ?? 'Sin definir' }}</a></h4></div>
+                    <div class="mb-6 mb-md-0"><h4><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') ??  'Sin definir' }}</a></h4></div>
+                    <div class="mb-6 mb-md-0"><h4><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></h4></div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
     <hr class="m-0 mt-6 mt-md-12">
 
     {{-- =========================
@@ -234,88 +323,10 @@
         </div>
     </section>
 
-    <hr class="m-0 mt-6 mt-md-12">
-
-    {{-- =========================
-       PLANES
-    ========================== --}}
-    <section id="home-pricing" class="section-py landing-pricing">
-        <div class="container">
-            <div class="text-center mb-3">
-                <span class="badge bg-label-primary">Planes de suscripción</span>
-            </div>
-            <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
-            <p class="text-center text-body-secondary mb-6">
-                Disfruta sin límites con beneficios a tu medida.
-            </p>
-
-            <div class="row gy-4">
-                @foreach ($plans as $plan)
-                    @php
-                        $isActive =
-                            auth()->check() &&
-                            auth()->user()->current_plan_id === $plan->id &&
-                            auth()->user()->hasActivePlan();
-                    @endphp
-                    <div class="col-xl-4 col-lg-6">
-                        <div class="card h-100">
-                            <div class="card-header text-center">
-                                <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}" class="mb-4"
-                                    style="width:64px;height:64px;object-fit:contain;">
-                                <h4 class="mb-1">{{ $plan->name }}</h4>
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <span class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
-                                    <sub class="h6 text-body-secondary mb-n1 ms-1">
-                                        {{ $plan->duration_months === 1 ? '/mes' : '/'.$plan->duration_months.' meses' }}
-                                    </sub>
-                                </div>
-                            </div>
-
-                            <div class="card-body d-flex flex-column">
-                                {!! $plan->description ?? '' !!}
-
-                                @if ($plan->features)
-                                    <ul class="list-unstyled small text-body mb-4">
-                                        @foreach ($plan->features as $item)
-                                            <li class="mb-2 d-flex">
-                                                <i class="ti tabler-check me-2"></i>
-                                                <span>
-                                                    {{ $item['value'] }}
-                                                </span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
-                                <div class="mt-auto">
-                                    @auth
-                                        @if ($isActive)
-                                            <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
-                                        @else
-                                            <a href="{{ route('payment.form', $plan->id) }}"
-                                                class="btn btn-label-primary w-100">
-                                                Adquirir plan
-                                            </a>
-                                        @endif
-                                    @else
-                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100">
-                                            Inicia sesión para comprar
-                                        </a>
-                                    @endauth
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
-    </section>
-    
-    <hr class="m-0 mt-6 mt-md-12">
 
     {{-- =========================
        CONTACTO
-    ========================== --}}
+    ========================== 
     <section id="landingContact" class="section-py bg-body landing-contact">
         <div class="container" style="margin-top: 60px;">
             <div class="text-center mb-4">
@@ -390,7 +401,7 @@
                 </div>
             </div>
         </div>
-    </section>
+    </section> --}}
 @endsection
 
 @push('scripts')

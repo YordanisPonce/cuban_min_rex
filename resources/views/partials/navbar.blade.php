@@ -48,9 +48,9 @@
                     <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
                     </li> -->
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('plans') }}">Membresias</a>
-                    </li>
+                    </li> -->
                     <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Colecciones</a>
                     </li> -->
@@ -74,9 +74,9 @@
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="/radio">Emisora</a>
                     </li>
-                    <li class="nav-item">
+                    <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" href="/contact">Contacto</a>
-                    </li>
+                    </li> -->
                 </ul>
             </div>
             <div class="landing-menu-overlay d-lg-none"></div>
