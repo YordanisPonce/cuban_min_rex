@@ -48,7 +48,7 @@ class CategoriesTable
                     DeleteBulkAction::make()->hidden(fn($record) => Auth::user()->id != $record?->user_id)->label('Eliminar marcados'),
                 ]),
             ])->modifyQueryUsing(
-                fn(EloquentBuilder $query) => !auth()->user()->is_admin ? $query->where('is_general', true)->orWhere('user_id', Auth::user()->id) : $query
+                fn(EloquentBuilder $query) => !auth()->user()->is_admin ? $query->where('is_general', true)->orWhere('user_id', Auth::user()->id)->orderBy('name') : $query->orderBy('name')
             );
     }
 }
