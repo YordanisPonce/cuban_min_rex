@@ -74,11 +74,56 @@
     </section>
 
     <hr class="m-0 mt-6 mt-md-12">--}}
+
+    
+    {{-- =========================
+       NUEVOS LANZAMIENTOS
+    ========================== --}}
+    <section id="home-new" class="section-py mt-10">
+
+        @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
+
+        @if ($hasNew)
+            @include('partials.collection', [
+                'id' => 'collections-new',
+                'badge' => 'Novedades',
+                'title' => 'Estrenos de la semana',
+                'subtitle' => 'Actualizado con lanzamientos fresquitos para que no te pierdas nada.',
+                'ctaText' => 'Ver estrenos',
+                'ctaHref' => route('collection.news'),
+            
+                'newSingles' => $newItems ?? null,
+            
+                'collectionId' => optional($newCollectionToPlay ?? null)->id,
+                'playlistEndpoint' => isset($newCollectionToPlay)
+                    ? route('collections.playlist', $newCollectionToPlay->id)
+                    : null,
+            ])
+        @else
+            <div class="container mb-3">
+                <div class="d-flex align-items-end justify-content-between">
+                    <div>
+                        <span class="badge bg-label-primary mb-2">Novedades</span>
+                        <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
+                        <p class="text-body-secondary mb-0">Singles y packs recién salidos. Lo último de tus artistas
+                            favoritos.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
+                    <h3 class="h5 fw-bold mb-2">No hay lanzamientos recientes</h3>
+                    <p class="text-body-secondary mb-3">Vuelve pronto: actualizamos esta sección con nuevos estrenos.</p>
+                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
+                </div>
+            </div>
+        @endif
+    </section>
     
     {{-- =========================
        PLANES
     ========================== --}}
-    <section id="home-pricing" class="section-py landing-pricing mt-10">
+    <section id="home-pricing" class="section-py landing-pricing">
         <div class="container">
             <div class="text-center mb-3">
                 <span class="badge bg-label-primary">Planes de suscripción</span>
@@ -166,7 +211,7 @@
 
     {{-- =========================
        RECOMENDADO
-    ========================== --}}
+    ========================== 
     @auth
         <section id="home-recommended" class="section-py">
 
@@ -212,51 +257,8 @@
                 </div>
             @endif
         </section>
-    @endauth
-
-    {{-- =========================
-       NUEVOS LANZAMIENTOS
-    ========================== --}}
-    <section id="home-new" class="section-py">
-
-        @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
-
-        @if ($hasNew)
-            @include('partials.collection', [
-                'id' => 'collections-new',
-                'badge' => 'Novedades',
-                'title' => 'Estrenos de la semana',
-                'subtitle' => 'Actualizado con lanzamientos fresquitos para que no te pierdas nada.',
-                'ctaText' => 'Ver estrenos',
-                'ctaHref' => route('collection.news'),
-            
-                'newSingles' => $newItems ?? null,
-            
-                'collectionId' => optional($newCollectionToPlay ?? null)->id,
-                'playlistEndpoint' => isset($newCollectionToPlay)
-                    ? route('collections.playlist', $newCollectionToPlay->id)
-                    : null,
-            ])
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <span class="badge bg-label-primary mb-2">Novedades</span>
-                        <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
-                        <p class="text-body-secondary mb-0">Singles y packs recién salidos. Lo último de tus artistas
-                            favoritos.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">No hay lanzamientos recientes</h3>
-                    <p class="text-body-secondary mb-3">Vuelve pronto: actualizamos esta sección con nuevos estrenos.</p>
-                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
-                </div>
-            </div>
-        @endif
-    </section>
+    @endauth 
+    --}}
 
     {{-- =========================
        PACKS DE ARTISTAS
