@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Notification;
 use Stripe\Webhook;
 use Laravel\Cashier\Http\Controllers\WebhookController as CashierController;
-use Illumniate\Support\Str;
+use Illuminate\Support\Str;
 
 class StripeWebhookController extends CashierController
 {
