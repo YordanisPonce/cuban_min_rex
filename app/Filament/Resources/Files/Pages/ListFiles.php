@@ -39,13 +39,9 @@ class ListFiles extends ListRecords
                         ->required()
                         ->disk('s3')
                         ->directory('files')
-                        ->maxSize(512000)
                         ->getUploadedFileNameForStorageUsing(function (CustomTemporaryUploadedFile $file) {
                             return Str::random(40) . '.' . $file->getClientOriginalExtension();
                         })
-                        ->rules([
-                            'max:255',
-                        ])
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
                     FileUpload::make('original_file')
@@ -57,10 +53,6 @@ class ListFiles extends ListRecords
                         ->required()
                         ->disk('s3')
                         ->directory('files')
-                        ->maxSize(512000)
-                        ->rules([
-                            'max:255',
-                        ])
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
                     FileUpload::make('image')
