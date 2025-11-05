@@ -109,7 +109,7 @@ class StripeWebhookController extends CashierController
                     Notification::route('mail', $email)->notify(new FilePaid(route('file.download', [ $file->id, 'token' => $token])));
                 }
 
-                $downloadToken = $user->downloadToken;
+                $downloadToken = $user?->downloadToken ?? [];
                 array_push($downloadToken, $token);
                 $user->downloadToken = $downloadToken;
                 $user->save();
