@@ -44,7 +44,7 @@ class StripeService
 
         $price = $this->client->prices->create([
             'unit_amount' => (int) ($plan->price * 100),
-            'currency' => 'eur',
+            'currency' => 'usd',
             'recurring' => ['interval' => $interval],
             'product' => $product->id,
         ]);
