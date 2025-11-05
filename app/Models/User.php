@@ -160,23 +160,25 @@ class User extends Authenticatable implements FilamentUser
         $users = User::all();
         foreach ($users as $user) {
             if ($user->hasActivePlan() && $user->currentPlan()) {
-                $plan = Plan::find($user->current_plan_id);
-                $planAmount = $plan->price / $plan->duration_months * 0.7;
-                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                $downloadsToDJ = Download::whereHas('file', callback: function ($query) {
-                    $query->where('user_id', $this->id)->where('liquidated', false);
-                })
-                    ->where('user_id', $user->id)
-                    ->whereMonth('created_at', Carbon::now()->month)
-                    ->distinct('file_id')
-                    ->count('file_id');
-                if ($downloads == 0) {
-                    $amountToPay = 0;
-                } else {
-                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                $plan = Plan::find($user->current_plan_id) ?? $user->currentPlan;
+                if($plan){
+                    $planAmount = $plan->price / $plan->duration_months * 0.7;
+                    $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+                    $downloadsToDJ = Download::whereHas('file', callback: function ($query) {
+                        $query->where('user_id', $this->id)->where('liquidated', false);
+                    })
+                        ->where('user_id', $user->id)
+                        ->whereMonth('created_at', Carbon::now()->month)
+                        ->distinct('file_id')
+                        ->count('file_id');
+                    if ($downloads == 0) {
+                        $amountToPay = 0;
+                    } else {
+                        $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
 
+                    }
+                    $pendingToPay += $amountToPay;
                 }
-                $pendingToPay += $amountToPay;
             }
         }
         return $pendingToPay;
@@ -188,23 +190,25 @@ class User extends Authenticatable implements FilamentUser
         $users = User::all();
         foreach ($users as $user) {
             if ($user->hasActivePlan() && $user->currentPlan()) {
-                $plan = Plan::find($user->current_plan_id);
-                $planAmount = $plan->price / $plan->duration_months * 0.7;
-                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                $downloadsToDJ = Download::whereHas('file', function ($query) {
-                    $query->where('user_id', $this->id)->where('liquidated', true);
-                })
-                    ->where('user_id', $user->id)
-                    ->whereMonth('created_at', Carbon::now()->month)
-                    ->distinct('file_id')
-                    ->count('file_id');
-                if ($downloads == 0) {
-                    $amountToPay = 0;
-                } else {
-                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
-                }
+                $plan = Plan::find($user->current_plan_id) ?? $user->currentPlan;
+                if($plan){
+                    $planAmount = $plan->price / $plan->duration_months * 0.7;
+                    $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+                    $downloadsToDJ = Download::whereHas('file', function ($query) {
+                        $query->where('user_id', $this->id)->where('liquidated', true);
+                    })
+                        ->where('user_id', $user->id)
+                        ->whereMonth('created_at', Carbon::now()->month)
+                        ->distinct('file_id')
+                        ->count('file_id');
+                    if ($downloads == 0) {
+                        $amountToPay = 0;
+                    } else {
+                        $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                    }
 
-                $totalPaid += $amountToPay;
+                    $totalPaid += $amountToPay;
+                }
             }
         }
         return $totalPaid;
@@ -216,24 +220,26 @@ class User extends Authenticatable implements FilamentUser
         $users = User::all();
         foreach ($users as $user) {
             if ($user->hasActivePlan() && $user->currentPlan()) {
-                $plan = Plan::find($user->current_plan_id);
-                $planAmount = $plan->price / $plan->duration_months * 0.3;
-                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                $downloadsToDJ = Download::whereHas('file', function ($query) {
-                    $query->where('user_id', $this->id)->where('liquidated', true);
-                })
-                    ->where('user_id', $user->id)
-                    ->whereMonth('created_at', Carbon::now()->month)
-                    ->distinct('file_id')
-                    ->count('file_id');
+                $plan = Plan::find($user->current_plan_id) ?? $user->currentPlan;
+                if($plan){
+                    $planAmount = $plan->price / $plan->duration_months * 0.3;
+                    $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+                    $downloadsToDJ = Download::whereHas('file', function ($query) {
+                        $query->where('user_id', $this->id)->where('liquidated', true);
+                    })
+                        ->where('user_id', $user->id)
+                        ->whereMonth('created_at', Carbon::now()->month)
+                        ->distinct('file_id')
+                        ->count('file_id');
 
-                if ($downloads == 0) {
-                    $amountToPay = 0;
-                } else {
-                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                    if ($downloads == 0) {
+                        $amountToPay = 0;
+                    } else {
+                        $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                    }
+
+                    $totalGenerated += $amountToPay;
                 }
-
-                $totalGenerated += $amountToPay;
             }
         }
         return $totalGenerated;
