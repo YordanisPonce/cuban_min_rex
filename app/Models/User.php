@@ -34,6 +34,7 @@ class User extends Authenticatable implements FilamentUser
         'is_admin',
         'paypal_email',
         'email_verified_at',
+        'downloadToken'
     ];
 
     /**
@@ -56,6 +57,7 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'downloadToken' => 'array',
         ];
     }
 

@@ -5,15 +5,37 @@ namespace App\Http\Controllers;
 use App\Models\Download;
 use App\Models\File;
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
+use Illuminate\Http\Request;
 
 class FileController extends Controller
 {
-    public function download(string $id)
+    public function download(Request $request, string $id)
     {
+        $token = $request->get('token');
+        if($token){
+            $user = User::whereJsonContains('downloadToken', $token)->first();
+            if($user){
+                $downloadToken = $user->downloadToken;
+                $indice = array_search($token, $downloadToken);
+                unset($downloadToken[$indice]);
+                $user->downloadToken = $downloadToken;
+                $user->save();
+
+                $file = File::find($id);
+                $path = $file->original_file;
+                if (!Storage::disk('s3')->exists($path)) {
+                    abort(404);
+                }
+                $downloadName = basename($path);
+                return Storage::disk('s3')->download($path, $downloadName);
+            }
+            return redirect('home')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
+        }
 
         if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
             $plan = auth()->user()->currentPlan;
