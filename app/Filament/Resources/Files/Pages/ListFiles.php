@@ -6,6 +6,7 @@ use App\Filament\Resources\Files\FileResource;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
+use App\Types\CustomTemporaryUploadedFile;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Actions\Action;
@@ -39,7 +40,7 @@ class ListFiles extends ListRecords
                         ->disk('s3')
                         ->directory('files')
                         ->maxSize(512000)
-                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                        ->getUploadedFileNameForStorageUsing(function (CustomTemporaryUploadedFile $file) {
                             return Str::random(40) . '.' . $file->getClientOriginalExtension();
                         })
                         ->rules([
@@ -49,7 +50,7 @@ class ListFiles extends ListRecords
                         ->columnSpanFull(),
                     FileUpload::make('original_file')
                         ->label('Subir archivo completo')
-                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                        ->getUploadedFileNameForStorageUsing(function (CustomTemporaryUploadedFile $file) {
                             return Str::random(40) . '.' . $file->getClientOriginalExtension();
                         })
                         ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
