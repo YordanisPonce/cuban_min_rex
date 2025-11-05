@@ -14,7 +14,9 @@ use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 use ZipArchive;
 
 class ListFiles extends ListRecords
@@ -32,11 +34,14 @@ class ListFiles extends ListRecords
                         ->required(),
                     FileUpload::make('file')
                         ->label('Subir vista previa del archivo')
-                        ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('s3')
                         ->directory('files')
                         ->maxSize(512000)
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                            return Str::random(40) . '.' . $file->getClientOriginalExtension();
+                        })
                         ->rules([
                             'max:255',
                         ])
@@ -44,7 +49,10 @@ class ListFiles extends ListRecords
                         ->columnSpanFull(),
                     FileUpload::make('original_file')
                         ->label('Subir archivo completo')
-                        ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                            return Str::random(40) . '.' . $file->getClientOriginalExtension();
+                        })
+                        ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('s3')
                         ->directory('files')
@@ -94,7 +102,7 @@ class ListFiles extends ListRecords
                         ->default(fn($get) => $get('dinamic_category_id')),
                 ])->action(function (array $data): void {
                     $file = new File();
-                    $file->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
+                    $file->name = $data['name'] ?? basename(Storage::disk('s3')->url($data['file']));
                     $file->file = $data['file'];
                     $file->original_file = $data['original_file'];
                     //$file->collection_id = $data['collection_id'];
@@ -104,10 +112,10 @@ class ListFiles extends ListRecords
                     $file->bpm = $data['bpm'];
                     $file->save();
 
-                    if(pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip'){
+                    if (pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip') {
 
                         $collection = new Collection();
-                        $collection->name = $data['name'] ?? basename( Storage::disk('s3')->url($data['file']));
+                        $collection->name = $data['name'] ?? basename(Storage::disk('s3')->url($data['file']));
                         $collection->category_id = $data['category_id'];
                         $collection->image = $data['image'];
                         $collection->user_id = Auth::user()->id;
@@ -124,7 +132,7 @@ class ListFiles extends ListRecords
 
                             $files = scandir($extractPath);
 
-                            $filePrice = $data['price'] ? $data['price']/$file->count() : 0;
+                            $filePrice = $data['price'] ? $data['price'] / $file->count() : 0;
 
                             foreach ($files as $f) {
                                 if ($f !== '.' && $f !== '..') {

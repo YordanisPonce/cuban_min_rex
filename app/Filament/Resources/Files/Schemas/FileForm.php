@@ -7,9 +7,11 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
 use App\Models\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FileForm
 {
@@ -57,18 +59,22 @@ class FileForm
                     ->required(),
                 FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
-                    ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                    ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
-                    ->directory('files')
+                    ->directory('files')->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                        return Str::random(40) . '.' . $file->getClientOriginalExtension();
+                    })
                     ->maxSize(512000)
                     ->columnSpanFull(),
                 FileUpload::make('original_file')
                     ->label('Subir archivo completo')
-                    ->acceptedFileTypes(['audio/*','video/*','application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                    ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
-                    ->directory('files')
+                    ->directory('files')->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
+                        return Str::random(40) . '.' . $file->getClientOriginalExtension();
+                    })
                     ->maxSize(512000)
                     ->columnSpanFull(),
             ]);
