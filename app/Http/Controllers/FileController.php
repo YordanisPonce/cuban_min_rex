@@ -34,7 +34,7 @@ class FileController extends Controller
                 $downloadName = basename($path);
                 return Storage::disk('s3')->download($path, $downloadName);
             }
-            return redirect('home')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
+            return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
         }
 
         if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
