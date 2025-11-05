@@ -100,17 +100,19 @@ class StripeWebhookController extends CashierController
                 $sale->admin_amount = $file->price * 0.3;
                 $sale->save();
 
-                $downloadToken = $user->downloadToken;
                 $token = Str::random(50);
-                array_push($downloadToken, $token);
-                $user->downloadToken = $downloadToken;
-                $user->save();
 
                 //Aqui configurar para enviar el correo al cliente
                 $user && $user->notify(new FilePaid(route('file.download', [ $file->id, 'token' => $token])));
                 if ($email && !$user) {
+                    $user = User::where('email', 'user@guest.com')->first();
                     Notification::route('mail', $email)->notify(new FilePaid(route('file.download', [ $file->id, 'token' => $token])));
                 }
+
+                $downloadToken = $user->downloadToken;
+                array_push($downloadToken, $token);
+                $user->downloadToken = $downloadToken;
+                $user->save();
             }
         }
     }
