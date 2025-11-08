@@ -304,7 +304,7 @@
     <main>
         <div class="header" style="background-color: #12131C !important">
             <div class="logo-header">
-                <img src="{{ asset('assets/img/favicon/icon.PNG') }}" style="border-radius: 50%" alt="logo" width="100" height="100">
+                <img src="{{ config('app.logo') }}" style="border-radius: 50%" alt="logo" width="100" height="100">
             </div>
         </div>
         <div class="content">
@@ -323,7 +323,7 @@
         <footer style="background-color: #12131C !important">
             <div class="final">
                 <div class="logo-footer">
-                    <img src="{{ asset('assets/img/favicon/icon.PNG') }}" style="border-radius: 50%" alt="logo" width="100" height="100">
+                    <img src="{{ config('app.logo') }}" style="border-radius: 50%" alt="logo" width="100" height="100">
                 </div>
                 <p class="montserrat-alternates-regular" style="font-size: 18px;color:white"> © {{ date('Y') }}
                     {{ config('app.name') }}. Todos
