@@ -50,7 +50,7 @@ class ListFiles extends ListRecords
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
                     FileUpload::make('image')
-                        ->label('Subir Foto del Pack')
+                        ->label('Subir Poster')
                         ->image()
                         ->disk('s3')
                         ->directory('images'),
@@ -91,6 +91,7 @@ class ListFiles extends ListRecords
                     $file = new File();
                     $file->name = $data['name'] ?? basename(Storage::disk('s3')->url($data['file']));
                     $file->file = $data['file'];
+                    $file->poster = $data['image'];
                     $file->original_file = $data['original_file'];
                     //$file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
@@ -130,6 +131,7 @@ class ListFiles extends ListRecords
                                     $file->original_file = 'files/' . $f;
                                     $file->collection_id = $collection->id;
                                     $file->category_id = $data['category_id'];
+                                    $file->poster = $data['image'];
                                     $file->user_id = Auth::user()->id;
                                     $file->price = $filePrice;
                                     $file->bpm = $data['bpm'];

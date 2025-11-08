@@ -8,7 +8,7 @@
     <meta name="description" content="{{ config('app.name') }} - Panel de administración" />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ config('app.logo') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -52,7 +52,7 @@
         <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
             <span class="app-brand-logo demo">
                 <span class="text-primary">
-                    <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
+                    <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
                 </span>
             </span>

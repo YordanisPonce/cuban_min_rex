@@ -57,25 +57,23 @@ class FileForm
                 TextInput::make('bpm')
                     ->label('BPM')
                     ->required(),
+                FileUpload::make('poster')
+                    ->label('Subir Poster')
+                    ->image()
+                    ->disk('s3')
+                    ->directory('images')
+                    ->columnSpanFull(),
                 FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
-                    ->directory('files')->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
-                        return Str::random(40) . '.' . $file->getClientOriginalExtension();
-                    })
-                    ->maxSize(512000)
                     ->columnSpanFull(),
                 FileUpload::make('original_file')
                     ->label('Subir archivo completo')
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
-                    ->directory('files')->getUploadedFileNameForStorageUsing(function (TemporaryUploadedFile $file) {
-                        return Str::random(40) . '.' . $file->getClientOriginalExtension();
-                    })
-                    ->maxSize(512000)
                     ->columnSpanFull(),
             ]);
     }

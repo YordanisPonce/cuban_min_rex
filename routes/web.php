@@ -48,6 +48,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::get('/profile/billing', [ProfileController::class, 'billing'])->name('profile.billing');
         Route::post('/profile/billing', [ProfileController::class, 'updateBilling'])->name('profile.updateBilling');
         Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+        Route::get('/profile/restorePhoto', [ProfileController::class, 'restorePhoto'])->name('profile.restorePhoto');
         Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.changePassword');
         Route::get('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/profile/billing-link', [ProfileController::class, 'getBillingLink'])->name('profile.billingLink');
@@ -78,7 +79,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
     Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
     Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
-    Route::get('/djs', [HomeController::class, 'dj'])->name('djs');
+    Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
     Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
 
     Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');

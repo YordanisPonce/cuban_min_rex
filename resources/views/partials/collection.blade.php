@@ -47,7 +47,7 @@
                                             <div
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
                                                 <a class="mb-4">
-                                                    <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
+                                                    <img src="{{ $item->poster ? Storage::url($item->poster) : ($item->user->photo ? Storage::url($item->user->photo) : config('app.logo')) }}"
                                                         alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                                 </a>
                                                 <div class="d-flex align-items-center">
@@ -84,7 +84,7 @@
                                             <div
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
                                                 <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
-                                                    <img src="{{ $item->image ? $item->image : asset('assets/img/favicon/icon.PNG') }}"
+                                                    <img src="{{ $item->image ? Storage::url($item->image) : ($item->user->photo ? Storage::url($item->user->photo) : config('app.logo')) }}"
                                                         alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                                 </a>
                                                 <div class="d-flex align-items-center">

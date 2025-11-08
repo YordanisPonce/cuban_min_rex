@@ -23,7 +23,8 @@ class PaymentController extends Controller
         return view('payment.payment', [
             'planId' => $planId,
             'plans' => $plans,
-            'categories' => Category::where('show_in_landing', true)->get()
+            'categories' => Category::where('show_in_landing', true)->get(),
+            'djs' => User::where('role', 'worker')->orderBy('name')->get()
         ]);
     }
 

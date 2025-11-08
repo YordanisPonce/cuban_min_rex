@@ -17,8 +17,8 @@
                     <span class="app-brand-logo demo">
                         <span class="text-primary">
                             <!-- Reemplaza el SVG con tu imagen PNG -->
-                            <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
-                                style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
+                            <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
+                                style="width: 100px; height: 50px; object-fit: contain; border-radius: 50%">
                         </span>
                     </span>
                     <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-none d-lg-inline">{{ config('app.name') }}</span>
@@ -33,8 +33,8 @@
                     <span class="app-brand-logo demo">
                         <span class="text-primary">
                             <!-- Reemplaza el SVG con tu imagen PNG -->
-                            <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
-                                style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
+                            <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
+                                style="width: 100px; height: 50px; object-fit: contain; border-radius: 50%">
                         </span>
                     </span>
                     <span class="app-brand-text demo menu-text fw-bold ms-2 ps-1 d-inline">{{ config('app.name') }}</span>
@@ -54,9 +54,23 @@
                     <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Colecciones</a>
                     </li> -->
-                    <li class="nav-item">
-                        <a class="nav-link fw-medium" href="{{ route('djs') }}">DJs</a>
+                    @if (isset($djs) && count($djs)>0)
+                    <li class="nav-item dropdown ms-2">
+                        <a class="nav-link dropdown-toggle d-flex align-items-center" href="javascript:void(0);"
+                            data-bs-toggle="dropdown">
+                            <span class="ms-2 d-none d-md-block">DJ'S</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            @foreach ($djs as $dj)
+                            <li>
+                                <a class="dropdown-item" href="{{ route('dj', $dj->id)}}">
+                                    <span class="align-middle">{{ $dj->name }}</span>
+                                </a>
+                            </li>
+                            @endforeach
+                        </ul>
                     </li>
+                    @endif
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('remixes') }}">Remixes</a>
                     </li>

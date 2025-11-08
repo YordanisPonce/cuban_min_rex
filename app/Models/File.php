@@ -15,6 +15,7 @@ class File extends Model
         'price',
         'bpm',
         'file',
+        'poster',
         'original_file',
         'download_count',
     ];

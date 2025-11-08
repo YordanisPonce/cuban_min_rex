@@ -45,7 +45,7 @@
     @endif
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('assets/img/favicon/icon.png') }}" />
+    <link rel="icon" href="{{ config('app.logo') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/" />

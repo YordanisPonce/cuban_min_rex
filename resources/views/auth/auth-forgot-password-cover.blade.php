@@ -9,7 +9,7 @@
     <meta name="description" content="Reset your Cuban_Mix_Rex password." />
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ config('app.logo') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -55,8 +55,8 @@
       <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
         <span class="app-brand-logo demo">
           <span class="text-primary">
-            <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
-                                style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
+            <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
+                                style="width: 100px; height: 50px; object-fit: contain; border-radius: 50%">
           </span>
         </span>
         <span class="app-brand-text demo text-heading fw-bold">{{ config('app.name') }}</span>

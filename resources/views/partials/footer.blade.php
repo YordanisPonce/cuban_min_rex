@@ -8,8 +8,8 @@
             <span class="app-brand-logo demo">
               <span class="text-primary">
                 <!-- Reemplaza el SVG con tu imagen PNG -->
-                <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
-                                style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
+                <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
+                                style="width: 100px; height: 50px; object-fit: contain; border-radius: 50%">
               </span>
               </span>
             </span>
