@@ -279,8 +279,6 @@
             tracks.push(music);
         })
     });
-
-    console.log(tracks);
     
     if (tracks.length === 1) {
         document.querySelectorAll('.audio-player-controls').forEach(control => {
