@@ -256,6 +256,8 @@ class HomeController extends Controller
             $query->where('name', 'like', '%%');
         })->get();
 
-        return view('search', compact('results', 'djs','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
+        $remixes = true;
+
+        return view('search', compact('results', 'djs', 'remixes','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
     }
 }
