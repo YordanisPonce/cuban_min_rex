@@ -19,7 +19,7 @@ class CollectionController extends Controller
     {
         $collection = Collection::find($id);
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -103,7 +103,7 @@ class CollectionController extends Controller
     public function index()
     {
         $collections = Collection::paginate(12);
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
 
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -122,7 +122,7 @@ class CollectionController extends Controller
     public function news()
     {
         $collections = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->paginate(12);
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -140,7 +140,7 @@ class CollectionController extends Controller
     {
         $collections = Collection::orderBy('created_at', 'desc')->paginate(12);
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -157,7 +157,7 @@ class CollectionController extends Controller
     {
         $collections = Collection::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(12);
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });

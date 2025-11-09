@@ -19,7 +19,7 @@ class HomeController extends Controller
         $pageTitle = "Inicio";
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $artistCollections = Collection::all()->filter(function($item){
             return $item->files()->count() > 0;
         });
@@ -40,7 +40,7 @@ class HomeController extends Controller
     {
         
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -56,7 +56,7 @@ class HomeController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -72,7 +72,7 @@ class HomeController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -87,7 +87,7 @@ class HomeController extends Controller
     public function plan()
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $plans = Plan::orderBy('price')->get();
         
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -103,7 +103,7 @@ class HomeController extends Controller
     public function dj($id)
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -195,7 +195,7 @@ class HomeController extends Controller
     public function remixes(Request $request)
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });

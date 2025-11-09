@@ -14,7 +14,7 @@ class SearchController extends Controller
     public function search(Request $request)
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::where('role', 'worker')->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
