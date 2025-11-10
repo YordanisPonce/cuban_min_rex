@@ -21,13 +21,13 @@ class StripeService
 
             $product = $this->client->products->update($plan->stripe_product_id, [
                 'name' => $plan->name,
-                'description' => $plan->description,
+                'description' => strip_tags($plan->description),
             ]);
         } else {
 
             $product = $this->client->products->create([
                 'name' => $plan->name,
-                'description' => $plan->description,
+                'description' => strip_tags($plan->description),
             ]);
 
             $plan->stripe_product_id = $product->id;
