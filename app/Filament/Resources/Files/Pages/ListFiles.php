@@ -33,7 +33,7 @@ class ListFiles extends ListRecords
                     TextInput::make('name')
                         ->label('Nombre')
                         ->required(),
-                    FileUpload::make('file')
+                    FileUpload::make('file')->maxSize(800000)
                         ->label('Subir vista previa del archivo')
                         ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
@@ -41,7 +41,7 @@ class ListFiles extends ListRecords
                         ->directory('files')
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
-                    FileUpload::make('original_file')
+                    FileUpload::make('original_file')->maxSize(800000)
                         ->label('Subir archivo completo')
                         ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
