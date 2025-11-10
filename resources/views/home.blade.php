@@ -196,14 +196,6 @@
                     </div>
                 @endforeach
             </div>
-
-            <div class="row mt-5 ">
-                <div class="col-md-6 d-md-flex">
-                    <div class="mb-6 mb-md-0 ml-4"><h4><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') ?? 'Sin definir' }}</a></h4></div>
-                    <div class="mb-6 mb-md-0 ml-4"><h4><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') ??  'Sin definir' }}</a></h4></div>
-                    <div class="mb-6 mb-md-0 ml-4"><h4><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></h4></div>
-                </div>
-            </div>
         </div>
     </section>
     
@@ -324,7 +316,26 @@
             </div>
         </div>
     </section>
+    
+    <hr class="m-0 mt-6 mt-md-12">
 
+    <section class="section-py">
+        <div class="container">
+            <div class="d-flex align-items-end justify-content-between mb-3">
+                <div>
+                    <span class="badge bg-label-primary mb-2">Contáctanos</span>
+                    <h2 class="h3 fw-bold mb-1">Información de Contacto</h2>
+                    <p class="text-body-secondary mb-0">Puedes realizar tus peticiones, quejas o sugerencias a través de los siguientes medios de contacto.</p>
+                </div>
+            </div>
+
+            <div class="flex-wrap gap-2 d-lg-flex">
+                <div class="mb-6 mb-md-0 ml-4"><h4><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') ?? 'Sin definir' }}</a></h4></div>
+                <div class="mb-6 mb-md-0 ml-4"><h4><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') ??  'Sin definir' }}</a></h4></div>
+                <div class="mb-6 mb-md-0 ml-4"><h4><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></h4></div>
+            </div>
+        </div>
+    </section>
 
     {{-- =========================
        CONTACTO

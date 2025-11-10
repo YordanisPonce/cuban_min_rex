@@ -15,6 +15,10 @@ return [
 
     'name' => env('APP_NAME', 'Laravel'),
 
+    'logo' => env('APP_URL').'/assets/img/favicon/cubanpool logo AZUL 3d.png',
+
+    'logo_alter' => env('APP_URL').'/assets/img/favicon/cubanpool logo dorado 3d.png',
+
     /*
     |--------------------------------------------------------------------------
     | Application Environment

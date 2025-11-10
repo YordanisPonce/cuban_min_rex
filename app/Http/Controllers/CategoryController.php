@@ -12,7 +12,8 @@ class CategoryController extends Controller
 {
     public function show($categoryId)
     {
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -84,12 +85,12 @@ class CategoryController extends Controller
             $query->where('category_id', $categoryId);
         })->get();
 
-        return view('search', compact('category','results', 'categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
+        return view('search', compact('category','results', 'djs','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
     }
 
     public function showCollections(string $id)
     {
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });

@@ -133,7 +133,7 @@
                                 <div class="p-2">
                                     <div class="cursor-pointer d-flex justify-content-center">
                                         <img class="w-auto" style="max-height:400px"
-                                            src="{{ $collection->image ? $collection->image : asset('assets/img/favicon/icon.PNG') }}" />
+                                            src="{{ $collection->image ? $collection->image : config('app.logo') }}" />
                                     </div>
                                 </div>
 
@@ -223,7 +223,7 @@
                                                 <div class="col-md-4">
                                                     <img class="card-img card-img-left w-100"
                                                         style="max-height:80px;object-fit:cover"
-                                                        src="{{ $coll->image ? $coll->image : asset('assets/img/favicon/icon.PNG') }}" />
+                                                        src="{{ $coll->image ? $coll->image : config('app.logo') }}" />
                                                 </div>
                                                 <div class="col-md-8">
                                                     <div class="card-body p-3">

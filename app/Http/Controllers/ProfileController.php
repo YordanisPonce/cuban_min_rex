@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View; // Cambiar Inertia\Response por View
 
 class ProfileController extends Controller
@@ -22,19 +23,21 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
-        return view('profile.account', compact('categories', 'recentCategories', 'recentCollections'));
+        return view('profile.account', compact('djs','categories', 'recentCategories', 'recentCollections'));
     }
 
     public function billing(Request $request): View
     {
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -43,7 +46,7 @@ class ProfileController extends Controller
         });
         $plans = Plan::orderBy('price')->get();
         $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
-        return view('profile.billing', compact('categories', 'plans', 'orders', 'recentCategories', 'recentCollections'));
+        return view('profile.billing', compact('djs','categories', 'plans', 'orders', 'recentCategories', 'recentCollections'));
     }
 
     /**
@@ -51,15 +54,29 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {
-        $categories = Category::where('show_in_landing', true)->get();
+        $request->validate([
+            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $path = $request->file('photo')->store('images', 's3');
+        Storage::disk('s3')->setVisibility($path, 'public');
 
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->email = $request->email;
+        $user->photo = $path;
         $user->paypal_email = $request->paypal_email;
 
         $user->save();
         $success = "Información modificada correctamente";
+        return redirect()->back()->with('success', $success);
+    }
+
+    public function restorePhoto(){
+        $user = User::find(Auth::user()->id);
+        $user->photo = null;
+        $user->save();
+        $success = "Imagen Reestablecida";
         return redirect()->back()->with('success', $success);
     }
 
@@ -85,8 +102,6 @@ class ProfileController extends Controller
 
     public function updatePassword(Request $request)
     {
-        $categories = Category::where('show_in_landing', true)->get();
-
         $user = Auth::user();
 
         if (Hash::check($request->currentPassword, $user->password)) {

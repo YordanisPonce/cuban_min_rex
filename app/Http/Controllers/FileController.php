@@ -31,7 +31,7 @@ class FileController extends Controller
                 if (!Storage::disk('s3')->exists($path)) {
                     abort(404);
                 }
-                $downloadName = basename($path);
+                $downloadName = $file->name;
                 return Storage::disk('s3')->download($path, $downloadName);
             }
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
@@ -56,7 +56,7 @@ class FileController extends Controller
                 $download->user_id = auth()->user()->id;
                 $download->file_id = $file->id;
                 $download->save();
-                $downloadName = basename($path);
+                $downloadName = $file->name;
                 return Storage::disk('s3')->download($path, $downloadName);
             }
             return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
@@ -66,8 +66,7 @@ class FileController extends Controller
 
     public function play(string $collectionId, string $id)
     {
-        $file = File::find($id);
-        $track = $file->get()
+        $track = File::orderBy('created_at', 'desc')->get()
             ->map(fn($f) => [
                 'id' => $f->id,
                 'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas

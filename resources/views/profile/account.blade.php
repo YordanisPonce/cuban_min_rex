@@ -43,8 +43,24 @@
                                 <span class="ms-11 ps-1">No tienes Definido un Paypal E-mail, no podrás recibir pagos hasta que lo definas.</span>
                             </div>
                             @endif
-                            <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}">
+                            <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                                 @csrf
+                                <div class="d-flex align-items-start align-items-sm-center gap-6">
+                                    <img src="{{ Auth::user()->photo ? Storage::url(Auth::user()->photo) : config('app.logo') }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
+                                    <div class="button-wrapper">
+                                        <label for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
+                                            <span class="d-none d-sm-block">Subir Logo Personal</span>
+                                            <i class="icon-base ti tabler-upload d-block d-sm-none"></i>
+                                            <input type="file" id="upload" name="photo" class="account-file-input" hidden accept="image/png, image/jpeg" onchange="document.getElementById('formUserSettings').submit()"/>
+                                        </label>
+                                        <a role="button" class="btn btn-label-secondary account-image-reset mb-4" href="{{ route('profile.restorePhoto') }}">
+                                            <i class="icon-base ti tabler-reset d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Reestablecer</span>
+                                        </a>
+
+                                        <div>Permitido JPG o PNG.</div>
+                                    </div>
+                                </div>
                                 <div class="row gy-4 gx-6 mb-6">
                                     <div class="col-md-12 form-control-validation">
                                         <label for="firstName" class="form-label">Nombre</label>

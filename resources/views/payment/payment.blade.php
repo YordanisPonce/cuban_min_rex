@@ -155,7 +155,9 @@
                                 @foreach($plans as $plan)
                                     @if($plan->id == $planId)
                                         <h3>{{$plan->name}}</h3>
-                                        <p>{{$plan->description}}</p>
+                                        @if ($plan->description) 
+                                            <p>{{$plan->description}}</p>
+                                        @endif
                                         <p>Cantidad de descargas: {{$plan->downloads}}</p>
                                         <div class="d-flex align-items-center mb-4">
                                             <h1 class="text-heading mb-0">$ {{$plan->price}}</h1>

@@ -63,6 +63,8 @@
                                 </select>
                             </div>
                             @endisset
+                            @isset($dj)
+                            @else
                             <div class="dt-length my-6">
                                 <select class="form-select" name="remixers" id="dt-filter-2" onchange="filter()">
                                     <option value="" selected>Todos los Remixers</option>
@@ -75,6 +77,7 @@
                                     @endisset
                                 </select>
                             </div>
+                            @endisset
                          </div>
                         <div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto ms-auto mt-0">
                             <div class="dt-search my-6">
@@ -88,7 +91,7 @@
                             <tr>
                                 <th></th>
                                 <th>Fecha</th>
-                                <th>{{ isset($remixes) ? 'REMIXERS' :'Subido por'}}</th>
+                                <th>REMIXERS</th>
                                 <th>Nombre</th>
                                 <th>BPM</th>
                                 <th>Categoría</th>
@@ -111,7 +114,7 @@
                                     if( isset($file['ext']) && $file['ext'] !== 'mp3') $visible = false;
                                 @endphp
                                 @if ($visible)
-                                <tr class="result" data-remixer="{{ $file['user'] }}" data-category="{{ $file['category'] }}" data-name="{{ $file['name'] }}">
+                                <tr class="result" data-id="{{$file['id']}}" data-url="{{$file['url']}}">
                                     <td></td>
                                     <td>{{ $date }}</td>
                                     <td>{{ $file['user'] }}</td>
@@ -255,20 +258,27 @@
     const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
 
     const tracks = [];
-    let music;
     
-    @isset($playList[0])
-    @foreach ($playList[0] as $track)
-        music = {
-            'id' : {{$track['id']}},
-            'url' : "{{ str_replace('\\', '/', $track['url']) }}",
-            'title' : "{{$track['title']}}",
-        }
-        if(document.getElementById("{{$track['id']}}")!= null){
+    document.querySelectorAll('tr.result').forEach(track => {
+        const rute = track.dataset.url;
+
+        fetch(rute, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            let tr = data.filter(item => item.id === parseInt(track.dataset.id));
+            let music = {
+                'id' : tr[0].id,
+                'url' : tr[0].url,
+                'title' : tr[0].title,
+            }
             tracks.push(music);
-        }
-    @endforeach
-    @endisset
+        })
+    });
     
     if (tracks.length === 1) {
         document.querySelectorAll('.audio-player-controls').forEach(control => {
@@ -348,7 +358,7 @@
     }
     
 
-    function playPrevAudio(){
+    function playNextAudio(){
         let audio = document.getElementById('plyr-audio-player');
         let index = 0;
         let loaded = false;
@@ -408,7 +418,7 @@
         });
     }
 
-    function playNextAudio(){
+    function playPrevAudio(){
         let audio = document.getElementById('plyr-audio-player');
         let index = 0;
         let loaded = false;

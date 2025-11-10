@@ -7,7 +7,7 @@
     <title>Verifica tu correo | {{ config('app.name') }}</title>
 
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('assets/img/favicon/favicon.ico') }}" />
+    <link rel="icon" type="image/x-icon" href="{{ config('app.logo') }}" />
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
@@ -26,7 +26,7 @@
     <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
         <span class="app-brand-logo demo text-primary">
             <!-- Aquí tu logo -->
-            <img src="{{ asset('assets/img/favicon/icon.PNG') }}" alt="{{ config('app.name') }}"
+            <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
                                 style="width: 50px; height: 50px; object-fit: contain; border-radius: 50%">
         </span>
         <span class="app-brand-text demo text-heading fw-bold">{{ config('app.name') }}</span>

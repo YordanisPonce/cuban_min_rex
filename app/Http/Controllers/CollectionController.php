@@ -18,7 +18,8 @@ class CollectionController extends Controller
     public function show(string $id)
     {
         $collection = Collection::find($id);
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -51,7 +52,7 @@ class CollectionController extends Controller
             return $item->id !== $collection->id && $item->files()->count() > 0;
         });
 
-        return view('collection', compact('results', 'categories', 'collection', 'relationeds', 'recentCategories', 'recentCollections'));
+        return view('collection', compact('results', 'djs','categories', 'collection', 'relationeds', 'recentCategories', 'recentCollections'));
     }
 
     public function download(string $id)
@@ -102,8 +103,8 @@ class CollectionController extends Controller
     public function index()
     {
         $collections = Collection::paginate(12);
-
-        $categories = Category::where('show_in_landing', true)->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
 
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
@@ -115,13 +116,14 @@ class CollectionController extends Controller
 
         $badge = 'Colecciones';
 
-        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+        return view('category', compact('collections', 'djs', 'categories', 'recentCategories', 'recentCollections', 'badge'));
     }
 
     public function news()
     {
         $collections = Collection::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->paginate(12);
-        $categories = Category::where('show_in_landing', true)->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -131,13 +133,14 @@ class CollectionController extends Controller
 
         $badge = 'Estrenos de la Semana';
 
-        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+        return view('category', compact('collections', 'djs','categories', 'recentCategories', 'recentCollections', 'badge'));
     }
 
     public function recommended()
     {
         $collections = Collection::orderBy('created_at', 'desc')->paginate(12);
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -147,13 +150,14 @@ class CollectionController extends Controller
 
         $badge = 'Hecho para ti';
 
-        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+        return view('category', compact('collections', 'djs', 'categories', 'recentCategories', 'recentCollections', 'badge'));
     }
 
     public function dj(string $id)
     {
         $collections = Collection::where('user_id', $id)->orderBy('created_at', 'desc')->paginate(12);
-        $categories = Category::where('show_in_landing', true)->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -163,7 +167,7 @@ class CollectionController extends Controller
 
         $badge = 'DJ '.User::find($id)->name;
 
-        return view('category', compact('collections', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+        return view('category', compact('collections', 'djs','categories', 'recentCategories', 'recentCollections', 'badge'));
     }
 
     public function playlist(\App\Models\Collection $collection)
