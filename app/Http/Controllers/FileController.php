@@ -17,9 +17,9 @@ class FileController extends Controller
     public function download(Request $request, string $id)
     {
         $token = $request->get('token');
-        if($token){
+        if ($token) {
             $user = User::whereJsonContains('downloadToken', $token)->first();
-            if($user){
+            if ($user) {
                 $downloadToken = $user->downloadToken;
                 $indice = array_search($token, $downloadToken);
                 unset($downloadToken[$indice]);
@@ -31,7 +31,8 @@ class FileController extends Controller
                 if (!Storage::disk('s3')->exists($path)) {
                     abort(404);
                 }
-                $downloadName = $file->name;
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $downloadName = "$file->name.$ext";
                 return Storage::disk('s3')->download($path, $downloadName);
             }
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
