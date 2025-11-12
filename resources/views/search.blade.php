@@ -31,6 +31,10 @@
             z-index: 10;
         }
 
+        td a:hover{
+            transform: scale(0.9);
+        }
+
         footer{
             z-index: 11;
         }
@@ -149,10 +153,10 @@
                                         @endif
                                         <td>
                                             @if (Auth::user()->hasActivePlan() || !($file['price'] > 0))
-                                                <a style="display: flex; width: 20px"
+                                                <a style="display: flex; width: 20px; color: #f62a2a"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             @else
-                                                <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                <a style="display: flex; width: 20px; color: #f62a2a" class="cursor-pointer" fdata-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                             @endif
                                         </td>
                                     @else
@@ -162,19 +166,19 @@
                                                 $ {{ $file['price'] }}
                                             </span></td>
                                             <td>
-                                                <a style="display: flex; width: 20px" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                <a style="display: flex; width: 20px; color: #f62a2a" class="cursor-pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                             </td>
                                         @else
                                             <td></td>
                                             <td>
-                                                <a style="display: flex; width: 20px"
+                                                <a style="display: flex; width: 20px; color: #f62a2a"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             </td>
                                         @endif
                                     @endauth
                                     <td>
                                         @if (!$file['isZip'])
-                                        <a id="{{$file['id']}}" style="display: flex; width: 20px" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-name="{{$file['name']}}" data-state="pause" onclick="playAudio(this)"
+                                        <a id="{{$file['id']}}" style="display: flex; width: 20px; color: #2a7af6" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-name="{{$file['name']}}" data-state="pause" onclick="playAudio(this)"
                                                 >{{ svg('vaadin-play') }}</a>
                                         @endif
                                     </td>
