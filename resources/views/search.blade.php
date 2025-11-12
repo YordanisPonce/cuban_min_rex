@@ -271,28 +271,7 @@
     const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
     const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
 
-    const tracks = [];
-    
-    document.querySelectorAll('tr.result').forEach(track => {
-        const rute = track.dataset.url;
-
-        fetch(rute, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            let tr = data.filter(item => item.id === parseInt(track.dataset.id));
-            let music = {
-                'id' : tr[0].id,
-                'url' : tr[0].url,
-                'title' : tr[0].title,
-            }
-            tracks.push(music);
-        })
-    });
+    const tracks = @json($playList);
     
     if (tracks.length === 1) {
         document.querySelectorAll('.audio-player-controls').forEach(control => {
@@ -326,7 +305,6 @@
             const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
             if (track.id === parseInt(element.id)) {
                 if(audioExtensions.includes(extension)){
-                    console.log(track.url);
                     audio.src = track.url;
                     if(element.dataset.state == "pause"){
                         stopCurrentAudio();

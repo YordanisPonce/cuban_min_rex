@@ -33,6 +33,22 @@ class SearchController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(30);
 
+        $playList = File::where('name', 'like', '%' . $word . '%')
+            ->orWhereHas('collection', function ($query) use ($word) {
+                $query->where('name', 'like', '%' . $word . '%');
+            })
+            ->orWhereHas('category', function ($query) use ($word) {
+                $query->where('name', 'like', '%' . $word . '%');
+            })
+            ->with(['collection', 'category']) // Carga las relaciones
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($f) => [
+                'id' => $f->id,
+                'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'title' => $f->title ?? $f->name,
+            ]);
+
         $name = request()->get("search");
         $category = request()->get("categories");
         $remixers = request()->get("remixers");
@@ -47,6 +63,22 @@ class SearchController extends Controller
                 ->with(['user', 'category']) // Carga las relaciones
                 ->orderBy('created_at', 'desc')
                 ->paginate(30);
+
+            $playList = File::where('name', 'like', '%' . $name . '%')
+                ->whereHas('user', function ($query) use ($remixers) {
+                    $query->where('name', 'like', '%' . $remixers . '%');
+                })
+                ->whereHas('category', function ($query) use ($category) {
+                    $query->where('name', 'like', '%' . $category . '%');
+                })
+                ->with(['user', 'category']) // Carga las relaciones
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(fn($f) => [
+                    'id' => $f->id,
+                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                    'title' => $f->title ?? $f->name,
+                ]);
         }
 
         $results->getCollection()->transform(function ($file) {
@@ -64,22 +96,8 @@ class SearchController extends Controller
                 'isZip' => $isZip
             ];
         });
-        
-        $playList = []; 
 
-        foreach ($results as $f) {
-            $file = File::find($f['id']);
-            $track = $file->get()
-                ->map(fn($f) => [
-                    'id' => $f->id,
-                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
-                    'title' => $f->title ?? $f->name,
-                ]);
-            array_push($playList, $track);
-        }
-
-
-        $allCategories = Category::all();
+        $allCategories = Category::orderBy('name')->get();
         $allRemixers = User::whereHas('files', function ($query) use ($word) {
             $query->where('name', 'like', '%' . $word . '%');
         })->get();

@@ -31,7 +31,23 @@ class CategoryController extends Controller
             ->with(['collection.category'])
             ->orderBy('created_at', 'desc')
             ->paginate(30);
-        
+
+        $playList = File::where(function ($query) use ($categoryId) {
+                $query->whereHas('collection.category', function ($q) use ($categoryId) {
+                    $q->where('id', $categoryId);
+                })->orWhereHas('category', function ($q) use ($categoryId) {
+                    $q->where('categories.id', $categoryId);
+                });
+            })
+            ->with(['collection.category'])
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($f) => [
+                'id' => $f->id,
+                'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'title' => $f->title ?? $f->name,
+            ]);
+
         $name = request()->get("search");
         $category = request()->get("categories");
         $remixers = request()->get("remixers");
@@ -46,6 +62,22 @@ class CategoryController extends Controller
                 ->with(['user', 'category']) // Carga las relaciones
                 ->orderBy('created_at', 'desc')
                 ->paginate(30);
+            
+            $playList = File::where('name', 'like', '%' . $name . '%')
+                ->whereHas('category', function ($query) use ($category) {
+                    $query->where('name', 'like', '%' . $category . '%');
+                })
+                ->whereHas('user', function ($query) use ($remixers) {
+                    $query->where('name', 'like', '%' . $remixers . '%');
+                })
+                ->with(['user', 'category']) // Carga las relaciones
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->map(fn($f) => [
+                    'id' => $f->id,
+                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                    'title' => $f->title ?? $f->name,
+                ]);
         }
 
         $results->getCollection()->transform(function ($file) {
@@ -65,22 +97,8 @@ class CategoryController extends Controller
         });
 
         $category = Category::find($categoryId);
-        
-        $playList = []; 
 
-        foreach ($results as $f) {
-            $file = File::find($f['id']);
-            $track = $file->get()
-                ->map(fn($f) => [
-                    'id' => $f->id,
-                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
-                    'title' => $f->title ?? $f->name,
-                ]);
-            array_push($playList, $track);
-        }
-
-
-        $allCategories = Category::all();
+        $allCategories = Category::orderBy('name')->get();
         $allRemixers = User::whereHas('files', function ($query) use ($categoryId) {
             $query->where('category_id', $categoryId);
         })->get();
