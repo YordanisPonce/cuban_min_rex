@@ -34,6 +34,16 @@
         footer{
             z-index: 11;
         }
+
+        @media(max-width: 500px) {
+            .hidden-mobile{
+                display: none !important;
+            }
+
+            .name{
+                max-width: 100px !important;
+            }
+        }
     </style>
 @endpush
 
@@ -86,15 +96,15 @@
                             </div>
                         </div>
                     </form>
-                    <table class="datatables-basic table">
+                    <table class="datatables-basic table table-hover">
                         <thead>
                             <tr>
-                                <th></th>
-                                <th>Fecha</th>
+                                <th class="hidden-mobile"></th>
+                                <th class="hidden-mobile">Fecha</th>
                                 <th>REMIXERS</th>
                                 <th>Nombre</th>
-                                <th>BPM</th>
-                                <th>Categoría</th>
+                                <th class="hidden-mobile">BPM</th>
+                                <th class="hidden-mobile">Categoría</th>
                                 @auth
                                     @if (!Auth::user()->hasActivePlan())
                                         <th></th>
@@ -115,17 +125,17 @@
                                 @endphp
                                 @if ($visible)
                                 <tr class="result" data-id="{{$file['id']}}" data-url="{{$file['url']}}">
-                                    <td></td>
-                                    <td>{{ $date }}</td>
+                                    <td class="hidden-mobile"></td>
+                                    <td class="hidden-mobile">{{ $date }}</td>
                                     <td>{{ $file['user'] }}</td>
                                     <td>
-                                        <span class="d-block w-100 text-nowrap overflow-hidden"
-                                                style="text-overflow:ellipsis;">
-                                            {{ $file['name'] }}
+                                        <span class="d-block overflow-hidden name"
+                                                style="text-overflow:ellipsis;max-width: 500px">
+                                            {{ $file['name'] }} 
                                         </span>
                                     </td>
-                                    <td>{{ $file['bpm'] }}</td>
-                                    <td>{{ $file['category'] }}</td>
+                                    <td class="hidden-mobile">{{ $file['bpm'] }}</td>
+                                    <td class="hidden-mobile">{{ $file['category'] }}</td>
                                     @auth
                                         @if (!Auth::user()->hasActivePlan())
                                             @if ($file['price'] > 0)

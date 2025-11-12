@@ -8,6 +8,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Plan;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +21,8 @@ class PlanForm
             ->components([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
                 // TextInput::make('stripe_product_id'),
                 // TextInput::make('stripe_price_id'),
                 TextInput::make('price')
@@ -28,6 +30,9 @@ class PlanForm
                     ->required()
                     ->numeric()
                     ->prefix('$'),
+                ColorPicker::make('color')
+                    ->required()
+                    ->default('#38717d'),
                 RichEditor::make('description')
                     ->label('Descripción')
                     ->required()

@@ -142,14 +142,14 @@
                             auth()->user()->hasActivePlan();
                     @endphp
                     <div class="col-xl-4 col-lg-6">
-                        <div class="card h-100">
+                        <div class="card h-100" style="border: 1px solid {{$plan->color}}" onmouseenter="this.style.boxShadow = '2px 2px 3px 2px {{$plan->color}}'" onmouseleave="this.style.boxShadow = 'none'">
                             <div class="card-header text-center">
-                                <img src="{{ $plan->image }}" alt="{{ $plan->name }}" class="mb-4"
+                                <img src="{{ $plan->image ?? config('app.logo') }}" alt="{{ $plan->name }}" class="mb-4"
                                     style="width:64px;height:64px;object-fit:contain;">
                                 <h4 class="mb-1">{{ $plan->name }}</h4>
                                 <div class="d-flex align-items-center justify-content-center">
-                                    <span class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
-                                    <sub class="h6 text-body-secondary mb-n1 ms-1">
+                                    <span class="h2 fw-extrabold mb-0" style="color: {{$plan->color}}">${{ $plan->price_formatted }}</span>
+                                    <sub class="h6 mb-n1 ms-1" style="color: {{$plan->color}}">
                                         {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
                                     </sub>
                                 </div>
@@ -178,15 +178,15 @@
                                 <div class="mt-auto">
                                     @auth
                                         @if ($isActive)
-                                            <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
+                                            <button class="btn btn-secondary w-100" style="color: {{$plan->color}}" disabled>Ya lo tienes</button>
                                         @else
                                             <a href="{{ route('payment.form', $plan->id) }}"
-                                                class="btn btn-label-primary w-100">
+                                                class="btn btn-label-primary w-100" style="color: {{$plan->color}}">
                                                 Adquirir plan
                                             </a>
                                         @endif
                                     @else
-                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100">
+                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100" style="color: {{$plan->color}}">
                                             Inicia sesión para comprar
                                         </a>
                                     @endauth

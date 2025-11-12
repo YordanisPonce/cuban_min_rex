@@ -78,7 +78,7 @@ class ListFiles extends ListRecords
                     Select::make('dinamic_category_id')
                         ->label('Selecciona una Categoría')
                         ->options(function () {
-                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
+                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)->orderBy('name')
                                 ->pluck('name', 'id');
                         })
                         ->disabled(fn($get) => $get('collection_id') !== null)

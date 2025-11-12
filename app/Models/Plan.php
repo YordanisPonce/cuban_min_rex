@@ -22,6 +22,7 @@ class Plan extends Model
         'downloads',
         'is_recommended',
         'image',
+        'color',
         'features',
     ];
 

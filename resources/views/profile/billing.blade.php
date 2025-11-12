@@ -359,7 +359,7 @@
                                 <div class="col-xl-4 col-lg-6">
                                     <div class="card h-100">
                                         <div class="card-header text-center">
-                                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}"
+                                            <img src="{{ $plan->image ?? config('app.logo') }}" alt="{{ $plan->name }}"
                                                 class="mb-4" style="width:64px;height:64px;object-fit:contain;">
                                             <h4 class="mb-1">{{ $plan->name }}</h4>
                                             <div class="d-flex align-items-center justify-content-center">

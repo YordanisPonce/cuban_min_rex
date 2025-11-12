@@ -57,7 +57,8 @@ class FileController extends Controller
                 $download->user_id = auth()->user()->id;
                 $download->file_id = $file->id;
                 $download->save();
-                $downloadName = $file->name;
+                $ext = pathinfo($path, PATHINFO_EXTENSION);
+                $downloadName = "$file->name.$ext";
                 return Storage::disk('s3')->download($path, $downloadName);
             }
             return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
