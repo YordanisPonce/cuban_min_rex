@@ -46,7 +46,7 @@
                             <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
                                 @csrf
                                 <div class="d-flex align-items-start align-items-sm-center gap-6">
-                                    <img src="{{ Auth::user()->photo ? Storage::url(Auth::user()->photo) : config('app.logo') }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
+                                    <img src="{{ Auth::user()->photo ? Auth::user()->photo : config('app.logo') }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
                                     <div class="button-wrapper">
                                         <label for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
                                             <span class="d-none d-sm-block">Subir Logo Personal</span>

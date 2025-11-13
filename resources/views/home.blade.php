@@ -30,7 +30,7 @@
 
     @media (max-width: 500px) {
         body{
-            background-image: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.75)),url("{{ asset('assets/img/front-pages/backgrounds/bg-mobile.PNG') }}");
+            background-image: linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.75)),url("{{ asset('assets/img/front-pages/backgrounds/new-bg-mobile.jpg') }}");
         }
     }
 </style>

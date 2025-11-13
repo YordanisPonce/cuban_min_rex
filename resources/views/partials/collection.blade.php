@@ -1,6 +1,6 @@
 {{-- resources/views/partials/collection.blade.php --}}
 
-<section class="bg-body landing-reviews pb-0 swiper" id="{{ $id }}">
+<section class="bg-body pb-0 swiper mt-5" id="{{ $id }}">
     <div class="container" style="position: relative;">
         <a href="{{ $ctaHref }}" class="link-underline d-none d-md-block" style="position: absolute; right: 16px">{{ $ctaText }} →</a>
         <div class="row align-items-center gx-0 gy-4 g-lg-5 mb-5 pb-md-5 flex-lg-row-normal">
@@ -116,11 +116,6 @@
                                 @endforeach
                             @endisset
                         </div>
-
-                        {{-- Flechas internas del swiper --}}
-                        <div class="swiper-button-next" tabindex="0" role="button" aria-label="Siguiente"></div>
-                        <div class="swiper-button-prev" tabindex="0" role="button" aria-label="Anterior"></div>
-                        <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
                     </div>
                 </div>
             </div>

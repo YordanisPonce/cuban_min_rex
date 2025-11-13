@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateInterval;
 use DateTime;
 
 use Filament\Models\Contracts\FilamentUser;
@@ -15,6 +14,8 @@ use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -70,6 +71,16 @@ class User extends Authenticatable implements FilamentUser
     public function getFilamentName(): string
     {
         return $this->name;
+    }
+
+    protected function photo(): Attribute
+    {
+
+        $isFrontend = request()->input('is_frontend');
+
+        return Attribute::make(
+            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
+        );
     }
 
     // === Socialite ===

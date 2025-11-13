@@ -129,10 +129,7 @@
                             @foreach ($results as $file)
                                 @php
                                     $date = Carbon::parse($file['date'])->format('d/m/Y');
-                                    $visible = true;
-                                    if( isset($file['ext']) && $file['ext'] !== 'mp3') $visible = false;
                                 @endphp
-                                @if ($visible)
                                 <tr class="result" data-id="{{$file['id']}}" data-url="{{$file['url']}}">
                                     <td class="hidden-mobile"></td>
                                     <td class="hidden-mobile">{{ $date }}</td>
@@ -188,7 +185,6 @@
                                         @endif
                                     </td>
                                 </tr>
-                                @endif
                             @endforeach
                         </tbody>
                     </table>
