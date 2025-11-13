@@ -39,6 +39,11 @@
             z-index: 11;
         }
 
+        .page-item .page-link
+        {
+            border-radius: 0 !important;
+        }
+
         @media(max-width: 500px) {
             .hidden-mobile{
                 display: none !important;
@@ -187,29 +192,9 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <nav class="mt-3">
-                        <ul class="pagination justify-content-center" style="--bs-pagination-border-radius: 0%;">
-                            @if ($results->onFirstPage())
-                                <li class="page-item disabled"><span class="page-link">Anterior</span></li>
-                            @else
-                                <li class="page-item"><a class="page-link" href="{{ $results->previousPageUrl() }}">Anterior</a></li>
-                            @endif
-
-                            @for ($i = 1; $i <= $results->lastPage(); $i++)
-                                @if ($i == $results->currentPage())
-                                    <li class="page-item active"><span class="page-link">{{ $i }}</span></li>
-                                @else
-                                    <li class="page-item"><a class="page-link" href="{{ $results->url($i) }}">{{ $i }}</a></li>
-                                @endif
-                            @endfor
-
-                            @if ($results->hasMorePages())
-                                <li class="page-item"><a class="page-link" href="{{ $results->nextPageUrl() }}">Siguiente</a></li>
-                            @else
-                                <li class="page-item disabled"><span class="page-link">Siguiente</span></li>
-                            @endif
-                        </ul>
-                    </nav>
+                    <div class="mt-3 d-flex justify-content-center">
+                        {{ $results->links() }}
+                    </div>
                 </div>
             </div>
             @if ($results->isEmpty())

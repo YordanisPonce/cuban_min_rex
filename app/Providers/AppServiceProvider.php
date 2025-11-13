@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use DateTime;
+use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Vite;
@@ -24,5 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        Paginator::useBootstrapFive();
+        Paginator::useBootstrapFour();
     }
 }
