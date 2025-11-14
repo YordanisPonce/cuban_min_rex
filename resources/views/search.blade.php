@@ -31,6 +31,11 @@
             z-index: 10;
         }
 
+        #musicSearch * {
+            font-size: 18px !important;
+            font-weight: 400;
+        }
+
         td a:hover{
             transform: scale(0.9);
         }
