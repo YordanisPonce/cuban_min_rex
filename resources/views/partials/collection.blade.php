@@ -48,7 +48,7 @@
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
                                                 <a class="mb-4">
                                                     <img src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}"
-                                                        alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
+                                                        alt="Synth Nights" class="w-100 rounded" style="height: 120px">
                                                 </a>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar me-3 avatar-sm">
@@ -85,7 +85,7 @@
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
                                                 <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
                                                     <img src="{{ $item->image ? $item->image : ($item->user->photo ? $item->user->photo : config('app.logo')) }}"
-                                                        alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
+                                                        alt="Synth Nights" class="w-100 rounded" style="max-height: 120px">
                                                 </a>
                                                 <div class="d-flex align-items-center">
                                                     <div class="avatar me-3 avatar-sm">
