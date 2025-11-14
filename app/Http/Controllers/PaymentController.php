@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Billing;
 use App\Models\Category;
+use App\Models\Collection;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\Plan;
@@ -24,7 +25,13 @@ class PaymentController extends Controller
             'planId' => $planId,
             'plans' => $plans,
             'categories' => Category::where('show_in_landing', true)->get(),
-            'djs' => User::where('role', 'worker')->orderBy('name')->get()
+            'djs' => User::where('role', 'worker')->orderBy('name')->get(),
+            'recentCollections' => Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                return $item->files()->count() > 0;
+            }),
+            'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                return $item->files()->count() > 0;
+            })
         ]);
     }
 
@@ -62,6 +69,8 @@ class PaymentController extends Controller
             $billing->postal = $request->postal;
             $billing->country = $request->country;
             $billing->save();
+
+            auth()->user()->createOrGetStripeCustomer();
 
             $session = auth()->user()->checkout(
                 [$plan->stripe_price_id],

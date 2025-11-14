@@ -7,6 +7,7 @@
 @section('title', "Inicio – ".config('app.name'))
 
 @push('styles')
+<link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
 <style> 
     body {
         /* The image used */
@@ -178,15 +179,15 @@
                                 <div class="mt-auto">
                                     @auth
                                         @if ($isActive)
-                                            <button class="btn btn-secondary w-100" style="color: {{$plan->color}}" disabled>Ya lo tienes</button>
+                                            <button class="btn btn-secondary w-100" style="color: {{$plan->color}}; border: 1px solid {{$plan->color}}" disabled>Ya lo tienes</button>
                                         @else
                                             <a href="{{ route('payment.form', $plan->id) }}"
-                                                class="btn btn-label-primary w-100" style="color: {{$plan->color}}">
+                                                class="btn btn-label-primary w-100" style="color: {{$plan->color}}; border: 1px solid {{$plan->color}}">
                                                 Adquirir plan
                                             </a>
                                         @endif
                                     @else
-                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100" style="color: {{$plan->color}}">
+                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100" style="color: {{$plan->color}}; border: 1px solid {{$plan->color}}">
                                             Inicia sesión para comprar
                                         </a>
                                     @endauth

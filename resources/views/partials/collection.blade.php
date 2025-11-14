@@ -47,7 +47,7 @@
                                             <div
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
                                                 <a class="mb-4">
-                                                    <img src="{{ $item->poster ? Storage::url($item->poster) : ($item->user->photo ? Storage::url($item->user->photo) : config('app.logo')) }}"
+                                                    <img src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}"
                                                         alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                                 </a>
                                                 <div class="d-flex align-items-center">
@@ -84,7 +84,7 @@
                                             <div
                                                 class="card-body text-body d-flex flex-column justify-content-between h-100">
                                                 <a class="mb-4" href="{{ route('collection.show', $item->id)}}">
-                                                    <img src="{{ $item->image ? Storage::url($item->image) : ($item->user->photo ? Storage::url($item->user->photo) : config('app.logo')) }}"
+                                                    <img src="{{ $item->image ? $item->image : ($item->user->photo ? $item->user->photo : config('app.logo')) }}"
                                                         alt="Synth Nights" class="w-100 rounded" style="max-height: 200px">
                                                 </a>
                                                 <div class="d-flex align-items-center">
@@ -123,9 +123,34 @@
     </div>
 
     <hr class="m-0 mt-6 mt-md-12">
+
+    <div class="window-notice" id="video-player">
+        <div class="content">
+            <div class="container-xxl flex-grow-1 container-p-y w-100">
+                <div class="row gy-6">
+                    <!-- Video Player -->
+                    <div class="col-12">
+                        <div class="card" style="position: relative">
+                            <h5 class="card-header d-block text-nowrap overflow-hidden"
+                                style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
+                            <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
+                            <div class="card-body">
+                                <video class="w-100" id="plyr-video-player" oncontextmenu="return false;" playsinline controls></video>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- /Video Player -->
+                </div>
+            </div>
+        </div>
+    </div>
 </section>
 
 @push('scripts')
+    <script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
+    <script>
+        new Plyr("#plyr-video-player");
+    </script>
     <script>
         let tracks = [];
         
@@ -141,6 +166,17 @@
                 currentAudio.currentTime = 0;
                 currentAudio = null;
             }
+        }
+
+        function stopVideo(){
+            document.getElementById('plyr-video-player').pause();
+            document.getElementById('video-player').style.display = 'none';
+        }
+
+        function playVideo(title){
+            document.getElementById('video-player').style.display = 'flex';
+            document.getElementById('video-title').innerHTML = title;
+            document.getElementById('plyr-video-player').play();
         }
 
         function playNextTrack(currentTrackIndex, tracks, audioPlayer, audioSource) {
@@ -243,6 +279,11 @@
                         element.dataset.state = 'paused';
                         element.innerHTML = '<i class="ti tabler-player-play"></i>';
                     }
+                } else {
+                    stopVideo();
+                    stopCurrentAudio();
+                    document.getElementById('plyr-video-player').src = data[0].url;
+                    playVideo(data[0].title);
                 }
             })
             .catch(error => {

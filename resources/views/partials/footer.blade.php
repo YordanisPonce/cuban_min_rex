@@ -16,8 +16,9 @@
             <span class="app-brand-text demo footer-link fw-bold ms-2 ps-1">{{ config('app.name') }}</span>
           </a>
           <p class="footer-text footer-logo-description mb-6">Sube, descarga y compra: haz que cada momento suene.</p>
-          <p><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</p>
-          <p><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</p>
+          <p><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</a></p>
+          <p><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</a></p>
+          <p><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></p>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
           <h6 class="footer-title mb-6">Categorías</h6>

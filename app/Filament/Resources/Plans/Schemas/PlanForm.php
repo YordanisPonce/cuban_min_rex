@@ -54,20 +54,20 @@ class PlanForm
                     ->required()
                     ->numeric()
                     ->default(1),
-                Toggle::make('is_recommended')
-                    ->required()
-                    ->label('Recomendado')
-                    ->reactive()
-                    ->rules([
-                        function ($attribute, $value, $fail) {
-                            if ($value) {
-                                $existing = Plan::where('is_recommended', true)->first();
-                                if ($existing) {
-                                    $fail('Ya existe un plan recomendado. Desmarca el otro primero.');
-                                }
-                            }
-                        },
-                    ]),
+                // Toggle::make('is_recommended')
+                //     ->required()
+                //     ->label('Recomendado')
+                //     ->reactive()
+                //     ->rules([
+                //         function ($attribute, $value, $fail) {
+                //             if ($value) {
+                //                 $existing = Plan::where('is_recommended', true)->first();
+                //                 if ($existing) {
+                //                     $fail('Ya existe un plan recomendado. Desmarca el otro primero.');
+                //                 }
+                //             }
+                //         },
+                //     ]),
                 Repeater::make('features')->columnSpanFull()->reorderableWithButtons()->schema([
                     TextInput::make('value')
                         ->label('Característica')

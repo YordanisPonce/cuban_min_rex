@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Files\Tables;
 
+use App\Models\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -11,6 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Filament\Actions\Action;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Response;
 
 class FilesTable
@@ -43,8 +45,14 @@ class FilesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                SelectFilter::make('category_id')
+                    ->label('Categoría')
+                    ->options(fn (): array => Category::orderBy('name')->pluck('name', 'id')->all())
+            ])->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filtros'),
+            )
             ->recordActions([
                 // Action::make('download')
                 //     ->label('Descargar')

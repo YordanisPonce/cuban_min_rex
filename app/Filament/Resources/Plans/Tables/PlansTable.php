@@ -41,9 +41,9 @@ class PlansTable
                     ->label('Descargas por usuario')
                     ->numeric()
                     ->sortable(),
-                IconColumn::make('is_recommended')
-                    ->label('Recomendado')
-                    ->boolean(),
+                // IconColumn::make('is_recommended')
+                //     ->label('Recomendado')
+                //     ->boolean(),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()

@@ -38,30 +38,39 @@ class FileController extends Controller
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
         }
 
-        if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
-            $plan = auth()->user()->currentPlan;
+        if (auth()->user()->hasActivePlan()) {
 
-            if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
-                $file = File::find($id);
+            $plan = null;
 
-                $path = $file->original_file;
-
-                if (!Storage::disk('s3')->exists($path)) {
-                    abort(404);
-                }
-
-                $file->download_count = $file->download_count + 1;
-                $file->save();
-
-                $download = new Download();
-                $download->user_id = auth()->user()->id;
-                $download->file_id = $file->id;
-                $download->save();
-                $ext = pathinfo($path, PATHINFO_EXTENSION);
-                $downloadName = "$file->name.$ext";
-                return Storage::disk('s3')->download($path, $downloadName);
+            if (auth()->user()->currentPlan) {
+                $plan = auth()->user()->currentPlan;
+            } else {
+                $plan = Order::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->first()?->plan;
             }
-            return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
+
+            if($plan){
+                if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
+                    $file = File::find($id);
+
+                    $path = $file->original_file;
+
+                    if (!Storage::disk('s3')->exists($path)) {
+                        abort(404);
+                    }
+
+                    $file->download_count = $file->download_count + 1;
+                    $file->save();
+
+                    $download = new Download();
+                    $download->user_id = auth()->user()->id;
+                    $download->file_id = $file->id;
+                    $download->save();
+                    $ext = pathinfo($path, PATHINFO_EXTENSION);
+                    $downloadName = "$file->name.$ext";
+                    return Storage::disk('s3')->download($path, $downloadName);
+                }
+                return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
+            }
         }
         return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
     }

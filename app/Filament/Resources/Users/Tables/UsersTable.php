@@ -11,12 +11,13 @@ use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 
 class UsersTable
 {
@@ -52,8 +53,22 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('current_plan_id')
+                    ->label('Subscripción activa')
+                    ->toggle()
+                    ->query(fn (Builder $query): Builder => $query->whereNot('current_plan_id', null)),
+                SelectFilter::make('role')
+                    ->label('Rol')
+                    ->options([
+                        'user' => 'Usuario',
+                        'worker' => 'Trabajador',
+                        'admin' => 'Administrador',
+                    ]),
+            ])->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filtros'),
+            )
             ->recordActions([
                 EditAction::make()->label('Editar'),
                 Action::make('changePassword')->visible(fn() => auth()->user()?->role === 'admin')

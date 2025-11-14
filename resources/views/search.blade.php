@@ -203,12 +203,12 @@
                     <div class="row gy-6">
                         <!-- Video Player -->
                         <div class="col-12">
-                            <div class="card" style="position: relative">
+                            <div class="card" style="position: relative; max-height: 100vh">
                                 <h5 class="card-header d-block text-nowrap overflow-hidden"
                                     style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
                                 <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
-                                <div class="card-body">
-                                    <video class="w-100" id="plyr-video-player" oncontextmenu="return false;" playsinline controls></video>
+                                <div class="card-body w-100 h-100">
+                                    <video class="w-100" style="max-height: 80vh;" id="plyr-video-player" oncontextmenu="return false;" playsinline controls></video>
                                 </div>
                             </div>
                         </div>
