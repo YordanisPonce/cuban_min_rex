@@ -163,7 +163,7 @@
                                                 <a style="display: flex; width: 20px; color: #f62a2a"
                                                     href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
                                             @else
-                                                <a style="display: flex; width: 20px; color: #f62a2a" class="cursor-pointer" fdata-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
+                                                <a style="display: flex; width: 20px; color: #f62a2a" class="cursor-pointer" data-url="{{route('file.pay', $file['id']) }}"  onclick="proccessPayment(this.dataset.url)">{{ svg('vaadin-cart') }}</a>
                                             @endif
                                         </td>
                                     @else

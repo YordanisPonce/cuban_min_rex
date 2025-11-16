@@ -117,7 +117,7 @@ class FileController extends Controller
             Stripe::setApiKey(config('services.stripe.secret_key'));
 
             // URL temporal al archivo
-            $urlTemporal = Storage::disk('s3')->temporaryUrl($file->file, now()->addHour());
+            $urlTemporal = Storage::disk('s3')->temporaryUrl($file->original_file, now()->addHour());
 
             // Monto en centavos
             $amountInCents = (int) round($price * 100);

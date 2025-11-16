@@ -7,24 +7,20 @@
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>@yield('title', 'Cuban_Mix_Rex')</title>
+    <!-- <meta name="robots" content="noindex, nofollow" /> -->
+    <title>@yield('title', config('app.name'))</title>
 
     <meta name="description"
-        content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
+        content="{{ config('app.name') }}" />
     <!-- Canonical SEO -->
     <meta name="keywords"
-        content="Vuexy bootstrap dashboard, vuexy bootstrap 5 dashboard, themeselection, html dashboard, web dashboard, frontend dashboard, responsive bootstrap theme" />
-    <meta property="og:title" content="Vuexy bootstrap Dashboard by Pixinvent" />
+        content="{{ config('app.name') }}, Remixes, Dj, music" />
+    <meta property="og:title" content="{{ config('app.name') }}" />
     <meta property="og:type" content="product" />
-    <meta property="og:url"
-        content="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
-    <meta property="og:image" content="{{ asset('assets/img/vuexy-hero-image.png') }}" />
+    <meta property="og:image" content="{{ config('app.logo') }}" />
     <meta property="og:description"
-        content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
-    <meta property="og:site_name" content="Pixinvent" />
-    <link rel="canonical"
-        href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
+        content="{{ config('app.name') }}" />
+    <meta property="og:site_name" content="{{ config('app.name') }}" />
 
     @if (env('APP_ENV') == 'production')
         <script>
