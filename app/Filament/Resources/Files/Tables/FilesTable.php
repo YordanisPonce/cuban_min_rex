@@ -62,8 +62,8 @@ class FilesTable
                 //         $path = storage_path('app/public/'.$record->file);
                 //         return Response::download($path);
                 //     }),
-                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Editar'),
-                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Eliminar'),
+                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Editar'),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
