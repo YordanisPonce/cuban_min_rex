@@ -176,8 +176,10 @@ class User extends Authenticatable implements FilamentUser
                 $plan = Plan::find($user->current_plan_id);
             } else {
                 $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
-                if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
-                    $plan = $order?->plan;
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
+                    }
                 }
             }
 
@@ -213,8 +215,10 @@ class User extends Authenticatable implements FilamentUser
                 $plan = Plan::find($user->current_plan_id);
             } else {
                 $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
-                if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
-                    $plan = $order?->plan;
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
+                    }
                 }
             }
 
@@ -246,15 +250,18 @@ class User extends Authenticatable implements FilamentUser
         $users = User::all();
         foreach ($users as $user) {
             $plan = null;
-            
+
             if ($user->hasActivePlan() && $user->currentPlan()) {
                 $plan = Plan::find($user->current_plan_id);
             } else {
                 $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
-                if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
-                    $plan = $order?->plan;
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
+                    }
                 }
             }
+            
             if ($plan) {
                 $planAmount = $plan->price / $plan->duration_months * 0.3;
                 $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
