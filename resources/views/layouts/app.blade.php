@@ -89,6 +89,14 @@
     <script src="{{ asset('assets/js/front-config.js') }}"></script>
 
     <style>
+
+        :root{
+            --bs-primary: #00FF9F !important; /* Color de Bottones */
+            /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
+
+            --download-button: #FF2EC4 !important;
+            --play-button: #00C8FF !important;
+        }
         /* Estilo para el loader */
         .loader {
             position: fixed;
@@ -159,6 +167,21 @@
 
         .card-relationed:hover .dark-screen {
             display: block !important;
+        }    
+
+        .bg-body{
+            background-color: transparent !important;
+        }
+
+        body{
+            /* The image used */
+            background-image: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)),url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg.jpeg') }}");
+
+            /* Create the parallax scrolling effect */
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
         }
 
         @media(max-width: 450px) {
@@ -168,6 +191,9 @@
                 img {
                     height: 100%;
                 }
+            }
+            body{
+                background-image: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
             }
         }
 

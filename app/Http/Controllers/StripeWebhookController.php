@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Order;
 use App\Models\File;
 use App\Models\Plan;
@@ -59,8 +60,6 @@ class StripeWebhookController extends CashierController
     {
         $pi = $payload['data']['object'];
         $session = $payload['data']['object'];
-        $file_id = $session['metadata']['file_id'] ?? null;
-        $file_url = $session['metadata']['file_url'] ?? null;
         $user_id = $session['metadata']['user_id'] ?? null;
         $orderId = $session['metadata']['order_id'] ?? null;
         $email = null;
@@ -81,38 +80,43 @@ class StripeWebhookController extends CashierController
             Log::error("Fallo en el intento de obtener el correo " . $th->getMessage());
         }
         Log::info('Payload', $payload);
-        if ($file_id && $orderId) {
-            $file = File::find($file_id);
+        if ($orderId) {
             $user = User::where('id', $user_id)->orWhere('email', $email)->first();
             $order = Order::find($orderId);
-            if ($file && $order) {
+            if ($order) {
                 $order->status = 'paid';
                 $order->paid_at = Carbon::now();
                 $order->customer_email = $email;
                 $order->save();
 
-                $sale = new Sale();
-                $sale->user_id = $user?->id;
-                $sale->file_id = $file->id;
-                $sale->customer_email = $email;
-                $sale->amount = $file->price;
-                $sale->user_amount = $file->price * 0.7;
-                $sale->admin_amount = $file->price * 0.3;
-                $sale->save();
+                foreach ($order->order_items as $key => $value) {
+                    $sale = new Sale();
+                    $sale->user_id = $user?->id;
+                    $sale->file_id = $value->file_id;
+                    $sale->customer_email = $email;
+                    $sale->amount = $value->file->price;
+                    $sale->user_amount = $value->file->price * 0.7;
+                    $sale->admin_amount = $value->file->price * 0.3;
+                    $sale->save();
+                }
 
                 $token = Str::random(50);
 
                 //Aqui configurar para enviar el correo al cliente
-                $user && $user->notify(new FilePaid(route('file.download', [ $file->id, 'token' => $token])));
+                $user && $user->notify(new FilePaid(route('order.download', [ $order->id, 'token' => $token])));
                 if ($email && !$user) {
                     $user = User::where('email', 'user@guest.com')->first();
-                    Notification::route('mail', $email)->notify(new FilePaid(route('file.download', [ $file->id, 'token' => $token])));
+                    Notification::route('mail', $email)->notify(new FilePaid(route('order.download', [ $order->id, 'token' => $token])));
                 }
 
                 $downloadToken = $user?->downloadToken ?? [];
                 array_push($downloadToken, $token);
                 $user->downloadToken = $downloadToken;
                 $user->save();
+
+                $cart = Cart::get_current_cart();
+                $cart->items = [];
+                $cart->save();
             }
         }
     }

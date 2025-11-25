@@ -1,3 +1,7 @@
+@php
+    use App\Models\Cart;
+@endphp
+
 <script src="{{ asset('assets/vendor/js/dropdown-hover.js') }}"></script>
 <script src="{{ asset('assets/vendor/js/mega-dropdown.js') }}"></script>
 
@@ -107,14 +111,21 @@
                     </form>
                 </li> --}}
 
-                <!-- navbar button: Start -->
+                
+                <li>
+                    <a class="btn btn-primary align-center" href="{{ route('cart') }}">
+                        <span class="icon-base me-md-1" style="width: 18px !important;">{{ svg('vaadin-cart') }}</span>
+                        <span class="d-none d-md-block">$ {{ number_format(Cart::get_current_cart()->get_cart_count(), 2, '.', '')}}</span>
+                    </a>
+                </li>
                 @auth
+                    <!-- navbar button: Start -->
                     <li class="nav-item dropdown ms-2">
                         <a class="nav-link dropdown-toggle d-flex align-items-center hide-arrow" href="javascript:void(0);"
                             data-bs-toggle="dropdown">
-                            <div class="avatar avatar-online">
-                                <span
-                                    class="avatar-initial rounded-circle bg-label-primary">{{ substr(Auth::user()->name, 0, 1) }}</span>
+                            <div class="avatar overflow-hidden rounded-circle">
+                                <img src="{{ Auth::user()->photo ? Auth::user()->photo : config('app.logo') }}" alt="Avatar" class="rounded-circle" />
+                                <div class="dark-screen" style="background-color: rgba(0, 0, 0, 0.5);"></div>
                             </div>
                             <span class="ms-2 d-none d-md-block">{{ Auth::user()->name }}</span>
                         </a>

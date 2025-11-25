@@ -35,7 +35,7 @@ class User extends Authenticatable implements FilamentUser
         'is_admin',
         'paypal_email',
         'email_verified_at',
-        'downloadToken'
+        'downloadToken',
     ];
 
     /**
@@ -121,6 +121,11 @@ class User extends Authenticatable implements FilamentUser
     public function billing()
     {
         return $this->hasOne(Billing::class);
+    }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
     }
 
     public function categories()

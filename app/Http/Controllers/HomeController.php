@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
@@ -10,6 +11,7 @@ use App\Models\User;
 use App\Notifications\ContactNotification;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
 class HomeController extends Controller
@@ -20,10 +22,11 @@ class HomeController extends Controller
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $artistCollections = Collection::all()->filter(function($item){
+        $artistCollections = Collection::take(6)->get()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->get();
+        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->take(6)->get();
+        $tops = File::orderBy('download_count', 'desc')->take(6)->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -33,7 +36,7 @@ class HomeController extends Controller
         $ctg = Category::orderBy('name')->get()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        return view('home', compact('pageTitle', 'plans', 'ctg', 'djs','categories', 'artistCollections', 'newItems', 'recentCategories', 'recentCollections'));
+        return view('home', compact('pageTitle', 'plans', 'ctg', 'djs','categories', 'artistCollections', 'newItems', 'tops', 'recentCategories', 'recentCollections'));
     }
 
     public function faq()
@@ -250,5 +253,25 @@ class HomeController extends Controller
         $remixes = true;
 
         return view('search', compact('results', 'djs', 'remixes','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
+    }
+
+    public function cart(Request $request){
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+        $djs = User::whereHas('files')->orderBy('name')->get();
+        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $cart = [];
+
+        foreach (Cart::get_current_cart()->items ?? [] as $key => $value) {
+            $file = File::find($value);
+            array_push($cart, $file);
+        }
+
+        return view('cart', compact('cart','categories', 'djs', 'recentCategories', 'recentCollections'));
     }
 }
