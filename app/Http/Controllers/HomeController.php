@@ -22,11 +22,11 @@ class HomeController extends Controller
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $artistCollections = Collection::take(6)->get()->filter(function($item){
+        $artistCollections = Collection::take(12)->get()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->take(6)->get();
-        $tops = File::orderBy('download_count', 'desc')->take(6)->get();
+        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->take(12)->get();
+        $tops = File::orderBy('download_count', 'desc')->take(12)->get();
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });

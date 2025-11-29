@@ -111,13 +111,14 @@
                     </form>
                 </li> --}}
 
-                
+                @if (!(Auth::user() && Auth::user()->hasActivePlan()))
                 <li>
                     <a class="btn btn-primary align-center text-black" href="{{ route('cart') }}">
                         <span class="icon-base me-md-1" style="width: 18px !important;">{{ svg('vaadin-cart') }}</span>
                         <span class="d-none d-md-block">$ {{ number_format(Cart::get_current_cart()->get_cart_count(), 2, '.', '')}}</span>
                     </a>
                 </li>
+                @endif
                 @auth
                     <!-- navbar button: Start -->
                     <li class="nav-item dropdown ms-2">

@@ -11,7 +11,7 @@ $error = session('error');
 @section('content')
 <div class="content-wrapper mt-10">
     <!-- Content -->
-    @if (count(Cart::get_current_cart()->items) > 0)
+    @if (count(Cart::get_current_cart()->items ?? []) > 0)
     <div class="container-xxl flex-grow-1 container-p-y mt-10">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
             <div class="d-flex flex-column justify-content-center">

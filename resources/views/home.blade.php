@@ -85,7 +85,7 @@
         @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
 
         @if ($hasNew)
-            <div class="container">
+            <div class="container mt-10">
                 <div class="text-center mb-3">
                     <span class="badge bg-label-primary">Novedades</span>
                 </div>
@@ -239,6 +239,73 @@
     <hr class="m-0 mt-6 mt-md-12">
 
     {{-- =========================
+       PACKS DE ARTISTAS
+    ========================== --}}
+    <section id="home-collections" class="section-py">
+
+        @php $hasArtists = isset($artistCollections) && count($artistCollections) > 0; @endphp
+
+        @if ($hasArtists)
+            <div class="container">
+                <div class="text-center mb-3">
+                    <span class="badge bg-label-primary">Explorar</span>
+                </div>
+                <h2 class="text-center fw-bold mb-2">Packs de artistas</h2>
+                <p class="text-center text-body-secondary mb-6">
+                    Viaja por su historia musical: etapas, hits y mezclas imprescindibles.
+                </p>
+                <div class="row">
+                    @foreach ($artistCollections as $item)
+                    <div class="col-md-2 mb-4">
+                        <div class="relative card h-100">
+                            <div class="relative overflow-hidden">
+                                <img class="card-img-top" style="height: 200px" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
+                                <div class="dark-screen" style="background-color: rgba(0,0,0,.6);"></div>
+                            </div>
+                            <spam style="position: absolute; right: 0; top: 0; color: #12131C; font-weight: 500;background-color: var(--bs-primary); width: 40%; text-align: center; padding: 4px 0;">{{ $item->category ? $item->category->name : 'Sin Categoría' }}</spam>
+                            <div class="card-body">
+                                <h5 class="card-title mb-6"> <a href="{{route('collection.show', $item->id)}}">{{ $item->name }}</a></h5>
+                                <div class="d-flex gap-4" style="position: absolute; bottom: 0; margin-top: auto;">
+                                    <p class="card-text">{{ $item->user ? $item->user->name : 'Desconocido' }}</p>
+                                    <p class="card-text d-flex gap-2">
+                                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M8.50989 2.00001H15.49C15.7225 1.99995 15.9007 1.99991 16.0565 2.01515C17.1643 2.12352 18.0711 2.78958 18.4556 3.68678H5.54428C5.92879 2.78958 6.83555 2.12352 7.94337 2.01515C8.09917 1.99991 8.27741 1.99995 8.50989 2.00001Z" fill="currentColor"/>
+                                            <path d="M6.31052 4.72312C4.91989 4.72312 3.77963 5.56287 3.3991 6.67691C3.39117 6.70013 3.38356 6.72348 3.37629 6.74693C3.77444 6.62636 4.18881 6.54759 4.60827 6.49382C5.68865 6.35531 7.05399 6.35538 8.64002 6.35547H15.5321C17.1181 6.35538 18.4835 6.35531 19.5639 6.49382C19.9833 6.54759 20.3977 6.62636 20.7958 6.74693C20.7886 6.72348 20.781 6.70013 20.773 6.67691C20.3925 5.56287 19.2522 4.72312 17.8616 4.72312H6.31052Z" fill="currentColor"/>
+                                            <path d="M11.25 17C11.25 16.5858 10.9142 16.25 10.5 16.25C10.0858 16.25 9.75 16.5858 9.75 17C9.75 17.4142 10.0858 17.75 10.5 17.75C10.9142 17.75 11.25 17.4142 11.25 17Z" fill="currentColor"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.67239 7.54204H15.3276C18.7024 7.54204 20.3898 7.54204 21.3377 8.52887C22.2855 9.51569 22.0625 11.0404 21.6165 14.0896L21.1935 16.9811C20.8437 19.3724 20.6689 20.568 19.7717 21.284C18.8745 22 17.5512 22 14.9046 22H9.09534C6.4488 22 5.12553 22 4.22834 21.284C3.33115 20.568 3.15626 19.3724 2.80648 16.9811L2.38351 14.0896C1.93748 11.0403 1.71447 9.5157 2.66232 8.52887C3.61017 7.54204 5.29758 7.54204 8.67239 7.54204ZM12.75 10.5C12.75 10.0858 12.4142 9.75 12 9.75C11.5858 9.75 11.25 10.0858 11.25 10.5V14.878C11.0154 14.7951 10.763 14.75 10.5 14.75C9.25736 14.75 8.25 15.7574 8.25 17C8.25 18.2426 9.25736 19.25 10.5 19.25C11.7426 19.25 12.75 18.2426 12.75 17V13.3197C13.4202 13.8634 14.2617 14.25 15 14.25C15.4142 14.25 15.75 13.9142 15.75 13.5C15.75 13.0858 15.4142 12.75 15 12.75C14.6946 12.75 14.1145 12.5314 13.5835 12.0603C13.0654 11.6006 12.75 11.0386 12.75 10.5Z" fill="currentColor"/>
+                                        </svg> 
+                                        {{ $item->files->count() }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <hr class="m-0 mt-6 mt-md-12">
+        @else
+            <div class="container mb-3">
+                <div class="d-flex align-items-end justify-content-between">
+                    <div>
+                        <span class="badge bg-label-primary mb-2">Explorar</span>
+                        <h2 class="h3 fw-bold mb-1">Packs de artistas</h2>
+                        <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
+                    <h3 class="h5 fw-bold mb-2">Sin packs por ahora</h3>
+                    <p class="text-body-secondary mb-3">Estamos preparando nuevas selecciones por artista y estilo.</p>
+                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Buscar artistas</a>
+                </div>
+            </div>
+        @endif
+    </section>
+    
+    {{-- =========================
        PLANES
     ========================== --}}
     <section id="home-pricing" class="section-py landing-pricing">
@@ -318,73 +385,6 @@
     </section>
     
     <hr class="m-0 mt-6 mt-md-12">
-
-    {{-- =========================
-       PACKS DE ARTISTAS
-    ========================== --}}
-    <section id="home-collections" class="section-py">
-
-        @php $hasArtists = isset($artistCollections) && count($artistCollections) > 0; @endphp
-
-        @if ($hasArtists)
-            <div class="container">
-                <div class="text-center mb-3">
-                    <span class="badge bg-label-primary">Explorar</span>
-                </div>
-                <h2 class="text-center fw-bold mb-2">Packs de artistas</h2>
-                <p class="text-center text-body-secondary mb-6">
-                    Viaja por su historia musical: etapas, hits y mezclas imprescindibles.
-                </p>
-                <div class="row">
-                    @foreach ($artistCollections as $item)
-                    <div class="col-md-2 mb-4">
-                        <div class="relative card h-100">
-                            <div class="relative overflow-hidden">
-                                <img class="card-img-top" style="height: 200px" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
-                                <div class="dark-screen" style="background-color: rgba(0,0,0,.6);"></div>
-                            </div>
-                            <spam style="position: absolute; right: 0; top: 0; color: #12131C; font-weight: 500;background-color: var(--bs-primary); width: 40%; text-align: center; padding: 4px 0;">{{ $item->category ? $item->category->name : 'Sin Categoría' }}</spam>
-                            <div class="card-body">
-                                <h5 class="card-title mb-6"> <a href="{{route('collection.show', $item->id)}}">{{ $item->name }}</a></h5>
-                                <div class="d-flex gap-4" style="position: absolute; bottom: 0; margin-top: auto;">
-                                    <p class="card-text">{{ $item->user ? $item->user->name : 'Desconocido' }}</p>
-                                    <p class="card-text d-flex gap-2">
-                                        <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M8.50989 2.00001H15.49C15.7225 1.99995 15.9007 1.99991 16.0565 2.01515C17.1643 2.12352 18.0711 2.78958 18.4556 3.68678H5.54428C5.92879 2.78958 6.83555 2.12352 7.94337 2.01515C8.09917 1.99991 8.27741 1.99995 8.50989 2.00001Z" fill="currentColor"/>
-                                            <path d="M6.31052 4.72312C4.91989 4.72312 3.77963 5.56287 3.3991 6.67691C3.39117 6.70013 3.38356 6.72348 3.37629 6.74693C3.77444 6.62636 4.18881 6.54759 4.60827 6.49382C5.68865 6.35531 7.05399 6.35538 8.64002 6.35547H15.5321C17.1181 6.35538 18.4835 6.35531 19.5639 6.49382C19.9833 6.54759 20.3977 6.62636 20.7958 6.74693C20.7886 6.72348 20.781 6.70013 20.773 6.67691C20.3925 5.56287 19.2522 4.72312 17.8616 4.72312H6.31052Z" fill="currentColor"/>
-                                            <path d="M11.25 17C11.25 16.5858 10.9142 16.25 10.5 16.25C10.0858 16.25 9.75 16.5858 9.75 17C9.75 17.4142 10.0858 17.75 10.5 17.75C10.9142 17.75 11.25 17.4142 11.25 17Z" fill="currentColor"/>
-                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M8.67239 7.54204H15.3276C18.7024 7.54204 20.3898 7.54204 21.3377 8.52887C22.2855 9.51569 22.0625 11.0404 21.6165 14.0896L21.1935 16.9811C20.8437 19.3724 20.6689 20.568 19.7717 21.284C18.8745 22 17.5512 22 14.9046 22H9.09534C6.4488 22 5.12553 22 4.22834 21.284C3.33115 20.568 3.15626 19.3724 2.80648 16.9811L2.38351 14.0896C1.93748 11.0403 1.71447 9.5157 2.66232 8.52887C3.61017 7.54204 5.29758 7.54204 8.67239 7.54204ZM12.75 10.5C12.75 10.0858 12.4142 9.75 12 9.75C11.5858 9.75 11.25 10.0858 11.25 10.5V14.878C11.0154 14.7951 10.763 14.75 10.5 14.75C9.25736 14.75 8.25 15.7574 8.25 17C8.25 18.2426 9.25736 19.25 10.5 19.25C11.7426 19.25 12.75 18.2426 12.75 17V13.3197C13.4202 13.8634 14.2617 14.25 15 14.25C15.4142 14.25 15.75 13.9142 15.75 13.5C15.75 13.0858 15.4142 12.75 15 12.75C14.6946 12.75 14.1145 12.5314 13.5835 12.0603C13.0654 11.6006 12.75 11.0386 12.75 10.5Z" fill="currentColor"/>
-                                        </svg> 
-                                        {{ $item->files->count() }}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <hr class="m-0 mt-6 mt-md-12">
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <span class="badge bg-label-primary mb-2">Explorar</span>
-                        <h2 class="h3 fw-bold mb-1">Packs de artistas</h2>
-                        <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">Sin packs por ahora</h3>
-                    <p class="text-body-secondary mb-3">Estamos preparando nuevas selecciones por artista y estilo.</p>
-                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Buscar artistas</a>
-                </div>
-            </div>
-        @endif
-    </section>
 
     {{-- =========================
        GÉNEROS POPULARES
