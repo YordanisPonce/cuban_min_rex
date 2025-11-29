@@ -181,8 +181,8 @@
                             </div>
                             <spam style="position: absolute; right: 0; top: 0; background-color: var(--bs-primary);color:#12131C; font-weight:500; width: 40%; text-align: center; padding: 4px 0;">{{ $item->category ? $item->category->name : 'Sin Categoría' }}</spam>
                             <div class="card-body">
-                                <h5 class="card-title">{{ $item->name }}</h5>
-                                <div class="d-flex justify-content-between">
+                                <h5 class="card-title mb-5">{{ $item->name }}</h5>
+                                <div class="d-flex gap-4" style="position: absolute; bottom: 0; margin-top: auto;">
                                     <p class="card-text">{{ $item->user ? $item->user->name : 'Desconocido' }}</p>
                                     <p class="card-text d-flex gap-2">
                                         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -345,8 +345,8 @@
                             </div>
                             <spam style="position: absolute; right: 0; top: 0; color: #12131C; font-weight: 500;background-color: var(--bs-primary); width: 40%; text-align: center; padding: 4px 0;">{{ $item->category ? $item->category->name : 'Sin Categoría' }}</spam>
                             <div class="card-body">
-                                <h5 class="card-title"> <a href="{{route('collection.show', $item->id)}}">{{ $item->name }}</a></h5>
-                                <div class="d-flex justify-content-between">
+                                <h5 class="card-title mb-6"> <a href="{{route('collection.show', $item->id)}}">{{ $item->name }}</a></h5>
+                                <div class="d-flex gap-4" style="position: absolute; bottom: 0; margin-top: auto;">
                                     <p class="card-text">{{ $item->user ? $item->user->name : 'Desconocido' }}</p>
                                     <p class="card-text d-flex gap-2">
                                         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

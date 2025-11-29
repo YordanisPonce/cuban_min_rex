@@ -167,10 +167,18 @@
 
         .card-relationed:hover .dark-screen {
             display: block !important;
-        }    
+        }
+
+        .dropdown-item:hover{
+            color: black;
+        }
 
         .bg-body{
             background-color: transparent !important;
+        }
+
+        .play-button:hover{
+            color: var(--bs-primary) !important;
         }
 
         body{

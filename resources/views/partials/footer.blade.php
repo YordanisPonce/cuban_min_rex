@@ -46,20 +46,20 @@
         </div>
         <div class="col-lg-3 col-md-4">
           @auth
-            <a class="d-block btn btn-primary mb-4" href="{{ route('profile.edit') }}">
+            <a class="d-block btn btn-primary mb-4 text-black" href="{{ route('profile.edit') }}">
               <i class="icon-base ti tabler-user me-2"></i>
               <span class="align-middle">Perfil</span>
             </a>
             @if (Auth()->user()->role !== 'user')
-            <a class="d-block btn btn-primary" href="/admin" target="_blank">
+            <a class="d-block btn btn-primary text-black" href="/admin" target="_blank">
               <i class="icon-base ti tabler-dashboard me-2"></i>
               <span class="align-middle">Panel de Administración</span>
             </a>
             @endif
           @else
             <h6 class="footer-title mb-6">Únete a nosotros</h6>
-            <a href="{{route('register')}}" class="d-block btn btn-primary mb-4"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>
-            <a href="{{route('login')}}" class="d-block btn btn-primary"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span>  Acceder</a>
+            <a href="{{route('register')}}" class="d-block btn btn-primary mb-4 text-black"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>
+            <a href="{{route('login')}}" class="d-block btn btn-primary text-black"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span>  Acceder</a>
           @endauth
         </div>
       </div>

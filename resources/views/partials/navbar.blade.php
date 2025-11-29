@@ -113,7 +113,7 @@
 
                 
                 <li>
-                    <a class="btn btn-primary align-center" href="{{ route('cart') }}">
+                    <a class="btn btn-primary align-center text-black" href="{{ route('cart') }}">
                         <span class="icon-base me-md-1" style="width: 18px !important;">{{ svg('vaadin-cart') }}</span>
                         <span class="d-none d-md-block">$ {{ number_format(Cart::get_current_cart()->get_cart_count(), 2, '.', '')}}</span>
                     </a>
@@ -157,7 +157,7 @@
                     </li>
                 @else
                     <li>
-                        <a href="{{ route('login') }}" class="btn btn-primary"><span
+                        <a href="{{ route('login') }}" class="btn btn-primary text-black"><span
                                 class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span><span
                                 class="d-none d-md-block">Acceder / Registrar</span></a>
                     </li>
