@@ -74,6 +74,15 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
 
     @stack('styles')
+    <style>
+      :root{
+          --bs-primary: #00FF9F !important; /* Color de Bottones */
+          /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
+
+          --download-button: #FF2EC4 !important;
+          --play-button: #00C8FF !important;
+      }
+    </style>
 </head>
 
 <body style="background-color: #000 !important">
@@ -155,7 +164,7 @@
                             </div>
                         </div>
 
-                        <button type="submit" class="btn btn-primary d-grid w-100">Registrarse</button>
+                        <button type="submit" class="btn btn-primary d-grid w-100 text-black">Registrarse</button>
                     </form>
 
                     <p class="text-center mb-4">

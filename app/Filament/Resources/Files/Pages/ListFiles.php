@@ -39,6 +39,7 @@ class ListFiles extends ListRecords
                         ->required()
                         ->disk('s3')
                         ->directory('files')
+                        ->maxSize(204800)
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
                     FileUpload::make('original_file')->maxSize(800000)
@@ -46,6 +47,7 @@ class ListFiles extends ListRecords
                         ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('s3')
+                        ->maxSize(204800)
                         ->directory('files')
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),

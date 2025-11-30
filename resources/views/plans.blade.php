@@ -21,7 +21,7 @@
                 Disfruta sin límites con beneficios a tu medida.
             </p>
 
-            <div class="row gy-4 justify-content-center">
+            <div class="pricing-table">
                 @foreach ($plans as $plan)
                     @php
                         $isActive =
@@ -29,58 +29,28 @@
                             auth()->user()->current_plan_id === $plan->id &&
                             auth()->user()->hasActivePlan();
                     @endphp
-                    <div class="col-xl-4 col-lg-6">
-                        <div class="card h-100">
-                            <div class="card-header text-center">
-                                <img src="{{ $plan->image ?? config('app.logo') }}" alt="{{ $plan->name }}" class="mb-4"
-                                    style="width:64px;height:64px;object-fit:contain;">
-                                <h4 class="mb-1">{{ $plan->name }}</h4>
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <span class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
-                                    <sub class="h6 text-body-secondary mb-n1 ms-1">
-                                        {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
-                                    </sub>
-                                </div>
-                            </div>
-
-                            <div class="card-body d-flex flex-column">
-                                @if ($plan->description)
-                                    <div class="list-unstyled small text-body mb-4">
-                                        {!! $plan->description ?? '' !!}
-                                    </div>
-                                @endif
-
-                                @if ($plan->features)
-                                    <ul class="list-unstyled small text-body mb-4">
-                                        @foreach ($plan->features as $item)
-                                            <li class="mb-2 d-flex">
-                                                <i class="ti tabler-check me-2"></i>
-                                                <span>
-                                                    {{ $item['value'] }}
-                                                </span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
-                                <div class="mt-auto">
-                                    @auth
-                                        @if ($isActive)
-                                            <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
-                                        @else
-                                            <a href="{{ route('payment.form', $plan->id) }}"
-                                                class="btn btn-label-primary w-100">
-                                                Adquirir plan
-                                            </a>
-                                        @endif
-                                    @else
-                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100">
-                                            Inicia sesión para comprar
-                                        </a>
-                                    @endauth
-                                </div>
-                            </div>
+                    <div class="pricing-card">
+                        <spam class="type">{{$plan->name}}</spam>
+                        <div class="price" data-content="${{$plan->price}}"><span>$</span>{{$plan->price}}</div>
+                        <h5 class="plan">plan</h5>
+                        <div class="details mb-5">
+                            <p>Duración: {{$plan->duration_months}} {{$plan->duration_months > 1 ? 'meses' : 'mes'}}</p>
+                            <p>Descargas por archivo: {{$plan->downloads}}</p>
+                            @if ($plan->features)
+                                @foreach ($plan->features as $item)
+                                    <p>{{ $item['value'] }}</p>
+                                @endforeach
+                            @endif
                         </div>
+                        @if ($isActive)
+                        <div class="buy-button active">
+                            <h3 class="btn"><a style="color: gray">Ya lo tienes</a></h3>
+                        </div>
+                        @else
+                        <div class="buy-button">
+                            <h3 class="btn"><a href="{{ route('payment.form', $plan->id) }}">Adquirir</a></h3>
+                        </div>
+                        @endif
                     </div>
                 @endforeach
             </div>

@@ -20,7 +20,7 @@
                     <div class="nav-align-top">
                         <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
                             <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('profile.edit') }}"><i
+                                <a class="nav-link active text-black" href="{{ route('profile.edit') }}"><i
                                         class="icon-base ti tabler-users icon-sm me-1_5"></i> Información de Usuario</a>
                             </li>
                             <li class="nav-item">
@@ -48,7 +48,7 @@
                                 <div class="d-flex align-items-start align-items-sm-center gap-6">
                                     <img src="{{ Auth::user()->photo ? Auth::user()->photo : config('app.logo') }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
                                     <div class="button-wrapper">
-                                        <label for="upload" class="btn btn-primary me-3 mb-4" tabindex="0">
+                                        <label for="upload" class="btn btn-primary me-3 mb-4 text-black" tabindex="0">
                                             <span class="d-none d-sm-block">Subir Logo Personal</span>
                                             <i class="icon-base ti tabler-upload d-block d-sm-none"></i>
                                             <input type="file" id="upload" name="photo" class="account-file-input" hidden accept="image/png, image/jpeg" onchange="document.getElementById('formUserSettings').submit()"/>
@@ -81,7 +81,7 @@
                                     @endif
                                 </div>
                                 <div class="mt-2">
-                                    <button type="submit" class="btn btn-primary me-3">Guardar Cambios</button>
+                                    <button type="submit" class="btn btn-primary me-3 text-black">Guardar Cambios</button>
                                     <button type="reset" class="btn btn-label-secondary">Cancelar</button>
                                 </div>
                             </form>
@@ -131,7 +131,7 @@
                                     <li class="mb-4">Mínimo 8 carácteres de longitud</li>
                                 </ul>
                                 <div class="mt-6">
-                                    <button type="submit" class="btn btn-primary me-3">Cambiar Contraseña</button>
+                                    <button type="submit" class="btn btn-primary me-3 text-black">Cambiar Contraseña</button>
                                 </div>
                             </form>
                         </div>

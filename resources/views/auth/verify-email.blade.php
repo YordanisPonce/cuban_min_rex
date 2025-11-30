@@ -18,6 +18,15 @@
 
     <!-- Page CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
+    <style>
+      :root{
+          --bs-primary: #00FF9F !important; /* Color de Bottones */
+          /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
+
+          --download-button: #FF2EC4 !important;
+          --play-button: #00C8FF !important;
+      }
+    </style>
 </head>
 
 <body style="background-color: #000 !important">

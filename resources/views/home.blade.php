@@ -282,8 +282,6 @@
                     @endforeach
                 </div>
             </div>
-
-            <hr class="m-0 mt-6 mt-md-12">
         @else
             <div class="container mb-3">
                 <div class="d-flex align-items-end justify-content-between">
@@ -303,85 +301,6 @@
                 </div>
             </div>
         @endif
-    </section>
-    
-    {{-- =========================
-       PLANES
-    ========================== --}}
-    <section id="home-pricing" class="section-py landing-pricing">
-        <div class="container">
-            <div class="text-center mb-3">
-                <span class="badge bg-label-primary">Planes de suscripción</span>
-            </div>
-            <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
-            <p class="text-center text-body-secondary mb-6">
-                Disfruta sin límites con beneficios a tu medida.
-            </p>
-
-            <div class="row gy-4 justify-content-center">
-                @foreach ($plans as $plan)
-                    @php
-                        $isActive =
-                            auth()->check() &&
-                            auth()->user()->current_plan_id === $plan->id &&
-                            auth()->user()->hasActivePlan();
-                    @endphp
-                    <div class="col-xl-4 col-lg-6">
-                        <div class="card h-100" style="border: 1px solid {{$plan->color}}" onmouseenter="this.style.boxShadow = '2px 2px 3px 2px {{$plan->color}}'" onmouseleave="this.style.boxShadow = 'none'">
-                            <div class="card-header text-center">
-                                <img src="{{ $plan->image ?? config('app.logo') }}" alt="{{ $plan->name }}" class="mb-4"
-                                    style="width:64px;height:64px;object-fit:contain;">
-                                <h4 class="mb-1">{{ $plan->name }}</h4>
-                                <div class="d-flex align-items-center justify-content-center">
-                                    <span class="h2 fw-extrabold mb-0" style="color: {{$plan->color}}">${{ $plan->price_formatted }}</span>
-                                    <sub class="h6 mb-n1 ms-1" style="color: {{$plan->color}}">
-                                        {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
-                                    </sub>
-                                </div>
-                            </div>
-
-                            <div class="card-body d-flex flex-column">
-                                @if ($plan->description)
-                                    <div class="list-unstyled small text-body mb-4">
-                                        {!! $plan->description ?? '' !!}
-                                    </div>
-                                @endif
-
-                                @if ($plan->features)
-                                    <ul class="list-unstyled small text-body mb-4">
-                                        @foreach ($plan->features as $item)
-                                            <li class="mb-2 d-flex">
-                                                <i class="ti tabler-check me-2"></i>
-                                                <span>
-                                                    {{ $item['value'] }}
-                                                </span>
-                                            </li>
-                                        @endforeach
-                                    </ul>
-                                @endif
-
-                                <div class="mt-auto">
-                                    @auth
-                                        @if ($isActive)
-                                            <button class="btn btn-secondary w-100" style="color: {{$plan->color}}; border: 1px solid {{$plan->color}}" disabled>Ya lo tienes</button>
-                                        @else
-                                            <a href="{{ route('payment.form', $plan->id) }}"
-                                                class="btn btn-label-primary w-100" style="color: {{$plan->color}}; border: 1px solid {{$plan->color}}">
-                                                Adquirir plan
-                                            </a>
-                                        @endif
-                                    @else
-                                        <a href="{{ route('login') }}" class="btn btn-outline-primary w-100" style="color: {{$plan->color}}; border: 1px solid {{$plan->color}}">
-                                            Inicia sesión para comprar
-                                        </a>
-                                    @endauth
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-        </div>
     </section>
     
     <hr class="m-0 mt-6 mt-md-12">
@@ -409,102 +328,50 @@
     
     <hr class="m-0 mt-6 mt-md-12">
 
-    <section class="section-py">
-        <div class="container">
-            <div class="d-flex align-items-end justify-content-between mb-3">
-                <div>
-                    <span class="badge bg-label-primary mb-2">Contáctanos</span>
-                    <h2 class="h3 fw-bold mb-1">Información de Contacto</h2>
-                    <p class="text-body-secondary mb-0">Puedes realizar tus peticiones, quejas o sugerencias a través de los siguientes medios de contacto.</p>
-                </div>
+    <section id="home-pricing" class="section-py bg-body landing-pricing mt-10">
+        <div class="container mt-5">
+            <div class="text-center mb-3">
+                <span class="badge bg-label-primary">Planes de suscripción</span>
             </div>
+            <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
+            <p class="text-center text-body-secondary mb-10">
+                Disfruta sin límites con beneficios a tu medida.
+            </p>
 
-            <div class="flex-wrap gap-2 d-lg-flex">
-                <div class="mb-6 mb-md-0 ml-4"><h4><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') ?? 'Sin definir' }}</a></h4></div>
-                <div class="mb-6 mb-md-0 ml-4"><h4><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') ??  'Sin definir' }}</a></h4></div>
-                <div class="mb-6 mb-md-0 ml-4"><h4><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></h4></div>
+            <div class="pricing-table">
+                @foreach ($plans as $plan)
+                    @php
+                        $isActive =
+                            auth()->check() &&
+                            auth()->user()->current_plan_id === $plan->id &&
+                            auth()->user()->hasActivePlan();
+                    @endphp
+                    <div class="pricing-card">
+                        <spam class="type">{{$plan->name}}</spam>
+                        <div class="price" data-content="${{$plan->price}}"><span>$</span>{{$plan->price}}</div>
+                        <h5 class="plan">plan</h5>
+                        <div class="details mb-5">
+                            <p>Duración: {{$plan->duration_months}} {{$plan->duration_months > 1 ? 'meses' : 'mes'}}</p>
+                            <p>Descargas por archivo: {{$plan->downloads}}</p>
+                            @if ($plan->features)
+                                @foreach ($plan->features as $item)
+                                    <p>{{ $item['value'] }}</p>
+                                @endforeach
+                            @endif
+                        </div>
+                        @if ($isActive)
+                        <div class="buy-button active">
+                            <h3 class="btn"><a style="color: gray">Ya lo tienes</a></h3>
+                        </div>
+                        @else
+                        <div class="buy-button">
+                            <h3 class="btn"><a href="{{ route('payment.form', $plan->id) }}">Adquirir</a></h3>
+                        </div>
+                        @endif
+                    </div>
+                @endforeach
             </div>
-        </div>
     </section>
-
-    {{-- =========================
-       CONTACTO
-    ========================== 
-    <section id="landingContact" class="section-py bg-body landing-contact">
-        <div class="container" style="margin-top: 60px;">
-            <div class="text-center mb-4">
-                <span class="badge bg-label-primary">🎶 Contáctanos</span>
-            </div>
-            <h4 class="text-center mb-1">
-                <span class="position-relative fw-extrabold z-1">¿Necesitas ayuda con tu música?
-                    <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/section-title-icon.png" alt="laptop charging" class="section-title-img position-absolute object-fit-contain bottom-0 z-n1">
-                </span>
-
-            </h4>
-            <p class="text-center mb-12 pb-md-4">Estamos aquí para resolver tus dudas sobre canciones, playlists, compras o licencias 🎧</p>
-            <div class="row g-6">
-                <div class="col-lg-5">
-                    <div class="contact-img-box position-relative border p-2 h-100">
-                        <img src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/img/front-pages/icons/contact-border.png" alt="contact border" class="contact-border-img position-absolute d-none d-lg-block scaleX-n1-rtl">
-                        <img src="{{ asset('assets/img/front-pages/landing-page/contact-form.jpeg') }}" alt="contact customer service" class="contact-img w-100 scaleX-n1-rtl">
-                        <div class="p-4 pb-2">
-                            <div class="row g-4">
-                                <div class="col-md-6 col-lg-12 col-xl-6">
-                                    <div class="d-flex align-items-center">
-                                        <div class="badge bg-label-primary rounded p-1_5 me-3"><i class="icon-base ti tabler-mail icon-lg"></i></div>
-                                        <div>
-                                            <p class="mb-0">Correo</p>
-                                            <h6 class="mb-0"><a href="mailto:{{ config('contact.email') }}" class="text-heading">{{ config('contact.email') }}</a></h6>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 col-lg-12 col-xl-6">
-                                    <div class="d-flex align-items-center">
-                                        <div class="badge bg-label-success rounded p-1_5 me-3"><i class="icon-base ti tabler-phone-call icon-lg"></i></div>
-                                        <div>
-                                            <p class="mb-0">Teléfono</p>
-                                            <h6 class="mb-0"><a href="tel:{{ config('contact.phone') }}" class="text-heading">{{ config('contact.phone') }}</a></h6>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-7">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <h4 class="mb-2">🎵 Escríbenos un mensaje</h4>
-                            <p class="mb-6">
-                                ¿Problemas con tu cuenta, compras de canciones o playlists personalizadas?<br class="d-none d-lg-block">
-                                Déjanos tu mensaje y nuestro equipo musical te ayudará.
-                            </p>
-                            <form action="{{ route('contact.form') }}" method="POST">
-                                @csrf
-                                <div class="row g-4">
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="contact-form-fullname">Nombre</label>
-                                        <input type="text" class="form-control" id="contact-form-fullname" name="fullname" placeholder="john" required>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="contact-form-email">Correo</label>
-                                        <input type="text" id="contact-form-email" class="form-control" name="email" placeholder="johndoe@gmail.com" required>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label" for="contact-form-message">Mensaje</label>
-                                        <textarea id="contact-form-message" class="form-control" rows="7" name="message" placeholder="Write a message" required></textarea>
-                                    </div>
-                                    <div class="col-12">
-                                        <button type="submit" class="btn btn-primary waves-effect waves-light">📩 Enviar consulta</button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section> --}}
 
     <section id="audioPlayer">
         <div class="container">
