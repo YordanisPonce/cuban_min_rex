@@ -7,6 +7,7 @@ use App\Models\File;
 use App\Models\Order;
 use App\Models\User;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
@@ -17,12 +18,16 @@ class FileController extends Controller
     public function download(Request $request, string $id)
     {
         $token = $request->get('token');
+        Log::debug("Token de descarga: $token");
         if ($token) {
+            Log::debug("Descarga con token");
             $user = User::whereJsonContains('downloadToken', $token)->first();
             if ($user) {
+                Log::debug("Usuario encontrado para token de descarga: " . $user->id);
                 $downloadToken = $user->downloadToken;
                 $indice = array_search($token, $downloadToken);
-                unset($downloadToken[$indice]);
+
+               // unset($downloadToken[$indice]);
                 $user->downloadToken = $downloadToken;
                 $user->save();
 
@@ -35,6 +40,9 @@ class FileController extends Controller
                 $downloadName = "$file->name.$ext";
                 return Storage::disk('s3')->download($path, $downloadName);
             }
+
+            Log::debug("No entorn a ningun descargar");
+            Log::debug("Usuario no encontrado para token de descarga: $token");
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
         }
 
@@ -62,6 +70,8 @@ class FileController extends Controller
             }
             return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
         }
+
+        Log::debug("No entorn a ningun descargar");
         return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
     }
 
