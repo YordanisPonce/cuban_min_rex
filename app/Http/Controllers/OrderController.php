@@ -29,7 +29,7 @@ class OrderController extends Controller
 
                 // Eliminar el token usado
                 if ($indice !== false) {
-                  //  unset($downloadToken[$indice]);
+                    unset($downloadToken[$indice]);
                     $user->downloadToken = array_values($downloadToken); // Reindexar array
                     $user->save();
                 }
