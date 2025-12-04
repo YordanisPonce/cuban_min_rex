@@ -42,14 +42,14 @@ class OrderController extends Controller
                 foreach ($order->order_items as $key => $value) {
                     $file = File::find($value->file_id);
                     Log::debug('Adding file to ZIP: ' . $file->original_file);
-                    $path = $file->original_file;
                     if (!Storage::disk('s3')->exists($path)) {
+                        $path = Storage::disk('s3')->path($file->original_file);
                         // abort(404);
                         continue;
                     }
                     $ext = pathinfo($path, PATHINFO_EXTENSION);
                     $downloadName = "$file->name.$ext";
-                    $zip->addFile($path, $downloadName);
+                    $zip->addFile(Storage::disk('s3')->path($file->original_file), $downloadName);
                 }
                 Log::debug('Closing ZIP archive');
 
