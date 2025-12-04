@@ -167,9 +167,9 @@
                 <div class="text-center mb-3">
                     <span class="badge bg-label-primary">TOPS</span>
                 </div>
-                <h2 class="text-center fw-bold mb-2">Lo más escuchado</h2>
+                <h2 class="text-center fw-bold mb-2">TOP REMIXES</h2>
                 <p class="text-center text-body-secondary mb-6">
-                    Los archivos más populares, lo más escuchado.
+                     
                 </p>
                 <div class="row">
                     @foreach ($tops as $item)
@@ -221,8 +221,8 @@
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
                         <span class="badge bg-label-primary mb-2">TOPS</span>
-                        <h2 class="h3 fw-bold mb-1">Lo más escuchado</h2>
-                        <p class="text-body-secondary mb-0">Los archivos más populares, lo más escuchado.</p>
+                        <h2 class="h3 fw-bold mb-1">TOP REMIXES</h2>
+                        <p class="text-body-secondary mb-0"> </p>
                     </div>
                 </div>
             </div>

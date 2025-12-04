@@ -70,7 +70,7 @@ class UsersTable
                     ->label('Filtros'),
             )
             ->recordActions([
-                EditAction::make()->label('Editar'),
+                EditAction::make()->label('Editar')->visible(fn() => auth()->user()?->role === 'admin'),
                 Action::make('changePassword')->visible(fn() => auth()->user()?->role === 'admin')
                     ->modalSubmitActionLabel('Cambiar')
                     ->modalCancelActionLabel('Cancelar')
@@ -111,13 +111,13 @@ class UsersTable
                     })
                     // Opcional: evita cerrar el modal si hay error de validación
                     ->closeModalByClickingAway(false),
-                DeleteAction::make()->label('Eliminar'),
+                DeleteAction::make()->label('Eliminar')->visible(fn() => auth()->user()?->role === 'admin'),
             ])
 
             ->toolbarActions([
             ])
             ->modifyQueryUsing(
-                fn(): Builder => User::query()->orderBy('id', 'desc')
+                fn($record): Builder => auth()->user()?->role === 'admin' ? User::query()->orderBy('id', 'desc') : User::query()->whereNot('current_plan_id')->orderBy('id', 'desc')
             );
     }
 }

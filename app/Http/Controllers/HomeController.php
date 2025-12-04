@@ -25,8 +25,12 @@ class HomeController extends Controller
         $artistCollections = Collection::take(12)->get()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->take(12)->get();
-        $tops = File::orderBy('download_count', 'desc')->take(12)->get();
+        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->take(12)->get()->filter(function($item){
+            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->file), PATHINFO_EXTENSION) !== 'zip';
+        });
+        $tops = File::orderBy('download_count', 'desc')->take(12)->get()->filter(function($item){
+            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->file), PATHINFO_EXTENSION) !== 'zip';
+        });
         $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -150,6 +154,7 @@ class HomeController extends Controller
                 'id' => $file->id,
                 'date' => $file->created_at,
                 'user' => $file->user->name,
+                'logotipe' => $file->user->photo,
                 'name' => $file->name,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection->name ?? null,
@@ -235,6 +240,7 @@ class HomeController extends Controller
                 'date' => $file->created_at,
                 'user' => $file->user->name,
                 'name' => $file->name,
+                'logotipe' => $file->user->photo,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection->name ?? null,
                 'category' => $file->category->name ?? null,

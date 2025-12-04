@@ -19,7 +19,12 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\SitemapGenerator;
 
+Route::get('/sitemap', function () {
+    SitemapGenerator::create(config('app.url'))->writeToFile(public_path('sitemap.xml'));
+});
 
 Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');

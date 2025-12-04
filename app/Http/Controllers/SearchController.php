@@ -87,6 +87,7 @@ class SearchController extends Controller
                 'id' => $file->id,
                 'date' => $file->created_at,
                 'user' => $file->user->name,
+                'logotipe' => $file->user->photo,
                 'name' => $file->name,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection->name ?? null,

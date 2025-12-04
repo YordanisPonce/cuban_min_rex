@@ -144,7 +144,7 @@ class ListFiles extends ListRecords
                             array_map('unlink', glob("$extractPath/*.*"));
                             rmdir($extractPath);
                         } else {
-                            throw new \Exception('No se pudo abrir el archivo ZIP.');
+                            throw new \Exception('No se pudo abrir el archivo ZIP: '.$path);
                         }
                     }
                 }),

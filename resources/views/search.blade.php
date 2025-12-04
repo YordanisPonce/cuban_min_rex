@@ -138,7 +138,12 @@
                                     $date = Carbon::parse($file['date'])->format('d/m/Y');
                                 @endphp
                                 <tr class="result" data-id="{{$file['id']}}" data-url="{{$file['url']}}">
-                                    <td class="hidden-mobile"></td>
+                                    <td class="hidden-mobile">
+                                        <div class="avatar overflow-hidden rounded-circle">
+                                            <img src="{{ $file['logotipe'] ? $file['logotipe'] : config('app.logo') }}" alt="Avatar" class="rounded-circle" />
+                                            <div class="dark-screen" style="background-color: rgba(0, 0, 0, 0.5);"></div>
+                                        </div>
+                                    </td>
                                     <td class="hidden-mobile">{{ $date }}</td>
                                     <td><span style="color: var(--bs-primary)">{{ $file['user'] }}</span></td>
                                     <td>
