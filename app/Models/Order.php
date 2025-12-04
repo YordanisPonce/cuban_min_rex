@@ -20,4 +20,8 @@ class Order extends Model
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
     public function plan(): BelongsTo { return $this->belongsTo(Plan::class); }
     public function file(): BelongsTo { return $this->belongsTo(File::class); }
+
+    public function order_items() { 
+        return $this->hasMany(OrderItem::class); 
+    }
 }

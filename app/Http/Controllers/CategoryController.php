@@ -20,33 +20,36 @@ class CategoryController extends Controller
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
-        
-        $results = File::where(function ($query) use ($categoryId) {
-                $query->whereHas('collection.category', function ($q) use ($categoryId) {
-                    $q->where('id', $categoryId);
-                })->orWhereHas('category', function ($q) use ($categoryId) {
-                    $q->where('categories.id', $categoryId);
-                });
+
+        $name = request()->get("search") ?? "";
+        $remixers = request()->get("remixers") ?? "";
+
+        $results = File::where('name', 'like', '%' . $name . '%')
+            ->whereHas('category', function ($query) use ($categoryId) {
+                $query->where('id', $categoryId);
             })
-            ->with(['collection.category'])
+            ->whereHas('user', function ($query) use ($remixers) {
+                $query->where('name', 'like', '%' . $remixers . '%');
+            })
+            ->with(['user', 'category']) // Carga las relaciones
             ->orderBy('created_at', 'desc')
             ->paginate(30);
         
-        $name = request()->get("search");
-        $category = request()->get("categories");
-        $remixers = request()->get("remixers");
-        if ($name || $category || $remixers) {
-            $results = File::where('name', 'like', '%' . $name . '%')
-                ->whereHas('category', function ($query) use ($category) {
-                    $query->where('name', 'like', '%' . $category . '%');
-                })
-                ->whereHas('user', function ($query) use ($remixers) {
-                    $query->where('name', 'like', '%' . $remixers . '%');
-                })
-                ->with(['user', 'category']) // Carga las relaciones
-                ->orderBy('created_at', 'desc')
-                ->paginate(30);
-        }
+        $playList = File::where('name', 'like', '%' . $name . '%')
+            ->whereHas('category', function ($query) use ($categoryId) {
+                $query->where('id', $categoryId);
+            })
+            ->whereHas('user', function ($query) use ($remixers) {
+                $query->where('name', 'like', '%' . $remixers . '%');
+            })
+            ->with(['user', 'category']) // Carga las relaciones
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->map(fn($f) => [
+                'id' => $f->id,
+                'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'title' => $f->title ?? $f->name,
+            ]);
 
         $results->getCollection()->transform(function ($file) {
             $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
@@ -54,6 +57,7 @@ class CategoryController extends Controller
                 'id' => $file->id,
                 'date' => $file->created_at,
                 'user' => $file->user->name,
+                'logotipe' => $file->user->photo,
                 'name' => $file->name,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection->name ?? null,
@@ -65,22 +69,8 @@ class CategoryController extends Controller
         });
 
         $category = Category::find($categoryId);
-        
-        $playList = []; 
 
-        foreach ($results as $f) {
-            $file = File::find($f['id']);
-            $track = $file->get()
-                ->map(fn($f) => [
-                    'id' => $f->id,
-                    'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
-                    'title' => $f->title ?? $f->name,
-                ]);
-            array_push($playList, $track);
-        }
-
-
-        $allCategories = Category::all();
+        $allCategories = Category::orderBy('name')->get();
         $allRemixers = User::whereHas('files', function ($query) use ($categoryId) {
             $query->where('category_id', $categoryId);
         })->get();

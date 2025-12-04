@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Files\Tables;
 
+use App\Models\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -11,6 +12,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Filament\Actions\Action;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Response;
 
 class FilesTable
@@ -43,8 +45,14 @@ class FilesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                SelectFilter::make('category_id')
+                    ->label('Categoría')
+                    ->options(fn (): array => Category::orderBy('name')->pluck('name', 'id')->all())
+            ])->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filtros'),
+            )
             ->recordActions([
                 // Action::make('download')
                 //     ->label('Descargar')
@@ -54,8 +62,8 @@ class FilesTable
                 //         $path = storage_path('app/public/'.$record->file);
                 //         return Response::download($path);
                 //     }),
-                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Editar'),
-                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id)->label('Eliminar'),
+                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Editar'),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

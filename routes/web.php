@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Middleware\IsUserMiddleware;
 use Illuminate\Foundation\Application;
@@ -18,7 +19,12 @@ use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\SitemapGenerator;
 
+Route::get('/sitemap', function () {
+    SitemapGenerator::create(config('app.url'))->writeToFile(public_path('sitemap.xml'));
+});
 
 Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -110,7 +116,10 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/file/{file}', [FileController::class, 'download'])
         ->name('file.download');
 
-    Route::get('/file/{file}/payment', [FileController::class, 'pay'])
+    Route::get('/order/{file}', [OrderController::class, 'download'])
+        ->name('order.download');
+
+    Route::get('/cart/pay', [FileController::class, 'pay'])
         ->name('file.pay');
 
     Route::get('/collection/download/{collection}', [CollectionController::class, 'download'])
@@ -134,8 +143,17 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         return Storage::disk('s3')->download($path);
     })->name('files.download');
 
+    Route::get('files/cart/add/{file}', [FileController::class, 'addToCart'])
+        ->name('file.add.cart');
 
+    Route::get('files/cart/remove/{file}', [FileController::class, 'removeToCart'])
+        ->name('file.remove.cart');
+    
+    Route::get('files/cart/empty', [FileController::class, 'emptyCart'])
+        ->name('file.empty.cart');
 
+    Route::get('cart', [HomeController::class, 'cart'])->name('cart');
+    
     Route::get('public/files/{path}', function (string $path) {
         if (!request()->hasValidSignature()) {
             abort(403);

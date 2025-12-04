@@ -16,8 +16,9 @@
             <span class="app-brand-text demo footer-link fw-bold ms-2 ps-1">{{ config('app.name') }}</span>
           </a>
           <p class="footer-text footer-logo-description mb-6">Sube, descarga y compra: haz que cada momento suene.</p>
-          <p><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</p>
-          <p><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</p>
+          <p><a href="mailto:{{ config('contact.email') }}" class="text-heading"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</a></p>
+          <p><a href="tel:{{ config('contact.phone') }}" class="text-heading"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</a></p>
+          <p><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></p>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
           <h6 class="footer-title mb-6">Categorías</h6>
@@ -45,20 +46,20 @@
         </div>
         <div class="col-lg-3 col-md-4">
           @auth
-            <a class="d-block btn btn-primary mb-4" href="{{ route('profile.edit') }}">
+            <a class="d-block btn btn-primary mb-4 text-black" href="{{ route('profile.edit') }}">
               <i class="icon-base ti tabler-user me-2"></i>
               <span class="align-middle">Perfil</span>
             </a>
             @if (Auth()->user()->role !== 'user')
-            <a class="d-block btn btn-primary" href="/admin" target="_blank">
+            <a class="d-block btn btn-primary text-black" href="/admin" target="_blank">
               <i class="icon-base ti tabler-dashboard me-2"></i>
               <span class="align-middle">Panel de Administración</span>
             </a>
             @endif
           @else
             <h6 class="footer-title mb-6">Únete a nosotros</h6>
-            <a href="{{route('register')}}" class="d-block btn btn-primary mb-4"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>
-            <a href="{{route('login')}}" class="d-block btn btn-primary"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span>  Acceder</a>
+            <a href="{{route('register')}}" class="d-block btn btn-primary mb-4 text-black"><span class="tf-icons icon-base ti tabler-user scaleX-n1-rtl me-md-1"></span>Registrarse</a>
+            <a href="{{route('login')}}" class="d-block btn btn-primary text-black"><span class="tf-icons icon-base ti tabler-login scaleX-n1-rtl me-md-1"></span>  Acceder</a>
           @endauth
         </div>
       </div>

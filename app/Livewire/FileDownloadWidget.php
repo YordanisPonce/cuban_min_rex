@@ -7,10 +7,9 @@ use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\File;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\HtmlString;
+use Stripe\Stripe;
+use Stripe\Subscription;
 
 class FileDownloadWidget extends BaseWidget
 {
@@ -24,6 +23,8 @@ class FileDownloadWidget extends BaseWidget
         $collectionMoreDownload = Collection::where('user_id', $userId)
             ->orderBy('download_count', 'desc')
             ->first();
+        Stripe::setApiKey(config('services.stripe.secret_key'));
+        $activeSubscriptions = Subscription::all(['status' => 'active']);
         $activeSubscriptions = User::get()->filter(fn($item) => $item->hasActivePlan())->count();
         $salesCount = Auth()->user()->sales()->count();
         $totalEarningsAtSubscription = (float) Auth()->user()->paidSubscriptionLiquidation();

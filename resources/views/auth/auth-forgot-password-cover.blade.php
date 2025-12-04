@@ -46,6 +46,15 @@
     <script src="{{ asset('assets/js/front-config.js') }}"></script>
 
     @stack('styles')
+    <style>
+      :root{
+          --bs-primary: #00FF9F !important; /* Color de Bottones */
+          /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
+
+          --download-button: #FF2EC4 !important;
+          --play-button: #00C8FF !important;
+      }
+    </style>
   </head>
 
   <body style="background-color: #000 !important">
@@ -94,7 +103,7 @@
                   <span class="invalid-feedback" role="alert"><strong>{{ $message }}</strong></span>
                 @enderror
               </div>
-              <button type="submit" class="btn btn-primary d-grid w-100">Send Reset Link</button>
+              <button type="submit" class="btn btn-primary d-grid w-100 text-black">Send Reset Link</button>
             </form>
 
             <div class="text-center">

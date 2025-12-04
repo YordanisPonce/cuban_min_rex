@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cart;
 use App\Models\Download;
 use App\Models\File;
 use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\User;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
@@ -12,6 +14,8 @@ use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class FileController extends Controller
 {
@@ -46,29 +50,39 @@ class FileController extends Controller
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
         }
 
-        if (auth()->user()->hasActivePlan() && auth()->user()->currentPlan) {
-            $plan = auth()->user()->currentPlan;
+        if (auth()->user()->hasActivePlan()) {
 
-            if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
-                $file = File::find($id);
+            $plan = null;
 
-                $path = $file->original_file;
-
-                if (!Storage::disk('s3')->exists($path)) {
-                    abort(404);
-                }
-
-                $file->download_count = $file->download_count + 1;
-                $file->save();
-
-                $download = new Download();
-                $download->user_id = auth()->user()->id;
-                $download->file_id = $file->id;
-                $download->save();
-                $downloadName = $file->name;
-                return Storage::disk('s3')->download($path, $downloadName);
+            if (auth()->user()->currentPlan) {
+                $plan = auth()->user()->currentPlan;
+            } else {
+                $plan = Order::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->first()?->plan;
             }
-            return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
+
+            if($plan){
+                if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
+                    $file = File::find($id);
+
+                    $path = $file->original_file;
+
+                    if (!Storage::disk('s3')->exists($path)) {
+                        abort(404);
+                    }
+
+                    $file->download_count = $file->download_count + 1;
+                    $file->save();
+
+                    $download = new Download();
+                    $download->user_id = auth()->user()->id;
+                    $download->file_id = $file->id;
+                    $download->save();
+                    $ext = pathinfo($path, PATHINFO_EXTENSION);
+                    $downloadName = "$file->name.$ext";
+                    return Storage::disk('s3')->download($path, $downloadName);
+                }
+                return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
+            }
         }
 
         Log::debug("No entorn a ningun descargar");
@@ -87,46 +101,72 @@ class FileController extends Controller
         return response()->json($track);
     }
 
-    public function pay(string $id)
+    public function pay()
     {
-        $file = File::find($id);
-        if (!$file) {
-            return response()->json([
-                'error' => 'El archivo seleccionado no es válido.'
-            ], 422);
-        }
-
-        // Valida precio
-        $price = (float) $file->price;
-        if ($price <= 0) {
-            return response()->json([
-                'error' => 'El precio del archivo no es válido.'
-            ], 422);
-        }
-
         try {
+
+            $cart = Cart::get_current_cart();
 
             $order = new Order();
             $order->user_id = auth()->user()?->id;
-            $order->file_id = $file->id;
-            $order->amount = $file->price;
+            $order->amount = $cart->get_cart_count();
             $order->status = 'pending';
             $order->save();
+
+            $line_items = [];
+
+            $files_url = [];
+
+            foreach ($cart->items as $key => $value) {
+                $file = File::find($value);
+                if (!$file) {
+                    return response()->json([
+                        'error' => 'El archivo seleccionado no es válido.'
+                    ], 422);
+                }
+
+                // Valida precio
+                $price = (float) $file->price;
+                if ($price <= 0) {
+                    return response()->json([
+                        'error' => 'El precio del archivo no es válido.'
+                    ], 422);
+                }
+                    
+                // Monto en centavos
+                $amountInCents = (int) round($price * 100);
+
+                $line_item = [
+                    'price_data' => [
+                        'currency' => 'usd',
+                        'product_data' => [
+                            'name' => (string) $file->name,
+                        ],
+                        'unit_amount' => $amountInCents,
+                    ],
+                    'quantity' => 1,
+                ];
+
+                array_push($line_items, $line_item);
+
+                $order_item = new OrderItem();
+                $order_item->order_id = $order->id;
+                $order_item->file_id = $file->id;
+                $order_item->save();
+
+                // URL temporal al archivo
+                $urlTemporal = Storage::disk('s3')->temporaryUrl($file->original_file, now()->addHour());
+
+                array_push($files_url, (string) $urlTemporal);
+
+            }
 
             // Configura tu clave secreta (recomendado: en AppServiceProvider::boot)
             Stripe::setApiKey(config('services.stripe.secret_key'));
 
-            // URL temporal al archivo
-            $urlTemporal = Storage::disk('s3')->temporaryUrl($file->file, now()->addHour());
-
-            // Monto en centavos
-            $amountInCents = (int) round($price * 100);
-
             // Metadatos para rastrear compra
             $metadata = [
-                'file_id' => (string) $file->id,
                 'user_id' => auth()->check() ? (string) auth()->id() : null,
-                'file_url' => (string) $urlTemporal,
                 'order_id' => (string) $order->id,
             ];
 
@@ -134,20 +174,9 @@ class FileController extends Controller
             $session = StripeSession::create([
                 'mode' => 'payment',
                 'payment_method_types' => ['card'],
-                'line_items' => [
-                    [
-                        'price_data' => [
-                            'currency' => 'usd',
-                            'product_data' => [
-                                'name' => (string) $file->name,
-                            ],
-                            'unit_amount' => $amountInCents,
-                        ],
-                        'quantity' => 1,
-                    ]
-                ],
+                'line_items' => $line_items,
                 'success_url' => route('payment.ok2') . '?session_id={CHECKOUT_SESSION_ID}',
-                'cancel_url' => route('file.pay', ['file' => $file->id]),
+                'cancel_url' => route('payment.ko'),
 
                 // Si no manejas customers en Stripe, usa el email
                 'customer_email' => optional(auth()->user())->email,
@@ -173,5 +202,104 @@ class FileController extends Controller
                 'error' => 'No se pudo iniciar el pago.',
             ], 500);
         }
+    }
+
+    public function addToCart(string $id){
+        $user = Auth::user() ?? null;
+        $cart = null;
+        $items = [];
+        if($user){
+            $cart = $user->cart;
+            if($cart){
+                $items = $cart->items ?? [];
+            } else {
+                $cart = new Cart();
+                $cart->user_id = $user->id;
+                $cart->save();
+            }
+        } else {
+            $unique_id = session()->get('unique_id');
+            if ($unique_id) {
+                $cart = Cart::where('uuid', $unique_id)->first();
+                $items = $cart->items ?? [];
+            } else {
+                $uuid = Str::uuid();
+                $cart = new Cart();
+                $cart->uuid = $uuid;
+                $cart->save();
+                session()->put('unique_id', $uuid);
+            }
+        }
+        array_push($items, $id);
+        $cart->items = $items;
+        $cart->save();
+        return redirect()->back()->with('success','Archivo añadido al carrito.');
+    }
+
+    public function removeToCart(string $id){
+        $user = Auth::user() ?? null;
+        $cart = null;
+        $items = [];
+        if($user){
+            $cart = $user->cart;
+            if($cart){
+                $items = $cart->items ?? [];
+            } else {
+                $cart = new Cart();
+                $cart->user_id = $user->id;
+                $cart->save();
+            }
+        } else {
+            $unique_id = session()->get('unique_id');
+            if ($unique_id) {
+                $cart = Cart::where('uuid', $unique_id)->first();
+                $items = $cart->items;
+            } else {
+                $uuid = Str::uuid();
+                $cart = new Cart();
+                $cart->uuid = $uuid;
+                $cart->save();
+                session()->put('unique_id', $uuid);
+            }
+        }
+        if(in_array($id, $items)){
+            $indice = array_search($id, $items);
+            unset($items[$indice]);
+            $cart->items = $items;
+            $cart->save();
+            return redirect()->back()->with('success','Archivo eliminado del carrito.');
+        }
+        return redirect()->back()->with('error','El archivo no está en su carrito.');
+    }
+
+    public function emptyCart(){
+        $user = Auth::user() ?? null;
+        $cart = null;
+        $items = [];
+        if($user){
+            $cart = $user->cart;
+            if($cart){
+                $items = $cart->items;
+            } else {
+                $cart = new Cart();
+                $cart->user_id = $user->id;
+                $cart->save();
+            }
+        } else {
+            $unique_id = session()->get('unique_id');
+            if ($unique_id) {
+                $cart = Cart::where('uuid', $unique_id)->first();
+                $items = $cart->items;
+            } else {
+                $uuid = Str::uuid();
+                $cart = new Cart();
+                $cart->uuid = $uuid;
+                $cart->save();
+                session()->put('unique_id', $uuid);
+            }
+        }
+        $cart->items = [];
+        $cart->save();
+        return redirect()->back()->with('success','Carrito vaciado.');
     }
 }

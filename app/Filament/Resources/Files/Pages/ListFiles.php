@@ -39,6 +39,7 @@ class ListFiles extends ListRecords
                         ->required()
                         ->disk('s3')
                         ->directory('files')
+                        ->maxSize(204800)
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
                     FileUpload::make('original_file')->maxSize(800000)
@@ -46,6 +47,7 @@ class ListFiles extends ListRecords
                         ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                         ->required()
                         ->disk('s3')
+                        ->maxSize(204800)
                         ->directory('files')
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
                         ->columnSpanFull(),
@@ -78,7 +80,7 @@ class ListFiles extends ListRecords
                     Select::make('dinamic_category_id')
                         ->label('Selecciona una Categoría')
                         ->options(function () {
-                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
+                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)->orderBy('name')
                                 ->pluck('name', 'id');
                         })
                         ->disabled(fn($get) => $get('collection_id') !== null)
@@ -142,7 +144,7 @@ class ListFiles extends ListRecords
                             array_map('unlink', glob("$extractPath/*.*"));
                             rmdir($extractPath);
                         } else {
-                            throw new \Exception('No se pudo abrir el archivo ZIP.');
+                            throw new \Exception('No se pudo abrir el archivo ZIP: '.$path);
                         }
                     }
                 }),

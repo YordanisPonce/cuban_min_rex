@@ -23,7 +23,7 @@
                                         class="icon-base ti tabler-users icon-sm me-1_5"></i> Información de Usuario</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link active" href="{{ route('profile.billing') }}"><i
+                                <a class="nav-link active text-black" href="{{ route('profile.billing') }}"><i
                                         class="icon-base ti tabler-bookmark icon-sm me-1_5"></i> Información de
                                     Facturación</a>
                             </li>
@@ -134,7 +134,7 @@
                                         </div>
                                     </div>
                                     <div class="col-12 d-flex gap-2 flex-wrap">
-                                        <button class="btn btn-primary me-2" data-bs-toggle="modal"
+                                        <button class="btn btn-primary me-2 text-black" data-bs-toggle="modal"
                                             data-bs-target="#pricingModal">Actualizar Plan</button>
                                         <a class="btn btn-dark me-2" href="{{ route('profile.billingLink') }}">Gestionar suscripción</a>
                                         <button class="btn btn-label-danger cancel-subscription"
@@ -169,7 +169,7 @@
                                         </div>
                                     @endif
                                     <div class="col-12 d-flex gap-2 flex-wrap">
-                                        <button class="btn btn-primary me-2" data-bs-toggle="modal"
+                                        <button class="btn btn-primary me-2 text-black" data-bs-toggle="modal"
                                             data-bs-target="#pricingModal">Adquirir Plan</button>
                                     </div>
                                 @endif
@@ -286,8 +286,7 @@
                                     </div>
                                 </div>
                                 <div class="mt-6">
-                                    <button type="submit" class="btn btn-primary me-3">Guardar cambios</button>
-                                    <button type="reset" class="btn btn-label-secondary">Descartar</button>
+                                    <button type="submit" class="btn btn-primary me-3 text-black">Guardar cambios</button>
                                 </div>
                             </form>
                         </div>
@@ -312,7 +311,15 @@
                                     @foreach ($orders as $order)
                                         <tr>
                                             <td></td>
-                                            <td>{{ $order->plan ? 'Plan: ' . $order->plan->name : 'Archivo: ' . $order->file->name }}
+                                            <td>
+                                                @if ($order->plan)
+                                                    Plan: {{ $order->plan->name }}
+                                                @else 
+                                                    {{ count($order->order_items ?? [])}} Archivos: <br>
+                                                    @foreach ($order->order_items as $key => $value)
+                                                        {{ $value->file->name }} <br>
+                                                    @endforeach
+                                                @endif
                                             </td>
                                             <td>{{ $order->amount }}</td>
                                             <td>{{ $order->status === 'paid' ? $order->paid_at : $order->created_at }}</td>
@@ -348,7 +355,7 @@
                             Disfruta sin límites con beneficios a tu medida.
                         </p>
 
-                        <div class="row gy-4">
+                        <div class="pricing-table">
                             @foreach ($plans as $plan)
                                 @php
                                     $isActive =
@@ -356,54 +363,28 @@
                                         auth()->user()->current_plan_id === $plan->id &&
                                         auth()->user()->hasActivePlan();
                                 @endphp
-                                <div class="col-xl-4 col-lg-6">
-                                    <div class="card h-100">
-                                        <div class="card-header text-center">
-                                            <img src="{{ asset('storage/' . $plan->image) }}" alt="{{ $plan->name }}"
-                                                class="mb-4" style="width:64px;height:64px;object-fit:contain;">
-                                            <h4 class="mb-1">{{ $plan->name }}</h4>
-                                            <div class="d-flex align-items-center justify-content-center">
-                                                <span
-                                                    class="h2 text-primary fw-extrabold mb-0">${{ $plan->price_formatted }}</span>
-                                                <sub class="h6 text-body-secondary mb-n1 ms-1">
-                                                    {{ $plan->duration_months === 1 ? '/mes' : '/' . $plan->duration_months . ' meses' }}
-                                                </sub>
-                                            </div>
-                                        </div>
-
-                                        <div class="card-body d-flex flex-column">
-                                            {!! $plan->description ?? '' !!}
-                                            @if ($plan->features)
-                                                <ul class="list-unstyled small text-body mb-4">
-                                                    @foreach ($plan->features as $item)
-                                                        <li class="mb-2 d-flex">
-                                                            <i class="ti tabler-check me-2"></i>
-                                                            <span>
-                                                                {{ $item['value'] }}
-                                                            </span>
-                                                        </li>
-                                                    @endforeach
-                                                </ul>
-                                            @endif
-
-                                            <div class="mt-auto">
-                                                @auth
-                                                    @if ($isActive)
-                                                        <button class="btn btn-secondary w-100" disabled>Ya lo tienes</button>
-                                                    @else
-                                                        <a href="{{ route('payment.form', $plan->id) }}"
-                                                            class="btn btn-label-primary w-100">
-                                                            Adquirir plan
-                                                        </a>
-                                                    @endif
-                                                @else
-                                                    <a href="{{ route('login') }}" class="btn btn-outline-primary w-100">
-                                                        Inicia sesión para comprar
-                                                    </a>
-                                                @endauth
-                                            </div>
-                                        </div>
+                                <div class="pricing-card">
+                                    <spam class="type">{{$plan->name}}</spam>
+                                    <div class="price" data-content="${{$plan->price}}"><span>$</span>{{$plan->price}}</div>
+                                    <h5 class="plan">plan</h5>
+                                    <div class="details mb-5">
+                                        <p>Duración: {{$plan->duration_months}} {{$plan->duration_months > 1 ? 'meses' : 'mes'}}</p>
+                                        <p>Descargas por archivo: {{$plan->downloads}}</p>
+                                        @if ($plan->features)
+                                            @foreach ($plan->features as $item)
+                                                <p>{{ $item['value'] }}</p>
+                                            @endforeach
+                                        @endif
                                     </div>
+                                    @if ($isActive)
+                                    <div class="buy-button active">
+                                        <h3 class="btn"><a style="color: gray">Ya lo tienes</a></h3>
+                                    </div>
+                                    @else
+                                    <div class="buy-button">
+                                        <h3 class="btn"><a href="{{ route('payment.form', $plan->id) }}">Adquirir</a></h3>
+                                    </div>
+                                    @endif
                                 </div>
                             @endforeach
                         </div>

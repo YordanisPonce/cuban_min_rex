@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 class File extends Model
 {
@@ -39,5 +41,14 @@ class File extends Model
     public function downloads()
     {
         return $this->hasMany(Download::class);
+    }
+    protected function poster(): Attribute
+    {
+
+        $isFrontend = request()->input('is_frontend');
+
+        return Attribute::make(
+            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
+        );
     }
 }

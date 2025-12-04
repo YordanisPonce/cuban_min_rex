@@ -8,6 +8,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Forms\Components\FileUpload;
 use App\Models\Plan;
+use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Support\Facades\Storage;
@@ -20,7 +21,8 @@ class PlanForm
             ->components([
                 TextInput::make('name')
                     ->label('Nombre')
-                    ->required(),
+                    ->required()
+                    ->columnSpanFull(),
                 // TextInput::make('stripe_product_id'),
                 // TextInput::make('stripe_price_id'),
                 TextInput::make('price')
@@ -28,6 +30,9 @@ class PlanForm
                     ->required()
                     ->numeric()
                     ->prefix('$'),
+                ColorPicker::make('color')
+                    ->required()
+                    ->default('#38717d'),
                 RichEditor::make('description')
                     ->label('Descripción')
                     ->required()
@@ -49,20 +54,20 @@ class PlanForm
                     ->required()
                     ->numeric()
                     ->default(1),
-                Toggle::make('is_recommended')
-                    ->required()
-                    ->label('Recomendado')
-                    ->reactive()
-                    ->rules([
-                        function ($attribute, $value, $fail) {
-                            if ($value) {
-                                $existing = Plan::where('is_recommended', true)->first();
-                                if ($existing) {
-                                    $fail('Ya existe un plan recomendado. Desmarca el otro primero.');
-                                }
-                            }
-                        },
-                    ]),
+                // Toggle::make('is_recommended')
+                //     ->required()
+                //     ->label('Recomendado')
+                //     ->reactive()
+                //     ->rules([
+                //         function ($attribute, $value, $fail) {
+                //             if ($value) {
+                //                 $existing = Plan::where('is_recommended', true)->first();
+                //                 if ($existing) {
+                //                     $fail('Ya existe un plan recomendado. Desmarca el otro primero.');
+                //                 }
+                //             }
+                //         },
+                //     ]),
                 Repeater::make('features')->columnSpanFull()->reorderableWithButtons()->schema([
                     TextInput::make('value')
                         ->label('Característica')

@@ -53,18 +53,19 @@ class ProfileController extends Controller
      * Update the user's profile information.
      */
     public function update(Request $request)
-    {
-        $request->validate([
-            'photo' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    {   
 
-        $path = $request->file('photo')->store('images', 's3');
-        Storage::disk('s3')->setVisibility($path, 'public');
+        $path = $request->file('photo');
+        
+        if($path){
+            $path = $request->file('photo')->store('images', 's3');
+            Storage::disk('s3')->setVisibility($path, 'public');
+        }
 
         $user = User::find(Auth::user()->id);
         $user->name = $request->name;
         $user->email = $request->email;
-        $user->photo = $path;
+        $path && $user->photo = $path;
         $user->paypal_email = $request->paypal_email;
 
         $user->save();

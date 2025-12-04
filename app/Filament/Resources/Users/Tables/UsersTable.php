@@ -11,12 +11,13 @@ use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 
 class UsersTable
 {
@@ -52,10 +53,24 @@ class UsersTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Filter::make('current_plan_id')
+                    ->label('Subscripción activa')
+                    ->toggle()
+                    ->query(fn (Builder $query): Builder => $query->whereNot('current_plan_id', null)),
+                SelectFilter::make('role')
+                    ->label('Rol')
+                    ->options([
+                        'user' => 'Usuario',
+                        'worker' => 'Trabajador',
+                        'admin' => 'Administrador',
+                    ]),
+            ])->filtersTriggerAction(
+                fn (Action $action) => $action
+                    ->button()
+                    ->label('Filtros'),
+            )
             ->recordActions([
-                EditAction::make()->label('Editar'),
+                EditAction::make()->label('Editar')->visible(fn() => auth()->user()?->role === 'admin'),
                 Action::make('changePassword')->visible(fn() => auth()->user()?->role === 'admin')
                     ->modalSubmitActionLabel('Cambiar')
                     ->modalCancelActionLabel('Cancelar')
@@ -96,13 +111,13 @@ class UsersTable
                     })
                     // Opcional: evita cerrar el modal si hay error de validación
                     ->closeModalByClickingAway(false),
-                DeleteAction::make()->label('Eliminar'),
+                DeleteAction::make()->label('Eliminar')->visible(fn() => auth()->user()?->role === 'admin'),
             ])
 
             ->toolbarActions([
             ])
             ->modifyQueryUsing(
-                fn(): Builder => User::query()->orderBy('id', 'desc')
+                fn($record): Builder => auth()->user()?->role === 'admin' ? User::query()->orderBy('id', 'desc') : User::query()->whereNot('current_plan_id')->orderBy('id', 'desc')
             );
     }
 }

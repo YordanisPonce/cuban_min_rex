@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Carbon\Carbon;
-use DateInterval;
 use DateTime;
 
 use Filament\Models\Contracts\FilamentUser;
@@ -15,6 +14,8 @@ use Laravel\Cashier\Billable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -34,7 +35,7 @@ class User extends Authenticatable implements FilamentUser
         'is_admin',
         'paypal_email',
         'email_verified_at',
-        'downloadToken'
+        'downloadToken',
     ];
 
     /**
@@ -70,6 +71,16 @@ class User extends Authenticatable implements FilamentUser
     public function getFilamentName(): string
     {
         return $this->name;
+    }
+
+    protected function photo(): Attribute
+    {
+
+        $isFrontend = request()->input('is_frontend');
+
+        return Attribute::make(
+            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
+        );
     }
 
     // === Socialite ===
@@ -110,6 +121,11 @@ class User extends Authenticatable implements FilamentUser
     public function billing()
     {
         return $this->hasOne(Billing::class);
+    }
+
+    public function cart()
+    {
+        return $this->hasOne(Cart::class);
     }
 
     public function categories()
@@ -158,27 +174,36 @@ class User extends Authenticatable implements FilamentUser
     {
         $pendingToPay = 0;
         $users = User::all();
-        foreach ($users as $user) {
-            if ($user->hasActivePlan() && $user->currentPlan()) {
-                $plan = Plan::find($user->current_plan_id) ?? $user->currentPlan;
-                if($plan){
-                    $planAmount = $plan->price / $plan->duration_months * 0.7;
-                    $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                    $downloadsToDJ = Download::whereHas('file', callback: function ($query) {
-                        $query->where('user_id', $this->id)->where('liquidated', false);
-                    })
-                        ->where('user_id', $user->id)
-                        ->whereMonth('created_at', Carbon::now()->month)
-                        ->distinct('file_id')
-                        ->count('file_id');
-                    if ($downloads == 0) {
-                        $amountToPay = 0;
-                    } else {
-                        $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+        foreach ($users as $user) {            
+            $plan = null;
 
+            if ($user->hasActivePlan() && $user->currentPlan()) {
+                $plan = Plan::find($user->current_plan_id);
+            } else {
+                $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
                     }
-                    $pendingToPay += $amountToPay;
                 }
+            }
+
+            if ($plan) {
+                $planAmount = $plan->price / $plan->duration_months * 0.7;
+                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+                $downloadsToDJ = Download::whereHas('file', callback: function ($query) {
+                    $query->where('user_id', $this->id)->where('liquidated', false);
+                })
+                    ->where('user_id', $user->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->distinct('file_id')
+                    ->count('file_id');
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                }
+                $pendingToPay += $amountToPay;
             }
         }
         return $pendingToPay;
@@ -189,26 +214,36 @@ class User extends Authenticatable implements FilamentUser
         $totalPaid = 0;
         $users = User::all();
         foreach ($users as $user) {
-            if ($user->hasActivePlan() && $user->currentPlan()) {
-                $plan = Plan::find($user->current_plan_id) ?? $user->currentPlan;
-                if($plan){
-                    $planAmount = $plan->price / $plan->duration_months * 0.7;
-                    $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                    $downloadsToDJ = Download::whereHas('file', function ($query) {
-                        $query->where('user_id', $this->id)->where('liquidated', true);
-                    })
-                        ->where('user_id', $user->id)
-                        ->whereMonth('created_at', Carbon::now()->month)
-                        ->distinct('file_id')
-                        ->count('file_id');
-                    if ($downloads == 0) {
-                        $amountToPay = 0;
-                    } else {
-                        $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
-                    }
+            $plan = null;
 
-                    $totalPaid += $amountToPay;
+            if ($user->hasActivePlan() && $user->currentPlan()) {
+                $plan = Plan::find($user->current_plan_id);
+            } else {
+                $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
+                    }
                 }
+            }
+
+            if ($plan) {
+                $planAmount = $plan->price / $plan->duration_months * 0.7;
+                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+                $downloadsToDJ = Download::whereHas('file', function ($query) {
+                    $query->where('user_id', $this->id)->where('liquidated', true);
+                })
+                    ->where('user_id', $user->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->distinct('file_id')
+                    ->count('file_id');
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                }
+
+                $totalPaid += $amountToPay;
             }
         }
         return $totalPaid;
@@ -219,32 +254,42 @@ class User extends Authenticatable implements FilamentUser
         $totalGenerated = 0;
         $users = User::all();
         foreach ($users as $user) {
+            $plan = null;
+
             if ($user->hasActivePlan() && $user->currentPlan()) {
-                $plan = Plan::find($user->current_plan_id) ?? $user->currentPlan;
-                if($plan){
-                    $planAmount = $plan->price / $plan->duration_months * 0.3;
-                    $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
-                    $downloadsToDJ = Download::whereHas('file', function ($query) {
-                        $query->where('user_id', $this->id)->where('liquidated', true);
-                    })
-                        ->where('user_id', $user->id)
-                        ->whereMonth('created_at', Carbon::now()->month)
-                        ->distinct('file_id')
-                        ->count('file_id');
-
-                    if ($downloads == 0) {
-                        $amountToPay = 0;
-                    } else {
-                        $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                $plan = Plan::find($user->current_plan_id);
+            } else {
+                $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
                     }
-
-                    $totalGenerated += $amountToPay;
                 }
+            }
+            
+            if ($plan) {
+                $planAmount = $plan->price / $plan->duration_months * 0.3;
+                $downloads = $user->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
+                $downloadsToDJ = Download::whereHas('file', function ($query) {
+                    $query->where('user_id', $this->id)->where('liquidated', true);
+                })
+                    ->where('user_id', $user->id)
+                    ->whereMonth('created_at', Carbon::now()->month)
+                    ->distinct('file_id')
+                    ->count('file_id');
+
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                }
+
+                $totalGenerated += $amountToPay;
             }
         }
         return $totalGenerated;
     }
-    
+
     public function pendingSaleLiquidation()
     {
         $totalPaid = 0;
@@ -281,12 +326,13 @@ class User extends Authenticatable implements FilamentUser
         return $totalPaid;
     }
 
-    public function getCurrentMonthDownloads() {
+    public function getCurrentMonthDownloads()
+    {
         return $this->downloads()->whereMonth('created_at', Carbon::now()->month)->count();
     }
 
-    public function getFileCurrentMonthDownloads($fileId){
+    public function getFileCurrentMonthDownloads($fileId)
+    {
         return $this->downloads()->where('file_id', $fileId)->whereMonth('created_at', Carbon::now()->month)->count();
     }
 }
-

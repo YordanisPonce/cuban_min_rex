@@ -7,24 +7,22 @@
     <meta charset="utf-8" />
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>@yield('title', 'Cuban_Mix_Rex')</title>
+    <!-- <meta name="robots" content="noindex, nofollow" /> -->
+    <title>@yield('title', config('app.name'))</title>
 
     <meta name="description"
-        content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
+        content="{{ config('app.name') }}" />
     <!-- Canonical SEO -->
     <meta name="keywords"
-        content="Vuexy bootstrap dashboard, vuexy bootstrap 5 dashboard, themeselection, html dashboard, web dashboard, frontend dashboard, responsive bootstrap theme" />
-    <meta property="og:title" content="Vuexy bootstrap Dashboard by Pixinvent" />
+        content="{{ config('app.name') }}, Remixes, Dj, music" />
+    <meta name="author" content="{{ config('app.name') }}">
+    <meta property="og:title" content="{{ config('app.name') }}" />
     <meta property="og:type" content="product" />
-    <meta property="og:url"
-        content="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
-    <meta property="og:image" content="{{ asset('assets/img/vuexy-hero-image.png') }}" />
+    <meta property="og:image" content="{{ config('app.logo') }}" />
     <meta property="og:description"
-        content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
-    <meta property="og:site_name" content="Pixinvent" />
-    <link rel="canonical"
-        href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
+        content="{{ config('app.name') }}" />
+    <meta property="og:site_name" content="{{ config('app.name') }}" />
+    <meta property="og:url" content="{{ config('app.url') }}">
 
     @if (env('APP_ENV') == 'production')
         <script>
@@ -81,6 +79,8 @@
 
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
 
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pricing.css') }}" />
+
     <!-- Helpers -->
     <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
     <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
@@ -93,6 +93,14 @@
     <script src="{{ asset('assets/js/front-config.js') }}"></script>
 
     <style>
+
+        :root{
+            --bs-primary: #00FF9F !important; /* Color de Bottones */
+            /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
+
+            --download-button: #FF2EC4 !important;
+            --play-button: #00C8FF !important;
+        }
         /* Estilo para el loader */
         .loader {
             position: fixed;
@@ -165,6 +173,29 @@
             display: block !important;
         }
 
+        .dropdown-item:hover{
+            color: black;
+        }
+
+        .bg-body{
+            background-color: transparent !important;
+        }
+
+        .play-button:hover{
+            color: var(--bs-primary) !important;
+        }
+
+        body{
+            /* The image used */
+            background-image: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)),url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg.jpeg') }}");
+
+            /* Create the parallax scrolling effect */
+            background-attachment: fixed;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: cover;
+        }
+
         @media(max-width: 450px) {
             .carousel-item {
                 height: 100vh;
@@ -172,6 +203,9 @@
                 img {
                     height: 100%;
                 }
+            }
+            body{
+                background-image: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
             }
         }
 
