@@ -40,7 +40,7 @@ class OrderController extends Controller
 
                 Log::debug('Adding files to ZIP archive');
                 foreach ($order->order_items as $key => $value) {
-                    $file = File::find($value);
+                    $file = File::find($value->file_id);
                     Log::debug('Adding file to ZIP: ' . $file->original_file);
                     $path = $file->original_file;
                     if (!Storage::disk('s3')->exists($path)) {
