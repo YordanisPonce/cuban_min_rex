@@ -95,15 +95,16 @@ class ListFiles extends ListRecords
                     $file->file = $data['file'];
                     $file->poster = $data['image'];
                     $file->original_file = $data['original_file'];
-                    //$file->collection_id = $data['collection_id'];
                     $file->category_id = $data['category_id'];
                     $file->user_id = Auth::user()->id;
                     $file->price = $data['price'] ?? 0;
                     $file->bpm = $data['bpm'];
                     $file->save();
 
-                    if (pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip') {
+                    // Verificar si es un ZIP
+                    if (pathinfo($file->file, PATHINFO_EXTENSION) === 'zip') {
 
+                        // Crear la colección/pack
                         $collection = new Collection();
                         $collection->name = $data['name'] ?? basename(Storage::disk('s3')->url($data['file']));
                         $collection->category_id = $data['category_id'];
@@ -111,40 +112,67 @@ class ListFiles extends ListRecords
                         $collection->user_id = Auth::user()->id;
                         $collection->save();
 
+                        // Descargar el ZIP desde S3 a un archivo temporal
+                        $zipPath = storage_path('app/temp_' . uniqid() . '.zip');
+                        Storage::disk('s3')->download($file->file, $zipPath);
+
                         $zip = new ZipArchive;
-                        $path = Storage::disk('s3')->url($file->url ?? $file->file);
 
-                        if ($zip->open($path) === TRUE) {
+                        if ($zip->open($zipPath) === TRUE) {
 
-                            $extractPath = storage_path('app/temp');
+                            $extractPath = storage_path('app/temp_' . uniqid());
+
+                            if (!file_exists($extractPath)) {
+                                mkdir($extractPath, 0755, true);
+                            }
+
                             $zip->extractTo($extractPath);
                             $zip->close();
 
-                            $files = scandir($extractPath);
+                            // Obtener archivos del ZIP (excluyendo . y ..)
+                            $files = array_diff(scandir($extractPath), ['.', '..']);
+                            $fileCount = count($files);
 
-                            $filePrice = $data['price'] ? $data['price'] / $file->count() : 0;
+                            // Calcular precio por archivo si hay precio total
+                            $filePrice = ($data['price'] && $data['price'] > 0 && $fileCount > 0)
+                                ? $data['price'] / $fileCount
+                                : 0;
 
                             foreach ($files as $f) {
-                                if ($f !== '.' && $f !== '..') {
-                                    Storage::disk('s3')->putFileAs('files', new \Illuminate\Http\File($extractPath . '/' . $f), $f);
-                                    $file = new File();
-                                    $file->name = $f;
-                                    $file->file = 'files/' . $f;
-                                    $file->original_file = 'files/' . $f;
-                                    $file->collection_id = $collection->id;
-                                    $file->category_id = $data['category_id'];
-                                    $file->poster = $data['image'];
-                                    $file->user_id = Auth::user()->id;
-                                    $file->price = $filePrice;
-                                    $file->bpm = $data['bpm'];
-                                    $file->save();
+                                $filePath = $extractPath . '/' . $f;
+
+                                // Verificar que sea un archivo (no directorio)
+                                if (is_file($filePath)) {
+                                    // Subir cada archivo a S3
+                                    $filePathInS3 = 'files/' . uniqid() . '_' . $f;
+                                    Storage::disk('s3')->put($filePathInS3, file_get_contents($filePath));
+
+                                    // Crear registro de archivo
+                                    $newFile = new File();  // ¡Nota: variable diferente!
+                                    $newFile->name = pathinfo($f, PATHINFO_FILENAME); // Nombre sin extensión
+                                    $newFile->file = $filePathInS3;
+                                    $newFile->original_file = $filePathInS3;
+                                    $newFile->collection_id = $collection->id; // Asociar a la colección
+                                    $newFile->category_id = $data['category_id'];
+                                    $newFile->poster = $data['image'];
+                                    $newFile->user_id = Auth::user()->id;
+                                    $newFile->price = $filePrice;
+                                    $newFile->bpm = $data['bpm'];
+                                    $newFile->save();
                                 }
                             }
 
-                            array_map('unlink', glob("$extractPath/*.*"));
-                            rmdir($extractPath);
+                            // Limpiar archivos temporales
+                            array_map('unlink', glob("$extractPath/*"));
+                            if (is_dir($extractPath)) {
+                                rmdir($extractPath);
+                            }
+                            if (file_exists($zipPath)) {
+                                unlink($zipPath);
+                            }
+
                         } else {
-                            throw new \Exception('No se pudo abrir el archivo ZIP: '.$path);
+                            throw new \Exception('No se pudo abrir el archivo ZIP: ' . $file->file);
                         }
                     }
                 }),
