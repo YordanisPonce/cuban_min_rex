@@ -10,17 +10,14 @@
     <!-- <meta name="robots" content="noindex, nofollow" /> -->
     <title>@yield('title', config('app.name'))</title>
 
-    <meta name="description"
-        content="{{ config('app.name') }}" />
+    <meta name="description" content="{{ config('app.name') }}" />
     <!-- Canonical SEO -->
-    <meta name="keywords"
-        content="{{ config('app.name') }}, Remixes, Dj, music" />
+    <meta name="keywords" content="{{ config('app.name') }}, Remixes, Dj, music" />
     <meta name="author" content="{{ config('app.name') }}">
     <meta property="og:title" content="{{ config('app.name') }}" />
     <meta property="og:type" content="product" />
     <meta property="og:image" content="{{ config('app.logo') }}" />
-    <meta property="og:description"
-        content="{{ config('app.name') }}" />
+    <meta property="og:description" content="{{ config('app.name') }}" />
     <meta property="og:site_name" content="{{ config('app.name') }}" />
     <meta property="og:url" content="{{ config('app.url') }}">
 
@@ -43,7 +40,7 @@
     @endif
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ config('app.logo') }}" />
+    <link rel="icon" href="{{ asset('favicon.ico') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/" />
@@ -93,14 +90,15 @@
     <script src="{{ asset('assets/js/front-config.js') }}"></script>
 
     <style>
-
-        :root{
-            --bs-primary: #00FF9F !important; /* Color de Bottones */
+        :root {
+            --bs-primary: #00FF9F !important;
+            /* Color de Bottones */
             /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
 
             --download-button: #FF2EC4 !important;
             --play-button: #00C8FF !important;
         }
+
         /* Estilo para el loader */
         .loader {
             position: fixed;
@@ -173,21 +171,21 @@
             display: block !important;
         }
 
-        .dropdown-item:hover{
+        .dropdown-item:hover {
             color: black;
         }
 
-        .bg-body{
+        .bg-body {
             background-color: transparent !important;
         }
 
-        .play-button:hover{
+        .play-button:hover {
             color: var(--bs-primary) !important;
         }
 
-        body{
+        body {
             /* The image used */
-            background-image: linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.7)),url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg.jpeg') }}");
+            background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg.jpeg') }}");
 
             /* Create the parallax scrolling effect */
             background-attachment: fixed;
@@ -204,8 +202,9 @@
                     height: 100%;
                 }
             }
-            body{
-                background-image: linear-gradient(rgba(0,0,0,.5), rgba(0,0,0,.5)),url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
+
+            body {
+                background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
             }
         }
 
@@ -277,7 +276,7 @@
     {{--     <script src="{{ asset('assets/js/front-page-landing.js') }}"></script> --}}
 
     @stack('scripts')
-   
+
 </body>
 
 </html>
