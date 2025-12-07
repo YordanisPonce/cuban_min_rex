@@ -113,9 +113,10 @@
 
                 @if (!(Auth::user() && Auth::user()->hasActivePlan()))
                 <li>
-                    <a class="btn btn-primary align-center text-black" href="{{ route('cart') }}">
-                        <span class="icon-base me-md-1" style="width: 18px !important;">{{ svg('vaadin-cart') }}</span>
-                        <span class="d-none d-md-block">$ {{ number_format(Cart::get_current_cart()->get_cart_count(), 2, '.', '')}}</span>
+                    <a class="btn btn-primary align-center text-black relative" href="{{ route('cart') }}">
+                        <span class="icon-base" style="width: 18px !important;">{{ svg('vaadin-cart') }}</span>
+                        <span class="d-md-none badge text-bg-primary badge-notifications" style="right: 10px;">{{ count(Cart::get_current_cart()->items ?? []) }}</span>
+                        <span class="d-none d-md-block ms-1">$ {{ number_format(Cart::get_current_cart()->get_cart_count(), 2, '.', '')}}</span>
                     </a>
                 </li>
                 @endif
