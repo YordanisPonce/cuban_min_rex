@@ -93,7 +93,7 @@ class OrdersTable
                 Action::make('descargar')
                     ->label('Descargar archivo')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->visible(fn(Order $record) => filled($record->file?->file))
+                    ->visible(fn(Order $record) => $record->file_id !== null)
                     ->action(function (Order $record) {
                         // Verificar que exista archivo asociado
                         if (!$record->file || !$record->file->file) {
