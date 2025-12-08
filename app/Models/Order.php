@@ -121,8 +121,7 @@ class Order extends Model
 
         // Descargamos usando Storage y borramos después de enviar
         return $localDisk
-            ->download($relativeZipPath, $zipFileName)
-            ->deleteFileAfterSend(true);
+            ->download($relativeZipPath, $zipFileName);
     }
 
 }
