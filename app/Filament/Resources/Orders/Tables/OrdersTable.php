@@ -90,25 +90,11 @@ class OrdersTable
                 EditAction::make(),
                 ViewAction::make()
                     ->label('Ver'),
-                Action::make('descargar')
-                    ->label('Descargar archivo')
+                Action::make('download_files')
+                    ->label('Descargar archivos')
                     ->icon('heroicon-o-arrow-down-tray')
-                    ->visible(fn(Order $record) => $record->file_id !== null)
                     ->action(function (Order $record) {
-                        // Verificar que exista archivo asociado
-                        if (!$record->file || !$record->file->file) {
-                            abort(404, 'Archivo no disponible.');
-                        }
-
-                        $path = $record->file->file;
-                        $downloadName = $record->file->original_file ?? $record->file->name;
-
-                        if (!Storage::disk('s3')->exists($path)) {
-                            abort(404, 'Archivo no encontrado en el servidor.');
-                        }
-
-                        return Storage::disk('s3')->download($path); // ✅ sin segundo parámetro
-            
+                        return $record->downloadFilesZip();
                     }),
             ])
 
