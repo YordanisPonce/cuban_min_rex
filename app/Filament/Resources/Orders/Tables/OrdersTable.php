@@ -107,8 +107,8 @@ class OrdersTable
                             abort(404, 'Archivo no encontrado en el servidor.');
                         }
 
-                        // 🔥 Respuesta de descarga directa para Filament
-                        return Storage::disk('s3')->download($path, $downloadName);
+                        return Storage::disk('s3')->download($path); // ✅ sin segundo parámetro
+            
                     }),
             ])
 
