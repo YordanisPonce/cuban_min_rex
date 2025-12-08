@@ -80,18 +80,18 @@ class Order extends Model
         foreach ($this->order_items as $item) {
             $file = $item->file;
 
-            if (!$file || !$file->path) {
+            if (!$file || !$file->original_file) {
                 continue;
             }
 
-            $s3Path = $file->path; // ej: "users/1/files/mi-archivo.pdf"
+            $s3Path = $file->original_file; // ej: "users/1/files/mi-archivo.pdf"
 
             if (!Storage::disk('s3')->exists($s3Path)) {
                 continue;
             }
 
             // Nombre dentro del ZIP
-            $innerName = $file->original_name ?? basename($s3Path);
+            $innerName = $file->name ?? basename($s3Path);
             $innerName = str_replace(['/', '\\'], '-', $innerName);
 
             // Leemos desde S3 vía stream

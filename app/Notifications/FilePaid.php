@@ -37,7 +37,7 @@ class FilePaid extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->view('notification', [
+            ->view('notification-email-compatible', [
                 'file_url' => $this->file_url
             ])->subject('Archivo Comprado.');
     }

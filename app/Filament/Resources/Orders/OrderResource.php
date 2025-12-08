@@ -26,6 +26,11 @@ class OrderResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Órdenes';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role === 'admin';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return OrderForm::configure($schema);
