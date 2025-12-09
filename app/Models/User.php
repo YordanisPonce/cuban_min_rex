@@ -335,4 +335,42 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->downloads()->where('file_id', $fileId)->whereMonth('created_at', Carbon::now()->month)->count();
     }
+
+    public function totalEarning(){
+        $totalPaid = 0;
+        $users = User::all();
+        foreach ($users as $user) {
+            $plan = null;
+
+            if ($user->hasActivePlan() && $user->currentPlan()) {
+                $plan = Plan::find($user->current_plan_id);
+            } else {
+                $order = Order::where('user_id', $user->id)->orderBy('created_at', 'desc')->first();
+                if($order){
+                    if(Carbon::parse($order->expires_at)->isFuture() || Carbon::parse($order->expires_at)->month === Carbon::now()->month){
+                        $plan = $order?->plan;
+                    }
+                }
+            }
+
+            if ($plan) {
+                $planAmount = $plan->price / $plan->duration_months * 0.7;
+                $downloads = count($user->downloads);
+                $downloadsToDJ = Download::whereHas('file', function ($query) {
+                    $query->where('user_id', $this->id)->where('liquidated', true);
+                })
+                    ->where('user_id', $user->id)
+                    ->distinct('file_id')
+                    ->count('file_id');
+                if ($downloads == 0) {
+                    $amountToPay = 0;
+                } else {
+                    $amountToPay = $planAmount * ($downloadsToDJ / $downloads);
+                }
+
+                $totalPaid += $amountToPay;
+            }
+        }
+        return $totalPaid + $this->paidSaleLiquidation();
+    }
 }
