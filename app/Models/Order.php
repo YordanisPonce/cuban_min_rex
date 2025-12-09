@@ -92,7 +92,9 @@ class Order extends Model
 
             // Nombre dentro del ZIP
             $innerName = $file->name ?? basename($s3Path);
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
             $innerName = str_replace(['/', '\\'], '-', $innerName);
+            $innerName = $innerName . '.' . $ext;
 
             // Leemos desde S3 vía stream
             $stream = Storage::disk('s3')->readStream($s3Path);

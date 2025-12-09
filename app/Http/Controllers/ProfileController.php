@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View; // Cambiar Inertia\Response por View
+use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\Support\Str;
+use Throwable;
 
 class ProfileController extends Controller
 {
@@ -54,23 +57,33 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {   
-
-        $path = $request->file('photo');
+        try{
         
-        if($path){
-            $path = $request->file('photo')->store('images', 's3');
-            Storage::disk('s3')->setVisibility($path, 'public');
+            $photo = $request->file('photo');
+            
+            if($photo){
+                $image = Image::read($photo)->resize(300,200);
+                
+                $photo = 'images/'.Str::random() . '.' . $photo->getClientOriginalExtension();
+
+                Storage::disk('s3')->put(
+                    $photo,
+                    $image->encodeByExtension($request->file('photo')->getClientOriginalExtension(), quality: 70)
+                );
+            }
+
+            $user = User::find(Auth::user()->id);
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $photo && $user->photo = $photo;
+            $user->paypal_email = $request->paypal_email;
+
+            $user->save();
+            $success = "Información modificada correctamente";
+            return redirect()->back()->with('success', $success);
+        } catch(\Throwable $th){
+            return redirect()->back()->with('error', 'Error al guardar la informacion: '.$th->getMessage());
         }
-
-        $user = User::find(Auth::user()->id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $path && $user->photo = $path;
-        $user->paypal_email = $request->paypal_email;
-
-        $user->save();
-        $success = "Información modificada correctamente";
-        return redirect()->back()->with('success', $success);
     }
 
     public function restorePhoto(){
