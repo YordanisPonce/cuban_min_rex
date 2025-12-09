@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
@@ -50,5 +51,21 @@ class File extends Model
         return Attribute::make(
             get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
         );
+    }
+    public function monthlyEarning(){
+        $total = 0;
+        $sales = $this->sales()->whereMonth('created_at', Carbon::now()->month)->get();
+        foreach ($sales as $sale) {
+            $total += $sale->user_amount;
+        }
+        return $total;
+    }
+    public function totalEarning(){
+        $total = 0;
+        $sales = $this->sales;
+        foreach ($sales as $sale) {
+            $total += $sale->user_amount;
+        }
+        return $total;
     }
 }

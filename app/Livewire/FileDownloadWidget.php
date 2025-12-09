@@ -34,10 +34,10 @@ class FileDownloadWidget extends BaseWidget
         $fileMoreDownload = $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido';
         $stats = [
             Stat::make('Cantidad de Descargas', $downloadCounts),
-            Stat::make('Ganancia este Mes', '$ ' . $totalEarning),
-            Stat::make('Ganancia Total', '$ ' . auth()->user()->totalEarning()),
             Stat::make('Cantidad de Ventas', $salesCount),
             Stat::make('Colección más descargada', $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido'),
+            Stat::make('Ganancia este Mes', '$ ' . $totalEarning),
+            Stat::make('Ganancia Total', '$ ' . auth()->user()->totalEarning()),
         ];
 
         if (Auth()->user()->role === 'admin') {
