@@ -24,14 +24,12 @@ class UserEarningsTable extends TableWidget
                 TextColumn::make('monthly')
                     ->label('Ganado este mes')
                     ->default(fn($record) => $record->monthlyEarning())
-                    ->money()
-                    ->sortable(),
+                    ->money(),
                 TextColumn::make('total_sales')->label('Ventas Totales')->default(fn($record) => count($record->sales)),
                 TextColumn::make('total')
                     ->label('Total Ganado')
                     ->default(fn($record) => $record->totalEarning())
                     ->money()
-                    ->sortable()
             ])
             ->filters([
                 //
