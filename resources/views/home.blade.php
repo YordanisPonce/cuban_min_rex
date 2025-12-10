@@ -56,7 +56,7 @@
                      
                 </p>
                 <div class="row">
-                    <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); gap: 4px;">
+                    <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); row-gap: 4px; column-gap: 24px;">
                         @foreach ($newItems as $item)
                             @include('partials.line-card', ['item' => $item])
                         @endforeach
@@ -160,7 +160,7 @@
                 </div>
                 <h2 class="text-center fw-bold mb-2">Packs de artistas</h2>
                 <div class="row">
-                    <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); gap: 4px;">
+                    <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); row-gap: 4px; column-gap: 24px;">
                         @foreach ($artistCollections as $item)
                         <div class="card mb-1 mb-md-0 px-0">
                             <div class="row g-0">
@@ -279,6 +279,27 @@
                     </div>
                 @endforeach
             </div>
+        </div>
+        <div class="window-notice" id="video-player">
+            <div class="content">
+                <div class="container-xxl flex-grow-1 container-p-y w-100">
+                    <div class="row gy-6">
+                        <!-- Video Player -->
+                        <div class="col-12">
+                            <div class="card" style="position: relative; max-height: 100vh">
+                                <h5 class="card-header d-block text-nowrap overflow-hidden"
+                                    style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
+                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
+                                <div class="card-body w-100 h-100">
+                                    <video class="w-100" style="max-height: 70dvh;" id="plyr-video-player" oncontextmenu="return false;" playsinline controls></video>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Video Player -->
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <section id="audioPlayer">
@@ -308,12 +329,21 @@
     new Plyr("#plyr-video-player"),new Plyr("#plyr-audio-player");
 </script>
 <script>
+    const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+    const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+
     window.addEventListener('DOMContentLoaded', function() {
         document.body.classList.remove('bg-body');
     })
 
+    function stopVideo(){
+        document.getElementById('video-player').style.display = 'none';
+        video.pause();
+    }
+
     function playAudio(element) {
         let audio = document.getElementById('plyr-audio-player');
+        let video = document.getElementById('plyr-video-player');
         const rute = element.dataset.rute;
         const mode = element.dataset.status;
         console.log(rute);
@@ -326,18 +356,26 @@
         .then(response => response.json())
         .then(data => {
             data = data.filter( item => item.id === parseInt(element.id));
-            if(mode === "off"){
-                audio.src = data[0].url;    
-                document.getElementById('audioPlayer').style.transform = 'translateY(0)';
-                document.getElementById('plyr-audio-name').innerText = data[0].title;
-                audio.play();
-                element.dataset.status = "on";
-                element.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
+            const extension = data[0].url.substring(data[0].url.lastIndexOf('.')).toLowerCase();
+            if(audioExtensions.includes(extension)){
+                if(mode === "off"){
+                    audio.src = data[0].url;    
+                    document.getElementById('audioPlayer').style.transform = 'translateY(0)';
+                    document.getElementById('plyr-audio-name').innerText = data[0].title;
+                    audio.play();
+                    element.dataset.status = "on";
+                    element.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
+                } else {
+                    audio.pause();    
+                    document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                    element.dataset.status = "off";
+                    element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                }
             } else {
-                audio.pause();    
-                document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
-                element.dataset.status = "off";
-                element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                video.src = data[0].url;
+                document.getElementById('video-title').innerText = data[0].title;
+                document.getElementById('video-player').style.display = 'block';
+                video.play();
             }
         })
         .catch(error => {

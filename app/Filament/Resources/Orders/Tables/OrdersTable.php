@@ -12,6 +12,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
 class OrdersTable
 {
@@ -26,7 +27,8 @@ class OrdersTable
                 TextColumn::make('user.email')
                     ->label('Usuario')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->default(fn($record) => $record->user->email ?? 'Invitado' ),
 
                 TextColumn::make('plan.name')
                     ->label('Plan')
@@ -95,6 +97,9 @@ class OrdersTable
                     ->icon('heroicon-o-arrow-down-tray')
                     ->action(function (Order $record) {
                         return $record->downloadFilesZip();
+                    })
+                    ->visible(function (Order $record) {
+                        return $record->plan_id !== null;
                     }),
             ])
 
@@ -102,6 +107,9 @@ class OrdersTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->modifyQueryUsing(
+                fn(EloquentBuilder $query) => $query->orderBy('created_at', 'desc')
+            );
     }
 }
