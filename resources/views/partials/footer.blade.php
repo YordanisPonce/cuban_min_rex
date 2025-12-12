@@ -33,12 +33,12 @@
           </ul>
         </div>
         <div class="col-lg-2 col-md-4 col-sm-6">
-          <h6 class="footer-title mb-6">Packs</h6>
+          <h6 class="footer-title mb-6">Remixers</h6>
           <ul class="list-unstyled">
-            @isset($recentCollections)
-              @foreach ($recentCollections as $collection)
+            @isset($recentDjs)
+              @foreach ($recentDjs as $dj)
               <li class="mb-4">
-                <a href="{{route('collection.show', $collection->id)}}" class="footer-link">{{$collection->name}}</a>
+                <a href="{{ route('dj', $dj->id)}}" class="footer-link">{{$dj->name}}</a>
               </li>
               @endforeach
             @endisset

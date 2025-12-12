@@ -20,6 +20,7 @@ class File extends Model
         'file',
         'poster',
         'original_file',
+        'status',
         'download_count',
     ];
 

@@ -14,7 +14,7 @@ class CategoryController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -25,6 +25,7 @@ class CategoryController extends Controller
         $remixers = request()->get("remixers") ?? "";
 
         $results = File::where('name', 'like', '%' . $name . '%')
+            ->where('status','active')
             ->whereHas('category', function ($query) use ($categoryId) {
                 $query->where('id', $categoryId);
             })
@@ -36,6 +37,7 @@ class CategoryController extends Controller
             ->paginate(30);
         
         $playList = File::where('name', 'like', '%' . $name . '%')
+            ->where('status','active')
             ->whereHas('category', function ($query) use ($categoryId) {
                 $query->where('id', $categoryId);
             })
@@ -52,7 +54,7 @@ class CategoryController extends Controller
             ]);
 
         $results->getCollection()->transform(function ($file) {
-            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
+            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->original_file), PATHINFO_EXTENSION) === 'zip';
             return [
                 'id' => $file->id,
                 'date' => $file->created_at,
@@ -75,7 +77,7 @@ class CategoryController extends Controller
             $query->where('category_id', $categoryId);
         })->get();
 
-        return view('search', compact('category','results', 'djs','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
+        return view('search', compact('category','results', 'djs','categories', 'recentCategories', 'recentDjs', 'allCategories', 'allRemixers', 'playList'));
     }
 
     public function showCollections(string $id)

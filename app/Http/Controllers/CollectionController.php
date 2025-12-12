@@ -20,7 +20,7 @@ class CollectionController extends Controller
         $collection = Collection::find($id);
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -52,7 +52,7 @@ class CollectionController extends Controller
             return $item->id !== $collection->id && $item->files()->count() > 0;
         });
 
-        return view('collection', compact('results', 'djs','categories', 'collection', 'relationeds', 'recentCategories', 'recentCollections'));
+        return view('collection', compact('results', 'djs','categories', 'collection', 'relationeds', 'recentCategories', 'recentDjs'));
     }
 
     public function download(string $id)

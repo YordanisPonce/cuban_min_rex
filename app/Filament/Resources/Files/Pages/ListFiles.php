@@ -100,7 +100,7 @@ class ListFiles extends ListRecords
                     $file->save();
 
                     // Verificar si es un ZIP
-                    if (pathinfo($file->file, PATHINFO_EXTENSION) === 'zip') {
+                    if (pathinfo($file->original_file, PATHINFO_EXTENSION) === 'zip') {
 
                         // Crear la colección/pack
                         $collection = new Collection();
@@ -156,6 +156,7 @@ class ListFiles extends ListRecords
                                     $newFile->user_id = Auth::user()->id;
                                     $newFile->price = $filePrice;
                                     $newFile->bpm = $data['bpm'];
+                                    $newFile->status = "inactive";
                                     $newFile->save();
                                 }
                             }

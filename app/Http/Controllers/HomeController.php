@@ -22,16 +22,19 @@ class HomeController extends Controller
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $artistCollections = Collection::take(10)->get()->filter(function($item){
-            return $item->files()->count() > 0;
+        $artistCollections = File::where('status','active')->orderBy('created_at', 'desc')->take(10)->get()->filter(function($item){
+            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->original_file), PATHINFO_EXTENSION) === 'zip';
         });
-        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])->orderBy('created_at', 'desc')->take(10)->get()->filter(function($item){
-            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->file), PATHINFO_EXTENSION) !== 'zip';
+        $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])
+            ->where('status','active')
+            ->orderBy('created_at', 'desc')->take(10)->get()
+            ->filter(function($item){
+                return pathinfo(Storage::disk('s3')->url($item->url ?? $item->original_file), PATHINFO_EXTENSION) !== 'zip';
+            });
+        $tops = File::where('status','active')->orderBy('download_count', 'desc')->take(10)->get()->filter(function($item){
+            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->original_file), PATHINFO_EXTENSION) !== 'zip';
         });
-        $tops = File::orderBy('download_count', 'desc')->take(10)->get()->filter(function($item){
-            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->file), PATHINFO_EXTENSION) !== 'zip';
-        });
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -40,7 +43,7 @@ class HomeController extends Controller
         $ctg = Category::orderBy('name')->get()->filter(function($item){
             return $item->files()->count() > 0;
         });
-        return view('home', compact('pageTitle', 'plans', 'ctg', 'djs','categories', 'artistCollections', 'newItems', 'tops', 'recentCategories', 'recentCollections'));
+        return view('home', compact('pageTitle', 'plans', 'ctg', 'djs','categories', 'artistCollections', 'newItems', 'tops', 'recentCategories', 'recentDjs'));
     }
 
     public function faq()
@@ -49,7 +52,7 @@ class HomeController extends Controller
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -65,7 +68,7 @@ class HomeController extends Controller
         
         $djs = User::whereHas('files')->orderBy('name')->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -81,7 +84,7 @@ class HomeController extends Controller
         
         $djs = User::whereHas('files')->orderBy('name')->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -97,7 +100,7 @@ class HomeController extends Controller
         $djs = User::whereHas('files')->orderBy('name')->get();
         $plans = Plan::orderBy('price')->get();
         
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -111,7 +114,7 @@ class HomeController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -122,6 +125,7 @@ class HomeController extends Controller
         $category = request()->get("categories") ?? "";
 
         $results = File::where('name', 'like', '%' . $name . '%')
+            ->where('status','active')
             ->whereHas('category', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
@@ -133,6 +137,7 @@ class HomeController extends Controller
             ->paginate(30);
         
         $playList = File::where('name', 'like', '%' . $name . '%')
+            ->where('status','active')
             ->whereHas('category', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
@@ -149,7 +154,7 @@ class HomeController extends Controller
             ]);
 
         $results->getCollection()->transform(function ($file) {
-            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
+            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->original_file), PATHINFO_EXTENSION) === 'zip';
             return [
                 'id' => $file->id,
                 'date' => $file->created_at,
@@ -170,7 +175,7 @@ class HomeController extends Controller
 
         $allCategories = Category::orderBy('name')->get();
 
-        return view('search', compact('dj','results', 'djs','categories', 'recentCategories', 'recentCollections', 'allCategories', 'playList'));
+        return view('search', compact('dj','results', 'djs','categories', 'recentCategories', 'recentDjs', 'allCategories', 'playList'));
     }
 
     public function sendContactForm(Request $request){
@@ -196,7 +201,7 @@ class HomeController extends Controller
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -208,6 +213,7 @@ class HomeController extends Controller
         $remixers = request()->get("remixers") ?? "";
 
         $results = File::where('name', 'like', '%' . $name . '%')
+            ->where('status','active')
             ->whereHas('category', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
@@ -219,6 +225,7 @@ class HomeController extends Controller
             ->paginate(30);
 
         $playList = File::where('name', 'like', '%' . $name . '%')
+            ->where('status','active')
             ->whereHas('category', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
@@ -234,7 +241,7 @@ class HomeController extends Controller
             ]);
 
         $results->getCollection()->transform(function ($file) {
-            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION) === 'zip';
+            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->original_file), PATHINFO_EXTENSION) === 'zip';
             return [
                 'id' => $file->id,
                 'date' => $file->created_at,
@@ -258,13 +265,13 @@ class HomeController extends Controller
 
         $remixes = true;
 
-        return view('search', compact('results', 'djs', 'remixes','categories', 'recentCategories', 'recentCollections', 'allCategories', 'allRemixers', 'playList'));
+        return view('search', compact('results', 'djs', 'remixes','categories', 'recentCategories', 'recentDjs', 'allCategories', 'allRemixers', 'playList'));
     }
 
     public function cart(Request $request){
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -278,6 +285,6 @@ class HomeController extends Controller
             array_push($cart, $file);
         }
 
-        return view('cart', compact('cart','categories', 'djs', 'recentCategories', 'recentCollections'));
+        return view('cart', compact('cart','categories', 'djs', 'recentCategories', 'recentDjs'));
     }
 }

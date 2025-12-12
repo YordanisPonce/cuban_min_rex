@@ -26,7 +26,7 @@ class PaymentController extends Controller
             'plans' => $plans,
             'categories' => Category::where('show_in_landing', true)->get(),
             'djs' => User::where('role', 'worker')->orderBy('name')->get(),
-            'recentCollections' => Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
                 return $item->files()->count() > 0;
             }),
             'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
