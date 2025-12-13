@@ -103,10 +103,10 @@ class StripeWebhookController extends CashierController
                 $token = Str::random(50);
 
                 //Aqui configurar para enviar el correo al cliente
-                $user && $user->notify(new FilePaid(route('order.download', [ $order->id, 'token' => $token])));
+                $user && $user->notify(new FilePaid(route('order.download', [$order->id, 'token' => $token])));
                 if ($email && !$user) {
                     $user = User::where('email', 'user@guest.com')->first();
-                    Notification::route('mail', $email)->notify(new FilePaid(route('order.download', [ $order->id, 'token' => $token])));
+                    Notification::route('mail', $email)->notify(new FilePaid(route('order.download', [$order->id, 'token' => $token])));
                 }
 
                 $downloadToken = $user?->downloadToken ?? [];
@@ -120,4 +120,72 @@ class StripeWebhookController extends CashierController
             }
         }
     }
+
+    public function handleInvoicePaid(array $payload)
+    {
+        $invoice = $payload['data']['object'];
+
+        // SOLO renovaciones
+        if (($invoice['billing_reason'] ?? null) !== 'subscription_cycle') {
+            return;
+        }
+
+        // Metadata: viene en parent.subscription_details.metadata (en tu payload)
+        $meta = $invoice['parent']['subscription_details']['metadata'] ?? [];
+
+        // Fallback: también viene en lines.data[0].metadata
+        if (empty($meta) && !empty($invoice['lines']['data'][0]['metadata'])) {
+            $meta = $invoice['lines']['data'][0]['metadata'];
+        }
+
+        $userId = $meta['user_id'] ?? null;
+        $planId = $meta['plan_id'] ?? null;
+
+        // Fecha fin del periodo ya viene en el invoice
+        $periodEndTs = $invoice['lines']['data'][0]['period']['end'] ?? null;
+        if (!$periodEndTs) {
+            Log::warning('invoice.paid renewal sin period.end', ['invoice_id' => $invoice['id'] ?? null]);
+            return;
+        }
+
+        $user = $userId ? User::find($userId) : null;
+
+        // Fallback por stripe_id (por si un día falta metadata)
+        if (!$user && !empty($invoice['customer'])) {
+            $user = User::where('stripe_id', $invoice['customer'])->first();
+        }
+
+        if (!$user) {
+            Log::warning('invoice.paid renewal sin usuario', [
+                'invoice_id' => $invoice['id'] ?? null,
+                'customer' => $invoice['customer'] ?? null,
+                'meta' => $meta,
+            ]);
+            return;
+        }
+
+        $periodEnd = Carbon::createFromTimestamp((int) $periodEndTs);
+
+        // Actualiza tu user
+        if ($planId) {
+            $user->current_plan_id = (int) $planId;
+        }
+        $user->plan_expires_at = $periodEnd;
+        $user->save();
+
+        // Actualiza tu tabla Subscription custom
+        Subscription::updateOrCreate(
+            ['user_id' => $user->id],
+            ['ends_at' => $periodEnd]
+        );
+
+        Log::info('Renovación OK (invoice.paid)', [
+            'user_id' => $user->id,
+            'invoice_id' => $invoice['id'] ?? null,
+            'ends_at' => $periodEnd->toDateTimeString(),
+        ]);
+    }
+
+
+
 }
