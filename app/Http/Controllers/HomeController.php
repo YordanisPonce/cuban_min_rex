@@ -107,7 +107,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        return view('plans', compact('djs','plans','categories', 'recentCategories', 'recentCollections'));
+        return view('plans', compact('djs','plans','categories', 'recentCategories', 'recentDjs'));
     }
 
     public function dj($id)

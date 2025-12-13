@@ -41,7 +41,6 @@ class PlanForm
                     ->image()
                     ->columnSpanFull()
                     ->label('Subir Foto')
-                    ->required()
                     ->disk('s3')
                     ->directory('images'),
                 TextInput::make('duration_months')
