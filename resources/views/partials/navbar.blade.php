@@ -59,10 +59,10 @@
                         <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Colecciones</a>
                     </li> -->
                     @if (isset($djs) && count($djs)>0)
-                    <li class="nav-item dropdown ms-2">
+                    <li class="nav-item dropdown ms-md-2 navbar-djs">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="javascript:void(0);"
                             data-bs-toggle="dropdown">
-                            <span class="ms-2 d-none d-md-block">DJ'S</span>
+                            <span class="ms-md-2 d-block">DJ'S</span>
                         </a>
                         <ul class="dropdown-menu">
                             @foreach ($djs as $dj)

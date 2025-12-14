@@ -212,6 +212,10 @@
             .card-relationed img {
                 max-height: 150px !important;
             }
+
+            .navbar-djs .dropdown-menu{
+                position: relative !important;
+            }
         }
 
         @media(max-width: 992px) {
