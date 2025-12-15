@@ -33,6 +33,19 @@ class FilesTable
                     ->searchable(),
                 TextColumn::make('category.name')
                     ->label('Categoría'),
+                TextColumn::make('status')
+                    ->label('Estado')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state) => match ($state) {
+                        'active' => 'Activo',
+                        'inactive' => 'Inactivo',
+                        default => ucfirst($state),
+                    })
+                    ->colors(fn(string $state) => match ($state) {
+                        'active' => ['success'],
+                        'inactive' => ['primary'],
+                        default => ['primary'],
+                    }),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()

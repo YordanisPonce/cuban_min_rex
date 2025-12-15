@@ -101,7 +101,7 @@ $error = session('error');
                             </div>
                         </div>
                         <div class="d-flex justify-content-end align-items-center">
-                            <a class="btn btn-primary cursor-pointer" onclick="proccessPayment()">Procesar Pago</a>
+                            <a class="btn btn-primary cursor-pointer text-black" onclick="proccessPayment()">Procesar Pago</a>
                         </div>
                     </div>
                 </div>

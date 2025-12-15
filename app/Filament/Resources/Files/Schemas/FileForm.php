@@ -57,6 +57,14 @@ class FileForm
                 TextInput::make('bpm')
                     ->label('BPM')
                     ->required(),
+                Select::make('status')
+                    ->label('Estado')
+                    ->required()
+                    ->options([
+                        'active' => 'Activo',
+                        'inactive' => 'Inactivo',
+                    ])
+                    ->default('active'),
                 FileUpload::make('poster')
                     ->label('Subir Poster')
                     ->image()

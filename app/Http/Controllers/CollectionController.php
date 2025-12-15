@@ -102,11 +102,11 @@ class CollectionController extends Controller
 
     public function index()
     {
-        $collections = Collection::paginate(12);
+        $collections = Collection::whereHas('files')->paginate(12);
         $djs = User::whereHas('files')->orderBy('name')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
 
-        $recentCollections = Collection::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
 
@@ -116,7 +116,7 @@ class CollectionController extends Controller
 
         $badge = 'Colecciones';
 
-        return view('category', compact('collections', 'djs', 'categories', 'recentCategories', 'recentCollections', 'badge'));
+        return view('category', compact('collections', 'djs', 'categories', 'recentCategories', 'recentDjs', 'badge'));
     }
 
     public function news()

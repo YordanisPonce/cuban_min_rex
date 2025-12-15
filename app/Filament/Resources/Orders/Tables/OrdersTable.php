@@ -55,11 +55,13 @@ class OrdersTable
                         'canceled' => 'Cancelado',
                         default => ucfirst($state),
                     })
-                    ->colors([
-                        'success' => ['paid'],
-                        'warning' => ['pending'],
-                        'danger' => ['failed', 'canceled'],
-                    ])
+                    ->colors(fn(string $state) => match ($state) {
+                        'paid' => ['success'],
+                        'pending' => ['warning'],
+                        'failed' => ['danger'],
+                        'canceled' => ['danger'],
+                        default => ['warning'],
+                    })
                     ->sortable(),
 
                 TextColumn::make('paid_at')
