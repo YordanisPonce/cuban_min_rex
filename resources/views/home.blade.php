@@ -160,9 +160,9 @@
                 </div>
                 <h2 class="text-center fw-bold mb-2">Packs de artistas</h2>
                 <div class="row">
-                    <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); row-gap: 4px; column-gap: 24px;">
+                    <div class="d-md-grid" style="grid-template-columns: repeat(6, 1fr); row-gap: 4px; column-gap: 24px;">
                         @foreach ($artistCollections as $item)
-                            @include('partials.line-card', ['item' => $item])
+                            @include('partials.pack-card', ['item' => $item])
                         @endforeach
                     </div>
                 </div>

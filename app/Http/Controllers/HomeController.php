@@ -22,18 +22,12 @@ class HomeController extends Controller
         $plans = Plan::orderBy('price')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
-        $artistCollections = File::where('status','active')->orderBy('created_at', 'desc')->take(10)->get()->filter(function($item){
-            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->original_file), PATHINFO_EXTENSION) === 'zip';
-        });
+        $artistCollections = File::where('original_file','LIKE','%.zip')->where('status','active')->orderBy('created_at', 'desc')->take(12)->get();
         $newItems = File::whereBetween('created_at', [Carbon::now()->startOfWeek(),Carbon::now()->endOfWeek()])
+            ->whereNot('original_file','LIKE','%.zip')
             ->where('status','active')
-            ->orderBy('created_at', 'desc')->take(10)->get()
-            ->filter(function($item){
-                return pathinfo(Storage::disk('s3')->url($item->url ?? $item->original_file), PATHINFO_EXTENSION) !== 'zip';
-            });
-        $tops = File::where('status','active')->orderBy('download_count', 'desc')->take(10)->get()->filter(function($item){
-            return pathinfo(Storage::disk('s3')->url($item->url ?? $item->original_file), PATHINFO_EXTENSION) !== 'zip';
-        });
+            ->orderBy('created_at', 'desc')->take(10)->get();
+        $tops = File::where('status','active')->whereNot('original_file','LIKE','%.zip')->orderBy('download_count', 'desc')->take(10)->get();
         $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -91,7 +85,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        return view('radio', compact('djs','categories', 'recentCategories', 'recentCollections'));
+        return view('radio', compact('djs','categories', 'recentCategories', 'recentDjs'));
     }
 
     public function plan()

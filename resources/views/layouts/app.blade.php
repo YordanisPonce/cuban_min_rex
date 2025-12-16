@@ -179,7 +179,7 @@
             background-color: transparent !important;
         }
 
-        .play-button:hover {
+        .play-button:hover, .btn-icon:hover{
             color: var(--bs-primary) !important;
         }
 
