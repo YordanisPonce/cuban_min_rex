@@ -50,10 +50,24 @@ class File extends Model
         $isFrontend = request()->input('is_frontend');
 
         return Attribute::make(
-            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
+            get: function ($value) {
+
+                // ✅ En Filament/Livewire devuelve SIEMPRE el key (path) para que funcione preview/remove
+                if (request()->is('admin/*') || request()->is('filament/*') || request()->is('livewire/*')) {
+                    return $value;
+                }
+
+                // ✅ Solo frontend: devuelve URL si viene el flag
+                $isFrontend = request()->boolean('is_frontend');
+
+                return ($value && $isFrontend)
+                    ? Storage::disk('s3')->url($value)
+                    : $value;
+            }
         );
     }
-    public function monthlyEarning(){
+    public function monthlyEarning()
+    {
         $total = 0;
         $sales = $this->sales()->whereMonth('created_at', Carbon::now()->month)->get();
         foreach ($sales as $sale) {
@@ -61,7 +75,8 @@ class File extends Model
         }
         return $total;
     }
-    public function totalEarning(){
+    public function totalEarning()
+    {
         $total = 0;
         $sales = $this->sales;
         foreach ($sales as $sale) {
