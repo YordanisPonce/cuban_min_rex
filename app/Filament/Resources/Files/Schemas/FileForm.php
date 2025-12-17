@@ -18,6 +18,23 @@ class FileForm
 {
     public static function configure(Schema $schema): Schema
     {
+
+        $toKey = function ($value): ?string {
+            if (!$value)
+                return null;
+
+            // Si viene URL -> quédate con el path
+            if (Str::startsWith($value, ['http://', 'https://'])) {
+                $value = parse_url($value, PHP_URL_PATH) ?? '';
+            }
+
+            $value = ltrim($value, '/'); // "storage/images/a.png" o "images/a.png"
+
+            // Quita prefijos típicos
+            $value = preg_replace('#^(storage/|public/|storage/app/public/)#', '', $value);
+
+            return $value ?: null; // "images/a.png"
+        };
         return $schema
             ->components([
                 Hidden::make('user_id')->default(Auth::user()->id),
@@ -58,25 +75,18 @@ class FileForm
                     ->disk('s3')
                     ->directory('images')
                     ->columnSpanFull()
-                    // ✅ Al editar: si en BD hay URL, Filament necesita el PATH
-                    ->formatStateUsing(function ($state) {
-                        if (!$state)
-                            return null;
 
-                        // si es URL, toma solo el path
-                        if (Str::startsWith($state, ['http://', 'https://'])) {
-                            $state = parse_url($state, PHP_URL_PATH) ?? '';
-                        }
+                    // ✅ hidrata el state como key de S3
+                    ->formatStateUsing(fn($state) => $toKey($state))
 
-                        $state = ltrim($state, '/'); // "storage/originals/xxx.zip"
-            
-                        // ✅ limpia prefijos comunes
-                        $state = preg_replace('#^(storage/|public/|storage/app/public/)#', '', $state);
+                    // ✅ obliga a Filament a usar una URL válida para el preview
 
-                        return $state ?: null; // => "originals/xxx.zip"
-                    })
-                    // ✅ Al guardar: conviértelo de nuevo a URL para tu frontend
+                    // ✅ cuando quitas el archivo en el form, que borre bien en S3
+                    ->deleteUploadedFileUsing(fn($file) => Storage::disk('s3')->delete($toKey($file)))
+                    ->getUploadedFileUrlUsing(fn($file) => Storage::disk('s3')->url($toKey($file)))
                     ->dehydrateStateUsing(fn($state) => $state ? Storage::disk('s3')->url($state) : null),
+
+                // (si quieres seguir guardando URL en BD)
 
                 FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
