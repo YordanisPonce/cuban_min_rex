@@ -207,10 +207,8 @@
                                         @endif
                                     @endauth
                                     <td>
-                                        @if (!$file['isZip'])
                                         <a id="{{$file['id']}}" style="display: flex; width: 20px; color: var(--play-button)" class="play-button cursor-pointer" data-url="{{$file['url']}}" data-name="{{$file['name']}}" data-state="pause" onclick="playAudio(this)"
                                                 >{{ svg('vaadin-play') }}</a>
-                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
