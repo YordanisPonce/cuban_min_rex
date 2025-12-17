@@ -1,5 +1,6 @@
 @php
     use App\Models\Cart;
+    $dowloads = auth()->user() ? auth()->user()->getFileDownloadsAtSubscriptionPeriod($item->id) : 0;
 @endphp
 <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
     <div class="card px-0 bg-transparent h-100">
@@ -13,10 +14,16 @@
                         ><i class="icon-base ti tabler-player-play-filled"></i></a>
                 </div>
                 <div class="d-flex align-items-center">
-                    @if ((Auth::user() && Auth::user()->hasActivePlan()) || !($item->price > 0))
-                    <a class="btn btn-icon rounded-pill d-flex gap-2" href="{{ route('file.download', $item->id)}}">
-                        <i style="width: 20px">{{ svg('entypo-download') }}</i>
-                    </a>
+                    @if ((Auth::user() && Auth::user()->hasActivePlan()))
+                    <div class="relative">
+                        <a class="btn btn-icon rounded-pill d-flex gap-2" href="{{ route('file.download', $item->id)}}">
+                            <i style="width: 20px">{{ svg('entypo-download') }}</i>
+                        </a>
+                            
+                        @if ($dowloads > 0)
+                            <span class="badge badge-notifications bg-transparent" style="top: 10px;right: -20px;color: currentColor; font-size: 16px;"><i class="ti tabler-{{ $dowloads > 1 ? 'checks':'check'}}"></i></span>
+                        @endif
+                    </div>
                     @else
                         @if (!in_array($item->id,Cart::get_current_cart()->items ?? []))
                         <a class="btn btn-icon rounded-pill d-flex gap-2" href="{{ route('file.add.cart', $item->id)}}">

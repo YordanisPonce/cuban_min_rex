@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
+use Stripe\Stripe;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -336,6 +337,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->downloads()->where('file_id', $fileId)->whereMonth('created_at', Carbon::now()->month)->count();
     }
 
+    public function getFileDownloads($fileId)
+    {
+        return $this->downloads()->where('file_id', $fileId)->count();
+    }
+
     public function totalEarning(){
         $totalPaid = 0;
         $users = User::all();
@@ -372,5 +378,30 @@ class User extends Authenticatable implements FilamentUser
             }
         }
         return $totalPaid + $this->paidSaleLiquidation();
+    }
+
+    public function getFileDownloadsAtSubscriptionPeriod($fileId)
+    {
+        Stripe::setApiKey(config('services.stripe.secret_key'));
+
+        $customerId = $this->stripe_id;
+
+        $subscriptions = \Stripe\Subscription::all(['customer' => $customerId]);
+        
+        $subscriptions = array_filter($subscriptions->data, function($subscription) {
+            return $subscription->status === 'active';
+        });
+
+        if (!empty($subscriptions->data)) {
+
+            $stripeSubscription = $subscriptions[0];
+
+            $start_date = \Carbon\Carbon::createFromTimestamp($stripeSubscription->start_date);
+            $end_date = \Carbon\Carbon::createFromTimestamp($stripeSubscription->current_period_end);
+        
+            return $this->downloads()->where('file_id', $fileId)->whereBetween('created_at', [$start_date, $end_date])->count();
+        }
+
+        return $this->downloads()->where('file_id', $fileId)->count();
     }
 }

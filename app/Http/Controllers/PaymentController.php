@@ -130,11 +130,6 @@ class PaymentController extends Controller
             Subscription::where('user_id', $userId)->whereNull('canceled_at')->update($dataToUpdate);
         });
 
-
-        $categories = Category::where('show_in_landing', true)->get();
-        $plans = Plan::orderBy('price')->get();
-        $orders = Order::where('user_id', Auth::user()->id)->orderBy('paid_at', 'desc')->get();
-
         return redirect()->back()->with('success', 'Membresia cancelada satisfactoriamente');
 
     }

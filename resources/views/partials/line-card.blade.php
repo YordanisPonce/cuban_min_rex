@@ -1,5 +1,6 @@
 @php
-    use App\Models\Cart;
+    use App\Models\Cart;    
+    $dowloads = auth()->user() ? auth()->user()->getFileDownloadsAtSubscriptionPeriod($item->id) : 0;
 @endphp
 <div class="{{ isset($top) ? 'card mb-1 px-0' : 'card mb-1 mb-md-0 px-0' }}">
     <div class="row g-0">
@@ -40,11 +41,14 @@
                     <i class="icon-base ti tabler-dots icon-22px text-body-secondary"></i>
                 </button>
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="BulkOptions">
-                    @if ((Auth::user() && Auth::user()->hasActivePlan()) || !($item->price > 0))
-                    <a class="dropdown-item d-flex gap-2" href="{{ route('file.download', $item->id)}}">
-                        <i style="width: 20px">{{ svg('entypo-download') }}</i>
-                        Descargar
-                    </a>
+                    @if ((Auth::user() && Auth::user()->hasActivePlan()))
+                        <a class="dropdown-item relative d-flex gap-2" href="{{ route('file.download', $item->id)}}">
+                            <i style="width: 20px">{{ svg('entypo-download') }}</i>
+                            Descargar
+                            @if ($dowloads > 0)
+                                <span class="badge badge-notifications top-10 end-0 bg-transparent" style="font-size: 14px; color: currentColor"><i class="ti tabler-{{ $dowloads > 1 ? 'checks':'check'}}"></i></span>
+                            @endif
+                        </a>
                     @else
                         <p class="pt-2 text-center">Precio: $ {{ $item->price }}</p>
                         @if (!in_array($item->id,Cart::get_current_cart()->items ?? []))

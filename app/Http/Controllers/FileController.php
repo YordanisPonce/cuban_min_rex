@@ -16,6 +16,7 @@ use Stripe\Checkout\Session as StripeSession;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Stripe\Subscription;
 
 class FileController extends Controller
 {
@@ -61,7 +62,7 @@ class FileController extends Controller
             }
 
             if($plan){
-                if (auth()->user()->getFileCurrentMonthDownloads($id) < $plan->downloads) {
+                if (auth()->user()->getFileDownloadsAtSubscriptionPeriod($id) < $plan->downloads) {
                     $file = File::find($id);
 
                     $path = $file->original_file;
@@ -82,6 +83,7 @@ class FileController extends Controller
                     return Storage::disk('s3')->download($path, $downloadName);
                 }
                 return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
+            
             }
         }
 
