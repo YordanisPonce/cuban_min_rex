@@ -90,13 +90,23 @@ class ListFiles extends ListRecords
                     Hidden::make('category_id')
                         ->default(fn($get) => $get('dinamic_category_id')),
                 ])->action(function (array $data): void {
-                    try{
-                        $localFile = Storage::disk('public')->url($data['original_file']);
+                    try {
+                        // ✅ 1) Ruta REAL del archivo en tu disco local (public)
+                        $localPath = Storage::disk('public')->path($data['original_file']);
 
-                        Storage::disk('s3')->put($data['original_file'], $localFile);
+                        if (!file_exists($localPath)) {
+                            throw new \Exception("No existe el archivo local: {$localPath}");
+                        }
 
+                        // ✅ 2) Subir a S3 el BINARIO (no la URL)
+                        $stream = fopen($localPath, 'r');
+                        Storage::disk('s3')->writeStream($data['original_file'], $stream);
+                        if (is_resource($stream))
+                            fclose($stream);
+
+                        // ✅ 3) Crear registro principal
                         $file = new File();
-                        $file->name = $data['name'] ?? basename(Storage::disk('s3')->url($data['file']));
+                        $file->name = $data['name'] ?? basename($data['file'] ?? $data['original_file']);
                         $file->file = $data['file'];
                         $file->poster = $data['image'];
                         $file->original_file = $data['original_file'];
@@ -106,31 +116,22 @@ class ListFiles extends ListRecords
                         $file->bpm = $data['bpm'];
                         $file->save();
 
-                        // Verificar si es un ZIP
-                        if (pathinfo($localFile, PATHINFO_EXTENSION) === 'zip') {
+                        // ✅ 4) Si es ZIP, extraer desde el archivo local (public) y subir cada archivo a S3
+                        if (strtolower(pathinfo($localPath, PATHINFO_EXTENSION)) === 'zip') {
 
-                            // Crear la colección/pack
                             $collection = new Collection();
-                            $collection->name = $data['name'] ?? basename(Storage::disk('s3')->url($data['file']));
+                            $collection->name = $data['name'] ?? basename($data['file'] ?? $data['original_file']);
                             $collection->category_id = $data['category_id'];
                             $collection->image = $data['image'];
                             $collection->user_id = Auth::user()->id;
                             $collection->save();
 
-                            // Descargar el ZIP desde S3 a un archivo temporal
-                            //$zipPath = storage_path('app/temp_' . uniqid() . '.zip');
-                            //Storage::disk('s3')->download($file->file, $zipPath);
+                            $zip = new \ZipArchive();
 
-                            $zipPath = Storage::disk('public')->path($data['original_file']);
-
-                            $zip = new ZipArchive;
-
-                            if ($zip->open($zipPath) === TRUE) {
-
-                                Log::info('Entro al ZIP '.$zipPath);
+                            if ($zip->open($localPath) === true) {
+                                Log::info('Entro al ZIP ' . $localPath);
 
                                 $extractPath = storage_path('app/temp_' . uniqid());
-
                                 if (!file_exists($extractPath)) {
                                     mkdir($extractPath, 0755, true);
                                 }
@@ -138,73 +139,81 @@ class ListFiles extends ListRecords
                                 $zip->extractTo($extractPath);
                                 $zip->close();
 
-                                // Obtener archivos del ZIP (excluyendo . y ..)
-                                $files = array_diff(scandir($extractPath), ['.', '..']);
-                                //$files = scandir($extractPath);
-                                $fileCount = count($files);
+                                $files = array_values(array_diff(scandir($extractPath), ['.', '..']));
 
-                                Log::info('Escanados '.$fileCount.' archivos');
+                                // Solo archivos (no carpetas)
+                                $onlyFiles = array_values(array_filter($files, function ($f) use ($extractPath) {
+                                    return is_file($extractPath . DIRECTORY_SEPARATOR . $f);
+                                }));
 
-                                // Calcular precio por archivo si hay precio total
+                                $fileCount = count($onlyFiles);
+                                Log::info("Escaneados {$fileCount} archivos");
+
                                 $filePrice = ($data['price'] && $data['price'] > 0 && $fileCount > 0)
                                     ? $data['price'] / $fileCount
                                     : 0;
 
-                                foreach ($files as $f) {
-                                    $filePath = $extractPath . '/' . $f;
+                                foreach ($onlyFiles as $f) {
+                                    $filePath = $extractPath . DIRECTORY_SEPARATOR . $f;
 
-                                    Log::info('Leyendo archivo '.$f);
+                                    Log::info("Subiendo archivo extraído: {$f}");
 
-                                    // Verificar que sea un archivo (no directorio)
-                                    if (is_file($filePath)) {
+                                    // ✅ Extensión REAL del archivo dentro del ZIP
+                                    $ext = strtolower(pathinfo($f, PATHINFO_EXTENSION));
+                                    $filePathInS3 = 'files/' . uniqid() . ($ext ? ".{$ext}" : '');
 
-                                        Log::info(''.$f.' es un archivo');
+                                    $contentStream = fopen($filePath, 'r');
+                                    Storage::disk('s3')->writeStream($filePathInS3, $contentStream);
+                                    if (is_resource($contentStream))
+                                        fclose($contentStream);
 
-                                        // Subir cada archivo a S3
-                                        $filePathInS3 = 'files/' . uniqid() . '.' . pathinfo($localFile, PATHINFO_EXTENSION);
-                                        Storage::disk('s3')->put($filePathInS3, file_get_contents($filePath));
-
-                                        // Crear registro de archivo
-                                        $newFile = new File();  // ¡Nota: variable diferente!
-                                        $newFile->name = pathinfo($f, PATHINFO_FILENAME); // Nombre sin extensión
-                                        $newFile->file = $filePathInS3;
-                                        $newFile->original_file = $filePathInS3;
-                                        $newFile->collection_id = $collection->id; // Asociar a la colección
-                                        $newFile->category_id = $data['category_id'];
-                                        $newFile->poster = $data['image'];
-                                        $newFile->user_id = Auth::user()->id;
-                                        $newFile->price = $filePrice;
-                                        $newFile->bpm = $data['bpm'];
-                                        $newFile->status = "inactive";
-                                        $newFile->save();
-                                    }
+                                    $newFile = new File();
+                                    $newFile->name = pathinfo($f, PATHINFO_FILENAME);
+                                    $newFile->file = $filePathInS3;
+                                    $newFile->original_file = $filePathInS3;
+                                    $newFile->collection_id = $collection->id;
+                                    $newFile->category_id = $data['category_id'];
+                                    $newFile->poster = $data['image'];
+                                    $newFile->user_id = Auth::user()->id;
+                                    $newFile->price = $filePrice;
+                                    $newFile->bpm = $data['bpm'];
+                                    $newFile->status = "inactive";
+                                    $newFile->save();
                                 }
 
-                                // Limpiar archivos temporales
-                                array_map('unlink', glob("$extractPath/*"));
-                                if (is_dir($extractPath)) {
+                                // ✅ Limpiar temp
+                                foreach (glob($extractPath . DIRECTORY_SEPARATOR . '*') as $tempFile) {
+                                    if (is_file($tempFile))
+                                        unlink($tempFile);
+                                }
+                                if (is_dir($extractPath))
                                     rmdir($extractPath);
-                                }
-                                if (file_exists($zipPath)) {
-                                    unlink($zipPath);
-                                }
 
                             } else {
-                                //throw new \Exception('No se pudo abrir el archivo ZIP: ' . $zipPath);
                                 Notification::make()
-                                        ->title('No se pudo abrir el archivo ZIP: ' . $zipPath)
-                                        ->danger()
-                                        ->send();
+                                    ->title('No se pudo abrir el archivo ZIP: ' . $localPath)
+                                    ->danger()
+                                    ->send();
                             }
                         }
 
+                        // ✅ 5) Borrar el archivo local (public) ya que está en S3
                         Storage::disk('public')->delete($data['original_file']);
-                    } catch (\Throwable $th) {
+
+                    } catch (\Throwable $e) {
+                        Log::error('Error subiendo archivo', [
+                            'error' => $e->getMessage(),
+                            'trace' => $e->getTraceAsString(),
+                        ]);
+
                         Notification::make()
-                            ->title($th->getMessage())
+                            ->title('Error subiendo archivo: ' . $e->getMessage())
                             ->danger()
                             ->send();
+
+                        throw $e;
                     }
+
                 }),
         ];
     }
