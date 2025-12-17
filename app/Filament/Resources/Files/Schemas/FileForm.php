@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FileForm
@@ -24,20 +25,6 @@ class FileForm
                     ->label('Nombre')
                     ->required()
                     ->columnSpanFull(),
-                /*Select::make('collection_id')
-                    ->label('Selecciona una Colección')
-                    ->options(function () {
-                        return Collection::where('user_id', Auth::user()->id)
-                            ->pluck('name', 'id');
-                    })->reactive()
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        if (Collection::find($state)) {
-                            $set('dinamic_category_id', Collection::find($state)->category->id);
-                            $set('category_id', Collection::find($state)->category->id);
-                        } else {
-                            $set('dinamic_category_id', $state);
-                        }
-                    }),*/
                 Select::make('dinamic_category_id')
                     ->label('Selecciona una Categoría')
                     ->options(function () {
@@ -70,19 +57,85 @@ class FileForm
                     ->image()
                     ->disk('s3')
                     ->directory('images')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    // ✅ Al editar: si en BD hay URL, Filament necesita el PATH
+                    ->formatStateUsing(function ($state) {
+                        if (!$state)
+                            return null;
+
+                        // si es URL, toma solo el path
+                        if (Str::startsWith($state, ['http://', 'https://'])) {
+                            $state = parse_url($state, PHP_URL_PATH) ?? '';
+                        }
+
+                        $state = ltrim($state, '/'); // "storage/originals/xxx.zip"
+            
+                        // ✅ limpia prefijos comunes
+                        $state = preg_replace('#^(storage/|public/|storage/app/public/)#', '', $state);
+
+                        return $state ?: null; // => "originals/xxx.zip"
+                    })
+                    // ✅ Al guardar: conviértelo de nuevo a URL para tu frontend
+                    ->dehydrateStateUsing(fn($state) => $state ? Storage::disk('s3')->url($state) : null),
+
                 FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
-                    ->columnSpanFull(),
+                    ->directory('previews')
+                    ->columnSpanFull()
+                    ->formatStateUsing(function ($state) {
+                        if (!$state)
+                            return null;
+
+                        // si es URL, toma solo el path
+                        if (Str::startsWith($state, ['http://', 'https://'])) {
+                            $state = parse_url($state, PHP_URL_PATH) ?? '';
+                        }
+
+                        $state = ltrim($state, '/'); // "storage/originals/xxx.zip"
+            
+                        // ✅ limpia prefijos comunes
+                        $state = preg_replace('#^(storage/|public/|storage/app/public/)#', '', $state);
+
+                        return $state ?: null; // => "originals/xxx.zip"
+            
+                    })
+                    ->dehydrateStateUsing(fn($state) => $state ? Storage::disk('s3')->url($state) : null),
                 FileUpload::make('original_file')
                     ->label('Subir archivo completo')
-                    ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                    ->acceptedFileTypes([
+                        'audio/*',
+                        'video/*',
+                        'application/zip',
+                        'application/x-zip-compressed',
+                        'application/x-zip',
+                        'multipart/x-zip',
+                    ])
                     ->required()
                     ->disk('s3')
-                    ->columnSpanFull(),
+                    ->directory('originals')
+                    ->columnSpanFull()
+                    ->formatStateUsing(function ($state) {
+                        if (!$state)
+                            return null;
+
+                        // si es URL, toma solo el path
+                        if (Str::startsWith($state, ['http://', 'https://'])) {
+                            $state = parse_url($state, PHP_URL_PATH) ?? '';
+                        }
+
+                        $state = ltrim($state, '/'); // "storage/originals/xxx.zip"
+            
+                        // ✅ limpia prefijos comunes
+                        $state = preg_replace('#^(storage/|public/|storage/app/public/)#', '', $state);
+
+                        return $state ?: null; // => "originals/xxx.zip"
+                    })
+                    ->dehydrateStateUsing(fn($state) => $state ? Storage::disk('s3')->url($state) : null)
+
+
             ]);
     }
 }
