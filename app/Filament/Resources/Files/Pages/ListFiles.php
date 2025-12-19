@@ -179,15 +179,19 @@ class ListFiles extends ListRecords
                                     $newFile->bpm = $data['bpm'];
                                     $newFile->status = "inactive";
                                     $newFile->save();
+
+                                    Storage::disk('public')->delete($filePath);
                                 }
 
                                 // ✅ Limpiar temp
-                                foreach (glob($extractPath . DIRECTORY_SEPARATOR . '*') as $tempFile) {
-                                    if (is_file($tempFile))
-                                        unlink($tempFile);
-                                }
-                                if (is_dir($extractPath))
-                                    rmdir($extractPath);
+                                // foreach (glob($extractPath . DIRECTORY_SEPARATOR . '*') as $tempFile) {
+                                //     if (is_file($tempFile))
+                                //         unlink($tempFile);
+                                // }
+                                // if (is_dir($extractPath))
+                                //     rmdir($extractPath);
+
+                                Storage::disk('public')->delete($extractPath);
 
                             } else {
                                 Notification::make()

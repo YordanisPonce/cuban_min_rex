@@ -34,6 +34,12 @@
     .bg-body{
         background-color: transparent !important;
     }
+
+    @media (max-width: 400px) {
+        .packs-link{
+            bottom: -12px !important;
+        }
+    }
 </style>
 @endpush
 
@@ -158,7 +164,10 @@
                 <div class="text-center mb-3">
                     <span class="badge bg-label-primary">Explorar</span>
                 </div>
-                <h2 class="text-center fw-bold mb-2">Packs de artistas</h2>
+                <div class="relative">
+                    <h2 class="text-center fw-bold mb-6 mb-md-2">Packs de artistas</h2>
+                    <a href="{{ route('collection.index') }}" class="position-absolute end-0 packs-link" style="bottom: 15px">Ver todos →</a>
+                </div>
                 <div class="row">
                     @foreach ($artistCollections as $item)
                         @include('partials.pack-card', ['item' => $item])

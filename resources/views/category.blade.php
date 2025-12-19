@@ -33,42 +33,13 @@
                 </div>
                 <div class="categories col-md-12">
                     <div class="row">
-                        @foreach ($collections as $collection)
-                            @if ($collection->files()->count() > 0)
-                                <div class="col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-6">
-                                    <a class="card relative overflow-hidden" href="{{ route('collection.show', $collection->id) }}"
-                                        style="background-image: url('{{ $collection->image ? $collection->image : asset('assets/img/favicon/icon.PNG') }}'); background-size: cover; height: 150px; background-color: rgba(0,0,0,.5); background-blend-mode: darken;">
-                                        <h4 class="bottom-0 w-100 text-center" style="position: absolute;">
-                                            {{ $collection->name }}</h4>
-                                        <div class="dark-screen d-none"></div>
-                                    </a>
-                                </div>
-                            @endif
+                        @foreach ($collections as $item)
+                            @include('partials.pack-card', ['item' => $item])
                         @endforeach
                     </div>
-                    <nav class="container mt-3" style="margin: auto;">
-                        <ul class="pagination" style="--bs-pagination-border-radius: 0%;">
-                            @if ($collections->onFirstPage())
-                                <li class="page-item disabled"><span class="page-link">←</span></li>
-                            @else
-                                <li class="page-item"><a class="page-link" href="{{ $collections->previousPageUrl() }}">←</a></li>
-                            @endif
-
-                            @for ($i = 1; $i <= $collections->lastPage(); $i++)
-                                @if ($i == $collections->currentPage())
-                                    <li class="page-item active"><span class="page-link">{{ $i }}</span></li>
-                                @else
-                                    <li class="page-item"><a class="page-link" href="{{ $collections->url($i) }}">{{ $i }}</a></li>
-                                @endif
-                            @endfor
-
-                            @if ($collections->hasMorePages())
-                                <li class="page-item"><a class="page-link" href="{{ $collections->nextPageUrl() }}">→</a></li>
-                            @else
-                                <li class="page-item disabled"><span class="page-link">→</span></li>
-                            @endif
-                        </ul>
-                    </nav>
+                    <div class="mt-3 d-flex justify-content-center">
+                        {{ $collections->links() }}
+                    </div>
                 </div>
             </div>
         </div>

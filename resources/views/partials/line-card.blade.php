@@ -1,6 +1,6 @@
 @php
     use App\Models\Cart;    
-    $dowloads = auth()->user() ? auth()->user()->getFileDownloadsAtSubscriptionPeriod($item->id) : 0;
+    $downloads = auth()->user() ? auth()->user()->getFileDownloadsAtSubscriptionPeriod($item->id) : 0;
 @endphp
 <div class="{{ isset($top) ? 'card mb-1 px-0' : 'card mb-1 mb-md-0 px-0' }}">
     <div class="row g-0">
@@ -45,9 +45,11 @@
                         <a class="dropdown-item relative d-flex gap-2" href="{{ route('file.download', $item->id)}}">
                             <i style="width: 20px">{{ svg('entypo-download') }}</i>
                             Descargar
-                            @if ($dowloads > 0)
-                                <span class="badge badge-notifications top-10 end-0 bg-transparent" style="font-size: 14px; color: currentColor"><i class="ti tabler-{{ $dowloads > 1 ? 'checks':'check'}}"></i></span>
-                            @endif
+                            <div class="d-flex position-absolute" style="bottom: -5px;">
+                                <span class="bg-transparent" style="color: {{ $downloads > 0 ? 'currentColor' : '#8080806b'}}; font-size: 12px; margin-right: -3px; margin-left: -5px"><i class="ti tabler-check"></i></span>
+                                <span class="bg-transparent" style="color: {{ $downloads > 1 ? 'currentColor' : '#8080806b'}}; font-size: 12px; margin-right: -3px"><i class="ti tabler-check"></i></span>
+                                <span class="bg-transparent" style="color: {{ $downloads > 2 ? 'currentColor' : '#8080806b'}}; font-size: 12px;"><i class="ti tabler-check"></i></span>
+                            </div>
                         </a>
                     @else
                         <p class="pt-2 text-center">Precio: $ {{ $item->price }}</p>

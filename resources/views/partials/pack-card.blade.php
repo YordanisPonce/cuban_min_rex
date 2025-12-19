@@ -1,13 +1,13 @@
 @php
     use App\Models\Cart;
-    $dowloads = auth()->user() ? auth()->user()->getFileDownloadsAtSubscriptionPeriod($item->id) : 0;
+    $downloads = auth()->user() ? auth()->user()->getFileDownloadsAtSubscriptionPeriod($item->id) : 0;
 @endphp
 <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
     <div class="card px-0 bg-transparent h-100">
         <img class="card-img-top" style="width: 160px;height: 200px; margin: 0 auto" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
         <div class="card-body text-center relative">
             <h5 class="card-title">{{$item->name}}</h5>
-            <p class="card-text mb-4">{{ $item->user->name }}<br>{{ $item->category->name ?? 'Sin Categoría'}}</p>
+            <p class="card-text mb-8">{{ $item->user->name }}<br>{{ $item->category->name ?? 'Sin Categoría'}}</p>
             <div class="d-flex justify-content-center position-absolute bottom-0 w-100 start-0">
                 <div class="d-flex justify-content-center align-items-center" style="height: 38px;">
                     <a id="{{$item->id}}" style="display: flex;" class="btn btn-icon rounded-pill play-button cursor-pointer" data-rute="{{ route('file.play', [$item->collection ?? 'none', $item->id])}}" data-status="off" onclick="playAudio(this)"
@@ -15,14 +15,15 @@
                 </div>
                 <div class="d-flex align-items-center">
                     @if ((Auth::user() && Auth::user()->hasActivePlan()))
-                    <div class="relative">
+                    <div class="d-flex flex-column relative pb-2">
                         <a class="btn btn-icon rounded-pill d-flex gap-2" href="{{ route('file.download', $item->id)}}">
                             <i style="width: 20px">{{ svg('entypo-download') }}</i>
                         </a>
-                            
-                        @if ($dowloads > 0)
-                            <span class="badge badge-notifications bg-transparent" style="top: 10px;right: -20px;color: currentColor; font-size: 16px;"><i class="ti tabler-{{ $dowloads > 1 ? 'checks':'check'}}"></i></span>
-                        @endif
+                        <div class="d-flex position-absolute bottom-0">
+                            <span class="bg-transparent" style="color: {{ $downloads > 0 ? 'var(--bs-primary)' : '#8080806b'}}; font-size: 12px; margin-right: -3px; margin-left: 3px"><i class="ti tabler-check"></i></span>
+                            <span class="bg-transparent" style="color: {{ $downloads > 1 ? 'var(--bs-primary)' : '#8080806b'}}; font-size: 12px; margin-right: -3px"><i class="ti tabler-check"></i></span>
+                            <span class="bg-transparent" style="color: {{ $downloads > 2 ? 'var(--bs-primary)' : '#8080806b'}}; font-size: 12px;"><i class="ti tabler-check"></i></span>
+                        </div>
                     </div>
                     @else
                         @if (!in_array($item->id,Cart::get_current_cart()->items ?? []))
