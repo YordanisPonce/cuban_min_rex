@@ -185,7 +185,7 @@
                                                 <div class="relative">
                                                     <a style="display: flex; width: 20px; color: var(--download-button)" class="mx-auto"
                                                         href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
-                                                    <div class="position-absolute w-100 text-center" style="bottom: -17px;">
+                                                    <div class="w-100 text-center" style="bottom: -17px;">
                                                         <span class="bg-transparent" style="color: {{ $downloads > 0 ? 'var(--download-button)' : '#8080806b'}}; margin: 0 -7px 0 0  !important"><i class="ti tabler-check" style="font-size: 12px !important;"></i></span>
                                                         <span class="bg-transparent" style="color: {{ $downloads > 1 ? 'var(--download-button)' : '#8080806b'}}; margin-right: -7px !important"><i class="ti tabler-check" style="font-size: 12px !important;"></i></span>
                                                         <span class="bg-transparent" style="color: {{ $downloads > 2 ? 'var(--download-button)' : '#8080806b'}};"><i class="ti tabler-check" style="font-size: 12px !important;"></i></span>
