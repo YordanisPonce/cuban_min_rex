@@ -5,46 +5,46 @@
     $error = session('error');
 @endphp
 
-@section('title', "Inicio – ".config('app.name'))
+@section('title', 'Inicio – ' . config('app.name'))
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
-<style>
-
-    .player--dark {
-        background-color: #12131C !important;
-        color: #fff;
-    }
-
-    footer{
-        z-index: 11;
-    }
-    section#audioPlayer{
-        transition: all 0.3s ease-in;
-        transform: translateY(160px);
-    }
-
-    #audioPlayer{
-        position: sticky;
-        bottom: 0;
-        width: 100%;
-        z-index: 10;
-    }
-
-    .bg-body{
-        background-color: transparent !important;
-    }
-
-    @media (max-width: 400px) {
-        .packs-link{
-            bottom: -12px !important;
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
+    <style>
+        .player--dark {
+            background-color: #12131C !important;
+            color: #fff;
         }
-    }
-</style>
+
+        footer {
+            z-index: 11;
+        }
+
+        section#audioPlayer {
+            transition: all 0.3s ease-in;
+            transform: translateY(160px);
+        }
+
+        #audioPlayer {
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .bg-body {
+            background-color: transparent !important;
+        }
+
+        @media (max-width: 400px) {
+            .packs-link {
+                bottom: -12px !important;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
-    
+
     {{-- =========================
        NUEVOS LANZAMIENTOS
     ========================== --}}
@@ -59,7 +59,7 @@
                 </div>
                 <h2 class="text-center fw-bold mb-2">Estrenos de la semana</h2>
                 <p class="text-center text-body-secondary mb-6">
-                     
+
                 </p>
                 <div class="row">
                     <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); row-gap: 4px; column-gap: 24px;">
@@ -73,8 +73,10 @@
             <div class="container mb-3">
                 <div class="d-flex align-items-end justify-content-between">
                     <div>
-                        <span class="badge bg-label-primary mb-2">Novedades</span>
-                        <h2 class="h3 fw-bold mb-1">Estrenos de la semana</h2>
+                        <div class="text-center mb-3">
+                            <span class="badge bg-label-primary">Novedades</span>
+                        </div>
+                        <h2 class="text-center fw-bold mb-2">Estrenos de la semana</h2>
                         <p class="text-body-secondary mb-0">Singles y packs recién salidos. Lo último de tus artistas
                             favoritos.</p>
                     </div>
@@ -166,7 +168,8 @@
                 </div>
                 <div class="relative">
                     <h2 class="text-center fw-bold mb-6 mb-md-2">Packs de artistas</h2>
-                    <a href="{{ route('collection.index') }}" class="position-absolute end-0 packs-link" style="bottom: 15px">Ver todos →</a>
+                    <a href="{{ route('collection.index') }}" class="position-absolute end-0 packs-link"
+                        style="bottom: 15px">Ver todos →</a>
                 </div>
                 <div class="row">
                     @foreach ($artistCollections as $item)
@@ -180,7 +183,8 @@
                     <div>
                         <span class="badge bg-label-primary mb-2">Explorar</span>
                         <h2 class="h3 fw-bold mb-1">Packs de artistas</h2>
-                        <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por mood.
+                        <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por
+                            mood.
                         </p>
                     </div>
                 </div>
@@ -212,12 +216,13 @@
 
             <div class="d-flex flex-wrap gap-2">
                 @foreach ($ctg as $genre)
-                    <a href="{{route('category.show', $genre->id)}}" class="btn btn-sm btn-outline-secondary rounded-pill px-3">{{ $genre->name }}</a>
+                    <a href="{{ route('category.show', $genre->id) }}"
+                        class="btn btn-sm btn-outline-secondary rounded-pill px-3">{{ $genre->name }}</a>
                 @endforeach
             </div>
         </div>
     </section>
-    
+
     <hr class="m-0 mt-6 mt-md-12">
 
     <section id="home-pricing" class="section-py bg-body landing-pricing mt-10">
@@ -231,7 +236,7 @@
             </p>
             <div class="pricing-table">
                 @foreach ($plans as $plan)
-                    @include('partials.plans-card', ['plan'=>$plan])
+                    @include('partials.plans-card', ['plan' => $plan])
                 @endforeach
             </div>
         </div>
@@ -244,9 +249,11 @@
                             <div class="card" style="position: relative; max-height: 100vh">
                                 <h5 class="card-header d-block text-nowrap overflow-hidden"
                                     style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
-                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer" onclick="stopVideo()">✖️</spam>
+                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer"
+                                    onclick="stopVideo()">✖️</spam>
                                 <div class="card-body w-100 h-100">
-                                    <video class="w-100" style="max-height: 70dvh;" id="plyr-video-player" oncontextmenu="return false;" playsinline controls></video>
+                                    <video class="w-100" style="max-height: 70dvh;" id="plyr-video-player"
+                                        oncontextmenu="return false;" playsinline controls></video>
                                 </div>
                             </div>
                         </div>
@@ -268,7 +275,9 @@
                                 style="text-overflow:ellipsis; text-align:center">Audio</span>
                         </h5>
                         <div class="card-body">
-                            <audio class="w-100" id="plyr-audio-player" type="audio/mp3" src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3" controls></audio>
+                            <audio class="w-100" id="plyr-audio-player" type="audio/mp3"
+                                src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3"
+                                controls></audio>
                         </div>
                     </div>
                 </div>
@@ -279,72 +288,72 @@
 @endsection
 
 @push('scripts')
-<script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
-<script>
-    new Plyr("#plyr-video-player"),new Plyr("#plyr-audio-player");
-</script>
-<script>
-    const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
-    const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
-
-    window.addEventListener('DOMContentLoaded', function() {
-        document.body.classList.remove('bg-body');
-    })
-
-    function stopVideo(){
-        document.getElementById('video-player').style.display = 'none';
-        video.pause();
-    }
-
-    function playAudio(element) {
-        let audio = document.getElementById('plyr-audio-player');
-        let video = document.getElementById('plyr-video-player');
-        const rute = element.dataset.rute;
-        const mode = element.dataset.status;
-        console.log(rute);
-        fetch(rute, {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-            }
-        })
-        .then(response => response.json())
-        .then(data => {
-            data = data.filter( item => item.id === parseInt(element.id));
-            const extension = data[0].url.substring(data[0].url.lastIndexOf('.')).toLowerCase();
-            if(audioExtensions.includes(extension)){
-                if(mode === "off"){
-                    audio.src = data[0].url;    
-                    document.getElementById('audioPlayer').style.transform = 'translateY(0)';
-                    document.getElementById('plyr-audio-name').innerText = data[0].title;
-                    audio.play();
-                    element.dataset.status = "on";
-                    element.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
-                } else {
-                    audio.pause();    
-                    document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
-                    element.dataset.status = "off";
-                    element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
-                }
-            } else {
-                video.src = data[0].url;
-                document.getElementById('video-title').innerText = data[0].title;
-                document.getElementById('video-player').style.display = 'block';
-                video.play();
-            }
-        })
-        .catch(error => {
-            Swal.fire("Error", error.message, "error");
-        });
-    }
-</script>
-@isset($error)
+    <script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
     <script>
-        Swal.fire({
-            title: 'Error al descargar el archivo',
-            text: '{{ $error }}',
-            icon: 'error'
-        });
+        new Plyr("#plyr-video-player"), new Plyr("#plyr-audio-player");
     </script>
-@endisset
+    <script>
+        const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+        const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+
+        window.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.remove('bg-body');
+        })
+
+        function stopVideo() {
+            document.getElementById('video-player').style.display = 'none';
+            video.pause();
+        }
+
+        function playAudio(element) {
+            let audio = document.getElementById('plyr-audio-player');
+            let video = document.getElementById('plyr-video-player');
+            const rute = element.dataset.rute;
+            const mode = element.dataset.status;
+            console.log(rute);
+            fetch(rute, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    data = data.filter(item => item.id === parseInt(element.id));
+                    const extension = data[0].url.substring(data[0].url.lastIndexOf('.')).toLowerCase();
+                    if (audioExtensions.includes(extension)) {
+                        if (mode === "off") {
+                            audio.src = data[0].url;
+                            document.getElementById('audioPlayer').style.transform = 'translateY(0)';
+                            document.getElementById('plyr-audio-name').innerText = data[0].title;
+                            audio.play();
+                            element.dataset.status = "on";
+                            element.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
+                        } else {
+                            audio.pause();
+                            document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                            element.dataset.status = "off";
+                            element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                        }
+                    } else {
+                        video.src = data[0].url;
+                        document.getElementById('video-title').innerText = data[0].title;
+                        document.getElementById('video-player').style.display = 'block';
+                        video.play();
+                    }
+                })
+                .catch(error => {
+                    Swal.fire("Error", error.message, "error");
+                });
+        }
+    </script>
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: 'Error al descargar el archivo',
+                text: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
 @endpush
