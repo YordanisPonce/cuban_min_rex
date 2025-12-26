@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Files\Pages;
 
+use App\Enums\SectionEnum;
 use App\Filament\Resources\Files\FileResource;
 use App\Models\Category;
 use App\Models\Collection;
@@ -89,6 +90,14 @@ class ListFiles extends ListRecords
                         }),
                     Hidden::make('category_id')
                         ->default(fn($get) => $get('dinamic_category_id')),
+                    Select::make('sections')
+                        ->label('Secciones a mostrar')
+                        ->options([
+                            SectionEnum::MAIN->value => config('app.name'),
+                            SectionEnum::CUBANDJS->value => 'CubanDjs'
+                        ])
+                        ->multiple()
+                        ->required(),
                 ])->action(function (array $data): void {
                     try {
                         // ✅ 1) Ruta REAL del archivo en tu disco local (public)

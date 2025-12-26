@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Files\Schemas;
 
+use App\Enums\SectionEnum;
 use App\Models\Category;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Schema;
@@ -24,18 +25,12 @@ class FileForm
                     ->label('Nombre')
                     ->required()
                     ->columnSpanFull(),
-                Select::make('dinamic_category_id')
+                Select::make('category_id')
                     ->label('Selecciona una Categoría')
                     ->options(function () {
                         return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
                             ->pluck('name', 'id');
-                    })
-                    ->disabled(fn($get) => $get('collection_id') !== null)
-                    ->afterStateUpdated(function ($state, callable $set) {
-                        $set('category_id', $state);
                     }),
-                Hidden::make('category_id')
-                    ->default(fn($get) => $get('dinamic_category_id')),
                 TextInput::make('price')
                     ->label('Precio')
                     ->numeric()
@@ -69,6 +64,14 @@ class FileForm
                     ->required()
                     ->disk('s3')
                     ->columnSpanFull(),
+                Select::make('sections')
+                    ->label('Secciones a mostrar')
+                    ->options([
+                        SectionEnum::MAIN->value => config('app.name'),
+                        SectionEnum::CUBANDJS->value => 'CubanDjs'
+                    ])
+                    ->multiple()
+                    ->required(),
 
             ]);
     }

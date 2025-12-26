@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Files\Tables;
 
+use App\Enums\SectionEnum;
 use App\Models\Category;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
@@ -45,6 +46,14 @@ class FilesTable
                         'active' => ['success'],
                         'inactive' => ['primary'],
                         default => ['primary'],
+                    }),
+                TextColumn::make('sections')
+                    ->label('Secciones a mostrar')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state) => match ($state) {
+                        SectionEnum::MAIN->value => config('app.name'),
+                        SectionEnum::CUBANDJS->value => 'CubanDJs',
+                        default => ucfirst($state),
                     }),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SectionEnum;
 use App\Models\File;
 use App\Models\Category;
 use App\Models\Collection;
@@ -24,8 +25,9 @@ class CategoryController extends Controller
         $name = request()->get("search") ?? "";
         $remixers = request()->get("remixers") ?? "";
 
-        $results = File::where('name', 'like', '%' . $name . '%')
+        $results = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status','active')
+            ->where('name', 'like', '%' . $name . '%')
             ->whereHas('category', function ($query) use ($categoryId) {
                 $query->where('id', $categoryId);
             })
@@ -36,8 +38,9 @@ class CategoryController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(30);
         
-        $playList = File::where('name', 'like', '%' . $name . '%')
+        $playList = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status','active')
+            ->where('name', 'like', '%' . $name . '%')
             ->whereHas('category', function ($query) use ($categoryId) {
                 $query->where('id', $categoryId);
             })

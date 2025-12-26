@@ -21,8 +21,21 @@ class File extends Model
         'poster',
         'original_file',
         'status',
+        'sections',
         'download_count',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'sections' => 'array',
+        ];
+    }
 
     public function user(): BelongsTo
     {
