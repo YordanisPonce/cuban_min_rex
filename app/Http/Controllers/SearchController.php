@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SectionEnum;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
