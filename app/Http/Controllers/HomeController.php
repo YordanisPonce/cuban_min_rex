@@ -99,7 +99,7 @@ class HomeController extends Controller
         $results = File::where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
             ->orderBy('created_at', 'desc')
-            ->paginate(30);
+            ->paginate(30)->withQueryString();
 
         $playList = File::where('status', 'active')
             ->where('sections', SectionEnum::CUBANDJS->value)
@@ -177,7 +177,7 @@ class HomeController extends Controller
             })
             ->with(['user', 'category']) // Carga las relaciones
             ->orderBy('created_at', 'desc')
-            ->paginate(30);
+            ->paginate(30)->withQueryString();
 
         $playList = File::where('name', 'like', '%' . $name . '%')
             ->where('status', 'active')
@@ -268,7 +268,7 @@ class HomeController extends Controller
             })
             ->with(['user', 'category']) // Carga las relaciones
             ->orderBy('created_at', 'desc')
-            ->paginate(30);
+            ->paginate(30)->withQueryString();
 
         $playList = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status', 'active')
