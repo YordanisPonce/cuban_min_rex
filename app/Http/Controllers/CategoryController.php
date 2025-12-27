@@ -36,7 +36,7 @@ class CategoryController extends Controller
             })
             ->with(['user', 'category']) // Carga las relaciones
             ->orderBy('created_at', 'desc')
-            ->paginate(30);
+            ->paginate(30)->withQueryString();
         
         $playList = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status','active')
@@ -65,8 +65,8 @@ class CategoryController extends Controller
                 'logotipe' => $file->user->photo,
                 'name' => $file->name,
                 'bpm' => $file->bpm,
-                'collection' => $file->collection->name ?? null,
-                'category' => $file->category->name ?? null,
+                'collection' => $file->collection ? $file->collection->name : null,
+                'category' => $file->category ? $file->category->name : null,
                 'price' => $file->price,
                 'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
                 'isZip' => $isZip
