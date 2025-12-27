@@ -20,14 +20,14 @@ class UserEarningsTable extends TableWidget
             ->query(fn (): Builder => File::query()->where('user_id', auth()->user()->id))
             ->columns([
                 TextColumn::make('name')->label('Archivo'),
-                TextColumn::make('sales')->label('Ventas este Mes')->default(fn($record) => count($record->sales()->whereMonth('created_at', Carbon::now()->month)->get())),
-                TextColumn::make('monthly')
-                    ->label('Ganado este mes')
-                    ->default(fn($record) => $record->monthlyEarning())
+                TextColumn::make('downloads')->label('Descargas')->default(fn($record) => count($record->downloads)),
+                TextColumn::make('downloadsEarning')
+                    ->label('Ganancias por Descargas')
+                    ->default(fn($record) => $record->getDownloadsEarnings())
                     ->money(),
-                TextColumn::make('total_sales')->label('Ventas Totales')->default(fn($record) => count($record->sales)),
+                TextColumn::make('sales')->label('Ventas Totales')->default(fn($record) => count($record->sales)),
                 TextColumn::make('total')
-                    ->label('Total Ganado')
+                    ->label('Ganancias por Ventas')
                     ->default(fn($record) => $record->totalEarning())
                     ->money()
             ])

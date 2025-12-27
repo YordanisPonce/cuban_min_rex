@@ -97,4 +97,14 @@ class File extends Model
         }
         return $total;
     }
+
+    public function getDownloadsEarnings()
+    {
+        $totalEarning = 0;
+        $users = User::all();
+        foreach ($users as $user) {
+            $totalEarning+=$user->getFileDownloadsEarnings($this->id);
+        }
+        return $totalEarning;
+    }
 }

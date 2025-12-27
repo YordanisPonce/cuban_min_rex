@@ -56,7 +56,7 @@ class SubscriptionLiquidationTable extends TableWidget
                 //
             ])
             ->recordActions([
-                Action::make('Pagar')
+                /*Action::make('Pagar')
                     ->color('success')
                     ->icon('heroicon-m-currency-dollar')
                     ->disabled(fn($record) => !($record->pendingSubscriptionLiquidation() > 0))
@@ -103,7 +103,7 @@ class SubscriptionLiquidationTable extends TableWidget
                     ->modalDescription('¿Estás seguro de que deseas proceder con el pago?')
                     ->modalSubmitActionLabel('Sí, proceder a pagar')
                     ->modalCancelActionLabel('No, cancelar'),
-                Action::make('Ver Pagos')
+                */Action::make('Ver Pagos')
                     ->color('info')
                     ->icon('heroicon-m-eye')
                     ->url(fn($record) => route('user.payments', $record)),

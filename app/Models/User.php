@@ -404,4 +404,45 @@ class User extends Authenticatable implements FilamentUser
 
         return $this->downloads()->where('file_id', $fileId)->count();
     }
+
+    public function getFileDownloadsEarnings($fileId)
+    {
+        $totalEarning = 0;
+        $downloads = $this->downloads()->whereHas('file', function($query) use ($fileId) {
+            $query->where('file_id', $fileId);
+        });
+        foreach ($downloads as $download) {
+            $dateX = Carbon::parse($download->create_at);
+            $order = Order::whereHas('plan')
+                ->where('created_at', '<', $dateX)
+                ->where('expires_at', '>', $dateX)
+                ->orderBy('create_at')
+                ->first();
+            if ($order) {
+                $plan = $order->plan;
+
+                $start_date = \Carbon\Carbon::createFromTimestamp($order->create_at);
+                $end_date = \Carbon\Carbon::createFromTimestamp($order->expires_at);
+
+                if ($plan) {
+                    $planAmount = $plan->price / $plan->duration_months * 0.7;
+
+                    $fileDownloads = $this->downloads()->whereHas('file', function($query) use ($fileId) {
+                        $query->where('file_id', $fileId);
+                    })->whereBetween('created_at', [$start_date, $end_date])->count();
+
+                    $totalDownloads = $this->downloads()->whereBetween('created_at', [$start_date, $end_date])->count();
+
+                    if ($downloads == 0) {
+                        $amountEarning = 0;
+                    } else {
+                        $amountEarning = $planAmount * ($fileDownloads / $totalDownloads);
+                    }
+
+                    $totalEarning += $amountEarning;
+                }
+            }
+        }
+        return $totalEarning;
+    }
 }
