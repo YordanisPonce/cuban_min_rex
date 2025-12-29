@@ -13,13 +13,15 @@ class Earnings extends Page
     protected string $view = 'filament.pages.earnings';
 
     protected static ?string $title = 'Ganancias';
-    
+
+    protected static bool $shouldRegisterNavigation = false;
+
     protected static BackedEnum|string|null $navigationIcon = Heroicon::CurrencyDollar;
 
     protected function getHeaderActions(): array
     {
         return [
-            
+
         ];
     }
 
@@ -30,7 +32,7 @@ class Earnings extends Page
         ];
     }
 
-    public function getHeaderWidgetsColumns(): int | array
+    public function getHeaderWidgetsColumns(): int|array
     {
         return 1;
     }
