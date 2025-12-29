@@ -14,7 +14,11 @@ class Payment extends Model
         'amount',
         'currency',
         'email',
-        'note'
+        'note',
+        'error_message',
+        'paid_at',
+        'status',
+
     ];
 
 

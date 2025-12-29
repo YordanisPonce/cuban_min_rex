@@ -19,12 +19,14 @@ class Order extends Model
         'amount',
         'status',
         'paid_at',
-        'expires_at'
+        'expires_at',
+        'settled_at', // ✅ añadir
     ];
 
     protected $casts = [
         'paid_at' => 'datetime',
         'expires_at' => 'datetime',
+        'settled_at' => 'datetime', // ✅ añadir
     ];
 
     public function user(): BelongsTo
