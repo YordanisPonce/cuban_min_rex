@@ -100,6 +100,8 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     Route::get('/collections', [CollectionController::class, 'index'])
         ->name('collection.index');
+    Route::get('/radio/collections', [CollectionController::class, 'radio'])
+        ->name('radio.collection.index');
     Route::get('/collections/news', [CollectionController::class, 'news'])
         ->name('collection.news');
     Route::get('/collections/recommended', [CollectionController::class, 'recommended'])

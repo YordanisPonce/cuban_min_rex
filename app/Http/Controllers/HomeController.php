@@ -97,12 +97,14 @@ class HomeController extends Controller
         });
 
         $results = File::where('status', 'active')
+            ->whereNot('original_file', 'LIKE', '%.zip')
             ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
             ->orderBy('created_at', 'desc')
             ->paginate(30)->withQueryString();
 
         $playList = File::where('status', 'active')
-            ->where('sections', SectionEnum::CUBANDJS->value)
+            ->whereNot('original_file', 'LIKE', '%.zip')
+            ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
             ->orderBy('created_at', 'desc')
             ->get()->map(fn($f) => [
                 'id' => $f->id,
@@ -128,12 +130,19 @@ class HomeController extends Controller
             ];
         });
 
+        $packs = File::where('original_file', 'LIKE', '%.zip')
+            ->where('status', 'active')
+            ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
+            ->orderBy('created_at', 'desc')
+            ->take(6)
+            ->get();
+
         $allCategories = Category::orderBy('name')->get();
         $allRemixers = User::whereHas('files', function ($query) {
             $query->where('name', 'like', '%%');
         })->get();
 
-        return view('radio', compact('djs', 'categories', 'recentCategories', 'recentDjs', 'results', 'playList'));
+        return view('radio', compact('djs', 'categories', 'recentCategories', 'recentDjs', 'results', 'playList', 'packs'));
     }
 
     public function plan()
