@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\SectionEnum;
 use App\Models\Category;
 use App\Models\Download;
 use App\Models\Collection;
@@ -102,7 +103,7 @@ class CollectionController extends Controller
 
     public function index()
     {
-        $collections = File::where('original_file','LIKE','%.zip')->where('status','active')->orderBy('created_at', 'desc')->paginate(12);
+        $collections = File::where('original_file','LIKE','%.zip')->whereJsonContains('sections', SectionEnum::MAIN->value)->where('status','active')->orderBy('created_at', 'desc')->paginate(12);
         $djs = User::whereHas('files')->orderBy('name')->get();
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
 
@@ -117,6 +118,26 @@ class CollectionController extends Controller
         $badge = 'Packs';
 
         return view('category', compact('collections', 'djs', 'categories', 'recentCategories', 'recentDjs', 'badge'));
+    }
+
+    public function radio()
+    {
+        $collections = File::where('original_file','LIKE','%.zip')->whereJsonContains('sections', SectionEnum::CUBANDJS->value)->where('status','active')->orderBy('created_at', 'desc')->paginate(12);
+        $djs = User::whereHas('files')->orderBy('name')->get();
+        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
+
+        $recentDjs = User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+            return $item->files()->count() > 0;
+        });
+
+        $badge = 'Packs';
+        $radio = 'true';
+
+        return view('category', compact('radio','collections', 'djs', 'categories', 'recentCategories', 'recentDjs', 'badge'));
     }
 
     public function news()
