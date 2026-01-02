@@ -35,11 +35,8 @@ class FileDownloadWidget extends BaseWidget
             Stat::make('Cantidad de Ventas', $salesCount),
             Stat::make('Pendiente por cobrar', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal()),
             Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation()),
+            Stat::make('Subscripciones Activas', $activeSubscriptions)
         ];
-
-        if (Auth()->user()->role === 'admin') {
-            $stats[] = Stat::make('Subscripciones Activas', $activeSubscriptions);
-        }
 
         return $stats;
     }
