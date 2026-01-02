@@ -31,6 +31,7 @@ class FileDownloadWidget extends BaseWidget
 
         $stats = [
             Stat::make('Cantidad de Descargas', $downloadCounts),
+            Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads()),
             Stat::make('Cantidad de Ventas', $salesCount),
             Stat::make('Pendiente por cobrar', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal()),
             Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation()),
