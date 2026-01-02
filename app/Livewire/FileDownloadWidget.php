@@ -3,9 +3,11 @@
 namespace App\Livewire;
 
 use App\Models\Collection;
+use App\Models\Download;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\File;
+use App\Models\Sale;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
@@ -16,29 +18,22 @@ class FileDownloadWidget extends BaseWidget
     protected function getStats(): array
     {
         $userId = Auth::id();
-        $downloadCounts = File::where('user_id', $userId)->sum('download_count');
-        $fileMoreDownload = File::where('user_id', $userId)
-            ->orderBy('download_count', 'desc')
-            ->first();
-        $collectionMoreDownload = Collection::where('user_id', $userId)
-            ->orderBy('download_count', 'desc')
-            ->first();
-        Stripe::setApiKey(config('services.stripe.secret_key'));
-        $activeSubscriptions = Subscription::all(['status' => 'active']);
-        $activeSubscriptions = User::get()->filter(fn($item) => $item->hasActivePlan())->count();
-        $salesCount = Auth()->user()->sales()->count();
-        $totalEarningsAtSubscription = (float) Auth()->user()->paidSubscriptionLiquidation();
-        $totalEarningsAtSales = (float) Auth()->user()->paidSaleLiquidation();
-        $totalEarning = (float) ($totalEarningsAtSubscription + $totalEarningsAtSales);
 
-        $fileMoreDownload = $fileMoreDownload ? $fileMoreDownload->name : 'Desconocido';
+        $downloadCounts = Download::whereHas('file', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
+        Stripe::setApiKey(config('services.stripe.secret_key'));
+        $activeSubscriptions = Subscription::all(['status' => 'active'])->count();
+        $salesCount = Sale::whereHas('file', function ($query) use ($userId) {
+            $query->where('user_id', $userId);
+        })->count();
+
         $stats = [
             Stat::make('Cantidad de Descargas', $downloadCounts),
-            Stat::make('Archivo más descargado', $fileMoreDownload),
-            Stat::make('Colección más descargada', $collectionMoreDownload ? $collectionMoreDownload->name : 'Desconocido'),
             Stat::make('Cantidad de Ventas', $salesCount),
-            Stat::make('Ganancia este Mes', '$ ' . $totalEarning),
-            Stat::make('Ganancia Total', '$ ' . auth()->user()->totalEarning()),
+            Stat::make('Pendiente por cobrar', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal()),
+            Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation()),
         ];
 
         if (Auth()->user()->role === 'admin') {
