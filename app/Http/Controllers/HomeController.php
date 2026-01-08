@@ -48,6 +48,7 @@ class HomeController extends Controller
         $ctg = Category::orderBy('name')->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
+
         return view('home', compact('pageTitle', 'plans', 'ctg', 'djs', 'categories', 'artistCollections', 'newItems', 'tops', 'recentCategories', 'recentDjs'));
     }
 

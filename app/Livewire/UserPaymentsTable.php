@@ -37,7 +37,7 @@ class UserPaymentsTable extends TableWidget
                     ->sortable(),
                 TextColumn::make("paypal_response_id")->copyable()
                     ->getStateUsing(function (Payment $record) {
-                        return $record->paypal_response['batch_header']['payout_batch_id'];
+                        return $record->paypal_response['batch_header']['payout_batch_id'] ?? 'N/A';
                     })
                     ->label('Transacción')
                     ->default('No definido'),
