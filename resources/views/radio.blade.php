@@ -751,6 +751,7 @@
     <script>
         window.addEventListener('DOMContentLoaded', function() {
             //document.body.classList.remove('bg-body');
+            document.getElementsByClassName('bg-mobile')[0].remove();
         })
     </script>
     @isset($error)

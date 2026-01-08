@@ -194,6 +194,26 @@
             background-size: cover;
         }
 
+        .bg-mobile{
+            position: fixed;
+            width: 100%;
+            height: 100vh;
+            bottom: 0;
+            top: 0;
+            z-index: -1;
+            display: none;
+
+            img{
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+            }
+
+            .dark-screen{
+                opacity: 0.5;
+            }
+        }
+
         @media(max-width: 450px) {
             .carousel-item {
                 height: 100vh;
@@ -216,6 +236,10 @@
             body {
                 background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
             }
+
+            .bg-mobile{
+                display: block;
+            }
         }
 
         @media(max-width: 992px) {
@@ -235,6 +259,10 @@
     @endif
 
     @include('partials.navbar')
+    <div class="bg-mobile">
+        <img src="{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}">
+        <div class="dark-screen"></div>    
+    </div>
 
     <main>
         @yield('content')
