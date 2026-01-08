@@ -202,10 +202,6 @@
                     height: 100%;
                 }
             }
-
-            body {
-                background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
-            }
         }
 
         @media(max-width: 767px) {
@@ -215,6 +211,10 @@
 
             .navbar-djs .dropdown-menu{
                 position: relative !important;
+            }
+
+            body {
+                background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
             }
         }
 

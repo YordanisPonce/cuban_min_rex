@@ -301,6 +301,7 @@
         })
 
         function stopVideo() {
+            let video = document.getElementById('plyr-video-player');
             document.getElementById('video-player').style.display = 'none';
             video.pause();
         }
@@ -310,7 +311,7 @@
             let video = document.getElementById('plyr-video-player');
             const rute = element.dataset.rute;
             const mode = element.dataset.status;
-            console.log(rute);
+            video.pause();
             fetch(rute, {
                     method: 'GET',
                     headers: {
@@ -336,6 +337,12 @@
                             element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
                         }
                     } else {
+                        audio.pause();
+                        document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                        document.querySelectorAll('.play-button').forEach(button=>{
+                            button.dataset.status = "off";
+                            button.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                        });
                         video.src = data[0].url;
                         document.getElementById('video-title').innerText = data[0].title;
                         document.getElementById('video-player').style.display = 'block';

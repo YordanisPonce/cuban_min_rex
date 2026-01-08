@@ -2,10 +2,13 @@
 @php
     use Carbon\Carbon;
     Carbon::setLocale('es');
+    $success = session('success');
+    $error = session('error');
 @endphp
 @section('title', 'Página de Resultados de Busqueda')
 
 @push('styles')
+    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
     <style>
         @isset($radio)
         :root{
@@ -122,6 +125,37 @@
                 }
             }
         }
+
+        .player--dark {
+            background-color: #12131C !important;
+            color: #fff;
+        }
+
+        footer {
+            z-index: 11;
+        }
+
+        section#audioPlayer {
+            transition: all 0.3s ease-in;
+            transform: translateY(160px);
+        }
+
+        #audioPlayer {
+            position: sticky;
+            bottom: 0;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .bg-body {
+            background-color: transparent !important;
+        }
+
+        @media (max-width: 400px) {
+            .packs-link {
+                bottom: -12px !important;
+            }
+        }
     </style>
 @endpush
 
@@ -174,5 +208,126 @@
                 @endisset
             </div>
         </div>
+        <div class="window-notice" id="video-player">
+            <div class="content">
+                <div class="container-xxl flex-grow-1 container-p-y w-100">
+                    <div class="row gy-6">
+                        <!-- Video Player -->
+                        <div class="col-12">
+                            <div class="card" style="position: relative; max-height: 100vh">
+                                <h5 class="card-header d-block text-nowrap overflow-hidden"
+                                    style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
+                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer"
+                                    onclick="stopVideo()">✖️</spam>
+                                <div class="card-body w-100 h-100">
+                                    <video class="w-100" style="max-height: 70dvh;" id="plyr-video-player"
+                                        oncontextmenu="return false;" playsinline controls></video>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /Video Player -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section id="audioPlayer">
+        <div class="container">
+            <div class="row">
+                <!-- Audio Player -->
+                <div class="col-12">
+                    <div class="card">
+                        <h5 class="card-header d-flex justify-content-between">
+                            <span id="plyr-audio-name" class="d-block w-100 text-nowrap overflow-hidden"
+                                style="text-overflow:ellipsis; text-align:center">Audio</span>
+                        </h5>
+                        <div class="card-body">
+                            <audio class="w-100" id="plyr-audio-player" type="audio/mp3"
+                                src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3"
+                                controls></audio>
+                        </div>
+                    </div>
+                </div>
+                <!-- /Audio Player -->
+            </div>
+        </div>
     </section>
 @endsection
+
+@push('scripts')
+    <script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
+    <script>
+        new Plyr("#plyr-video-player"), new Plyr("#plyr-audio-player");
+    </script>
+    <script>
+        const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
+        const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+
+        window.addEventListener('DOMContentLoaded', function() {
+            document.body.classList.remove('bg-body');
+        })
+
+        function stopVideo() {
+            let video = document.getElementById('plyr-video-player');
+            document.getElementById('video-player').style.display = 'none';
+            video.pause();
+        }
+
+        function playAudio(element) {
+            let audio = document.getElementById('plyr-audio-player');
+            let video = document.getElementById('plyr-video-player');
+            const rute = element.dataset.rute;
+            const mode = element.dataset.status;
+            video.pause();
+            fetch(rute, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    data = data.filter(item => item.id === parseInt(element.id));
+                    const extension = data[0].url.substring(data[0].url.lastIndexOf('.')).toLowerCase();
+                    if (audioExtensions.includes(extension)) {
+                        if (mode === "off") {
+                            audio.src = data[0].url;
+                            document.getElementById('audioPlayer').style.transform = 'translateY(0)';
+                            document.getElementById('plyr-audio-name').innerText = data[0].title;
+                            audio.play();
+                            element.dataset.status = "on";
+                            element.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
+                        } else {
+                            audio.pause();
+                            document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                            element.dataset.status = "off";
+                            element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                        }
+                    } else {
+                        audio.pause();
+                        document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
+                        document.querySelectorAll('.play-button').forEach(button=>{
+                            button.dataset.status = "off";
+                            button.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                        });
+                        video.src = data[0].url;
+                        document.getElementById('video-title').innerText = data[0].title;
+                        document.getElementById('video-player').style.display = 'block';
+                        video.play();
+                    }
+                })
+                .catch(error => {
+                    Swal.fire("Error", error.message, "error");
+                });
+        }
+    </script>
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: 'Error al descargar el archivo',
+                text: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
+@endpush

@@ -519,6 +519,7 @@
         function playAudio(element){
             let audio = document.getElementById('plyr-audio-player');
             let index = 0;
+            document.getElementById('plyr-video-player').pause();
             tracks.forEach(track => {
                 const extension = track.url.substring(track.url.lastIndexOf('.')).toLowerCase();
                 if (track.id === parseInt(element.id)) {
