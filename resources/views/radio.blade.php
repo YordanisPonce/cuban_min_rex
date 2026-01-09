@@ -212,7 +212,8 @@
                     <p class="text-body-secondary mb-4">
                         Escucha música a tu gusto directamente desde nuestra emisora.
                     </p>
-                    <iframe src="https://public-player-widget.webradiosite.com/?cover=1&current_track=1&schedules=1&link=1&popup=1&share=1&embed=0&auto_play=1&source=10382&theme=dark&color=4&link_to=cubandjsproradio.com&identifier=CubanDjsPro%20Radio&info=https%3A%2F%2Fpublic-player-widget.webradiosite.com%2Fapp%2Fplayer%2Finfo%2F247079%3Fhash%3D7beeef43d3d82f9110c118b97c8e149829ddb4ad&locale=es-es" border="0" scrolling="no" frameborder="0" allow="autoplay; clipboard-write" allowtransparency="true" style="background-color: unset; width: 100%;" height="auto"></iframe>
+                    <iframe src="https://public-player-widget.webradiosite.com/?cover=1&current_track=1&schedules=1&link=1&popup=1&share=1&embed=0&auto_play=1&source=10382&theme=dark&color=4&link_to=cubandjsproradio.com&identifier=CubanDjsPro%20Radio&info=https%3A%2F%2Fpublic-player-widget.webradiosite.com%2Fapp%2Fplayer%2Finfo%2F247079%3Fhash%3D7beeef43d3d82f9110c118b97c8e149829ddb4ad&locale=es-es" border="0" scrolling="no" frameborder="0" allow="autoplay; clipboard-write" allowtransparency="true" style="background-color: unset; width: 100%; border-radius:15px; margin-bottom: 10px;" height="auto"></iframe>
+                    <iframe src="https://public-web-widget.webradiosite.com/app/widget/broadcaster/247079?hash=4b5dcf88092ec1ed77112bd9a980aeb8cdfa062e&theme=dark&color=1" style="width:100%; height:auto; border-radius:15px;" border="0" frameborder="0" allow="autoplay; clipboard-write" allowtransparency="true"></iframe>
                 </div>
             </div>
         </div>
