@@ -168,14 +168,10 @@
                                     <td class="hidden-mobile">{{ $file['category'] }}</td>
                                     @auth
                                         @if (!Auth::user()->hasActivePlan())
-                                            @if ($file['price'] > 0)
                                             <td class="hidden-xl"><span class="d-block w-100 text-nowrap overflow-hidden"
                                                 style="text-overflow:ellipsis;">
                                                 $ {{ $file['price'] }}
                                             </span></td>
-                                            @else
-                                            <td class="hidden-xl"></td>
-                                            @endif
                                         @endif
                                         <td class="hidden-xl">
                                             @if (Auth::user()->hasActivePlan())
@@ -184,7 +180,9 @@
                                                 @endphp
                                                 <div class="relative">
                                                     <a style="display: flex; width: 20px; color: var(--download-button)" class="mx-auto"
-                                                        href="{{ route('file.download', $file['id'])}}">{{ svg('entypo-download') }}</a>
+                                                        href="{{ route('file.download', $file['id'])}}">
+                                                        <svg fill="currentColor" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M15 7h-3V1H8v6H5l5 5 5-5zm4.338 6.532c-.21-.224-1.611-1.723-2.011-2.114A1.503 1.503 0 0 0 16.285 11h-1.757l3.064 2.994h-3.544a.274.274 0 0 0-.24.133L12.992 16H7.008l-.816-1.873a.276.276 0 0 0-.24-.133H2.408L5.471 11H3.715c-.397 0-.776.159-1.042.418-.4.392-1.801 1.891-2.011 2.114-.489.521-.758.936-.63 1.449l.561 3.074c.128.514.691.936 1.252.936h16.312c.561 0 1.124-.422 1.252-.936l.561-3.074c.126-.513-.142-.928-.632-1.449z"></path></svg>
+                                                    </a>
                                                     <div class="w-100 text-center" style="bottom: -17px;">
                                                         <span class="bg-transparent" style="color: {{ $downloads > 0 ? 'var(--download-button)' : '#8080806b'}}; margin: 0 -7px 0 0  !important"><i class="ti tabler-check" style="font-size: 12px !important;"></i></span>
                                                         <span class="bg-transparent" style="color: {{ $downloads > 1 ? 'var(--download-button)' : '#8080806b'}}; margin-right: -7px !important"><i class="ti tabler-check" style="font-size: 12px !important;"></i></span>
@@ -222,7 +220,7 @@
                                     @endauth
                                     <td class="hidden-xl">
                                         <a id="{{$file['id']}}" style="display: flex; width: 20px; color: var(--play-button)" class="play-button cursor-pointer" data-editable="true" data-url="{{$file['url']}}" data-name="{{$file['name']}}" data-state="pause" onclick="playAudio(this)"
-                                                >{{ svg('vaadin-play') }}</a>
+                                                ><i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i></a>
                                     </td>
                                     <td class="show-xl">
                                         <div class="dropdown d-flex justify-content-center">
@@ -372,7 +370,7 @@
                         if (element.dataset.editable === "true") {
                             document.querySelectorAll('.play-button').forEach(button => {
                                 if(button.dataset.state === "play" && button !== element){
-                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                                     button.dataset.state = "pause";
                                 }
                             });
@@ -390,14 +388,14 @@
                         currentTrack = index;
                         audio.play();
                         if (element.dataset.editable === "true") {
-                            element.innerHTML = '{{ svg('vaadin-close') }}';
+                            element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-pause-filled"></i>';
                         } else {
                             element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-pause-filled"></i> Pausar';
                         }
                         element.dataset.state = "play";
                     } else {
                         if (element.dataset.editable === "true") {
-                            element.innerHTML = '{{ svg('vaadin-play') }}';
+                            element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                         } else {
                             element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i> Reproducir';
                         }
@@ -407,7 +405,7 @@
                     }
                     
                     audio.addEventListener('ended', () => {
-                        element.innerHTML = '{{ svg('vaadin-play') }}';
+                        element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                         element.dataset.state = "pause";
                     });
                 } else {
@@ -441,11 +439,11 @@
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
                                 if(button.dataset.state === "play" && button !== element){
-                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-close') }}';
+                            element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-pause-filled"></i>';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
@@ -465,11 +463,11 @@
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
                                 if(button.dataset.state === "play" && button !== element){
-                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-close') }}';
+                            element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-pause-filled"></i>';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
@@ -502,11 +500,11 @@
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
                                 if(button.dataset.state === "play" && button !== element){
-                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-close') }}';
+                            element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-pause-filled"></i>';
                             element.dataset.state = "play";
 
                             audio.src = track.url;
@@ -526,11 +524,11 @@
                             element = document.getElementById(track.id);
                             document.querySelectorAll('.play-button').forEach(button => {
                                 if(button.dataset.state === "play" && button !== element){
-                                    button.innerHTML = '{{ svg('vaadin-play') }}';
+                                    button.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-play-filled"></i>';
                                     button.dataset.state = "pause";
                                 }
                             });
-                            element.innerHTML = '{{ svg('vaadin-close') }}';
+                            element.innerHTML = '<i style="width: 20px;" class="icon-base ti tabler-player-pause-filled"></i>';
                             element.dataset.state = "play";
 
                             audio.src = track.url;

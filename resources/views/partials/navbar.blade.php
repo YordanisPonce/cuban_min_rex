@@ -52,9 +52,6 @@
                     <!-- <li class="nav-item">
                         <a class="nav-link fw-medium" aria-current="page" href="{{ route('home') }}">Inicio</a>
                     </li> -->
-                    <!-- <li class="nav-item">
-                        <a class="nav-link fw-medium" href="{{ route('plans') }}">Membresias</a>
-                    </li> -->
                     @if (isset($djs) && count($djs)>0)
                     <li class="nav-item dropdown ms-md-2 navbar-djs">
                         <a class="nav-link dropdown-toggle d-flex align-items-center" href="javascript:void(0);"
@@ -74,6 +71,9 @@
                     @endif
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('remixes') }}">Remixes</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link fw-medium" href="{{ route('plans') }}">Membresias</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('collection.index') }}">Packs</a>
