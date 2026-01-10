@@ -18,10 +18,16 @@
             <div class="p-2">
                 <h5 class="card-title mb-0 text-truncate">{{ $item->name}}</h5>
                 <p class="card-text mb-0 text-truncate" style="color: var(--bs-primary)">{{ $item->user ? $item->user->name : 'Desconocido' }}</p>
-                <p class="card-text d-flex gap-4">
-                    <small class="text-body-secondary">{{ $item->category ? $item->category->name : 'Sin Categoría' }}</small>
+                <p class="card-text d-flex gap-2 my-1">
+                    @if($item->categories()->count() > 0)
+                        @foreach($item->categories as $cat)
+                            <small class="badge bg-label-primary">{{ $cat->name }}</small>
+                        @endforeach
+                    @else
+                        <small class="badge bg-label-primary">Sin Categoría</small>
+                    @endif
                     @isset($top)
-                    <small class="text-body-secondary d-flex gap-2">
+                    <small class="text-body-secondary d-flex gap-2 align-items-center">
                         <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M3 15C3 17.8284 3 19.2426 3.87868 20.1213C4.75736 21 6.17157 21 9 21H15C17.8284 21 19.2426 21 20.1213 20.1213C21 19.2426 21 17.8284 21 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M12 3V16M12 16L16 11.625M12 16L8 11.625" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>

@@ -64,32 +64,15 @@ class ListFiles extends ListRecords
                     TextInput::make('bpm')
                         ->label('BPM')
                         ->required(),
-                    // Select::make('collection_id')
-                    //     ->label('Selecciona una Colección')
-                    //     ->options(function () {
-                    //         return Collection::where('user_id', Auth::user()->id)
-                    //             ->pluck('name', 'id');
-                    //     })->reactive()
-                    //     ->afterStateUpdated(function ($state, callable $set) {
-                    //         if (Collection::find($state)) {
-                    //             $set('dinamic_category_id', Collection::find($state)->category->id);
-                    //             $set('category_id', Collection::find($state)->category->id);
-                    //         } else {
-                    //             $set('dinamic_category_id', $state);
-                    //         }
-                    //     }),
-                    Select::make('dinamic_category_id')
-                        ->label('Selecciona una Categoría')
+                    Select::make('categories')
+                        ->label('Selecciona la/las Categoría(s)')
+                        ->searchable()
+                        ->multiple()
                         ->options(function () {
-                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)->orderBy('name')
+                            return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
                                 ->pluck('name', 'id');
                         })
-                        ->disabled(fn($get) => $get('collection_id') !== null)
-                        ->afterStateUpdated(function ($state, callable $set) {
-                            $set('category_id', $state);
-                        }),
-                    Hidden::make('category_id')
-                        ->default(fn($get) => $get('dinamic_category_id')),
+                        ->preload(),
                     Select::make('sections')
                         ->label('Secciones a mostrar')
                         ->options([
@@ -119,11 +102,12 @@ class ListFiles extends ListRecords
                         $file->file = $data['file'];
                         $file->poster = $data['image'];
                         $file->original_file = $data['original_file'];
-                        $file->category_id = $data['category_id'];
                         $file->user_id = Auth::user()->id;
                         $file->price = $data['price'] ?? 0;
                         $file->bpm = $data['bpm'];
+                        $file->sections = $data['sections'];
                         $file->save();
+                        $file->categories()->sync($data['categories']);
 
                         // ✅ 4) Si es ZIP, extraer desde el archivo local (public) y subir cada archivo a S3
                         if (strtolower(pathinfo($localPath, PATHINFO_EXTENSION)) === 'zip') {
@@ -181,13 +165,14 @@ class ListFiles extends ListRecords
                                     $newFile->file = $filePathInS3;
                                     $newFile->original_file = $filePathInS3;
                                     $newFile->collection_id = $collection->id;
-                                    $newFile->category_id = $data['category_id'];
                                     $newFile->poster = $data['image'];
                                     $newFile->user_id = Auth::user()->id;
                                     $newFile->price = $filePrice;
                                     $newFile->bpm = $data['bpm'];
                                     $newFile->status = "inactive";
+                                    $newFile->sections = $data['sections'];
                                     $newFile->save();
+                                    $newFile->categories()->sync($data['categories']);
 
                                     Storage::disk('public')->delete($filePath);
                                 }

@@ -132,7 +132,7 @@
                                 <th>REMIXERS</th>
                                 <th>Nombre</th>
                                 <th class="hidden-mobile">BPM</th>
-                                <th class="hidden-mobile">Categoría</th>
+                                <th class="hidden-mobile">Categorías</th>
                                 @auth
                                     @if (!Auth::user()->hasActivePlan())
                                         <th class="hidden-xl"></th>
@@ -165,7 +165,15 @@
                                         </span>
                                     </td>
                                     <td class="hidden-mobile">{{ $file['bpm'] }}</td>
-                                    <td class="hidden-mobile">{{ $file['category'] }}</td>
+                                    <td class="hidden-mobile">
+                                        @if(count($file['categories']) > 0)
+                                            @foreach($file['categories'] as $cat)
+                                                <small class="badge bg-label-primary">{{ $cat->name }}</small>
+                                            @endforeach
+                                        @else
+                                            <small class="badge bg-label-primary">Sin Categoría</small>
+                                        @endif
+                                    </td>
                                     @auth
                                         @if (!Auth::user()->hasActivePlan())
                                             <td class="hidden-xl"><span class="d-block w-100 text-nowrap overflow-hidden"

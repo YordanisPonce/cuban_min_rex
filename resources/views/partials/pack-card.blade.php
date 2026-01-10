@@ -7,7 +7,16 @@
         <img class="card-img-top" style="width: 160px;height: 200px; margin: 0 auto" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
         <div class="card-body text-center relative">
             <h5 class="card-title">{{$item->name}}</h5>
-            <p class="card-text mb-8">{{ $item->user->name }}<br>{{ $item->category->name ?? 'Sin Categoría'}}</p>
+            <p class="card-text mb-1">{{ $item->user->name }}</p>
+            <p class="d-flex gap-2 justify-content-center mb-8">
+                @if($item->categories()->count() > 0)
+                    @foreach($item->categories as $cat)
+                        <small class="badge bg-label-primary">{{ $cat->name }}</small>
+                    @endforeach
+                @else
+                    <small class="badge bg-label-primary">Sin Categoría</small>
+                @endif
+            </p>
             <div class="d-flex justify-content-center position-absolute bottom-0 w-100 start-0">
                 <div class="d-flex justify-content-center align-items-center" style="height: 38px;">
                     <a id="{{$item->id}}" style="display: flex;" class="btn btn-icon rounded-pill play-button cursor-pointer" data-rute="{{ route('file.play', [$item->collection ?? 'none', $item->id])}}" data-status="off" onclick="playAudio(this)"

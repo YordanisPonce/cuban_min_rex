@@ -32,8 +32,13 @@ class FilesTable
                 TextColumn::make('bpm')
                     ->label('BPM')
                     ->searchable(),
-                TextColumn::make('category.name')
-                    ->label('Categoría'),
+                TextColumn::make('categories')
+                    ->label('Categorías')
+                    ->badge()
+                    ->getStateUsing(function ($record) {
+                        return $record->categories->pluck('name');
+                    })
+                    ->default('Sin categoría'),
                 TextColumn::make('status')
                     ->label('Estado')
                     ->badge()

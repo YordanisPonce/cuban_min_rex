@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Support\Facades\Storage;
 
 class File extends Model
@@ -48,6 +49,10 @@ class File extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class, 'category_files', 'file_id', 'category_id');
     }
     public function sales()
     {

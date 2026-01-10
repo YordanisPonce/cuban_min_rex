@@ -25,12 +25,12 @@ class FileForm
                     ->label('Nombre')
                     ->required()
                     ->columnSpanFull(),
-                Select::make('category_id')
-                    ->label('Selecciona una Categoría')
-                    ->options(function () {
-                        return Category::where('is_general', true)->orWhere('user_id', Auth::user()->id)
-                            ->pluck('name', 'id');
-                    }),
+                Select::make('categories')
+                    ->label('Selecciona la/las Categoría(s)')
+                    ->searchable()
+                    ->multiple()
+                    ->relationship(name: 'categories', titleAttribute: 'name')
+                    ->preload(),
                 TextInput::make('price')
                     ->label('Precio')
                     ->numeric()

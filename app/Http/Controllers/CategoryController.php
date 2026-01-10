@@ -66,7 +66,7 @@ class CategoryController extends Controller
                 'name' => $file->name,
                 'bpm' => $file->bpm,
                 'collection' => $file->collection ? $file->collection->name : null,
-                'category' => $file->category ? $file->category->name : null,
+                'categories' => $file->categories ?? [],
                 'price' => $file->price,
                 'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
                 'isZip' => $isZip
