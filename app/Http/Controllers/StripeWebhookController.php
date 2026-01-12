@@ -173,6 +173,23 @@ class StripeWebhookController extends CashierController
         $user->plan_expires_at = $periodEnd;
         $user->save();
 
+        $lastOrder = Order::query()
+            ->where('user_id', $user->id)
+            ->where('status', 'paid')
+            ->whereNotNull('plan_id')
+            ->orderBy('created_at', 'DESC')
+            ->first();
+
+        $order = new Order([
+            'user_id' => $user->id,
+            'plan_id' => $planId,
+            'status' => 'paid',
+            'settled_at' => null,
+            'amount' => $lastOrder->amount
+        ]);
+
+        $order->save();
+
         // Actualiza tu tabla Subscription custom
         Subscription::updateOrCreate(
             ['user_id' => $user->id],
