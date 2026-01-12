@@ -28,7 +28,7 @@ class CategoryController extends Controller
         $results = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status','active')
             ->where('name', 'like', '%' . $name . '%')
-            ->whereHas('category', function ($query) use ($categoryId) {
+            ->whereHas('categories', function ($query) use ($categoryId) {
                 $query->where('id', $categoryId);
             })
             ->whereHas('user', function ($query) use ($remixers) {
@@ -41,7 +41,7 @@ class CategoryController extends Controller
         $playList = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status','active')
             ->where('name', 'like', '%' . $name . '%')
-            ->whereHas('category', function ($query) use ($categoryId) {
+            ->whereHas('categories', function ($query) use ($categoryId) {
                 $query->where('id', $categoryId);
             })
             ->whereHas('user', function ($query) use ($remixers) {

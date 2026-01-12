@@ -192,7 +192,7 @@ class HomeController extends Controller
         $playList = File::where('name', 'like', '%' . $name . '%')
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->whereHas('category', function ($query) use ($category) {
+            ->whereHas('categories', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
             ->whereHas('user', function ($q) use ($id) {
@@ -283,7 +283,7 @@ class HomeController extends Controller
         $playList = File::whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('status', 'active')
             ->where('name', 'like', '%' . $name . '%')
-            ->whereHas('category', function ($query) use ($category) {
+            ->whereHas('categories', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
             ->whereHas('user', function ($query) use ($remixers) {

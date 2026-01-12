@@ -38,7 +38,7 @@ class ListFiles extends ListRecords
                         ->required(),
                     FileUpload::make('file')->maxSize(800000)
                         ->label('Subir vista previa del archivo')
-                        ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
+                        ->acceptedFileTypes(['audio/*', 'video/*'])
                         ->required()
                         ->disk('s3')
                         ->directory('files')
@@ -114,7 +114,6 @@ class ListFiles extends ListRecords
 
                             $collection = new Collection();
                             $collection->name = $data['name'] ?? basename($data['file'] ?? $data['original_file']);
-                            $collection->category_id = $data['category_id'];
                             $collection->image = $data['image'];
                             $collection->user_id = Auth::user()->id;
                             $collection->save();
