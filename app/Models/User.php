@@ -37,6 +37,7 @@ class User extends Authenticatable implements FilamentUser
         'paypal_email',
         'email_verified_at',
         'downloadToken',
+        'plan_expires_at',
     ];
 
     /**
