@@ -52,26 +52,84 @@ class UserPaymentsTable extends TableWidget
                     ->latest('created_at')
             )
             ->columns([
-                TextColumn::make('created_at')
-                    ->label('Fecha')
-                    ->dateTime('Y-m-d H:i'),
+                TextColumn::make('created_at')->label('Creado')->since(),
 
-                TextColumn::make('amount')
-                    ->label('Cantidad Pagada')
-                    ->money(),
+                TextColumn::make('paid_at')->label('Pagado')->dateTime('Y-m-d H:i')->placeholder('—'),
 
+                TextColumn::make('status')
+                    ->label('Estado')
+                    ->badge()
+                    ->color(fn(string $state) => match ($state) {
+                        'succeeded' => 'success',
+                        'pending' => 'warning',
+                        'failed' => 'danger',
+                        default => 'gray',
+                    }),
+
+                TextColumn::make('amount')->label('Monto')->money(),
                 TextColumn::make('currency')->label('Moneda'),
-
-                TextColumn::make('email')->label('Email pagado'),
+                TextColumn::make('email')->label('Email pagado')->copyable(),
 
                 TextColumn::make('paypal_response_id')
-                    ->label('Transacción')
+                    ->label('Payout ID')
                     ->copyable()
                     ->state(fn(Payment $record) => $record->paypal_response['batch_header']['payout_batch_id'] ?? 'N/A'),
 
-                TextColumn::make('note')->label('Descripción'),
+                TextColumn::make('paypal_batch_status')
+                    ->label('Batch status')
+                    ->badge()
+                    ->state(fn(Payment $record) => $record->paypal_response['batch_header']['batch_status'] ?? '—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('sender_batch_id')->label('Sender batch')->copyable()->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('item_id')->label('Item')->copyable()->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('error_message')->label('Error')->wrap()->limit(60)->placeholder('—')->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('note')->label('Descripción')->wrap()->limit(50),
             ])
             ->recordActions([
+                // Ver detalle
+                Action::make('view')
+                    ->label('Ver')
+                    ->icon('heroicon-m-eye')
+                    ->color('gray')
+                    ->modalHeading('Detalle del pago')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Cerrar')
+                    ->modalContent(function (Payment $record) {
+                        $payoutId = $record->paypal_response['batch_header']['payout_batch_id'] ?? 'N/A';
+                        $batchStatus = $record->paypal_response['batch_header']['batch_status'] ?? '—';
+
+                        return new \Illuminate\Support\HtmlString(
+                            '<div style="display:grid;gap:10px;font-size:14px;">'
+                            . '<div><strong>Estado:</strong> ' . e($record->status) . '</div>'
+                            . '<div><strong>Monto:</strong> $' . number_format((float) $record->amount, 2) . ' ' . e($record->currency) . '</div>'
+                            . '<div><strong>Email:</strong> ' . e($record->email) . '</div>'
+                            . '<div><strong>Sender batch:</strong> <code>' . e($record->sender_batch_id ?? '—') . '</code></div>'
+                            . '<div><strong>Item ID:</strong> <code>' . e($record->item_id ?? '—') . '</code></div>'
+                            . '<div><strong>Payout Batch ID:</strong> <code>' . e($payoutId) . '</code></div>'
+                            . '<div><strong>Batch status:</strong> ' . e($batchStatus) . '</div>'
+                            . ($record->error_message ? '<div><strong>Error:</strong> <span style="color:#b91c1c;">' . e($record->error_message) . '</span></div>' : '')
+                            . ($record->note ? '<div><strong>Nota:</strong> ' . e($record->note) . '</div>' : '')
+                            . '</div>'
+                        );
+                    }),
+
+                // Ver JSON
+                Action::make('paypal_json')
+                    ->label('PayPal JSON')
+                    ->icon('heroicon-m-code-bracket-square')
+                    ->color('gray')
+                    ->modalHeading('Respuesta cruda de PayPal')
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Cerrar')
+                    ->modalContent(fn(Payment $record) => new \Illuminate\Support\HtmlString(
+                        '<pre style="white-space:pre-wrap;font-size:12px;background:#0b1220;color:#e5e7eb;padding:12px;border-radius:12px;max-height:420px;overflow:auto;">'
+                        . e(json_encode($record->paypal_response ?? [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES))
+                        . '</pre>'
+                    ))
+                    ->visible(fn(Payment $record) => !empty($record->paypal_response)),
                 Action::make('repay')
                     ->label('Reintentar pago')
                     ->icon('heroicon-m-arrow-path')
@@ -163,8 +221,13 @@ class UserPaymentsTable extends TableWidget
                         || !empty($record->paypal_response['batch_header']['payout_batch_id'] ?? null)
                     )
                 ,
+
             ])
 
+            /*    ->recordActions([
+
+               ])
+    */
             ->heading(
                 fn() => $userId
                 ? ('Pagos Realizados a ' . (User::find($userId)->name ?? 'Usuario'))
