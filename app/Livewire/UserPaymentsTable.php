@@ -137,7 +137,7 @@ class UserPaymentsTable extends TableWidget
                     ->requiresConfirmation()
                     ->modalHeading('Reintentar payout en PayPal')
                     ->modalDescription('Se volverá a intentar enviar este payout a PayPal. Úsalo solo si el pago falló o quedó pendiente.')
-                    ->visible(fn(Payment $record) => in_array($record->status, ['failed', 'pending'], true))
+                    ->visible(fn(Payment $record) => in_array($record->status, ['failed', 'pending'], true) && auth()->user()->isAdmin())
                     ->action(function (Payment $record) {
 
                         // Seguridad: solo permitir retry si tiene monto válido

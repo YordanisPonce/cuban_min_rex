@@ -447,4 +447,8 @@ class User extends Authenticatable implements FilamentUser
             ->sum('user_amount');
     }
 
+    public function isAdmin()
+    {
+        return $this->role == 'admin';
+    }
 }
