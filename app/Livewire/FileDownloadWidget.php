@@ -9,6 +9,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\File;
 use App\Models\Sale;
 use App\Models\User;
+use Filament\Support\Enums\IconPosition;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Subscription;
@@ -33,13 +34,20 @@ class FileDownloadWidget extends BaseWidget
             Stat::make('Cantidad de Descargas', $downloadCounts),
             Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads()),
             Stat::make('Cantidad de Ventas', $salesCount),
-            Stat::make('Pendiente por cobrar', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal()),
-            Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation()),
+            Stat::make('Pendiente por cobrar (Ventas)', '$ ' . auth()->user()->pendingSalesTotal())->description('Cobros por ventas')->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)->descriptionColor('success'),
+            Stat::make('Pendiente por cobrar (Suscripción)', '$ ' . auth()->user()->pendingSubscriptionLiquidation())->description('Variable dependiendo de las descargas')->descriptionColor('info')->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),
+            Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
             Stat::make('Subscripciones Activas', $activeSubscriptions)
         ];
 
         return $stats;
     }
+    
+    protected function getColumns(): int
+    {
+        return 3;
+    }
+    
     public function ellipsis(string $text, int $limit = 40): string
     {
         $text = trim($text);
