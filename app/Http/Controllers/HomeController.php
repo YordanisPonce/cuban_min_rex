@@ -179,7 +179,7 @@ class HomeController extends Controller
         $results = File::where('name', 'like', '%' . $name . '%')
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->whereHas('category', function ($query) use ($category) {
+            ->whereHas('categories', function ($query) use ($category) {
                 $query->where('name', 'like', '%' . $category . '%');
             })
             ->whereHas('user', function ($q) use ($id) {
