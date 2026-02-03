@@ -24,6 +24,16 @@ class CategoryResource extends Resource
     
     protected static string|null $label = 'Categorías';
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        return !auth()->user()->role==='developer';
+    }
+
+    public static function canAccess(): bool
+    {
+        return !auth()->user()->role==='developer';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return CategoryForm::configure($schema);

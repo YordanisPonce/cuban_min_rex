@@ -12,7 +12,7 @@ class UserPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role !== 'user';
+        return $user->role !== 'user' && $user->role !== 'developer';
     }
 
     /**

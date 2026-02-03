@@ -1,5 +1,6 @@
 <?php
 
+use App\Filament\Pages\DevDashboard;
 use App\Filament\Pages\UserPayments;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
@@ -87,6 +88,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
     Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
     Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
+    Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
 
     Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
 

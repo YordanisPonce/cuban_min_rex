@@ -2,7 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\DevDashboard;
 use App\Http\Middleware\CheckUserAccess;
+use App\Http\Middleware\DevMiddleware;
 use App\Livewire\DownloadsChart;
 use App\Livewire\FileDownloadWidget;
 use App\Livewire\SubscriptionChart;
@@ -65,6 +67,7 @@ class AdminPanelProvider extends PanelProvider
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
                 CheckUserAccess::class,
+                DevMiddleware::class
             ])
             ->authMiddleware([
                 Authenticate::class,

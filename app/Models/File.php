@@ -112,4 +112,27 @@ class File extends Model
         }
         return $totalEarning;
     }
+
+    public function scopeVideos($query)
+    {
+        $ext = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+
+        return $query->where(function ($q) use ($ext) {
+            foreach ($ext as $e) {
+                $q->orWhere('file', 'like', "%{$e}");
+            }
+        });
+    }
+
+    public function scopeAudios($query)
+    {
+        $ext =  ['.mp3', '.wav', '.ogg', '.m4a'];
+
+        return $query->where(function ($q) use ($ext) {
+            foreach ($ext as $e) {
+                $q->orWhere('file', 'like', "%{$e}");
+            }
+        });
+    }
+
 }

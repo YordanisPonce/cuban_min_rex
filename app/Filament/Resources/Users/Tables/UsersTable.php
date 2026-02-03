@@ -201,7 +201,7 @@ class UsersTable
             ->toolbarActions([
             ])
             ->modifyQueryUsing(
-                fn($record): Builder => auth()->user()?->role === 'admin' ? User::query()->orderBy('id', 'desc') : User::query()->whereNot('current_plan_id')->orderBy('id', 'desc')
+                fn($record): Builder => auth()->user()?->role === 'admin' ? User::query()->whereNot('role', 'developer')->orderBy('id', 'desc') : User::query()->whereNot('current_plan_id')->orderBy('id', 'desc')
             );
     }
 
