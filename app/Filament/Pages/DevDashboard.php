@@ -2,7 +2,11 @@
 
 namespace App\Filament\Pages;
 
+use App\Filament\Widgets\DevStatsWidget;
 use App\Filament\Widgets\SalesByMonthChart;
+use App\Filament\Widgets\SuscriptionByMonthChart;
+use App\Livewire\DevSuscriptionTable;
+use App\Livewire\TabsWidget;
 use App\Models\Sale;
 use BackedEnum;
 use Carbon\Carbon;
@@ -13,7 +17,6 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
-use Filament\Schemas\Components\Section;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 
@@ -61,7 +64,7 @@ class DevDashboard extends Page implements HasTable
     {
         return [
             Action::make('filter')
-                ->label('Filtrar por Fecha')
+                ->label('Filtrar por Mes/Año')
                 ->icon('heroicon-o-funnel')
                 ->modal()
                 ->form([
@@ -120,7 +123,7 @@ class DevDashboard extends Page implements HasTable
                     ->label('Fecha')
                     ->formatStateUsing(function($state){
                         Carbon::setLocale('es');
-                        return Carbon::parse($state)->translatedFormat('d \d\e F \d\e Y');
+                        return Carbon::parse($state)->translatedFormat('j \d\e F \d\e Y');
                     }),
                 TextColumn::make('file.name')
                     ->label('Archivo Vendido'),
@@ -156,7 +159,8 @@ class DevDashboard extends Page implements HasTable
     protected function getHeaderWidgets(): array
     {
         return [
-           //
+           DevStatsWidget::class,
+           DevSuscriptionTable::class,
         ];
     }
 
@@ -164,12 +168,18 @@ class DevDashboard extends Page implements HasTable
     {
         return [
             SalesByMonthChart::class,
+            SuscriptionByMonthChart::class,
         ];
+    }
+
+    public function getHeaderWidgetsColumns(): int|array
+    {
+        return 1;
     }
 
     public function getFooterWidgetsColumns(): int|array
     {
-        return 1;
+        return 2;
     }
 
     public function getWidgetData(): array

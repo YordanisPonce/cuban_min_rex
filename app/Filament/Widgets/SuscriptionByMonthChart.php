@@ -2,14 +2,14 @@
 
 namespace App\Filament\Widgets;
 
-use App\Models\Sale;
+use App\Models\Order;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
-class SalesByMonthChart extends ChartWidget
+class SuscriptionByMonthChart extends ChartWidget
 {
-    protected ?string $heading = 'Comision por ventas al mes ';
+    protected ?string $heading = 'Comision por suscripciones al mes ';
 
     protected ?string $description = 'Información sensible al filtro de año.';
 
@@ -35,7 +35,7 @@ class SalesByMonthChart extends ChartWidget
     {
         $year = $this->year;
 
-        $query = Sale::query();
+        $query = Order::query()->whereHas('plan');
 
         if ($year){
             $query->whereYear('created_at', $year);
@@ -73,7 +73,7 @@ class SalesByMonthChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Comisión por Ventas',
+                    'label' => 'Comisión por Suscripciones',
                     'data' => $chartData,
                     'backgroundColor' => '#10b981',
                     'borderColor' => '#059669',
