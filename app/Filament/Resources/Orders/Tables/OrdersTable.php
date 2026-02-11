@@ -35,14 +35,14 @@ class OrdersTable
                     ->sortable()
                     ->toggleable(),
 
-                TextColumn::make('file.name')
-                    ->label('Archivo')
-                    ->sortable()
-                    ->toggleable(),
+                TextColumn::make('order_items_count')
+                    ->label('Archivos')
+                    ->toggleable()
+                    ->default(fn($record) => $record->order_items()->count()),
 
                 TextColumn::make('amount')
                     ->label('Importe')
-                    ->money('eur', true) // o 'usd'
+                    ->money('usd', true) // o 'usd'
                     ->sortable(),
 
                 TextColumn::make('status')
@@ -101,7 +101,7 @@ class OrdersTable
                         return $record->downloadFilesZip();
                     })
                     ->visible(function (Order $record) {
-                        return $record->plan_id !== null;
+                        return $record->order_items()->count() > 0;
                     }),
             ])
 
@@ -111,7 +111,7 @@ class OrdersTable
                 ]),
             ])
             ->modifyQueryUsing(
-                fn(EloquentBuilder $query) => $query->orderBy('created_at', 'desc')
+                fn(EloquentBuilder $query) => $query->where('currency', 'USD')->orderBy('created_at', 'desc')
             );
     }
 }

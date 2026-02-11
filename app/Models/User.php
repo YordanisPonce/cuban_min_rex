@@ -170,8 +170,6 @@ class User extends Authenticatable implements FilamentUser
             ->value('cnt');
     }
 
-
-
     public function pendingSubscriptionLiquidation(): float
     {
         // Pool pendiente (solo suscripciones pagadas NO repartidas aún)
@@ -205,8 +203,6 @@ class User extends Authenticatable implements FilamentUser
         $amount = $poolPending * ($djPendingPairs / $totalPendingPairs);
         return round($amount, 2);
     }
-
-
 
     public function paidSubscriptionLiquidation(): float
     {
@@ -450,5 +446,9 @@ class User extends Authenticatable implements FilamentUser
     public function isAdmin()
     {
         return $this->role == 'admin';
+    }
+
+    public function recordAdmin($query){
+        return $query->where('role', 'admin');
     }
 }

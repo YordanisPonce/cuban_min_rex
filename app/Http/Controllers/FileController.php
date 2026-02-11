@@ -206,6 +206,93 @@ class FileController extends Controller
         }
     }
 
+    public function payFile(string $id) { 
+
+        try {
+
+            $file = File::find($id);
+            if (!$file) {
+                return response()->json([
+                    'error' => 'El archivo seleccionado no es válido.'
+                ], 422);
+            }
+
+            // Valida precio
+            $price = (float) $file->price;
+            if ($price <= 0) {
+                return response()->json([
+                    'error' => 'El precio del archivo no es válido.'
+                ], 422);
+            }
+                
+            // Monto en centavos
+            $amountInCents = (int) round($price * 100);
+
+            $order = new Order();
+            $order->user_id = auth()->user()?->id;
+            $order->amount = $price;
+            $order->status = 'pending';
+            $order->save();
+            
+            $order_item = new OrderItem();
+            $order_item->order_id = $order->id;
+            $order_item->file_id = $file->id;
+            $order_item->save();
+            
+            // Configura tu clave secreta (recomendado: en AppServiceProvider::boot)
+            Stripe::setApiKey(config('services.stripe.secret_key'));
+
+            // Metadatos para rastrear compra
+            $metadata = [
+                'user_id' => auth()->check() ? (string) auth()->id() : null,
+                'order_id' => (string) $order->id,
+            ];
+
+            // Crea la sesión de Checkout
+            $session = StripeSession::create([
+                'mode' => 'payment',
+                'payment_method_types' => ['card'],
+                'line_items' => [
+                    [
+                        'price_data' => [
+                            'currency' => 'usd',
+                            'product_data' => [
+                                'name' => (string) $file->name,
+                            ],
+                            'unit_amount' => $amountInCents,
+                        ],
+                        'quantity' => 1,
+                    ]
+                ],
+                'success_url' => route('payment.ok2') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('payment.ko'),
+
+                // Si no manejas customers en Stripe, usa el email
+                'customer_email' => optional(auth()->user())->email,
+
+                // Metadatos en la Session (útil para búsqueda rápida)
+                'metadata' => $metadata,
+
+                // Metadatos en el PaymentIntent (bajan al cargo)
+                'payment_intent_data' => [
+                    'metadata' => $metadata,
+                ],
+            ]);
+
+            return response()->json(['url' => $session->url]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            report($e);
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json([
+                'error' => 'No se pudo iniciar el pago.',
+            ], 500);
+        }
+    }
+
     public function addToCart(string $id){
         $user = Auth::user() ?? null;
         $cart = null;

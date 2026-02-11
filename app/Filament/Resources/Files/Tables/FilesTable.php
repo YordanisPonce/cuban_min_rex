@@ -55,11 +55,7 @@ class FilesTable
                 TextColumn::make('sections')
                     ->label('Secciones a mostrar')
                     ->badge()
-                    ->formatStateUsing(fn(string $state) => match ($state) {
-                        SectionEnum::MAIN->value => config('app.name'),
-                        SectionEnum::CUBANDJS->value => 'CubanDJs',
-                        default => ucfirst($state),
-                    }),
+                    ->formatStateUsing(fn(string $state) => SectionEnum::getTransformName($state)),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
@@ -72,9 +68,34 @@ class FilesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                SelectFilter::make('category_id')
-                    ->label('Categoría')
+                SelectFilter::make('categories')
+                    ->relationship(name: 'categories', titleAttribute: 'name')
+                    ->label('Categorías')
                     ->options(fn (): array => Category::orderBy('name')->pluck('name', 'id')->all())
+                    ->multiple(),
+                SelectFilter::make('status')
+                    ->label('Estado')
+                    ->options([
+                        'active' => 'Activo',
+                        'inactive' => 'Inactivo',
+                    ]),
+                SelectFilter::make('sections')
+                    ->label('Secciones a mostrar')
+                    ->options(function () {
+                        $options = [];
+                        $sections = SectionEnum::cases();
+                        foreach ($sections as $section) {
+                            $options[$section->value] = SectionEnum::getTransformName($section->value);
+                        }
+                        return $options;
+                    })->multiple()
+                    ->query(function (EloquentBuilder $query, array $data) {
+                        $query->where(function (EloquentBuilder $query) use ($data) {
+                            foreach ($data as $section) {
+                                $query->whereJsonContains('sections', $section);
+                            }
+                        });
+                    }),
             ])->filtersTriggerAction(
                 fn (Action $action) => $action
                     ->button()

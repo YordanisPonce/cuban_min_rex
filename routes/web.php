@@ -81,6 +81,9 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::view('/payment_ok2', 'payment.ok2')->name('payment.ok2');
     Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
 
+    Route::get('/payment/cup/{file}', [PaymentController::class, 'showCUPForm'])->name('payment.cup.form');
+    Route::post('/payment/cup/{file}/pay', [PaymentController::class, 'processCUPPayment'])->name('payment.cup.proccess');
+
     Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
     Route::get('/radio', [HomeController::class, 'radio'])->name('radio');
     Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
@@ -125,6 +128,9 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     Route::get('/cart/pay', [FileController::class, 'pay'])
         ->name('file.pay');
+    
+    Route::get('/radio/file/{file}/pay', [FileController::class, 'payFile'])
+        ->name('radio.file.pay');
 
     Route::get('/collection/download/{collection}', [CollectionController::class, 'download'])
         ->name('collection.download');

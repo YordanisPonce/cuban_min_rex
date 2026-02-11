@@ -4,16 +4,18 @@ namespace App\Http\Controllers;
 
 use App\Models\Billing;
 use App\Models\Category;
-use App\Models\Collection;
+use App\Models\File;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Models\Plan;
+use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\User;
+use App\Notifications\CUPPaymentNotification;
+use App\Services\ElToqueService;
 use Carbon\Carbon;
-use Illuminate\Http\Response as HttpResponse;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Notification;
 
 class PaymentController extends Controller
 {
@@ -140,5 +142,79 @@ class PaymentController extends Controller
             "payments" => User::find($userId)->payments(),
         ]);
 
+    }
+
+    public function showCUPForm($fileId) {
+        $file = File::find($fileId);
+        if (!$file) {
+            abort(404);
+        }
+
+        //$usdEnchange = ElToqueService::getUsdExchangeRate();
+
+        $setting = Setting::first();
+
+        return view('payment.cup_payment', [
+            'file' => $file,
+            'setting' => $setting,
+            'categories' => Category::where('show_in_landing', true)->get(),
+            'djs' => User::where('role', 'worker')->orderBy('name')->get(),
+            'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                return $item->files()->count() > 0;
+            }),
+            'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                return $item->files()->count() > 0;
+            })
+        ]);
+    }
+
+    function processCUPPayment(Request $request, string $fileId) {
+
+        try {
+            $file = File::find($fileId);
+            if (!$file) {
+                abort(404);
+            }
+
+            $data = [
+                'file_id' => $file->id,
+                'amount' => $file->price * (Setting::first()->currency_convertion_rate),
+                'status' => 'pending',
+                'currency' => 'CUP',
+                'phone' => $request->phone,
+                'code' => $request->code,
+                'customer_email' => $request->email,
+            ];
+
+            $order = new Order($data);
+            $order->save();
+
+            $order->order_items()->create([
+                'file_id' => $file->id,
+            ]);
+
+            $setting = Setting::first();
+
+            $notifyUser = User::where('email', $setting->confirmation_email)->first();
+
+            if (!$notifyUser) {
+                Notification::route('mail', $setting->confirmation_email)->notify(new CUPPaymentNotification($order));
+            } else {
+                $notifyUser->notify(new CUPPaymentNotification($order));
+            }
+
+            return view('payment.cup_payment_confirm', [
+                'categories' => Category::where('show_in_landing', true)->get(),
+                'djs' => User::where('role', 'worker')->orderBy('name')->get(),
+                'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                    return $item->files()->count() > 0;
+                }),
+                'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                    return $item->files()->count() > 0;
+                })
+            ]);
+        } catch (\Throwable $th) {
+            throw $th;
+        }
     }
 }

@@ -75,10 +75,17 @@ class ListFiles extends ListRecords
                         ->preload(),
                     Select::make('sections')
                         ->label('Secciones a mostrar')
-                        ->options([
-                            SectionEnum::MAIN->value => config('app.name'),
-                            SectionEnum::CUBANDJS->value => 'CubanDjs'
-                        ])
+                        ->options(function () {
+                            $options = [];
+
+                            $sections = SectionEnum::cases();
+        
+                            foreach ($sections as $sectionsCase) {
+                                $options[$sectionsCase->value] = SectionEnum::getTransformName($sectionsCase->value);
+                            }
+
+                            return $options;
+                        })
                         ->multiple()
                         ->required(),
                 ])->action(function (array $data): void {

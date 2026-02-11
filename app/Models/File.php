@@ -119,7 +119,7 @@ class File extends Model
 
         return $query->where(function ($q) use ($ext) {
             foreach ($ext as $e) {
-                $q->orWhere('file', 'like', "%{$e}");
+                $q->orWhere('original_file', 'like', "%{$e}");
             }
         });
     }
@@ -130,9 +130,24 @@ class File extends Model
 
         return $query->where(function ($q) use ($ext) {
             foreach ($ext as $e) {
-                $q->orWhere('file', 'like', "%{$e}");
+                $q->orWhere('original_file', 'like', "%{$e}");
             }
         });
     }
 
+    public function scopeZips($query)
+    {
+        $ext = ['.zip', '.rar', '.7z'];
+
+        return $query->where(function ($q) use ($ext) {
+            foreach ($ext as $e) {
+                $q->orWhere('original_file', 'like', "%{$e}");
+            }
+        });
+    }
+
+    public function scopeSection($query, $section)
+    {
+        return $query->whereJsonContains('sections', $section);
+    }
 }

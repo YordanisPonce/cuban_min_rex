@@ -21,6 +21,12 @@ class Order extends Model
         'paid_at',
         'expires_at',
         'settled_at', // ✅ añadir
+
+        //pagos CUP
+        'currency',
+        'phone',
+        'code',
+        'customer_email',
     ];
 
     protected $casts = [
@@ -33,10 +39,12 @@ class Order extends Model
     {
         return $this->belongsTo(User::class);
     }
+
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
     }
+
     public function file(): BelongsTo
     {
         return $this->belongsTo(File::class);

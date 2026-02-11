@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
 use App\Models\Plan;
+use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\ContactNotification;
 use Carbon\Carbon;
@@ -97,15 +98,15 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        $results = File::where('status', 'active')
+        $mixes = File::section(SectionEnum::CUBANDJS->value)
+            ->where('status', 'active')
             ->whereNot('original_file', 'LIKE', '%.zip')
-            ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
             ->orderBy('created_at', 'desc')
             ->paginate(30)->withQueryString();
 
-        $playList = File::where('status', 'active')
+        $mixesPlayList = File::section(SectionEnum::CUBANDJS->value)
+            ->where('status', 'active')
             ->whereNot('original_file', 'LIKE', '%.zip')
-            ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
             ->orderBy('created_at', 'desc')
             ->get()->map(fn($f) => [
                 'id' => $f->id,
@@ -113,7 +114,7 @@ class HomeController extends Controller
                 'title' => $f->title ?? $f->name,
             ]);
 
-        $results->getCollection()->transform(function ($file) {
+        $mixes->getCollection()->transform(function ($file) {
             $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->original_file), PATHINFO_EXTENSION) === 'zip';
             return [
                 'id' => $file->id,
@@ -131,19 +132,50 @@ class HomeController extends Controller
             ];
         });
 
-        $packs = File::where('original_file', 'LIKE', '%.zip')
+        $lives = File::section(SectionEnum::CUBANDJS_LIVE_SESSIONS->value)
             ->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::CUBANDJS->value)
+            ->whereNot('original_file', 'LIKE', '%.zip')
             ->orderBy('created_at', 'desc')
-            ->take(6)
-            ->get();
+            ->paginate(30)->withQueryString();
+        
+        $livesPlayList = File::section(SectionEnum::CUBANDJS_LIVE_SESSIONS->value)
+            ->where('status', 'active')
+            ->whereNot('original_file', 'LIKE', '%.zip')
+            ->orderBy('created_at', 'desc')
+            ->get()->map(fn($f) => [
+                'id' => $f->id,
+                'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
+                'title' => $f->title ?? $f->name,
+            ]);
+        
+        $lives->getCollection()->transform(function ($file) {
+            $isZip = pathinfo(Storage::disk('s3')->url($file->url ?? $file->original_file), PATHINFO_EXTENSION) === 'zip';
+            return [
+                'id' => $file->id,
+                'date' => $file->created_at,
+                'user' => $file->user->name,
+                'name' => $file->name,
+                'logotipe' => $file->user->photo,
+                'bpm' => $file->bpm,
+                'collection' => $file->collection ? $file->collection->name : null,
+                'categories' => $file->categories ?? [],
+                'price' => $file->price,
+                'url' => route('file.play', [$file->collection ? $file->collection->id : 'none', $file->id]),
+                'isZip' => $isZip,
+                'ext' => pathinfo(Storage::disk('s3')->url($file->url ?? $file->file), PATHINFO_EXTENSION),
+            ];
+        });
 
         $allCategories = Category::orderBy('name')->get();
         $allRemixers = User::whereHas('files', function ($query) {
             $query->where('name', 'like', '%%');
         })->get();
 
-        return view('radio', compact('djs', 'categories', 'recentCategories', 'recentDjs', 'results', 'playList', 'packs'));
+        $setting = Setting::first();
+
+        $activeCUPPayment = !(is_null($setting->credit_card_info) | is_null($setting->confirmation_phone) | is_null($setting->confirmation_email) | is_null($setting->currency_convertion_rate));
+
+        return view('radio', compact('djs', 'categories', 'recentCategories', 'recentDjs', 'lives', 'livesPlayList', 'mixes', 'mixesPlayList', 'allCategories', 'allRemixers', 'activeCUPPayment'));
     }
 
     public function plan()
