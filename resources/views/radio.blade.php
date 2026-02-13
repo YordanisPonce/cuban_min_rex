@@ -287,7 +287,7 @@
                                         </span>
                                     </td>
                                     <td class="hidden-xl">
-                                        {{ $file['currency'] ?? 'USD' }}
+                                        {{ $file['currency'] ?? 'USD/CUP' }}
                                     </td>
                                     <td class="hidden-xl">
                                         <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
@@ -386,7 +386,7 @@
                                         </span>
                                     </td>
                                     <td class="hidden-xl">
-                                        {{ $file['currency'] ?? 'USD' }}
+                                        {{ $file['currency'] ?? 'USD/CUP' }}
                                     </td>
                                     <td class="hidden-xl">
                                         <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
