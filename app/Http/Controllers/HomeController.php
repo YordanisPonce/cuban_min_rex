@@ -198,7 +198,7 @@ class HomeController extends Controller
         return view('plans', compact('djs', 'plans', 'categories', 'recentCategories', 'recentDjs'));
     }
 
-    public function dj($id)
+    public function dj($dj)
     {
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
@@ -208,6 +208,8 @@ class HomeController extends Controller
         $recentCategories = Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
+
+        $id = User::where('name',$dj)->first()->id;
 
         $name = request()->get("search") ?? "";
         $category = request()->get("categories") ?? "";

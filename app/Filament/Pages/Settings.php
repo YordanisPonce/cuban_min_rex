@@ -3,6 +3,7 @@
 namespace App\Filament\Pages;
 
 use App\Models\Order;
+use App\Models\Sale;
 use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\FilePaid;
@@ -197,7 +198,7 @@ class Settings extends Page implements HasForms, HasTable
                     ->visible(fn($record) => $record->status == 'pending')
                     ->action(function($record){
                         try {
-
+                            
                             $user = User::where('email', $record->customer_email)->first();
 
                             $token = Str::random(50);
@@ -217,6 +218,17 @@ class Settings extends Page implements HasForms, HasTable
                                 'status' => 'paid',
                                 'paid_at' => Carbon::now(),
                             ]);
+                            
+                            foreach ($record->order_items as $item) {
+                                $sale = new Sale([
+                                    'file_id' => $item->file->id,
+                                    'amount' => $item->file->price,
+                                    'status' => 'paid',
+                                    'user_amount' => $item->file->price*1.0,
+                                    'admin_amount' => $item->file->price*0,
+                                ]);
+                                $sale->save();
+                            }
 
                             Notification::make()
                                 ->title('Pago confirmado')

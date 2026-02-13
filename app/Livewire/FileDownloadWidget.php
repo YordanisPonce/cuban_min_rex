@@ -2,6 +2,7 @@
 
 namespace App\Livewire;
 
+use App\Filament\Pages\SaleSumary;
 use App\Models\Collection;
 use App\Models\Download;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -31,9 +32,9 @@ class FileDownloadWidget extends BaseWidget
         })->count();
 
         $stats = [
-            Stat::make('Cantidad de Descargas', $downloadCounts),
+            Stat::make('Cantidad de Descargas', $downloadCounts)->url(SaleSumary::getUrl()),
             Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads()),
-            Stat::make('Cantidad de Ventas', $salesCount),
+            Stat::make('Cantidad de Ventas', $salesCount)->url(SaleSumary::getUrl()),
             Stat::make('Pendiente por cobrar (Ventas)', '$ ' . auth()->user()->pendingSalesTotal())->description('Cobros por ventas')->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)->descriptionColor('success'),
             Stat::make('Pendiente por cobrar (Suscripción)', '$ ' . auth()->user()->pendingSubscriptionLiquidation())->description('Variable dependiendo de las descargas')->descriptionColor('info')->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),
             Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
