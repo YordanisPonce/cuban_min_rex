@@ -27,8 +27,10 @@ class StripeWebhookController extends CashierController
     {
         parent::__construct();
     }
+
     public function handleCustomerSubscriptionCreated(array $payload)
     {
+        /*
         $session = $payload['data']['object'];
         $orderId = $session['metadata']['order_id'] ?? null;
         $userId = $session['metadata']['user_id'] ?? null;
@@ -53,7 +55,7 @@ class StripeWebhookController extends CashierController
                 $subscripction->ends_at = Carbon::now()->addMonths($plan->duration_months);
                 $subscripction->save();
             }
-        }
+        }*/
     }
 
     public function handlePaymentIntentSucceeded(array $payload)
@@ -126,83 +128,110 @@ class StripeWebhookController extends CashierController
         $invoice = $payload['data']['object'];
 
         // SOLO renovaciones
-        if (($invoice['billing_reason'] ?? null) !== 'subscription_cycle') {
-            return;
-        }
+        if (($invoice['billing_reason'] ?? null) == 'subscription_cycle') {
 
-        // Metadata: viene en parent.subscription_details.metadata (en tu payload)
-        $meta = $invoice['parent']['subscription_details']['metadata'] ?? [];
+            // Metadata: viene en parent.subscription_details.metadata (en tu payload)
+            $meta = $invoice['parent']['subscription_details']['metadata'] ?? [];
 
-        // Fallback: también viene en lines.data[0].metadata
-        if (empty($meta) && !empty($invoice['lines']['data'][0]['metadata'])) {
-            $meta = $invoice['lines']['data'][0]['metadata'];
-        }
+            // Fallback: también viene en lines.data[0].metadata
+            if (empty($meta) && !empty($invoice['lines']['data'][0]['metadata'])) {
+                $meta = $invoice['lines']['data'][0]['metadata'];
+            }
 
-        $userId = $meta['user_id'] ?? null;
-        $planId = $meta['plan_id'] ?? null;
+            $userId = $meta['user_id'] ?? null;
+            $planId = $meta['plan_id'] ?? null;
 
-        // Fecha fin del periodo ya viene en el invoice
-        $periodEndTs = $invoice['lines']['data'][0]['period']['end'] ?? null;
-        if (!$periodEndTs) {
-            Log::warning('invoice.paid renewal sin period.end', ['invoice_id' => $invoice['id'] ?? null]);
-            return;
-        }
+            // Fecha fin del periodo ya viene en el invoice
+            $periodEndTs = $invoice['lines']['data'][0]['period']['end'] ?? null;
+            if (!$periodEndTs) {
+                Log::warning('invoice.paid renewal sin period.end', ['invoice_id' => $invoice['id'] ?? null]);
+                return;
+            }
 
-        $user = $userId ? User::find($userId) : null;
+            $user = $userId ? User::find($userId) : null;
 
-        // Fallback por stripe_id (por si un día falta metadata)
-        if (!$user && !empty($invoice['customer'])) {
-            $user = User::where('stripe_id', $invoice['customer'])->first();
-        }
+            // Fallback por stripe_id (por si un día falta metadata)
+            if (!$user && !empty($invoice['customer'])) {
+                $user = User::where('stripe_id', $invoice['customer'])->first();
+            }
 
-        if (!$user) {
-            Log::warning('invoice.paid renewal sin usuario', [
-                'invoice_id' => $invoice['id'] ?? null,
-                'customer' => $invoice['customer'] ?? null,
-                'meta' => $meta,
+            if (!$user) {
+                Log::warning('invoice.paid renewal sin usuario', [
+                    'invoice_id' => $invoice['id'] ?? null,
+                    'customer' => $invoice['customer'] ?? null,
+                    'meta' => $meta,
+                ]);
+                return;
+            }
+
+            $periodEnd = Carbon::createFromTimestamp((int) $periodEndTs);
+
+            // Actualiza tu user
+            if ($planId) {
+                $user->current_plan_id = (int) $planId;
+            }
+            $user->plan_expires_at = $periodEnd;
+            $user->save();
+
+            $lastOrder = Order::query()
+                ->where('user_id', $user->id)
+                ->where('status', 'paid')
+                ->whereNotNull('plan_id')
+                ->orderBy('created_at', 'DESC')
+                ->first();
+
+            $order = new Order([
+                'user_id' => $user->id,
+                'plan_id' => $planId,
+                'status' => 'paid',
+                'settled_at' => null,
+                'amount' => $lastOrder->amount
             ]);
-            return;
+
+            $order->save();
+
+            // Actualiza tu tabla Subscription custom
+            Subscription::updateOrCreate(
+                ['user_id' => $user->id],
+                ['ends_at' => $periodEnd]
+            );
+
+            Log::info('Renovación OK (invoice.paid)', [
+                'user_id' => $user->id,
+                'invoice_id' => $invoice['id'] ?? null,
+                'ends_at' => $periodEnd->toDateTimeString(),
+            ]);
         }
 
-        $periodEnd = Carbon::createFromTimestamp((int) $periodEndTs);
+        // Solo si es la primera factura de la suscripción 
+        if (($invoice['billing_reason'] ?? null) == 'subscription_create') { 
 
-        // Actualiza tu user
-        if ($planId) {
-            $user->current_plan_id = (int) $planId;
+            $orderId = $invoice['metadata']['order_id'] ?? null; 
+            $userId = $invoice['metadata']['user_id'] ?? null; 
+            $planId = $invoice['metadata']['plan_id'] ?? null; 
+            
+            if ($orderId && $userId && $planId) { 
+                $order = Order::find($orderId); 
+                $user = User::find($userId); 
+                $plan = Plan::find($planId); 
+                if ($order && $user && $plan) { 
+
+                    $order->status = 'paid'; 
+                    $order->paid_at = now(); 
+                    $order->expires_at = now()->addMonths($plan->duration_months); 
+                    $order->save(); 
+                    
+                    $user->current_plan_id = $plan->id; 
+                    $user->plan_expires_at = now()->addMonths($plan->duration_months); 
+                    $user->save(); 
+                    
+                    $subscription = new Subscription(); 
+                    $subscription->user_id = $user->id; 
+                    $subscription->ends_at = now()->addMonths($plan->duration_months); 
+                    $subscription->save(); 
+                } 
+            }
         }
-        $user->plan_expires_at = $periodEnd;
-        $user->save();
-
-        $lastOrder = Order::query()
-            ->where('user_id', $user->id)
-            ->where('status', 'paid')
-            ->whereNotNull('plan_id')
-            ->orderBy('created_at', 'DESC')
-            ->first();
-
-        $order = new Order([
-            'user_id' => $user->id,
-            'plan_id' => $planId,
-            'status' => 'paid',
-            'settled_at' => null,
-            'amount' => $lastOrder->amount
-        ]);
-
-        $order->save();
-
-        // Actualiza tu tabla Subscription custom
-        Subscription::updateOrCreate(
-            ['user_id' => $user->id],
-            ['ends_at' => $periodEnd]
-        );
-
-        Log::info('Renovación OK (invoice.paid)', [
-            'user_id' => $user->id,
-            'invoice_id' => $invoice['id'] ?? null,
-            'ends_at' => $periodEnd->toDateTimeString(),
-        ]);
     }
-
-
 
 }

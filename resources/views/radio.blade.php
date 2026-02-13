@@ -232,6 +232,7 @@
             <div class="text-center mb-4">
                 <span class="badge bg-label-primary">🎶 Sesiones en Vivo</span>
             </div>
+            @if (!$lives->isEmpty())
             <div class="card" style="background-color: transparent !important">
                 <div class="card-datatable table-responsive pt-0">
                     <table class="datatables-basic table table-hover">
@@ -243,13 +244,8 @@
                                 <th>Nombre</th>
                                 <th class="hidden-mobile">BPM</th>
                                 <th class="hidden-mobile">Categorías</th>
-                                @auth
-                                    @if (!Auth::user()->hasActivePlan())
-                                        <th class="hidden-xl"></th>
-                                    @endif
-                                @else
-                                    <th class="hidden-xl"></th>
-                                @endauth
+                                <th class="hidden-xl">Precio</th>
+                                <th class="hidden-xl">Moneda</th>
                                 <th class="hidden-xl"></th>
                                 <th></th>
                             </tr>
@@ -287,11 +283,14 @@
                                     <td class="hidden-xl">
                                         <span class="d-block w-100 text-nowrap overflow-hidden"
                                                 style="text-overflow:ellipsis;">
-                                            $ {{ $file['price'] }}
+                                            {{ $file['price'] }}
                                         </span>
                                     </td>
                                     <td class="hidden-xl">
-                                        <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" onclick="false">
+                                        {{ $file['currency'] ?? 'USD' }}
+                                    </td>
+                                    <td class="hidden-xl">
+                                        <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
                                             <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i>
                                         </a>
                                     </td>
@@ -305,8 +304,8 @@
                                                 <i class="icon-base ti tabler-dots icon-22px text-body-secondary"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="BulkOptions">
-                                                <p class="pt-2 text-center">Precio: $ {{ $file['price'] }}</p>
-                                                <div class="dropdown-item d-flex gap-2 cursor-pointer align-items-center btn-play-xl" onclick="false">
+                                                <p class="pt-2 text-center">Precio: {{ $file['price'] }} {{ $file['currency'] ?? 'USD' }}</p>
+                                                <div class="dropdown-item d-flex gap-2 cursor-pointer align-items-center btn-play-xl" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
                                                     <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i> Comprar
                                                 </div>
                                                 <div class="dropdown-item d-flex gap-2 cursor-pointer align-items-center btn-play-xl" data-editable="false" id="{{$file['id']}}" data-url="{{$file['url']}}" data-name="{{$file['name']}}" data-state="pause" data-section="lives" onclick="playAudio(this)">
@@ -324,14 +323,15 @@
                     </div>
                 </div>
             </div>
-            @if ($lives->isEmpty())
+            @else
                 <h4 class="text-center text-primary mt-2">Sin Sesiones Disponibles</h4>
             @endif
         </div>
         <div class="container" style="margin-top: 60px;">
             <div class="text-center mb-4">
-                <span class="badge bg-label-primary">🎶 MIX</span>
+                <span class="badge bg-label-primary">🎶 MIX & REMIX</span>
             </div>
+            @if (!$mixes->isEmpty())
             <div class="card" style="background-color: transparent !important">
                 <div class="card-datatable table-responsive pt-0">
                     <table class="datatables-basic table table-hover">
@@ -343,13 +343,8 @@
                                 <th>Nombre</th>
                                 <th class="hidden-mobile">BPM</th>
                                 <th class="hidden-mobile">Categorías</th>
-                                @auth
-                                    @if (!Auth::user()->hasActivePlan())
-                                        <th class="hidden-xl"></th>
-                                    @endif
-                                @else
-                                    <th class="hidden-xl"></th>
-                                @endauth
+                                <th class="hidden-xl">PRECIO</th>
+                                <th class="hidden-xl">MONEDA</th>
                                 <th class="hidden-xl"></th>
                                 <th></th>
                             </tr>
@@ -387,8 +382,11 @@
                                     <td class="hidden-xl">
                                         <span class="d-block w-100 text-nowrap overflow-hidden"
                                                 style="text-overflow:ellipsis;">
-                                            $ {{ $file['price'] }}
+                                            {{ $file['price'] }}
                                         </span>
+                                    </td>
+                                    <td class="hidden-xl">
+                                        {{ $file['currency'] ?? 'USD' }}
                                     </td>
                                     <td class="hidden-xl">
                                         <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
@@ -405,7 +403,7 @@
                                                 <i class="icon-base ti tabler-dots icon-22px text-body-secondary"></i>
                                             </button>
                                             <div class="dropdown-menu dropdown-menu-end" aria-labelledby="BulkOptions">
-                                                <p class="pt-2 text-center">Precio: $ {{ $file['price'] }}</p>
+                                                <p class="pt-2 text-center">Precio: {{ $file['price'] }} {{ $file['currency'] ?? 'USD' }}</p>
                                                 <div class="dropdown-item d-flex gap-2 cursor-pointer align-items-center" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
                                                     <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i> Comprar
                                                 </div>
@@ -424,7 +422,7 @@
                     </div>
                 </div>
             </div>
-            @if ($mixes->isEmpty())
+            @else
                 <h4 class="text-center text-primary mt-2">Sin Mixes Disponibles</h4>
             @endif
         </div>
@@ -710,8 +708,6 @@
             index++;
         });
     }
-
-    console.log("{{ $activeCUPPayment }}");
 
     function proccessPayment(element) {
         Swal.fire({ 
