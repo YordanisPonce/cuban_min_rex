@@ -1,43 +1,18 @@
 <?php
 
-namespace App\Filament\Pages;
+namespace App\Livewire;
 
-use App\Enums\SectionEnum;
-use App\Livewire\DownloadsSummaryTable;
 use App\Models;
-use BackedEnum;
 use Carbon\Carbon;
-use Filament\Forms\Concerns\InteractsWithForms;
-use Filament\Forms\Contracts\HasForms;
-use Filament\Notifications\Notification;
-use Filament\Pages\Page;
-use Filament\Tables\Concerns\InteractsWithTable;
-use Filament\Tables\Contracts\HasTable;
 use Filament\Tables;
+use Filament\Tables\Enums\PaginationMode;
+use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\Relation;
 
-class SaleSumary extends Page implements HasForms, HasTable
+class DownloadsSummaryTable extends TableWidget
 {
-    use InteractsWithForms, InteractsWithTable;
-
-    protected string $view = 'filament.pages.sale-sumary';
     
-    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-banknotes';
-
-    protected static ?string $navigationLabel = 'Resumen';
-
-    protected static ?string $title = 'Resumen de ventas y descargas';
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return auth()->user()?->role == 'admin' || auth()->user()?->role == 'worker';
-    }
-
-    public static function canAccess(): bool
-    {
-        return auth()->user()?->role == 'admin' || auth()->user()?->role == 'worker';
-    }
-
     public function table(Tables\Table $table): Tables\Table
     {
         return $table
@@ -70,33 +45,22 @@ class SaleSumary extends Page implements HasForms, HasTable
             ])
             ->defaultSort('created_at', 'desc')
             ->poll(null)
-            ->heading('Ventas realiazadas')
-            ->description('Aquí puedes ver un resumen de las ventas realizadas.')
-            ->emptyStateHeading('No se han realizado ventas')
-            ->emptyStateDescription('Aún no se han realizado ventas. ¡Empieza a vender tus archivos para que aparezcan aquí!')
+            ->heading('Descargas realiazadas')
+            ->description('Aquí puedes ver un resumen de las descargas realizadas a tus archivos.')
+            ->emptyStateHeading('No se han realizado descargas')
+            ->emptyStateDescription('Aún no se han realizado descargas a tus archivos.')
             ->searchPlaceholder('Buscar por ID o Nombre')
-            ->defaultPaginationPageOption('5')
+            ->defaultPaginationPageOption('10')
+            ->paginationMode(PaginationMode::Default)
             ->modifyQueryUsing(
                 fn($query) => auth()->user()->role!=='admin' ? $query->whereHas('file', function($q) { $q->where('user_id', auth()->user()->id);}) : $query
             );
     }
 
-    protected function getTableQuery()
+    protected function getTableQuery(): Builder|Relation|null
     {
-        $query = Models\Sale::query();
+        $query = Models\Download::query();
 
         return $query->orderBy('created_at', 'desc');
-    }
-
-    public function getFooterWidgets(): array
-    {
-        return [
-            DownloadsSummaryTable::class,
-        ];
-    }
-
-    public function getFooterWidgetsColumns(): int|array
-    {
-        return 1;
     }
 }

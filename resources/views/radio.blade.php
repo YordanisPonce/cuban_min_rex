@@ -26,6 +26,10 @@
             --play-button: var(--azul) !important;
         }
 
+        .text-primary{
+            color: var(--rojo) !important;
+        }
+
         .swal2-confirm {
             background-color: var(--azul) !important;
         }
@@ -218,7 +222,7 @@
                 <div class="col-lg-6">
                     <span class="badge bg-label-primary mb-3">Radio</span>
                     <h1 class="display-6 fw-bold mb-2">Nuestra Emisora</h1>
-                    <p class="text-body-secondary mb-4">
+                    <p class="text-primary mb-4">
                         Escucha música a tu gusto directamente desde nuestra emisora.
                     </p>
                     <iframe src="https://public-player-widget.webradiosite.com/?cover=1&current_track=1&schedules=1&link=1&popup=1&share=1&embed=0&auto_play=1&source=10382&theme=dark&color=4&link_to=cubandjsproradio.com&identifier=CubanDjsPro%20Radio&info=https%3A%2F%2Fpublic-player-widget.webradiosite.com%2Fapp%2Fplayer%2Finfo%2F247079%3Fhash%3D7beeef43d3d82f9110c118b97c8e149829ddb4ad&locale=es-es" border="0" scrolling="no" frameborder="0" allow="autoplay; clipboard-write" allowtransparency="true" style="background-color: unset; width: 100%; border-radius:15px; margin-bottom: 10px;" height="auto"></iframe>
@@ -239,13 +243,11 @@
                         <thead>
                             <tr>
                                 <th class="hidden-mobile"></th>
-                                <th class="hidden-mobile">Fecha</th>
                                 <th>REMIXERS</th>
                                 <th>Nombre</th>
-                                <th class="hidden-mobile">BPM</th>
                                 <th class="hidden-mobile">Categorías</th>
-                                <th class="hidden-xl">Precio</th>
-                                <th class="hidden-xl">Moneda</th>
+                                <th class="hidden-xl">USD</th>
+                                <th class="hidden-xl">CUP</th>
                                 <th class="hidden-xl"></th>
                                 <th></th>
                             </tr>
@@ -262,7 +264,6 @@
                                             <div class="dark-screen" style="background-color: rgba(0, 0, 0, 0.5);"></div>
                                         </div>
                                     </td>
-                                    <td class="hidden-mobile">{{ $date }}</td>
                                     <td><span style="color: var(--bs-primary)">{{ $file['user'] }}</span></td>
                                     <td>
                                         <span class="d-block overflow-hidden name"
@@ -270,7 +271,6 @@
                                             {{ $file['name'] }} 
                                         </span>
                                     </td>
-                                    <td class="hidden-mobile">{{ $file['bpm'] }}</td>
                                     <td class="hidden-mobile">
                                         @if(count($file['categories']) > 0)
                                             @foreach($file['categories'] as $cat)
@@ -287,11 +287,11 @@
                                         </span>
                                     </td>
                                     <td class="hidden-xl">
-                                        {{ $file['currency'] ?? 'USD/CUP' }}
+                                        {{ $file['price'] * $setting?->currency_convertion_rate }}
                                     </td>
                                     <td class="hidden-xl">
-                                        <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
-                                            <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i>
+                                        <a style="display: flex; align-items:center; gap: 2px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
+                                            <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i> Comprar
                                         </a>
                                     </td>
                                     <td class="hidden-xl">
@@ -338,13 +338,11 @@
                         <thead>
                             <tr>
                                 <th class="hidden-mobile"></th>
-                                <th class="hidden-mobile">Fecha</th>
                                 <th>REMIXERS</th>
                                 <th>Nombre</th>
-                                <th class="hidden-mobile">BPM</th>
                                 <th class="hidden-mobile">Categorías</th>
-                                <th class="hidden-xl">PRECIO</th>
-                                <th class="hidden-xl">MONEDA</th>
+                                <th class="hidden-xl">USD</th>
+                                <th class="hidden-xl">CUP</th>
                                 <th class="hidden-xl"></th>
                                 <th></th>
                             </tr>
@@ -361,7 +359,6 @@
                                             <div class="dark-screen" style="background-color: rgba(0, 0, 0, 0.5);"></div>
                                         </div>
                                     </td>
-                                    <td class="hidden-mobile">{{ $date }}</td>
                                     <td><span style="color: var(--bs-primary)">{{ $file['user'] }}</span></td>
                                     <td>
                                         <span class="d-block overflow-hidden name"
@@ -369,7 +366,6 @@
                                             {{ $file['name'] }} 
                                         </span>
                                     </td>
-                                    <td class="hidden-mobile">{{ $file['bpm'] }}</td>
                                     <td class="hidden-mobile">
                                         @if(count($file['categories']) > 0)
                                             @foreach($file['categories'] as $cat)
@@ -386,11 +382,11 @@
                                         </span>
                                     </td>
                                     <td class="hidden-xl">
-                                        {{ $file['currency'] ?? 'USD/CUP' }}
+                                        {{ $file['price'] * $setting?->currency_convertion_rate  }}
                                     </td>
                                     <td class="hidden-xl">
-                                        <a style="display: flex; width: 25px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
-                                            <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i>
+                                        <a style="display: flex; align-items:center; gap: 2px; color: var(--download-button)" class="cursor-pointer" data-usd="{{ route('radio.file.pay', ['file' => $file['id']]) }}" data-cup="{{ route('payment.cup.form', ['file' => $file['id']]) }}" onclick="proccessPayment(this)">
+                                            <i style="width: 20px;" class="icon-base ti tabler-shopping-cart-dollar"></i> Comprar
                                         </a>
                                     </td>
                                     <td class="hidden-xl">

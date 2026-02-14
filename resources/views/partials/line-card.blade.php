@@ -5,7 +5,7 @@
 <div class="{{ isset($top) ? 'card mb-1 px-0' : 'card mb-1 mb-md-0 px-0' }}">
     <div class="row g-0">
         <div style="width: 10%;">
-            <img class="card-img card-img-left" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
+            <img class="card-img card-img-left" style="object-fit: contain;" loading="lazy" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}"/>
         </div>
         @isset($top)
         <div style="width: 10%;">

@@ -4,7 +4,7 @@
 @endphp
 <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
     <div class="card px-0 bg-transparent h-100">
-        <img class="card-img-top" style="width: 160px;height: 200px; margin: 0 auto" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
+        <img class="card-img-top" style="width: 160px;height: 200px; margin: 0 auto" loading="lazy" src="{{ $item->poster ? $item->poster : ($item->user->photo ? $item->user->photo : config('app.logo')) }}" alt="{{ $item->name }}" />
         <div class="card-body text-center relative">
             <h5 class="card-title">{{$item->name}}</h5>
             <p class="card-text mb-1">{{ $item->user->name }}</p>

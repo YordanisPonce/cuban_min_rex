@@ -3,20 +3,22 @@
 namespace App\Livewire;
 
 use App\Filament\Pages\SaleSumary;
-use App\Models\Collection;
 use App\Models\Download;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use App\Models\File;
 use App\Models\Sale;
-use App\Models\User;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\HtmlString;
 use Stripe\Stripe;
 use Stripe\Subscription;
 
 class FileDownloadWidget extends BaseWidget
 {
+    //protected string $view = 'filament.widgets.file-download-widget';
+
     protected function getStats(): array
     {
         $userId = Auth::id();
@@ -36,7 +38,13 @@ class FileDownloadWidget extends BaseWidget
             Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads()),
             Stat::make('Cantidad de Ventas', $salesCount)->url(SaleSumary::getUrl()),
             Stat::make('Pendiente por cobrar (Ventas)', '$ ' . auth()->user()->pendingSalesTotal())->description('Cobros por ventas')->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)->descriptionColor('success'),
-            Stat::make('Pendiente por cobrar (Suscripción)', '$ ' . auth()->user()->pendingSubscriptionLiquidation())->description('Variable dependiendo de las descargas')->descriptionColor('info')->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),
+            Stat::make('Pendiente por cobrar (Suscripción)', '$ ' . auth()->user()->pendingSubscriptionLiquidation())
+                ->description(new HtmlString( '<a href="#" wire:click="showDetails"> Depende de las descargas (ver detalles)</a>'))
+                ->descriptionColor('info')
+                ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before)
+                ->registerActions([
+                    Action::make()->label('Hola'),
+                ]),
             Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
             Stat::make('Subscripciones Activas', $activeSubscriptions)
         ];
@@ -56,5 +64,20 @@ class FileDownloadWidget extends BaseWidget
             return $text;
         }
         return rtrim(mb_substr($text, 0, $limit - 3, 'UTF-8')) . '...';
+    }
+
+    public function showDetails(){
+        Notification::make()
+            ->title("Comisión por descargas")
+            ->body(new HtmlString("<div style='text-align: justify; display:flex; flex-direction: column; gap:10px;'>
+                <p>La comisión por descargas de una suscripción no es un valor fijo, este se ve afectado por la cantidad de descargas que el usuario realizó sobre tus archivos con respecto a las descargas totales realizadas por dicho usuario durante el período de suscripción. </p>
+                <p>Si un usuario descarga 10 canciones, y las 10 son tuyas. Tu comisión sería del 100% a repartir.  </p>
+                <p>Pero si el usuario realizó 100 descargas y solo 10 son tuyas, tu comisión será del 10%.  </p>
+                <p>Por eso este valor nunca es estático y siempre está en constante variación.</p>
+                <p>Descargas repetidas de un mismo usuario sobre un mismo archivo no se tendrán en cuenta.</p>
+            </div>"))
+            ->info()
+            ->persistent()
+            ->send();
     }
 }

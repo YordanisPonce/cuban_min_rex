@@ -179,7 +179,7 @@ class HomeController extends Controller
             $activeCUPPayment = !(is_null($setting->credit_card_info) | is_null($setting->confirmation_phone) | is_null($setting->confirmation_email) | is_null($setting->currency_convertion_rate));
         }
 
-        return view('radio', compact('djs', 'categories', 'recentCategories', 'recentDjs', 'lives', 'livesPlayList', 'mixes', 'mixesPlayList', 'allCategories', 'allRemixers', 'activeCUPPayment'));
+        return view('radio', compact('djs', 'categories', 'recentCategories', 'recentDjs', 'lives', 'livesPlayList', 'mixes', 'mixesPlayList', 'allCategories', 'allRemixers', 'activeCUPPayment', 'setting'));
     }
 
     public function plan()
@@ -209,7 +209,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        $id = User::where('name',$dj)->first()->id;
+        $id = User::where('name', str_replace('_', ' ', $dj))->first()->id;
 
         $name = request()->get("search") ?? "";
         $category = request()->get("categories") ?? "";

@@ -61,7 +61,7 @@
                         <ul class="dropdown-menu">
                             @foreach ($djs as $dj)
                             <li>
-                                <a class="dropdown-item" href="{{ route('dj', $dj->name)}}">
+                                <a class="dropdown-item" href="{{ route('dj', str_replace(' ', '_', $dj->name))}}">
                                     <span class="align-middle">{{ $dj->name }}</span>
                                 </a>
                             </li>

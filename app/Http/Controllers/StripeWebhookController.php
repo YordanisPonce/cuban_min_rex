@@ -30,7 +30,7 @@ class StripeWebhookController extends CashierController
 
     public function handleCustomerSubscriptionCreated(array $payload)
     {
-        /*
+        
         $session = $payload['data']['object'];
         $orderId = $session['metadata']['order_id'] ?? null;
         $userId = $session['metadata']['user_id'] ?? null;
@@ -55,7 +55,7 @@ class StripeWebhookController extends CashierController
                 $subscripction->ends_at = Carbon::now()->addMonths($plan->duration_months);
                 $subscripction->save();
             }
-        }*/
+        }
     }
 
     public function handlePaymentIntentSucceeded(array $payload)
