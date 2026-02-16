@@ -35,7 +35,7 @@ class SuscriptionByMonthChart extends ChartWidget
     {
         $year = $this->year;
 
-        $query = Order::query()->whereHas('plan');
+        $query = Order::query()->whereHas('plan')->where('status','paid');
 
         if ($year){
             $query->whereYear('created_at', $year);

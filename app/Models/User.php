@@ -451,4 +451,37 @@ class User extends Authenticatable implements FilamentUser
     public function recordAdmin($query){
         return $query->where('role', 'admin');
     }
+
+    /**
+     * Get the Downloads to Dj Files without repeat files
+     * 
+     * @param int $djId -> id of the DJ
+     * 
+     * @return int downloads count
+     */
+    public function getDistinctDownloadsTo(int $djId) : int {
+        return Download::where('user_id', $this->id) ->whereHas('file', function($query) use ($djId) { $query->where('user_id', $djId); }) ->distinct('file_id')->count('file_id');
+    }
+
+    /**
+     * Get the Downloads without repeat files
+     * 
+     * @return int downloads count
+     */
+    public function getDistinctDownloads(): int {
+        return $this->downloads()->distinct('file_id')->count('file_id');
+    }
+
+    /**
+     * Get the Downloads recived without repeat files by a same user
+     * 
+     * @return int downloads count
+     */
+    function getDistinctDownloadsRecived() : int {
+        $cont = 0;
+        foreach (User::where('role', 'user')->get() as $user) {
+            $cont += $user->getDistinctDownloadsTo($this->id);
+        }
+        return $cont;
+    }
 }

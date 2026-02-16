@@ -3,10 +3,12 @@
 namespace App\Livewire;
 
 use App\Filament\Pages\SaleSumary;
+use App\Filament\Pages\SuscriptionComisionDetails;
 use App\Models\Download;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use App\Models\Sale;
+use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
@@ -23,9 +25,9 @@ class FileDownloadWidget extends BaseWidget
     {
         $userId = Auth::id();
 
-        $downloadCounts = Download::whereHas('file', function ($query) use ($userId) {
+        $downloadCounts = /*Download::whereHas('file', function ($query) use ($userId) {
             $query->where('user_id', $userId);
-        })->count();
+        })->count()*/ User::find($userId)->getDistinctDownloadsRecived();
 
         Stripe::setApiKey(config('services.stripe.secret_key'));
         $activeSubscriptions = Subscription::all(['status' => 'active'])->count();
@@ -34,17 +36,24 @@ class FileDownloadWidget extends BaseWidget
         })->count();
 
         $stats = [
-            Stat::make('Cantidad de Descargas', $downloadCounts)->url(SaleSumary::getUrl()),
-            Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads()),
-            Stat::make('Cantidad de Ventas', $salesCount)->url(SaleSumary::getUrl()),
+            Stat::make('Cantidad de Descargas', $downloadCounts)
+                ->description('Descargas únicas, sin duplicados.')
+                ->descriptionColor('info')
+                ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before)->url(SaleSumary::getUrl()),
+            Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads())
+                ->description('Descargas pendientes por cobrar')
+                ->descriptionColor('info')
+                ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),
+            Stat::make('Cantidad de Ventas', $salesCount)->url(SaleSumary::getUrl())
+                ->description('Archivos vendidos')
+                ->descriptionColor('success')
+                ->descriptionIcon('heroicon-o-musical-note', IconPosition::Before),
             Stat::make('Pendiente por cobrar (Ventas)', '$ ' . auth()->user()->pendingSalesTotal())->description('Cobros por ventas')->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)->descriptionColor('success'),
             Stat::make('Pendiente por cobrar (Suscripción)', '$ ' . auth()->user()->pendingSubscriptionLiquidation())
-                ->description(new HtmlString( '<a href="#" wire:click="showDetails"> Depende de las descargas (ver detalles)</a>'))
+                ->description('Depende de las descargas (ver detalles)')
                 ->descriptionColor('info')
                 ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before)
-                ->registerActions([
-                    Action::make()->label('Hola'),
-                ]),
+                ->url(SuscriptionComisionDetails::getUrl()),
             Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
             Stat::make('Subscripciones Activas', $activeSubscriptions)
         ];

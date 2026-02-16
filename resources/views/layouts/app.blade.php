@@ -10,16 +10,37 @@
     <!-- <meta name="robots" content="noindex, nofollow" /> -->
     <title>@yield('title', config('app.name'))</title>
 
-    <meta name="description" content="{{ config('app.name') }}" />
-    <!-- Canonical SEO -->
-    <meta name="keywords" content="{{ config('app.name') }}, Remixes, Dj, music" />
-    <meta name="author" content="{{ config('app.name') }}">
-    <meta property="og:title" content="{{ config('app.name') }}" />
-    <meta property="og:type" content="product" />
-    <meta property="og:image" content="{{ config('app.logo') }}" />
-    <meta property="og:description" content="{{ config('app.name') }}" />
-    <meta property="og:site_name" content="{{ config('app.name') }}" />
-    <meta property="og:url" content="{{ config('app.url') }}">
+    <!-- Canonical SEO --> 
+    <link rel="canonical" href="{{ config('app.url') }}" /> 
+    <meta name="keywords" content="{{ config('app.name') }}, música, remixes, dj, descargas, mp3, sets, mixes, electrónica, edm, descargar música, escuchar música online, dj tools, producer tools, club music, dance music" /> 
+    <meta name="description" content="Escucha y descarga música, remixes exclusivos y contenido para DJs en {{ config('app.name') }}. La mejor plataforma para descubrir nuevos sonidos y apoyar a tus DJs favoritos." /> 
+    <meta name="author" content="{{ config('app.name') }}"> 
+    <meta name="robots" content="index, follow"> 
+    <meta name="language" content="es"> 
+    <meta name="distribution" content="global"> 
+    <meta name="rating" content="general"> 
+    <meta name="revisit-after" content="7 days"> 
+    
+    <!-- Open Graph (Facebook, WhatsApp, Instagram) --> 
+    <meta property="og:title" content="{{ config('app.name') }} - Música, Remixes y Descargas" /> 
+    <meta property="og:type" content="website" /> <meta property="og:image" content="{{ config('app.logo') }}" /> 
+    <meta property="og:description" content="Descubre, escucha y descarga música y remixes exclusivos para DJs. Actualizado diariamente." /> 
+    <meta property="og:site_name" content="{{ config('app.name') }}" /> 
+    <meta property="og:url" content="{{ config('app.url') }}"> 
+    <meta property="og:locale" content="es_ES"> 
+    
+    <!-- Twitter Cards --> 
+    <meta name="twitter:card" content="summary_large_image"> 
+    <meta name="twitter:title" content="{{ config('app.name') }} - Música y Remixes"> 
+    <meta name="twitter:description" content="Escucha y descarga música, remixes y contenido exclusivo para DJs."> 
+    <meta name="twitter:image" content="{{ config('app.logo') }}"> 
+    <meta name="twitter:site" content="@{{ config('app.name') }}"> 
+    
+    <!-- Mobile & PWA --> 
+    <meta name="viewport" content="width=device-width, initial-scale=1"> 
+    <meta name="theme-color" content="#000000"> 
+    <meta name="mobile-web-app-capable" content="yes"> 
+    <meta name="apple-mobile-web-app-capable" content="yes">
 
     @if (env('APP_ENV') == 'production')
         <script>
