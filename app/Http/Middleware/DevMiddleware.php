@@ -29,7 +29,7 @@ class DevMiddleware
                     }
                 }
 
-                if (!$isAllowed && $request->path() !== 'admin/dev-dashboard') {
+                if (!$isAllowed && $request->path() !== 'admin/dev-dashboard' && $request->path() !== 'admin/dev-radio-earnings') {
                     return redirect($dashboardUrl);
                 }
             }

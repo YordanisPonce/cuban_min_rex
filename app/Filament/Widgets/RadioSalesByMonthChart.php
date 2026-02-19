@@ -3,14 +3,14 @@
 namespace App\Filament\Widgets;
 
 use App\Enums\SectionEnum;
-use App\Models\Sale;
+use App\Models\Order;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
-class SalesByMonthChart extends ChartWidget
+class RadioSalesByMonthChart extends ChartWidget
 {
-    protected ?string $heading = 'Comision por ventas al mes ';
+    protected ?string $heading = 'Comision por ventas al mes (USD)';
 
     protected ?string $description = 'Información sensible al filtro de año.';
 
@@ -36,9 +36,13 @@ class SalesByMonthChart extends ChartWidget
     {
         $year = $this->year;
 
-        $query = Sale::query()->whereHas('file', function($q){
-            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        });
+        $query = Order::query()->where('status','paid')
+            ->where('currency', 'USD')
+            ->whereHas('order_items', function($q){
+                $q->whereHas('file', function($q){
+                    $q->whereJsonContains('sections', SectionEnum::CUBANDJS->value)->orWhereJsonContains('sections', SectionEnum::CUBANDJS_LIVE_SESSIONS->value);
+                });
+            });;
 
         if ($year){
             $query->whereYear('created_at', $year);
@@ -46,7 +50,7 @@ class SalesByMonthChart extends ChartWidget
 
         $data = $query->select(
                 DB::raw('MONTH(created_at) as month'),
-                DB::raw('SUM(amount) * 0.2 as count')
+                DB::raw('SUM(amount) * 0.1 as count')
             )
             ->groupBy('month')
             ->orderBy('month')

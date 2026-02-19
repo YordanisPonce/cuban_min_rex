@@ -3,16 +3,14 @@
 namespace App\Filament\Pages;
 
 use App\Enums\SectionEnum;
-use App\Filament\Widgets\DevStatsWidget;
-use App\Filament\Widgets\SalesByMonthChart;
-use App\Filament\Widgets\SuscriptionByMonthChart;
-use App\Livewire\DevSuscriptionTable;
-use App\Livewire\TabsWidget;
-use App\Models\Sale;
+use App\Filament\Widgets\DevRadioStatsWidget;
+use App\Filament\Widgets\RadioCUPSalesByMonthChart;
+use App\Filament\Widgets\RadioSalesByMonthChart;
+use App\Livewire\DevRadioCUPSalesTable;
+use App\Models\Order;
 use BackedEnum;
 use Carbon\Carbon;
 use Filament\Pages\Page;
-use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -21,24 +19,24 @@ use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 
-class DevDashboard extends Page implements HasTable
+class DevRadioEarnings extends Page implements HasTable
 {
     use InteractsWithTable;
 
     public ?string $month = null;
     public ?string $year = null;
 
-    protected string $view = 'filament.pages.dev-dashboard';
+    protected string $view = 'filament.pages.dev-radio-earnings';
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::CurrencyDollar;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Radio;
 
-    protected static ?string $slug = 'dev-dashboard';
+    protected static ?string $slug = 'dev-radio-earnings';
 
-    protected static ?string $navigationLabel = 'Ganancias CubanPool';
+    protected static ?string $navigationLabel = 'Ganancias Emisora';
 
-    protected static ?string $title = "Ganancias CubanPool";
+    protected static ?string $title = 'Ganancias Emisora';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
     public function mount(): void
     {
@@ -96,7 +94,7 @@ class DevDashboard extends Page implements HasTable
                 ])
                 ->action(function (array $data): void {
                     $this->redirect(
-                        route('filament.admin.pages.dev-dashboard', [
+                        route('filament.admin.pages.dev-radio-earnings', [
                             'month' => $data['month'] ?? null,
                             'year' => $data['year'] ?? null,
                         ])
@@ -109,7 +107,7 @@ class DevDashboard extends Page implements HasTable
                 ->icon('heroicon-o-x-circle')
                 ->color('gray')
                 ->action(function (): void {
-                    $this->redirect(route('filament.admin.pages.dev-dashboard'));
+                    $this->redirect(route('filament.admin.pages.dev-radio-earnings'));
                 })
                 ->visible(fn() => $this->month || $this->year),
         ];
@@ -126,27 +124,40 @@ class DevDashboard extends Page implements HasTable
                         Carbon::setLocale('es');
                         return Carbon::parse($state)->translatedFormat('j \d\e F \d\e Y');
                     }),
+                TextColumn::make('user.name')
+                    ->label('Cliente')
+                    ->default('Anónimo'),
                 TextColumn::make('file.name')
-                    ->label('Archivo Vendido'),
+                    ->label('Archivo')
+                    ->default('Desconocido'),
                 TextColumn::make('amount')
                     ->prefix('$ ')
                     ->label('Precio'),
                 TextColumn::make('comision')
                     ->prefix('$ ')
                     ->label('Comisión')
-                    ->default(fn($record) => $record->amount * 0.2),
+                    ->default(fn($record) => $record->amount * 0.1),
             ])
             ->defaultSort('created_at', 'desc')
             ->paginated([10, 25, 50])
             ->poll(null)
-            ->heading('Ventas');
+            ->heading('Ventas en USD')
+            ->emptyStateIcon(Heroicon::MusicalNote)
+            ->emptyStateHeading('Sin coincidendias')
+            ->emptyStateDescription('No se han registrado ventas que cumplan con los filtros.');
     }
 
     protected function getTableQuery()
     {
-        $query = Sale::query()->whereHas('file', function($q){
-            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        });
+        $query = /*Sale::query()->whereHas('file', function($q){
+            $q->whereJsonContains('sections', SectionEnum::CUBANDJS->value)->orWhereJsonContains('sections', SectionEnum::CUBANDJS_LIVE_SESSIONS->value);
+        });*/ Order::query()->where('status','paid')
+            ->where('currency', 'USD')
+            ->whereHas('order_items', function($q){
+                $q->whereHas('file', function($q){
+                    $q->whereJsonContains('sections', SectionEnum::CUBANDJS->value)->orWhereJsonContains('sections', SectionEnum::CUBANDJS_LIVE_SESSIONS->value);
+                });
+            });
 
         if ($this->month) {
             $query->whereMonth('created_at', $this->month);
@@ -162,16 +173,16 @@ class DevDashboard extends Page implements HasTable
     protected function getHeaderWidgets(): array
     {
         return [
-           DevStatsWidget::class,
-           DevSuscriptionTable::class,
+            DevRadioStatsWidget::class,
+            DevRadioCUPSalesTable::class,
         ];
     }
 
     protected function getFooterWidgets(): array
     {
         return [
-            SalesByMonthChart::class,
-            SuscriptionByMonthChart::class,
+            RadioSalesByMonthChart::class,
+            RadioCUPSalesByMonthChart::class,
         ];
     }
 

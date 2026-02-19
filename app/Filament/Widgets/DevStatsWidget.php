@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\SectionEnum;
 use App\Models\Order;
 use App\Models\Sale;
 use Filament\Support\Enums\IconPosition;
@@ -30,7 +31,9 @@ class DevStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $query = Sale::query();
+        $query = Sale::query()->whereHas('file', function($q){
+            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
+        });
 
         $orderQuery = Order::query()->whereHas('plan')->where('status', 'paid');
 
