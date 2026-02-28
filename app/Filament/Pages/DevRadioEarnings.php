@@ -129,7 +129,7 @@ class DevRadioEarnings extends Page implements HasTable
                     ->default('Anónimo'),
                 TextColumn::make('file.name')
                     ->label('Archivo')
-                    ->default('Desconocido'),
+                    ->default(fn($record) => $record->order_items->first()->file->name ?? 'Desconocido'),
                 TextColumn::make('amount')
                     ->prefix('$ ')
                     ->label('Precio'),
