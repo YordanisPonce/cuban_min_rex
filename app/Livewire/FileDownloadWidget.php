@@ -27,14 +27,14 @@ class FileDownloadWidget extends BaseWidget
 
         $downloadCounts = /*Download::whereHas('file', function ($query) use ($userId) {
             $query->where('user_id', $userId);
-        })->count()*/ User::find($userId)->getDistinctDownloadsRecived();
+        })->count()*/ User::find($userId)->getPendingSalesCount();
 
         //Stripe::setApiKey(config('services.stripe.secret_key'));
         //$activeSubscriptions = Subscription::all(['status' => 'active'])->count();
 
-        $salesCount = Sale::whereHas('file', function ($query) use ($userId) {
+        /*$salesCount = Sale::whereHas('file', function ($query) use ($userId) {
             $query->where('user_id', $userId);
-        })->count();
+        })->count();*/
 
         $stats = [
             /*Stat::make('Cantidad de Descargas', $downloadCounts)
@@ -45,7 +45,7 @@ class FileDownloadWidget extends BaseWidget
                 ->description('Descargas pendientes por cobrar')
                 ->descriptionColor('info')
                 ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),*/
-            Stat::make('Archivos vendidos', $salesCount + $downloadCounts)->url(SaleSumary::getUrl())
+            Stat::make('Archivos vendidos', $downloadCounts)->url(SaleSumary::getUrl())
                 ->description('Ventas + Descargas')
                 ->descriptionColor('success')
                 ->descriptionIcon('heroicon-o-musical-note', IconPosition::Before),

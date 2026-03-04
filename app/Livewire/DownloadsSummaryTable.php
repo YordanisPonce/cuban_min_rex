@@ -28,7 +28,7 @@ class DownloadsSummaryTable extends TableWidget
                     })
                     ->default('Sin categoría'),
                 Tables\Columns\TextColumn::make('user.email')->label('Cliente')->default('Usuario Anónimo'),
-                Tables\Columns\TextColumn::make('created_at')->label('Fecha de venta')->formatStateUsing(function($state) {
+                Tables\Columns\TextColumn::make('created_at')->label('Fecha de Descarga')->formatStateUsing(function($state) {
                     Carbon::setLocale('es');
                     return Carbon::parse($state)->translatedFormat('j \d\e F \d\e Y');
                 }),
@@ -60,6 +60,8 @@ class DownloadsSummaryTable extends TableWidget
     protected function getTableQuery(): Builder|Relation|null
     {
         $query = Models\Download::query();
+
+        $query = auth()->user()->pendingDownloads();
 
         return $query->orderBy('created_at', 'desc');
     }

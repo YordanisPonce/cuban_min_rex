@@ -85,6 +85,8 @@ class SaleSumary extends Page implements HasForms, HasTable
     {
         $query = Models\Sale::query();
 
+        $query = auth()->user()->pendingSales();
+
         return $query->orderBy('created_at', 'desc');
     }
 

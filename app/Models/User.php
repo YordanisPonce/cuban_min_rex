@@ -484,4 +484,53 @@ class User extends Authenticatable implements FilamentUser
         }
         return $cont;
     }
+
+    /**
+     * Get the number of Downloads + Sales without liquidated
+     * 
+     * @return int Downloads + Sales Count
+     */
+    function getPendingSalesCount() : int {
+
+        $sales = Sale::query()
+            ->where('status', 'pending')
+            ->whereHas('file', fn($q) => $q->where('user_id', $this->id))
+            ->count();
+
+        $downloads = Download::query()
+            ->where('liquidated', false)
+            ->whereHas('file', fn($q) => $q->where('user_id', $this->id))
+            ->selectRaw('COUNT(DISTINCT user_id, file_id) as cnt')
+            ->value('cnt');
+            
+        return $sales + $downloads;
+    }
+
+    /**
+     * Get the Pending Sales Query
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder Pending sale query
+     */
+
+    function pendingSales(): \Illuminate\Database\Eloquent\Builder {
+        $query = Sale::query()
+            ->where('status', 'pending')
+            ->whereHas('file', fn($q) => $q->where('user_id', $this->id));
+
+        return $query;
+    }
+
+    /**
+     * Get the Pending Downloads Query
+     * 
+     * @return \Illuminate\Database\Eloquent\Builder Pending sale query
+     */
+    function pendingDownloads(): \Illuminate\Database\Eloquent\Builder {
+        $query = Download::query()
+            ->where('liquidated', false)
+            ->distinct('user_id','file_id')
+            ->whereHas('file', fn($q) => $q->where('user_id', $this->id));
+
+        return $query;
+    }
 }
