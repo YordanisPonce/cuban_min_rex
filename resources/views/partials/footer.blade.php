@@ -3,7 +3,7 @@
     <!-- <img src="{{ asset('assets/img/front-pages/backgrounds/footer-bg.png') }}" alt="footer bg" class="footer-bg banner-bg-img z-n1" /> -->
     <div class="container">
       <div class="row gx-0 gy-6 g-lg-10">
-        <div class="col-lg-5">
+        <div class="col-lg-9 col-md-8">
           <a href="{{ url('/') }}" class="app-brand-link mb-6">
             <span class="app-brand-logo demo">
               <span class="text-primary">
@@ -19,12 +19,15 @@
             $youtube = "https://www.youtube.com/@".config('contact.youtube')."/";
           @endphp
           <p class="footer-text footer-logo-description mb-6">Sube, descarga y compra: haz que cada momento suene.</p>
-          <p><a href="mailto:{{ config('contact.email') }}" class="text-heading" target="_blank"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</a></p>
-          <p><a href="tel:{{ config('contact.phone') }}" class="text-heading" target="_blank"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</a></p>
-          <p><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading" target="_blank"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></p>
-          <p><a href="{{$youtube}}" class="text-heading" target="_blank"><i class="icon-base ti tabler-brand-youtube icon-lg"></i> {{ '@'.config('contact.youtube') ??  'Sin definir' }}</a></p>
+          
+          <div class="d-lg-flex gap-4">
+            <p><a href="mailto:{{ config('contact.email') }}" class="text-heading" target="_blank"><i class="icon-base ti tabler-mail icon-lg"></i> {{ config('contact.email') }}</a></p>
+            <p><a href="tel:{{ config('contact.phone') }}" class="text-heading" target="_blank"><i class="icon-base ti tabler-phone-call icon-lg"></i> {{ config('contact.phone') }}</a></p>
+            <p><a href="https://www.instagram.com/{{config('contact.instagram')}}/" class="text-heading" target="_blank"><i class="icon-base ti tabler-brand-instagram icon-lg"></i> {{ '@'.config('contact.instagram') ??  'Sin definir' }}</a></p>
+            <p><a href="{{$youtube}}" class="text-heading" target="_blank"><i class="icon-base ti tabler-brand-youtube icon-lg"></i> {{ '@'.config('contact.youtube') ??  'Sin definir' }}</a></p>
+          </div>
         </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        {{-- <div class="col-lg-2 col-md-4 col-sm-6">
           <h6 class="footer-title mb-6">Categorías</h6>
           <ul class="list-unstyled">
             @isset($recentCategories)
@@ -35,8 +38,8 @@
               @endforeach
             @endisset
           </ul>
-        </div>
-        <div class="col-lg-2 col-md-4 col-sm-6">
+        </div>--}}
+        {{--<div class="col-lg-2 col-md-4 col-sm-6">
           <h6 class="footer-title mb-6">Remixers</h6>
           <ul class="list-unstyled">
             @isset($recentDjs)
@@ -47,7 +50,7 @@
               @endforeach
             @endisset
           </ul>
-        </div>
+        </div>--}}
         <div class="col-lg-3 col-md-4">
           @auth
             <a class="d-block btn btn-primary mb-4 text-black" href="{{ route('profile.edit') }}">
