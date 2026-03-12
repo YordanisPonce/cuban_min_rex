@@ -33,7 +33,7 @@ class DevStatsWidget extends BaseWidget
     {
         $query = Sale::query()->whereHas('file', function($q){
             $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        });
+        })->orWhereHas('playlist')->orWhereHas('playlistItem');
 
         $orderQuery = Order::query()->whereHas('plan')->where('status', 'paid');
 

@@ -38,7 +38,7 @@ class SalesByMonthChart extends ChartWidget
 
         $query = Sale::query()->whereHas('file', function($q){
             $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        });
+        })->orWhereHas('playlist')->orWhereHas('playlistItem');
 
         if ($year){
             $query->whereYear('created_at', $year);

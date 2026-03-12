@@ -127,7 +127,16 @@ class DevDashboard extends Page implements HasTable
                         return Carbon::parse($state)->translatedFormat('j \d\e F \d\e Y');
                     }),
                 TextColumn::make('file.name')
-                    ->label('Archivo Vendido'),
+                    ->label('Elemento Vendido')
+                    ->default(function($record){
+                        if ($record->playlist) {
+                            return 'Playlist: '.$record->playlist->name;
+                        } elseif ($record->playlistItem) {
+                            return 'Elemento: '.$record->playlistItem->name;
+                        } else {
+                            return 'Archivo: '.$record->file->name;
+                        }
+                    }),
                 TextColumn::make('amount')
                     ->prefix('$ ')
                     ->label('Precio'),
@@ -146,7 +155,7 @@ class DevDashboard extends Page implements HasTable
     {
         $query = Sale::query()->whereHas('file', function($q){
             $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        });
+        })->orWhereHas('playlist')->orWhereHas('playlistItem');
 
         if ($this->month) {
             $query->whereMonth('created_at', $this->month);
