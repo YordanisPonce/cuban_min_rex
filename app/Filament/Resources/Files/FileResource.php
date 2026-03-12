@@ -21,6 +21,8 @@ class FileResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = Heroicon::MusicalNote;
 
     protected static ?string $recordTitleAttribute = 'File';
+
+    protected static ?int $navigationSort = 4;
     
     protected static string|null $label = 'Archivos';
 

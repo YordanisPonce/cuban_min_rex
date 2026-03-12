@@ -1,0 +1,65 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class PlayList extends Model
+{
+    protected $fillable = [
+        'cover',
+        'name',
+        'description',
+        'user_id',
+        'is_public',
+        'price'
+    ];
+
+    
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function items()
+    {
+        return $this->hasMany(PlayListItem::class);
+    }
+
+    /**
+     * Get the playlist items file paths
+     * 
+     * @return array
+     */
+    public function getPlayList(): array
+    {
+        $paths = $this->items()->get()->pluck('file_path')->toArray();
+
+        $paths = array_map(function ($path) {
+            return Storage::disk('s3')->url($path ?? '');
+        }, $paths);
+        
+        return $paths;
+    }
+    
+    public function getCoverUrl()
+    {
+        return Storage::disk('s3')->url($this->cover);
+    }
+
+    /**
+     * Verify if the playlist has in current user cart
+     * 
+     * @return bool
+     */
+    public function isInCart(): bool
+    {
+        $cart = Cart::get_current_cart();
+        $cartItem = $cart->cart_items()->where('play_list_id', $this->id)->first();
+        
+        return $cartItem !== null;
+    
+    } 
+}

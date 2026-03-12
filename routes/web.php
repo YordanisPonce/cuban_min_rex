@@ -13,6 +13,7 @@ use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\PlayListController;
 use App\Http\Middleware\IsUserMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -171,6 +172,17 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         // Descargar o servir el archivo desde disco 'public'
         return Storage::disk('s3')->download($path);
     })->where('path', '.*')->name('public.files.download');
+
+
+    Route::get('/playlists', [PlayListController::class, 'index'])->name('playlist.index');
+    Route::get('/playlists/show/{id}', [PlayListController::class, 'show'])->name('playlist.show');
+    Route::get('/playlists/download/{id}', [PlayListController::class, 'download'])->name('playlist.download');
+    Route::get('/playlists/show/{id}/download_item/{itemId}', [PlayListController::class, 'download_item'])->name('playlist.download_item');
+    Route::get('/playlists/add_to_cart/{id}', [PlayListController::class, 'addToCart'])->name('playlist.add.cart');
+    Route::get('/playlists/show/{id}/add_item_to_cart/{itemId}', [PlayListController::class, 'addItemToCart'])->name('playlist.add.item.cart');
+    Route::get('/playlists/remove_to_cart/{id}', [PlayListController::class, 'removeToCart'])->name('playlist.remove.cart');
+    Route::get('/playlists/show/{id}/remove_item_to_cart/{itemId}', [PlayListController::class, 'removeItemToCart'])->name('playlist.remove.item.cart');
+
 
     require __DIR__ . '/auth.php';
 });

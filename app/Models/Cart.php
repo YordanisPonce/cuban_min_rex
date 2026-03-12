@@ -26,11 +26,24 @@ class Cart extends Model
         ];
     }
 
+    public function cart_items()
+    {
+        return $this->hasMany(CartItem::class);
+    }
+
+    /**
+     * Get the total amount in the cart.
+     */
     public function get_cart_count() {
         $count = 0;
-        foreach ($this->items ?? [] as $key => $value) {
-            $file = File::find($value);
-            $count += $file->price;
+        foreach($this->cart_items as $item) {
+            if($item->file) {
+                $count += $item->file->price;
+            } else if($item->playlist) {
+                $count += $item->playlist->price;
+            } else if($item->playlistItem) {
+                $count += $item->playlistItem->price;
+            }
         }
         return $count;
     }

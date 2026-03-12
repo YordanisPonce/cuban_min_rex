@@ -18,8 +18,17 @@ class DownloadsSummaryTable extends TableWidget
         return $table
             ->query($this->getTableQuery())
             ->columns([
-                Tables\Columns\TextColumn::make('file.id')->label('Id del archivo')->searchable(),
-                Tables\Columns\TextColumn::make('file.name')->label('Nombre del archivo')->searchable(),
+                Tables\Columns\TextColumn::make('file.id')->label('Id del archivo')->searchable()->default('-'),
+                Tables\Columns\TextColumn::make('file.name')->label('Nombre del archivo')->searchable()->default(function ($record) {
+                    if ($record->file) {
+                        return $record->file->name;
+                    } elseif ($record->playlist) {
+                        return 'Playlist: '.$record->playlist->name;
+                    } elseif ($record->playlistItem) {
+                        return 'Audio: '.$record->playlistItem->title;
+                    }
+                    return '-';
+                }),
                 Tables\Columns\TextColumn::make('files.categories')
                     ->label('Categorías')
                     ->badge()

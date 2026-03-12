@@ -17,8 +17,12 @@ class OrderItem extends Model
     protected $fillable = [
         'order_id',
         'file_id',
+        'play_list_id',
+        'play_list_item_id',
     ];
     
     public function order(): BelongsTo { return $this->belongsTo(Order::class); }
     public function file(): BelongsTo { return $this->belongsTo(File::class); }
+    public function playlist(): BelongsTo { return $this->belongsTo(PlayList::class, 'play_list_id'); }
+    public function playlistItem(): BelongsTo { return $this->belongsTo(PlayListItem::class, 'play_list_item_id'); }
 }

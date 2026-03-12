@@ -11,7 +11,7 @@ $error = session('error');
 @section('content')
 <div class="content-wrapper mt-10">
     <!-- Content -->
-    @if (count(Cart::get_current_cart()->items ?? []) > 0)
+    @if (Cart::get_current_cart()->cart_items()->count() > 0)
     <div class="container-xxl flex-grow-1 container-p-y mt-10">
         <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
             <div class="d-flex flex-column justify-content-center">
@@ -32,19 +32,37 @@ $error = session('error');
                             <thead>
                                 <tr>
                                     <th></th>
-                                    <th class="w-50">Archivo</th>
+                                    <th class="w-50">Elemento</th>
                                     <th class="w-25">Remixer</th>
                                     <th>Precio</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($cart as $item)
-                                <tr>
-                                    <td><a href="{{ route('file.remove.cart', $item->id )}}" style="width: 20px !important; display: block">{{ svg('vaadin-minus') }}</a></td>
-                                    <td>{{ $item->name}}</td>
-                                    <td>{{ $item->user->name}}</td>
-                                    <td>$ {{ $item->price}}</td>
-                                </tr>
+                                @foreach (Cart::get_current_cart()->cart_items as $item)
+                                    @if ($item->file)
+                                    <tr>
+                                        <td><a href="{{ route('file.remove.cart', $item->id )}}" style="width: 20px !important; display: block"><i class="icon-base ti tabler-trash"></i></a></td>
+                                        <td>{{ $item->file->name}}</td>
+                                        <td>{{ $item->file->user?->name ?? 'Desconocido'}}</td>
+                                        <td>$ {{ $item->file->price}}</td>
+                                    </tr>
+                                    @endif
+                                    @if ($item->playlist)
+                                    <tr>
+                                        <td><a href="{{ route('playlist.remove.cart', $item->playlist->id )}}" style="width: 20px !important; display: block"><i class="icon-base ti tabler-trash"></i></a></td>
+                                        <td>Playlist: {{ $item->playlist->name}}</td>
+                                        <td>{{ $item->playlist->user?->name ?? 'Desconocido'}}</td>
+                                        <td>$ {{ $item->playlist->price}}</td>
+                                    </tr>
+                                    @endif
+                                    @if($item->playlistItem)
+                                    <tr>
+                                        <td><a href="{{ route('playlist.remove.item.cart', ['id' => $item->playlistItem->playlist->id, 'itemId' => $item->playlistItem->id]) }}" style="width: 20px !important; display: block"><i class="icon-base ti tabler-trash"></i></a></td>
+                                        <td>Audio: {{ $item->playlistItem->title}}</td>
+                                        <td>{{ $item->playlistItem->playlist->user?->name ?? 'Desconocido'}}</td>
+                                        <td>$ {{ $item->playlistItem->price}}</td>
+                                    </tr>
+                                    @endif
                                 @endforeach
                             </tbody>
                         </table>
@@ -93,7 +111,7 @@ $error = session('error');
                         <div class="d-flex justify-content-between align-items-center mb-6">
                             <div class="d-flex justify-content-start align-items-center">
                                 <span class="avatar rounded-circle bg-label-success me-3 d-flex align-items-center justify-content-center"><i class="icon-base ti tabler-shopping-cart icon-lg"></i></span>
-                                <h6 class="text-nowrap mb-0">{{count(Cart::get_current_cart()->items ?? [])}} Archivo(s)</h6>
+                                <h6 class="text-nowrap mb-0">{{Cart::get_current_cart()->cart_items()->count()}} Elemento(s)</h6>
                             </div>
                             <div class="d-flex justify-content-start align-items-center">
                                 <strong class="w-px-100 mb-0">Total:</strong>
@@ -132,7 +150,7 @@ $error = session('error');
                     Explora nuestro repositorio y descubre música a tu gusto.
                 </p>
                 <div class="d-flex align-items-center justify-content-center gap-3 mt-4">
-                    <a href="{{ route('remixes') }}" class="btn btn-primary">Explorar</a>
+                    <a href="{{ route('remixes') }}" class="btn btn-primary text-black">Explorar</a>
                 </div>
             </div>
         </div>

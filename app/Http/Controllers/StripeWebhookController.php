@@ -92,13 +92,17 @@ class StripeWebhookController extends CashierController
                 $order->save();
 
                 foreach ($order->order_items as $key => $value) {
+                    $price = $value->file ? $value->file->price : ($value->playlist ? $value->playlist->price : ($value->playlistItem ? $value->playlistItem->price : 0));
+
                     $sale = new Sale();
                     $sale->user_id = $user?->id;
-                    $sale->file_id = $value->file_id;
+                    $sale->file_id = $value->file ? $value->file->id : null;
+                    $sale->play_list_id = $value->playlist ? $value->playlist->id : null;
+                    $sale->play_list_item_id = $value->playlistItem ? $value->playlistItem->id : null;
+                    $sale->amount = $price;
+                    $sale->user_amount = $price * 0.7;
+                    $sale->admin_amount = $price * 0.1;
                     $sale->customer_email = $email;
-                    $sale->amount = $value->file->price;
-                    $sale->user_amount = $value->file->price * 0.7;
-                    $sale->admin_amount = $value->file->price * 0.3;
                     $sale->save();
                 }
 
@@ -117,8 +121,7 @@ class StripeWebhookController extends CashierController
                 $user->save();
 
                 $cart = Cart::get_current_cart();
-                $cart->items = [];
-                $cart->save();
+                $cart->cart_items()->delete();
             }
         }
     }

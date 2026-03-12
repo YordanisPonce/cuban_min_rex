@@ -3,10 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\CartItem;
 use App\Models\Download;
 use App\Models\File;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PlayList;
+use App\Models\PlayListItem;
 use App\Models\User;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Log;
@@ -119,48 +122,123 @@ class FileController extends Controller
 
             $files_url = [];
 
-            foreach ($cart->items as $key => $value) {
-                $file = File::find($value);
-                if (!$file) {
-                    return response()->json([
-                        'error' => 'El archivo seleccionado no es válido.'
-                    ], 422);
-                }
+            foreach ($cart->cart_items as $item) {
+                if ($item->file) {
+                    $file = File::find($item->file->id);
+                    if (!$file) {
+                        return response()->json([
+                            'error' => 'El archivo seleccionado no es válido.'
+                        ], 422);
+                    }
 
-                // Valida precio
-                $price = (float) $file->price;
-                if ($price <= 0) {
-                    return response()->json([
-                        'error' => 'El precio del archivo no es válido.'
-                    ], 422);
-                }
-                    
-                // Monto en centavos
-                $amountInCents = (int) round($price * 100);
+                    // Valida precio
+                    $price = (float) $file->price;
+                    if ($price <= 0) {
+                        return response()->json([
+                            'error' => 'El precio del archivo no es válido.'
+                        ], 422);
+                    }
+                        
+                    // Monto en centavos
+                    $amountInCents = (int) round($price * 100);
 
-                $line_item = [
-                    'price_data' => [
-                        'currency' => 'usd',
-                        'product_data' => [
-                            'name' => (string) $file->name,
+                    $line_item = [
+                        'price_data' => [
+                            'currency' => 'usd',
+                            'product_data' => [
+                                'name' => (string) $file->name,
+                            ],
+                            'unit_amount' => $amountInCents,
                         ],
-                        'unit_amount' => $amountInCents,
-                    ],
-                    'quantity' => 1,
-                ];
+                        'quantity' => 1,
+                    ];
 
-                array_push($line_items, $line_item);
+                    array_push($line_items, $line_item);
 
-                $order_item = new OrderItem();
-                $order_item->order_id = $order->id;
-                $order_item->file_id = $file->id;
-                $order_item->save();
+                    $order_item = new OrderItem();
+                    $order_item->order_id = $order->id;
+                    $order_item->file_id = $file->id;
+                    $order_item->save();
 
-                // URL temporal al archivo
-                $urlTemporal = Storage::disk('s3')->temporaryUrl($file->original_file, now()->addHour());
+                    // URL temporal al archivo
+                    $urlTemporal = Storage::disk('s3')->temporaryUrl($file->original_file, now()->addHour());
 
-                array_push($files_url, (string) $urlTemporal);
+                    array_push($files_url, (string) $urlTemporal);
+                }
+                if($item->playlist){
+                    $file = PlayList::find($item->playlist->id);
+                    if (!$file) {
+                        return response()->json([
+                            'error' => 'El archivo seleccionado no es válido.'
+                        ], 422);
+                    }
 
+                    // Valida precio
+                    $price = (float) $file->price;
+                    if ($price <= 0) {
+                        return response()->json([
+                            'error' => 'El precio del archivo no es válido.'
+                        ], 422);
+                    }
+                        
+                    // Monto en centavos
+                    $amountInCents = (int) round($price * 100);
+
+                    $line_item = [
+                        'price_data' => [
+                            'currency' => 'usd',
+                            'product_data' => [
+                                'name' => (string) 'Playlist: '.$file->name,
+                            ],
+                            'unit_amount' => $amountInCents,
+                        ],
+                        'quantity' => 1,
+                    ];
+
+                    array_push($line_items, $line_item);
+
+                    $order_item = new OrderItem();
+                    $order_item->order_id = $order->id;
+                    $order_item->play_list_id = $file->id;
+                    $order_item->save();
+                }
+                if ($item->playlistItem) {
+                    $file = PlayListItem::find($item->playlistItem->id);
+                    if (!$file) {
+                        return response()->json([
+                            'error' => 'El archivo seleccionado no es válido.'
+                        ], 422);
+                    }
+
+                    // Valida precio
+                    $price = (float) $file->price;
+                    if ($price <= 0) {
+                        return response()->json([
+                            'error' => 'El precio del archivo no es válido.'
+                        ], 422);
+                    }
+                        
+                    // Monto en centavos
+                    $amountInCents = (int) round($price * 100);
+
+                    $line_item = [
+                        'price_data' => [
+                            'currency' => 'usd',
+                            'product_data' => [
+                                'name' => (string) 'Audio: '.$file->title,
+                            ],
+                            'unit_amount' => $amountInCents,
+                        ],
+                        'quantity' => 1,
+                    ];
+
+                    array_push($line_items, $line_item);
+
+                    $order_item = new OrderItem();
+                    $order_item->order_id = $order->id;
+                    $order_item->play_list_item_id = $file->id;
+                    $order_item->save();
+                }
             }
 
             // Configura tu clave secreta (recomendado: en AppServiceProvider::boot)
@@ -295,100 +373,34 @@ class FileController extends Controller
 
     public function addToCart(string $id){
         $user = Auth::user() ?? null;
-        $cart = null;
-        $items = [];
-        if($user){
-            $cart = $user->cart;
-            if($cart){
-                $items = $cart->items ?? [];
-            } else {
-                $cart = new Cart();
-                $cart->user_id = $user->id;
-                $cart->save();
-            }
-        } else {
-            $unique_id = session()->get('unique_id');
-            if ($unique_id) {
-                $cart = Cart::where('uuid', $unique_id)->first();
-                $items = $cart->items ?? [];
-            } else {
-                $uuid = Str::uuid();
-                $cart = new Cart();
-                $cart->uuid = $uuid;
-                $cart->save();
-                session()->put('unique_id', $uuid);
-            }
-        }
-        array_push($items, $id);
-        $cart->items = $items;
-        $cart->save();
+        $cart = Cart::get_current_cart();
+
+        $cart->cart_items()->create([
+            'file_id' => $id,
+            'amount' => File::find($id)->price,
+        ]);
+
         return redirect()->back()->with('success','Archivo añadido al carrito.');
     }
 
     public function removeToCart(string $id){
         $user = Auth::user() ?? null;
-        $cart = null;
-        $items = [];
-        if($user){
-            $cart = $user->cart;
-            if($cart){
-                $items = $cart->items ?? [];
-            } else {
-                $cart = new Cart();
-                $cart->user_id = $user->id;
-                $cart->save();
-            }
-        } else {
-            $unique_id = session()->get('unique_id');
-            if ($unique_id) {
-                $cart = Cart::where('uuid', $unique_id)->first();
-                $items = $cart->items;
-            } else {
-                $uuid = Str::uuid();
-                $cart = new Cart();
-                $cart->uuid = $uuid;
-                $cart->save();
-                session()->put('unique_id', $uuid);
-            }
-        }
-        if(in_array($id, $items)){
-            $indice = array_search($id, $items);
-            unset($items[$indice]);
-            $cart->items = $items;
-            $cart->save();
+        $cart = Cart::get_current_cart();
+
+        $cartItem = $cart->cart_items()->where('file_id', $id)->first();
+
+        if($cartItem){
+            $cartItem->delete();
             return redirect()->back()->with('success','Archivo eliminado del carrito.');
         }
+
         return redirect()->back()->with('error','El archivo no está en su carrito.');
     }
 
     public function emptyCart(){
         $user = Auth::user() ?? null;
-        $cart = null;
-        $items = [];
-        if($user){
-            $cart = $user->cart;
-            if($cart){
-                $items = $cart->items;
-            } else {
-                $cart = new Cart();
-                $cart->user_id = $user->id;
-                $cart->save();
-            }
-        } else {
-            $unique_id = session()->get('unique_id');
-            if ($unique_id) {
-                $cart = Cart::where('uuid', $unique_id)->first();
-                $items = $cart->items;
-            } else {
-                $uuid = Str::uuid();
-                $cart = new Cart();
-                $cart->uuid = $uuid;
-                $cart->save();
-                session()->put('unique_id', $uuid);
-            }
-        }
-        $cart->items = [];
-        $cart->save();
+        $cart = Cart::get_current_cart();
+        $cart->cart_items()->delete();
         return redirect()->back()->with('success','Carrito vaciado.');
     }
 }

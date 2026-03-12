@@ -25,6 +25,8 @@ class UserResource extends Resource
     
     protected static string|null $label = 'Usuarios';
 
+    protected static ?int $navigationSort = 8;
+
     public static function form(Schema $schema): Schema
     {
         return UserForm::configure($schema);

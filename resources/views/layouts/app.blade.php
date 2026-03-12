@@ -279,23 +279,35 @@
                 style="display: none; visibility: hidden"></iframe></noscript>
     @endif
 
-    @include('partials.navbar')
-    <div class="bg-mobile">
-        <img src="{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}">
-        <div class="dark-screen"></div>    
-    </div>
+    @php
+        $settings = \App\Models\Setting::first();
+    @endphp
 
-    <main>
-        @yield('content')
-    </main>
-
-    @include('partials.footer')
-
-    @if (env('APP_ENV') == 'production')
-        <div class="buy-now">
-            <a href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599"
-                target="_blank" class="btn btn-danger btn-buy-now">Buy Now</a>
+    @if ($settings && $settings->maintenance)
+        <div class="h-100 d-flex flex-column align-items-center justify-content-center">
+            <p><i class="icon-base ti tabler-mood-confuzed-filled" style="width: 6rem; height: 6rem"></i></p>
+            <h1>MANTENIMIENTO</h1>
+            <p>Lo sentimos, actualmente el sitio se encuentra en mantenimiento.</p>
         </div>
+    @else
+        @include('partials.navbar')
+        <div class="bg-mobile">
+            <img src="{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}">
+            <div class="dark-screen"></div>    
+        </div>
+
+        <main>
+            @yield('content')
+        </main>
+
+        @include('partials.footer')
+
+        @if (env('APP_ENV') == 'production')
+            <div class="buy-now">
+                <a href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599"
+                    target="_blank" class="btn btn-danger btn-buy-now">Buy Now</a>
+            </div>
+        @endif
     @endif
 
     <div class="loader" id="loader">

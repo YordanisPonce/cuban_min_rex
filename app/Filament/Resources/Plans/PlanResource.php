@@ -25,6 +25,8 @@ class PlanResource extends Resource
     
     protected static string|null $label = 'Planes';
 
+    protected static ?int $navigationSort = 7;
+
     public static function form(Schema $schema): Schema
     {
         return PlanForm::configure($schema);

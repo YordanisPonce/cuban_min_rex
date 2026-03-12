@@ -76,6 +76,9 @@
                         <a class="nav-link fw-medium" href="{{ route('videos') }}">Videos</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link fw-medium" href="{{ route('playlist.index') }}">Playlists</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link fw-medium" href="{{ route('plans') }}">Membresias</a>
                     </li>
                     <li class="nav-item">

@@ -26,6 +26,8 @@ class SaleSumary extends Page implements HasForms, HasTable
 
     protected static ?string $navigationLabel = 'Resumen';
 
+    protected static ?int $navigationSort = 2;
+
     protected static ?string $title = 'Resumen de ventas y descargas';
 
     public static function shouldRegisterNavigation(): bool
@@ -43,8 +45,18 @@ class SaleSumary extends Page implements HasForms, HasTable
         return $table
             ->query($this->getTableQuery())
             ->columns([
-                Tables\Columns\TextColumn::make('file.id')->label('Id del archivo')->searchable(),
-                Tables\Columns\TextColumn::make('file.name')->label('Nombre del archivo')->searchable(),
+                Tables\Columns\TextColumn::make('file.id')->label('Id del archivo')->searchable()->default('-'),
+                Tables\Columns\TextColumn::make('file.name')->label('Nombre del archivo')->searchable()
+                ->default(function ($record) {
+                    if ($record->file) {
+                        return $record->file->name;
+                    } elseif ($record->playlist) {
+                        return 'Playlist: '.$record->playlist->name;
+                    } elseif ($record->playlistItem) {
+                        return 'Audio: '.$record->playlistItem->title;
+                    }
+                    return '-';
+                }),
                 Tables\Columns\TextColumn::make('files.categories')
                     ->label('Categorías')
                     ->badge()
@@ -52,7 +64,7 @@ class SaleSumary extends Page implements HasForms, HasTable
                         return $record->file->categories->pluck('name');
                     })
                     ->default('Sin categoría'),
-                Tables\Columns\TextColumn::make('user.email')->label('Cliente')->default('Usuario Anónimo'),
+                Tables\Columns\TextColumn::make('customer_email')->label('Cliente')->default('Usuario Anónimo'),
                 Tables\Columns\TextColumn::make('created_at')->label('Fecha de venta')->formatStateUsing(function($state) {
                     Carbon::setLocale('es');
                     return Carbon::parse($state)->translatedFormat('j \d\e F \d\e Y');

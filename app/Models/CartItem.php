@@ -3,39 +3,33 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Sale extends Model
+class CartItem extends Model
 {
     protected $fillable = [
-        'user_id',
+        'cart_id',
         'file_id',
         'play_list_id',
         'play_list_item_id',
         'amount',
-        'user_amount',
-        'admin_amount',
-        'status',
-        'customer_email',
     ];
 
-    
-    public function user(): BelongsTo
+    public function cart()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Cart::class);
     }
-    
-    public function file(): BelongsTo
+
+    public function file()
     {
         return $this->belongsTo(File::class);
     }
 
-    public function playlist(): BelongsTo
+    public function playlist()
     {
         return $this->belongsTo(PlayList::class, 'play_list_id');
     }
 
-    public function playlistItem(): BelongsTo
+    public function playlistItem()
     {
         return $this->belongsTo(PlayListItem::class, 'play_list_item_id');
     }

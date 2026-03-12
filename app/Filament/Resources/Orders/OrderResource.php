@@ -24,6 +24,8 @@ class OrderResource extends Resource
 
     protected static ?string $modelLabel = 'Orden';
 
+    protected static ?int $navigationSort = 6;
+
     protected static ?string $pluralModelLabel = 'Órdenes';
 
     public static function canAccess(): bool

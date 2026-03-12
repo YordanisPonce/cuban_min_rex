@@ -29,6 +29,8 @@ class Liquidations extends Page
 
     protected static ?string $title = 'Liquidaciones';
 
+    protected static ?int $navigationSort = 1;
+
     protected static BackedEnum|string|null $navigationIcon = Heroicon::CurrencyDollar;
 
     public static function canAccess(): bool
@@ -114,11 +116,13 @@ class Liquidations extends Page
                         if ($total <= 0)
                             continue;
 
+                        $user = User::query()->where('id', $dj->id)->first();
+
                         $items[] = [
                             'name' => $dj->name,
-                            'total' => $total,
-                            'sales_count' => $salesCount,
-                            'pairs_count' => $pairsCount,
+                            'total' => $user->pendingSubscriptionLiquidation() + $user->pendingSalesTotal(),
+                            'sales_count' => $user->pendingSalesCount(),
+                            'pairs_count' => $user->pendingDownloadsCount(),
                         ];
                     }
 
@@ -258,29 +262,73 @@ class Liquidations extends Page
 
                             $totalPairs = (int) \App\Models\Download::query()
                                 ->where('liquidated', false)
-                                ->selectRaw('COUNT(DISTINCT user_id, file_id) as cnt')
+                                ->selectRaw("
+                                    COUNT(DISTINCT 
+                                        user_id,
+                                        COALESCE(file_id, play_list_id, play_list_item_id),
+                                        CASE
+                                            WHEN file_id IS NOT NULL THEN 'file'
+                                            WHEN play_list_id IS NOT NULL THEN 'playlist'
+                                            WHEN play_list_item_id IS NOT NULL THEN 'playlist_item'
+                                        END
+                                    ) AS cnt
+                                ")
                                 ->value('cnt');
 
                             $pairsByDj = \App\Models\Download::query()
-                                ->join('files', 'downloads.file_id', '=', 'files.id')
                                 ->where('downloads.liquidated', false)
-                                ->groupBy('files.user_id')
-                                ->selectRaw('files.user_id as dj_id, COUNT(DISTINCT downloads.user_id, downloads.file_id) as cnt')
+                                ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
+                                ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
+                                ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
+                                ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+                                ->where(function ($q) {
+                                    $q->whereNotNull('files.id')
+                                    ->orWhereNotNull('play_lists.id')
+                                    ->orWhereNotNull('pli_parent.id');
+                                })
+                                ->selectRaw("
+                                    COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
+                                    COUNT(DISTINCT 
+                                        downloads.user_id,
+                                        COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
+                                        CASE
+                                            WHEN downloads.file_id IS NOT NULL THEN 'file'
+                                            WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
+                                            WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
+                                        END
+                                    ) AS cnt
+                                ")
+                                ->groupBy('dj_id')
                                 ->pluck('cnt', 'dj_id');
+
 
                             $salesNetByDj = \App\Models\Sale::query()
-                                ->join('files', 'sales.file_id', '=', 'files.id')
                                 ->where('sales.status', 'pending')
-                                ->groupBy('files.user_id')
-                                ->selectRaw('files.user_id as dj_id, COALESCE(SUM(sales.user_amount),0) as total')
+                                ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+                                ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+                                ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+                                ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+                                ->selectRaw("
+                                    COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
+                                    COALESCE(SUM(sales.user_amount), 0) AS total
+                                ")
+                                ->groupBy('dj_id')
                                 ->pluck('total', 'dj_id');
 
+
                             $salesCountByDj = \App\Models\Sale::query()
-                                ->join('files', 'sales.file_id', '=', 'files.id')
                                 ->where('sales.status', 'pending')
-                                ->groupBy('files.user_id')
-                                ->selectRaw('files.user_id as dj_id, COUNT(*) as cnt')
+                                ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+                                ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+                                ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+                                ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+                                ->selectRaw("
+                                    COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
+                                    COUNT(*) AS cnt
+                                ")
+                                ->groupBy('dj_id')
                                 ->pluck('cnt', 'dj_id');
+
 
                             $djs = \App\Models\User::query()
                                 ->whereNot('role', 'user')

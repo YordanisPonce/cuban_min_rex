@@ -150,4 +150,16 @@ class File extends Model
     {
         return $query->whereJsonContains('sections', $section);
     }
+
+    /**
+     * Verify if the file has in current user cart
+     * 
+     * @return bool
+     */
+    public function isInCart(): bool
+    {
+        $cart = Cart::get_current_cart();
+        $cartItem = $cart->cart_items()->where('file_id', $this->id)->first();
+        return $cartItem !== null;
+    }
 }
