@@ -160,6 +160,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Download::class);
     }
 
+    public function playlists()
+    {
+        return $this->hasMany(PlayList::class);
+    }
+
     public function totalUnliquidatedDownloads(): int
     {
         return (int) Download::query()

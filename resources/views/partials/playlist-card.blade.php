@@ -4,7 +4,7 @@ $cover = $item->cover ? $item->getCoverUrl() : ($item->user?->photo ? $item->use
 @endphp
 
 <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="list-card card bg-transparent" style="max-height: 250px;">
+    <div class="list-card card bg-transparent" style="max-width: 200px; margin: 0 auto;">
         <div class="card-body p-2">
             <div class="position-relative overflow-hidden" style="height: 150px;">
                 <div>
@@ -20,7 +20,7 @@ $cover = $item->cover ? $item->getCoverUrl() : ($item->user?->photo ? $item->use
                 ><i class="icon-base ti tabler-player-play-filled"></i></a>
             </div>
             <div class="p-2">
-                <div style="font-size: 18px" class="overflow-hidden"><a href="{{ route('playlist.show', $item->id) }}" class="w-100 text-truncate">{{$item->name}}</a></div>
+                <div style="font-size: 18px" class="overflow-hidden"><a href="{{ route('playlist.show', $item->id) }}" class="w-100">{{$item->name}}</a></div>
                 <div class="d-flex align-items-center mt-2">
                     <div class="avatar avatar-sm me-2 overflow-hidden rounded-circle position-relative">
                         <img src="{{$item->user?->photo ? $item->user?->photo : config('app.logo')}}" alt="{{$item->user?->name}}" class="rounded-circle img-fluid">
