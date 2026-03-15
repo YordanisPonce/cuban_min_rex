@@ -133,7 +133,7 @@
                 <div class="playlist-card card">
                     <div class="card-header">
                         <div class="container">
-                            <div class="row g-0">
+                            <div class="row g-2">
                                 <div class="col-md-3 col-12">
                                     <img src="{{ $cover }}" class="w-100 rounded" alt="{{ $playlist->name }}" style="height: 200px;">
                                 </div>
