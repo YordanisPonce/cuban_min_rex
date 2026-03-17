@@ -8,7 +8,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
-use App\Models\Playlist;
+use App\Models\PlayList;
 use App\Models\File;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -23,7 +23,7 @@ class ApiController extends Controller
      */
     public function getPlaylists()
     {
-        $playlists = Playlist::with('items')->get();
+        $playlists = PlayList::with('items')->get();
         return response()->json($playlists);
     }
 
@@ -35,7 +35,7 @@ class ApiController extends Controller
      */
     public function getPlaylist($id)
     {
-        $playlist = Playlist::with('items')->findOrFail($id);
+        $playlist = PlayList::with('items')->findOrFail($id);
         return response()->json($playlist);
     }
 
