@@ -5,11 +5,15 @@ namespace App\Console\Commands;
 use App\Models\Collection;
 use App\Models\File;
 use App\Models\Plan;
+use App\Models\PlayList;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Support\Str;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
 
 class ResizeImages extends Command
 {
@@ -36,10 +40,16 @@ class ResizeImages extends Command
             'users' => User::all(),
             'files' => File::all(),
             'plans' => Plan::all(),
-            'packs' => Collection::all(),
+            'playlists' => PlayList::all(),
         ];
 
+        $succefullyProcessed = 0;
+        $errorProcessing = 0;
+
+        $this->info('Start picture convertion to webp.');
+
         foreach ($items as $key => $value) {
+            $this->info('Processing ' . $key . '...');
             foreach ($value as $item) {
                 $photo = null;
 
@@ -52,40 +62,66 @@ class ResizeImages extends Command
                         $photo = $item->poster;
                         break;
                     
+                    case 'playlists':
+                        $photo = $item->cover;
+                        break;
+                    
                     default:
                         $photo = $item->image;
                         break;
                 }
 
                 if($photo){
-                    $image = Image::read(Storage::disk('s3')->url($photo))->resize(300,200);
+                    $imagePath = Storage::disk('s3')->get($photo);
 
-                    $ext = $photo->getClientOriginalExtension();
-                    $newPhoto = 'images/'.Str::random() . '.' . $ext;
+                    $this->info('Processing ' . $photo . '...');
+                    
+                    try {
+                        $manager = new ImageManager(Driver::class);
+                        $image = $manager->read($imagePath);
+                        $encoded = $image->encode(new WebpEncoder(quality: 50));
+                        $webpPath = 'images/'.Str::random().'.webp';
+                        $encoded->save(Storage::disk('public')->path($webpPath));
 
-                    Storage::disk('s3')->put(
-                        $newPhoto,
-                        $image->encodeByExtension($ext, quality: 70)
-                    );
-
-                    Storage::disk('s3')->delete($photo);
-
-                    switch ($key) {
-                        case 'users':
-                            $item->photo = $newPhoto;
-                            break;
+                        $stream = fopen(Storage::disk('public')->path($webpPath), 'r');
+                        Storage::disk('s3')->writeStream($webpPath, $stream);
+                            if (is_resource($stream))
+                                fclose($stream);
                         
-                        case 'files':
-                            $item->poster = $newPhoto;
-                            break;
+                        Storage::disk('public')->delete($webpPath);
+                        Storage::disk('s3')->delete($photo);
+
+                        switch ($key) {
+                            case 'users':
+                                $item->photo = $webpPath;
+                                break;
+                            
+                            case 'files':
+                                $item->poster = $webpPath;
+                                break;
                         
-                        default:
-                            $item->image = $newPhoto;
-                            break;
+                            case 'playlists':
+                                $item->cover = $webpPath;
+                                break;
+                            
+                            default:
+                                $item->image = $webpPath;
+                                break;
+                        }
+
+                        $item->save();
+                        
+                        $succefullyProcessed++;
+                        $this->info('Finished ' . $photo . ' processing. Successfully converted to webp and updated the record.');
+                    } catch (\Throwable $th) {
+                        $errorProcessing++;
+                        $this->warn('Error processing ' . $photo . '. Skipping. Error: ' . $th->getMessage());
                     }
-                    $item->save();
+                    
                 }
             }
         }
+
+        $this->info('Processing completed. Successfully processed: ' . $succefullyProcessed . ', Errors: ' . $errorProcessing);
     }
 }

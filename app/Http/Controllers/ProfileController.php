@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View; // Cambiar Inertia\Response por View
-use Intervention\Image\Laravel\Facades\Image;
+use Illuminate\View\View;
 use Illuminate\Support\Str;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\WebpEncoder;
+use Intervention\Image\ImageManager;
 use Throwable;
 
 class ProfileController extends Controller
@@ -62,14 +64,20 @@ class ProfileController extends Controller
             $photo = $request->file('photo');
             
             if($photo){
-                $image = Image::read($photo)->resize(300,200);
-                
-                $photo = 'images/'.Str::random() . '.' . $photo->getClientOriginalExtension();
+                $manager = new ImageManager(Driver::class);
+                $image = $manager->read($photo);
+                $encoded = $image->encode(new WebpEncoder(quality: 65));
+                $webpPath = 'images/'.Str::random().'.webp';
+                $encoded->save(Storage::disk('public')->path($webpPath));
 
-                Storage::disk('s3')->put(
-                    $photo,
-                    $image->encodeByExtension($request->file('photo')->getClientOriginalExtension(), quality: 70)
-                );
+                $stream = fopen(Storage::disk('public')->path($webpPath), 'r');
+                    Storage::disk('s3')->writeStream($webpPath, $stream);
+                    if (is_resource($stream))
+                        fclose($stream);
+                
+                Storage::disk('public')->delete($webpPath);
+                
+                $photo = $webpPath;
             }
 
             $user = User::find(Auth::user()->id);

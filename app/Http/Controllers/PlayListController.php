@@ -25,7 +25,9 @@ class PlayListController extends Controller
         $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
         $djs = User::whereHas('files')->orderBy('name')->get();
 
-        $playlists = PlayList::orderBy('created_at', 'desc')->paginate(30);
+        $name = request()->get("search") ?? "";
+
+        $playlists = PlayList::where('name', 'like', "%{$name}%")->orderBy('created_at', 'desc')->paginate(30)->withQueryString();
 
         return view('playlists', compact('djs', 'categories', 'playlists'));
     }

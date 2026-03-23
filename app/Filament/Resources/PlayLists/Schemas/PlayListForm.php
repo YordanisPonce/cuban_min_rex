@@ -40,7 +40,7 @@ class PlayListForm
                                     ->label('Portada de la PlayList')
                                     ->image()
                                     ->directory('playlists/covers')
-                                    ->disk('s3')
+                                    ->disk('public')
                                     ->columnSpanFull(),
                             ])
                             ->columns(2),

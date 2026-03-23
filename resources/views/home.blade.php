@@ -46,9 +46,43 @@
 @section('content')
 
     {{-- =========================
+       HEADER DE BUSQUEDA
+    ========================== --}}
+    <section class="section first-section-pt help-center-header position-relative overflow-hidden ">
+        <div class="container">
+            <div class="row align-items-center g-10">
+                <div class="col-lg-6">
+                    <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
+                        <img src="{{ config('app.logo_alter') }}" alt="Arte destacado"
+                            class="w-100 h-100 object-fit-cover">
+                        <div class="dark-screen" style="opacity: 0.5;"></div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <span class="badge bg-label-primary mb-3">{{ config('app.name') }}</span>
+                    <h1 class="display-6 fw-bold mb-2">Descubre tu música favorita</h1>
+                    <p class="text-primary mb-4">
+                        Encuentra el ritmo perfecto y descubre tu próxima pista favorita.
+                    </p>
+                    {{-- Formulario buscador --}}
+                    <form action="{{ route('remixes') }}" method="GET" class="d-flex align-items-center gap-2">
+                        <div class="input-group">
+                            <input type="text" name="search" class="form-control form-control-lg"
+                                placeholder="Buscar" required>
+                            <button type="submit" class="btn btn-primary btn-lg px-4 z-0">
+                                <i class="ti tabler-search"></i>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- =========================
        NUEVOS LANZAMIENTOS
     ========================== --}}
-    <section id="home-new" class="section-py mt-10">
+    <section id="home-new" class="section-py">
 
         @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
 

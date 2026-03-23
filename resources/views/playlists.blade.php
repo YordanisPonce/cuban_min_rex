@@ -73,6 +73,23 @@
                     <span class="badge bg-label-primary">PlayLists</span>
                 </div>
             </div>
+            <div class="col-md-6 mb-4">
+                <h2 class="display-6 fw-bold mb-2">Nuestras PlayLists</h2>
+                <p class="text-body-secondary mb-4">
+                    Explora nuestras playlists curadas para cada estado de ánimo y ocasión.
+                </p>
+            </div>
+            <div class="col-md-6 mb-4">
+                <form action="" method="GET" class="d-flex align-items-center gap-2">
+                    <div class="input-group">
+                        <input type="text" name="search" class="form-control form-control-lg"
+                            placeholder="Buscar" value="{{ request()->query('search') ?? '' }}">
+                        <button type="submit" class="btn btn-primary btn-lg px-4 z-0">
+                            <i class="ti tabler-search"></i>
+                        </button>
+                    </div>
+                </form>
+            </div>
             <div class="categories col-md-12">
                 <div class="row">
                     @foreach ($playlists as $item)
