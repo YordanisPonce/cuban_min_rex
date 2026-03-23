@@ -78,7 +78,7 @@ class ResizeImages extends Command
                     
                     try {
                         $manager = new ImageManager(Driver::class);
-                        $image = $manager->read($imagePath);
+                        $image = $manager->read($imagePath)->scaleDown(width: 200, height: 200);
                         $encoded = $image->encode(new WebpEncoder(quality: 50));
                         $webpPath = 'images/'.Str::random().'.webp';
                         $encoded->save(Storage::disk('public')->path($webpPath));
