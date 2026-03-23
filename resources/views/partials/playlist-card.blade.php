@@ -4,7 +4,7 @@ $cover = $item->cover ? $item->getCoverUrl() : ($item->user?->photo ? $item->use
 @endphp
 
 <div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="list-card card bg-transparent" style="max-width: 200px; margin: 0 auto;">
+    <div class="list-card card bg-transparent" style="max-width: 175px; margin: 0 auto;">
         <div class="card-body p-2">
             <div class="position-relative overflow-hidden" style="height: 150px;">
                 <div>

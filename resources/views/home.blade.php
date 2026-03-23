@@ -51,14 +51,14 @@
     <section class="section first-section-pt help-center-header position-relative overflow-hidden ">
         <div class="container">
             <div class="row align-items-center g-10">
-                <div class="col-lg-6">
+                <div class="col-lg-3">
                     <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
                         <img src="{{ config('app.logo_alter') }}" alt="Arte destacado"
                             class="w-100 h-100 object-fit-cover">
                         <div class="dark-screen" style="opacity: 0.5;"></div>
                     </div>
                 </div>
-                <div class="col-lg-6">
+                <div class="col-lg-9">
                     <span class="badge bg-label-primary mb-3">{{ config('app.name') }}</span>
                     <h1 class="display-6 fw-bold mb-2">Descubre tu música favorita</h1>
                     <p class="text-primary mb-4">

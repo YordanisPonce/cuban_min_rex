@@ -77,20 +77,26 @@ class ResizeImages extends Command
                     $this->info('Processing ' . $photo . '...');
                     
                     try {
+                        $this->info('Resizing and converting ' . $photo . ' to webp...');
                         $manager = new ImageManager(Driver::class);
                         $image = $manager->read($imagePath)->scaleDown(width: 200, height: 200);
                         $encoded = $image->encode(new WebpEncoder(quality: 50));
                         $webpPath = 'images/'.Str::random().'.webp';
+                        $this->info('Saving ' . $photo . ' as webp temporarily to local storage...');
                         $encoded->save(Storage::disk('public')->path($webpPath));
-
+                        
+                        $this->info('Uploading ' . $photo . ' to S3....');
                         $stream = fopen(Storage::disk('public')->path($webpPath), 'r');
                         Storage::disk('s3')->writeStream($webpPath, $stream);
                             if (is_resource($stream))
                                 fclose($stream);
                         
+                        $this->info('Deleting original ' . $photo . ' and temporary webp from local storage...');
                         Storage::disk('public')->delete($webpPath);
                         Storage::disk('s3')->delete($photo);
 
+                        $this->info('Updating ' . $key . ' record with new webp path...');
+                        
                         switch ($key) {
                             case 'users':
                                 $item->photo = $webpPath;
