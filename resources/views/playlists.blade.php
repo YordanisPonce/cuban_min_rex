@@ -172,7 +172,7 @@
             playlist.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
             playlist.dataset.status = 'play';
             audio.src = tracks[0];
-            const name = names[0] === null ? 'Archivo sin nombre' : names[0];
+            const name = names[0] === null ? "Track " + (0 + 1) : names[0];
             document.getElementById('plyr-audio-name').textContent = currentPlayList + ' - ' + name;
             showAudioPlayer();
         } else {
@@ -185,7 +185,7 @@
     function playNextAudio() {
         const currentIndex = tracks.findIndex(track => track === audio.src);
         const nextIndex = (currentIndex + 1) % tracks.length;
-        const name = names[nextIndex] === null ? 'Archivo sin nombre' : names[nextIndex];
+        const name = names[nextIndex] === null ? "Track " + (nextIndex + 1) : names[nextIndex];
         audio.src = tracks[nextIndex];
         document.getElementById('plyr-audio-name').textContent = currentPlayList + ' - ' + name;
         audio.play();
