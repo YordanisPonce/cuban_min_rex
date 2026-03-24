@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', "PlayLists – ".config('app.name'))
+@section('title', 'PlayLists')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
@@ -74,7 +74,7 @@
                 </div>
             </div>
             <div class="col-md-6 mb-4">
-                <h2 class="display-6 fw-bold mb-2">Nuestras PlayLists</h2>
+                <h1 class="display-6 fw-bold mb-2">Nuestras PlayLists</h1>
                 <p class="text-body-secondary mb-4">
                     Explora nuestras playlists curadas para cada estado de ánimo y ocasión.
                 </p>

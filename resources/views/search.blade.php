@@ -6,7 +6,7 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', isset($remixes) ? 'Remixes - '.config('app.name') : 'Página de Resultados de Búsqueda')
+@section('title', 'Remixes')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />

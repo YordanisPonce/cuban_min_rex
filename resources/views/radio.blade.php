@@ -7,7 +7,7 @@
     $error = session('error');
 @endphp
 
-@section('title', 'Emisora - '.config('app.name'))
+@section('title', 'Emisora')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />

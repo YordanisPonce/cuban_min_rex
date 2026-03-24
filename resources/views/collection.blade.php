@@ -5,7 +5,7 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', 'Página de Resultados de Busqueda')
+@section('title', 'Packs')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
