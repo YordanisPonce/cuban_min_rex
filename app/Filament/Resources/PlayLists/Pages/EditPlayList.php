@@ -40,7 +40,7 @@ class EditPlayList extends EditRecord
             $data['cover'] = $webpPath;
             
             Storage::disk('public')->delete($webpPath);
-            Storage::disk('publick')->delete($imagePath);
+            Storage::disk('public')->delete($imagePath);
         }
         return $data;
     }

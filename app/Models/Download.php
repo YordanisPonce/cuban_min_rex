@@ -10,7 +10,9 @@ class Download extends Model
     protected $fillable = [
         'user_id',
         'file_id',
-        'liquidated'
+        'liquidated',
+        'play_list_id',
+        'play_list_item_id',
     ];
 
     
@@ -22,5 +24,15 @@ class Download extends Model
     public function file(): BelongsTo
     {
         return $this->belongsTo(File::class);
+    }
+
+    public function playlist(): BelongsTO
+    {
+        return $this->belongsTo(PlayList::class, 'play_list_id');
+    }
+
+    public function playlistItem(): BelongsTO
+    {
+        return $this->belongsTo(PlayListItem::class, 'play_list_item_id');
     }
 }

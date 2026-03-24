@@ -83,7 +83,7 @@ class PlayListController extends Controller
 
         $download = new Download();
         $download->user_id = auth()->check() ? auth()->user()->id : null;
-        $download->playlist_id = $playlist->id;
+        $download->play_list_id = $playlist->id;
         $download->save();
 
         return Response::download($zipFilePath)->deleteFileAfterSend(true);
@@ -97,7 +97,7 @@ class PlayListController extends Controller
 
         $download = new Download();
         $download->user_id = auth()->check() ? auth()->user()->id : null;
-        $download->playlist_item_id = $item->id;
+        $download->play_list_item_id = $item->id;
         $download->save();
 
         $path = Storage::disk('s3')->url($item->file_path);
