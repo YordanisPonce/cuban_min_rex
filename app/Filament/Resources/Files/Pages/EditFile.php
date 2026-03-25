@@ -24,8 +24,8 @@ class EditFile extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        if ($data['image']) {
-            $imagePath = Storage::disk('public')->path($data['image']);
+        if ($data['poster']) {
+            $imagePath = Storage::disk('public')->path($data['poster']);
             $manager = new ImageManager(Driver::class);
             $image = $manager->read($imagePath);
             $encoded = $image->encode(new WebpEncoder(quality: 65));
@@ -40,7 +40,7 @@ class EditFile extends EditRecord
             $data['image'] = $webpPath;
             
             Storage::disk('public')->delete($webpPath);
-            Storage::disk('publick')->delete($imagePath);
+            Storage::disk('public')->delete($imagePath);
         }
         return $data;
     }

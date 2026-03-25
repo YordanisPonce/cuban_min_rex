@@ -49,7 +49,7 @@ class FileForm
                 FileUpload::make('poster')
                     ->label('Subir Poster')
                     ->image()
-                    ->disk('s3')
+                    ->disk('public')
                     ->columnSpanFull(),
                 FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
