@@ -22,13 +22,14 @@ class EditFile extends EditRecord
         ];
     }
 
-    protected function mutateFormDataBeforeSave(array $data): array
+    protected function afterSave(): void
     {
-        if ($data['poster']) {
-            $imagePath = Storage::disk('public')->path($data['poster']);
+        $file = $this->record;
+        if ($file->wasChanged('poster') && $file->poster) {
+            $imagePath = Storage::disk('s3')->get($file->poster);
             $manager = new ImageManager(Driver::class);
-            $image = $manager->read($imagePath);
-            $encoded = $image->encode(new WebpEncoder(quality: 65));
+            $image = $manager->read($imagePath)->scaleDown(width: 200, height: 200);
+            $encoded = $image->encode(new WebpEncoder(quality: 50));
             $webpPath = 'images/'.Str::random().'.webp';
             $encoded->save(Storage::disk('public')->path($webpPath));
 
@@ -37,11 +38,11 @@ class EditFile extends EditRecord
                 if (is_resource($stream))
                     fclose($stream);
 
-            $data['image'] = $webpPath;
-            
+            $file->poster = $webpPath;
+            $file->save();
+
             Storage::disk('public')->delete($webpPath);
-            Storage::disk('public')->delete($imagePath);
+            Storage::disk('s3')->delete($imagePath);
         }
-        return $data;
     }
 }
