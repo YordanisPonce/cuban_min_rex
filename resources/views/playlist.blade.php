@@ -134,8 +134,8 @@
                     <div class="card-header">
                         <div class="container">
                             <div class="row g-2">
-                                <div class="col-md-3 col-12">
-                                    <img src="{{ $cover }}" class="w-100 rounded" alt="{{ $playlist->name }}" style="height: 200px;">
+                                <div class="col-md-3 col-12 d-flex justify-content-center">
+                                    <img src="{{ $cover }}" class="rounded" alt="{{ $playlist->name }}" style="height: 200px; width: 200px">
                                 </div>
                                 <div class="col-md-9 col-12">
                                     <div class="mb-4 mt-5">
