@@ -61,5 +61,23 @@ class PlayList extends Model
         
         return $cartItem !== null;
     
-    } 
+    }
+
+    /**
+     * Verify if the current auth user can download the resource
+     * 
+     * @return bool
+     */
+    public function canBeDownload() : bool
+    {
+        $user = auth()->check() ? auth()->user() : null;
+        if($user){
+            $firstPlan = Plan::orderBy('price')->first();
+
+            if($user->current_plan_id){
+                return $user->current_plan_id != $firstPlan->id;
+            }
+        }
+        return false;
+    }
 }

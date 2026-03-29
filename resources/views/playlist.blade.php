@@ -165,7 +165,9 @@
                                 <a id="playlist-btn" class="btn btn-success rounded-circle" style="width: 50px; height: 50px; padding: 10px;" onclick="playList()" data-status="pause"><i class="icon-base ti tabler-player-play-filled"></i></a>
                                 @auth
                                     @if(auth()->user()->hasActivePlan())
-                                        <a href="{{route('playlist.download', $playlist->id )}}" class="btn btn-light rounded-circle" style="width: 30px; height: 30px; padding: 5px;"><i class="icon-base ti tabler-download"></i></a>
+                                        @if ($playlist->canBeDownload())
+                                            <a href="{{route('playlist.download', $playlist->id )}}" class="btn btn-light rounded-circle" style="width: 30px; height: 30px; padding: 5px;"><i class="icon-base ti tabler-download"></i></a>
+                                        @endif
                                     @else
                                         @if($playlist->isInCart())
                                             <a href="{{ route('playlist.remove.cart', $playlist->id) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
@@ -200,7 +202,9 @@
                                             <div class="d-flex gap-2 align-items-center justify-content-end">
                                                 @auth
                                                     @if(auth()->user()->hasActivePlan())
-                                                        <a href="{{ route('playlist.download_item', [$playlist->id, $item->id]) }}"><i class="icon-base ti tabler-download"></i></a>
+                                                        @if ($playlist->canBeDownload())
+                                                            <a href="{{ route('playlist.download_item', [$playlist->id, $item->id]) }}"><i class="icon-base ti tabler-download"></i></a>
+                                                        @endif
                                                     @else
                                                         @if($item->isInCart())
                                                             <a href="{{ route('playlist.remove.item.cart', [$playlist->id, $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
