@@ -20,9 +20,10 @@ use Illuminate\Support\Facades\Notification;
 class PaymentController extends Controller
 {
 
-    public function showForm($planId)
+    public function showForm($planName)
     {
         $plans = Plan::all();
+        $planId = Plan::where('name', str_replace('_', ' ', $planName))->first()->id;
         return view('payment.payment', [
             'planId' => $planId,
             'plans' => $plans,

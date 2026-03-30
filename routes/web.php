@@ -73,7 +73,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
         ->middleware('auth')
         ->name('payment.cancelSubscription');
-    Route::get('/{plan}/payment', [PaymentController::class, 'showForm'])
+    Route::get('plans/{plan}/payment', [PaymentController::class, 'showForm'])
         ->middleware('auth')
         ->name('payment.form');
 

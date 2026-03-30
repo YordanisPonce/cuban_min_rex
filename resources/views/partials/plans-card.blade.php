@@ -22,7 +22,7 @@
         <h3 class="btn"><a style="color: gray">Ya lo tienes</a></h3>
     </div>
     @else
-    <a  href="{{ route('payment.form', $plan->id) }}" class="buy-button">
+    <a  href="{{ route('payment.form', str_replace(' ', '_', $plan->name)) }}" class="buy-button">
         <h3 class="btn">Adquirir</h3>
     </a>
     @endif
