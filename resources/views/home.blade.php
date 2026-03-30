@@ -35,6 +35,22 @@
             background-color: transparent !important;
         }
 
+        .list-card:hover{
+            transform: scale(.95);
+            transition: transform 0.3s ease-in, background-color 0.3s ease-in;
+            background-color: rgba(133,133,133,0.3) !important;
+        }
+
+        .btn-success{
+            transform: scale(0) !important;
+            bottom: 10px;
+            transition: all 0.3s ease-in !important;
+        }
+
+        .list-card:hover .btn-success{
+            transform: scale(1) !important;
+        }
+
         @media (max-width: 400px) {
             .packs-link {
                 bottom: -12px !important;
@@ -120,7 +136,7 @@
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">No hay lanzamientos recientes</h3>
                     <p class="text-body-secondary mb-3">Vuelve pronto: actualizamos esta sección con nuevos estrenos.</p>
-                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
+                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
                 </div>
             </div>
         @endif
@@ -180,7 +196,51 @@
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">No hay tops lanzamientos</h3>
                     <p class="text-body-secondary mb-3">Vuelve pronto: actualizamos esta sección con nuevos estrenos.</p>
-                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
+                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
+                </div>
+            </div>
+        @endif
+    </section>
+
+    <hr class="m-0 mt-6 mt-md-12">
+
+    {{-- =========================
+        NUEVAS PLAYLIST
+    ========================== --}}
+    <section id="home-playlist" class="section-py mt-10">
+
+        @php $hasPlsylidt = isset($recentPlaylist) && count($recentPlaylist) > 0; @endphp
+
+        @if ($hasPlsylidt)
+            <div class="container">
+                <div class="text-center mb-3">
+                    <span class="badge bg-label-primary">Explorar</span>
+                </div>
+                <div class="relative">
+                    <h2 class="text-center fw-bold mb-6 mb-md-2">Playlist Recientes</h2>
+                    <a href="{{ route('playlist.index') }}" class="position-absolute end-0 packs-link"
+                        style="bottom: 15px">Ver todos →</a>
+                </div>
+                <div class="row">
+                    @foreach ($recentPlaylist as $item)
+                        @include('partials.playlist-card', ['item' => $item])
+                    @endforeach
+                </div>
+            </div>
+        @else
+            <div class="container mb-3">
+                <div class="d-flex align-items-end justify-content-between">
+                    <div>
+                        <span class="badge bg-label-primary mb-2">Explorar</span>
+                        <h2 class="h3 fw-bold mb-1">Playlist Recientess</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="container">
+                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
+                    <h3 class="h5 fw-bold mb-2">Sin playlist por ahora</h3>
+                    <p class="text-body-secondary mb-3">Estamos preparando nuevas playlist por artista y estilo.</p>
+                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Buscar artistas</a>
                 </div>
             </div>
         @endif
@@ -227,7 +287,7 @@
                 <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
                     <h3 class="h5 fw-bold mb-2">Sin packs por ahora</h3>
                     <p class="text-body-secondary mb-3">Estamos preparando nuevas selecciones por artista y estilo.</p>
-                    <a href="{{ route('search') }}" class="btn btn-outline-secondary">Buscar artistas</a>
+                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Buscar artistas</a>
                 </div>
             </div>
         @endif
@@ -386,6 +446,71 @@
                 .catch(error => {
                     Swal.fire("Error", error.message, "error");
                 });
+        }
+
+        const audioPlayer = document.getElementById('audioPlayer');
+        const audio = document.getElementById('plyr-audio-player');
+        var tracks = [];
+        var names = [];
+        var currentPlayList = "";
+
+        if (tracks.length <= 1) {
+            document.querySelectorAll('.audio-player-controls').forEach(control => {
+                control.style.display="none";
+            });
+        }
+
+        function cleanBtns(except){
+            document.querySelectorAll('.btn-success').forEach(btn => {
+                if (btn !== except) {
+                    btn.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                    btn.dataset.status = 'pause';
+                }
+            });
+        }
+
+        function showAudioPlayer() {
+            audioPlayer.style.transform = 'translateY(0)';
+            audio.play();
+        }
+
+        function hiddenAudioPlayer() {
+            audioPlayer.style.transform = 'translateY(160px)';
+            audio.pause();
+        }
+
+        function playList(playlist, tracksList, namesList) {
+            tracks = tracksList;
+            names = namesList;
+            currentPlayList = playlist.dataset.name;
+            cleanBtns(playlist);
+            if(playlist.dataset.status==='pause'){
+                playlist.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
+                playlist.dataset.status = 'play';
+                audio.src = tracks[0];
+                const name = names[0] === null ? "Track " + (0 + 1) : names[0];
+                document.getElementById('plyr-audio-name').textContent = currentPlayList + ' - ' + name;
+                showAudioPlayer();
+            } else {
+                playlist.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
+                playlist.dataset.status = 'pause';
+                hiddenAudioPlayer();
+            }
+            
+
+            // Cuando termina un audio, cargar el siguiente
+            audio.addEventListener("ended", () => {
+                playNextAudio();
+            });
+        }
+
+        function playNextAudio() {
+            const currentIndex = tracks.findIndex(track => track === audio.src);
+            const nextIndex = (currentIndex + 1) % tracks.length;
+            const name = names[nextIndex] === null ? "Track " + (nextIndex + 1) : names[nextIndex];
+            audio.src = tracks[nextIndex];
+            document.getElementById('plyr-audio-name').textContent = currentPlayList + ' - ' + name;
+            audio.play();
         }
     </script>
     @isset($error)

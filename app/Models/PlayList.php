@@ -74,7 +74,7 @@ class PlayList extends Model
         if($user){
             $firstPlan = Plan::orderBy('price')->first();
 
-            if($user->current_plan_id){
+            if($user->hasActivePlan() && $user->current_plan_id){
                 return $user->current_plan_id != $firstPlan->id;
             }
         }

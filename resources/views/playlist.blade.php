@@ -163,26 +163,23 @@
                         <div class="row g-4 mb-4">
                             <div class="d-flex align-items-center gap-3">
                                 <a id="playlist-btn" class="btn btn-success rounded-circle" style="width: 50px; height: 50px; padding: 10px;" onclick="playList()" data-status="pause"><i class="icon-base ti tabler-player-play-filled"></i></a>
-                                @auth
-                                    @if(auth()->user()->hasActivePlan())
-                                        @if ($playlist->canBeDownload())
-                                            <a href="{{route('playlist.download', $playlist->id )}}" class="btn btn-light rounded-circle" style="width: 30px; height: 30px; padding: 5px;"><i class="icon-base ti tabler-download"></i></a>
-                                        @endif
-                                    @else
-                                        @if($playlist->isInCart())
-                                            <a href="{{ route('playlist.remove.cart', $playlist->id) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
-                                        @else
-                                            <a href="{{ route('playlist.add.cart', $playlist->id) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
-                                        @endif
-                                    @endif
+                                @if($playlist->canBeDownload())
+                                    <a href="{{route('playlist.download', str_replace(' ', '_', $playlist->name) )}}" class="btn btn-light rounded-circle" style="width: 30px; height: 30px; padding: 5px;"><i class="icon-base ti tabler-download"></i></a>
                                 @else
                                     @if($playlist->isInCart())
-                                        <a href="{{ route('playlist.remove.cart', $playlist->id) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
+                                        <a href="{{ route('playlist.remove.cart', str_replace(' ', '_', $playlist->name)) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
                                     @else
-                                        <a href="{{ route('playlist.add.cart', $playlist->id) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
+                                        <a href="{{ route('playlist.add.cart', str_replace(' ', '_', $playlist->name)) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
                                     @endif
-                                @endauth
+                                @endif
                             </div>
+                            @auth
+                                @if (auth()->user()->hasActivePlan() && !$playlist->canBeDownload())
+                                    <div class="alert alert-warning mb-0" role="alert">
+                                        <span class="ps-1"> ⚠️ Debes adquirir un plan mayor para descargar playlists y/o sus canciones.</span>
+                                    </div>
+                                @endif
+                            @endauth
                         </div>
                         <div class="row g-4">
                             <table>
@@ -200,25 +197,15 @@
                                         <td class="text-wrap">{{ $item->title ?? 'Archivo sin nombre' }}</td>
                                         <td> 
                                             <div class="d-flex gap-2 align-items-center justify-content-end">
-                                                @auth
-                                                    @if(auth()->user()->hasActivePlan())
-                                                        @if ($playlist->canBeDownload())
-                                                            <a href="{{ route('playlist.download_item', [$playlist->id, $item->id]) }}"><i class="icon-base ti tabler-download"></i></a>
-                                                        @endif
-                                                    @else
-                                                        @if($item->isInCart())
-                                                            <a href="{{ route('playlist.remove.item.cart', [$playlist->id, $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
-                                                        @else
-                                                            <a href="{{ route('playlist.add.item.cart', [$playlist->id, $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
-                                                        @endif   
-                                                    @endif
+                                                @if($playlist->canBeDownload())
+                                                    <a href="{{ route('playlist.download_item', [str_replace(' ', '_', $playlist->name), $item->id]) }}"><i class="icon-base ti tabler-download"></i></a>
                                                 @else
                                                     @if($item->isInCart())
-                                                        <a href="{{ route('playlist.remove.item.cart', [$playlist->id, $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
+                                                        <a href="{{ route('playlist.remove.item.cart', [str_replace(' ', '_', $playlist->name), $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
                                                     @else
-                                                        <a href="{{ route('playlist.add.item.cart', [$playlist->id, $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
-                                                    @endif 
-                                                @endauth
+                                                        <a href="{{ route('playlist.add.item.cart', [str_replace(' ', '_', $playlist->name), $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
+                                                    @endif   
+                                                @endif
                                                 <a data-index="{{$index}}" onclick="playAudio(this.dataset.index)"><i class="icon-base ti tabler-player-play-filled"></i></a>
                                             </div>
                                         </td>

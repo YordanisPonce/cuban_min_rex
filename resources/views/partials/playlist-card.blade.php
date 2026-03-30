@@ -20,7 +20,7 @@ $cover = $item->cover ? $item->getCoverUrl() : ($item->user?->photo ? $item->use
                 ><i class="icon-base ti tabler-player-play-filled"></i></a>
             </div>
             <div class="p-2">
-                <div style="font-size: 18px" class="overflow-hidden"><a href="{{ route('playlist.show', $item->id) }}" class="w-100">{{$item->name}}</a></div>
+                <div style="font-size: 18px" class="overflow-hidden"><a href="{{ route('playlist.show', str_replace(' ', '_', $item->name)) }}" class="w-100">{{$item->name}}</a></div>
                 <div class="d-flex align-items-center mt-2">
                     <div class="avatar avatar-sm me-2 overflow-hidden rounded-circle position-relative">
                         <img src="{{$item->user?->photo ? $item->user?->photo : config('app.logo')}}" alt="{{$item->user?->name}}" class="rounded-circle img-fluid">

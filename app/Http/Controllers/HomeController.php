@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
 use App\Models\Plan;
+use App\Models\PlayList;
 use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\ContactNotification;
@@ -40,6 +41,7 @@ class HomeController extends Controller
         }
         $tops = File::where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)->whereNot('original_file', 'LIKE', '%.zip')->orderBy('download_count', 'desc')->take(10)->get();
+        $recentPlaylist = PlayList::orderBy('created_at', 'desc')->take(6)->get();
         $recentDjs = User::whereNot('role', 'user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
             return $item->files()->count() > 0;
         });
@@ -50,7 +52,7 @@ class HomeController extends Controller
             return $item->files()->count() > 0;
         });
 
-        return view('home', compact('pageTitle', 'plans', 'ctg', 'djs', 'categories', 'artistCollections', 'newItems', 'tops', 'recentCategories', 'recentDjs'));
+        return view('home', compact('pageTitle', 'plans', 'ctg', 'djs', 'categories', 'artistCollections', 'newItems', 'tops', 'recentPlaylist', 'recentCategories', 'recentDjs'));
     }
 
     public function faq()
