@@ -310,7 +310,7 @@
 
             <div class="d-flex flex-wrap gap-2">
                 @foreach ($ctg as $genre)
-                    <a href="{{ route('category.show', $genre->id) }}"
+                    <a href="{{ route('remixes', ['categories' => $genre->name]) }}"
                         class="btn btn-sm btn-outline-secondary rounded-pill px-3">{{ $genre->name }}</a>
                 @endforeach
             </div>
