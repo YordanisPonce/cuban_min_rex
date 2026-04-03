@@ -45,17 +45,17 @@ class FileDownloadWidget extends BaseWidget
                 ->description('Descargas pendientes por cobrar')
                 ->descriptionColor('info')
                 ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),*/
-            Stat::make('Archivos vendidos', $downloadCounts)->url(SaleSumary::getUrl())
-                ->description('Ventas + Descargas')
+            Stat::make('Archivos Vendidos (Sin Cobrar)', $downloadCounts)->url(SaleSumary::getUrl())
+                ->description('Ventas + Descargas (Click detalles)')
                 ->descriptionColor('success')
                 ->descriptionIcon('heroicon-o-musical-note', IconPosition::Before),
             //Stat::make('Pendiente por cobrar (Ventas)', '$ ' . auth()->user()->pendingSalesTotal())->description('Cobros por ventas')->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)->descriptionColor('success'),
-            Stat::make('Pendiente por cobrar', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal())
+            Stat::make('Cantidad Pendiente a Cobro', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal())
                 ->description('Ventas + Suscripciones (Click detalles)')
                 ->descriptionColor('success')
                 ->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)
                 ->url(SuscriptionComisionDetails::getUrl()),
-            Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
+            //Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
             //Stat::make('Subscripciones Activas', $activeSubscriptions)
         ];
 
@@ -64,7 +64,7 @@ class FileDownloadWidget extends BaseWidget
     
     protected function getColumns(): int
     {
-        return 3;
+        return 2;
     }
     
     public function ellipsis(string $text, int $limit = 40): string

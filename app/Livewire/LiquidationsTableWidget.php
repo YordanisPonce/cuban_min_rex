@@ -29,16 +29,14 @@ class LiquidationsTableWidget extends TableWidget
                     ->label('Nombre'),
                 TextColumn::make('paypal_email')
                     ->label('Correo de PayPal'),
+                TextColumn::make('pending_sales')
+                    ->default(fn($record) => $record->pendingSalesCount())
+                    ->label('Ventas sin liquidar')
+                    ->alignCenter(),
                 TextColumn::make('pending_amount')
                     ->default(fn($record) => $record->pendingSalesTotal())
                     ->label('Pendiente a pago')
-                    ->money()
-                    ->sortable(),
-                TextColumn::make('total_paid')
-                    ->default(fn($record) => $record->paidSalesTotal())
-                    ->label('Total pagado')
-                    ->money()
-                    ->sortable(),
+                    ->money(),
             ])
             ->filters([
                 //

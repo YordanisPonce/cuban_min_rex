@@ -33,17 +33,12 @@ class SubscriptionLiquidationTable extends TableWidget
                 TextColumn::make('downloads_count')
                     ->label('Descargas por liquidar')
                     ->numeric()
-                    ->default(fn($record) => $record->totalUnliquidatedDownloads()),
+                    ->default(fn($record) => $record->totalUnliquidatedDownloads())
+                    ->alignCenter(),
                 TextColumn::make('pending_amount')
                     ->label('Pendiente a pago')
                     ->money()
-                    ->sortable()
                     ->default(fn($record) => $record->pendingSubscriptionLiquidation()),
-                TextColumn::make('total_paid')
-                    ->label('Total pagado')
-                    ->money()
-                    ->sortable()
-                    ->default(fn($record) => $record->paidSubscriptionLiquidation()),
             ])
             ->filters([
                 //

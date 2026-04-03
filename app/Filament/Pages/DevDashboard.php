@@ -153,9 +153,7 @@ class DevDashboard extends Page implements HasTable
 
     protected function getTableQuery()
     {
-        $query = Sale::query()->whereHas('file', function($q){
-            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        })->orWhereHas('playlist')->orWhereHas('playlistItem');
+        $query = Sale::query();
 
         if ($this->month) {
             $query->whereMonth('created_at', $this->month);
@@ -165,7 +163,9 @@ class DevDashboard extends Page implements HasTable
             $query->whereYear('created_at', $this->year);
         }
 
-        return $query;
+        return $query->whereHas('file', function($q){
+            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
+        })->orWhereHas('playlist')->orWhereHas('playlistItem');
     }
 
     protected function getHeaderWidgets(): array

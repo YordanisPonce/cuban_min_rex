@@ -126,10 +126,18 @@ class Liquidations extends Page
                         ];
                     }
 
+                    $items[] = [
+                        'name' => 'Desarrollo (CubanPool)',
+                        'total' => User::getDevUnpaidCommition(),
+                        'sales_count' => '-',
+                        'pairs_count' => '-',
+                    ];
+
                     usort($items, fn($a, $b) => $b['total'] <=> $a['total']);
 
                     return view('filament.liquidations.dj-labels', [
                         'items' => $items,
+                        'totalToGenerated' => User::getGeneratedAmount(),
                     ]);
                 })
                 ->modalSubmitActionLabel('Sí, proceder a pagar')

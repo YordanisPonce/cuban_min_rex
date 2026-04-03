@@ -31,9 +31,7 @@ class DevStatsWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $query = Sale::query()->whereHas('file', function($q){
-            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
-        })->orWhereHas('playlist')->orWhereHas('playlistItem');
+        $query = Sale::query();
 
         $orderQuery = Order::query()->whereHas('plan')->where('status', 'paid');
 
@@ -46,6 +44,10 @@ class DevStatsWidget extends BaseWidget
             $query->whereYear('created_at', $this->year);
             $orderQuery->whereYear('created_at', $this->year);
         }
+
+        $query->whereHas('file', function($q){
+            $q->whereJsonContains('sections', SectionEnum::MAIN->value);
+        })->orWhereNotNull('play_list_id')->orWhereNotNull('play_list_item_id');
 
         $totalSales = $query->count();
 

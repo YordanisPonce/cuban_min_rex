@@ -1,5 +1,7 @@
 @php
-    /** @var array $items  -> [['name'=>..., 'total'=>..., 'sales_count'=>int, 'pairs_count'=>int], ...] */
+    /** @var array $items  -> [['name'=>..., 'total'=>..., 'sales_count'=>int, 'pairs_count'=>int], ...] 
+     * @var float $totalToGenerated
+    */
 @endphp
 
 @if (empty($items))
@@ -49,7 +51,7 @@
                         <th
                             style="
                             padding:8px 12px;
-                            text-align:left;
+                            text-align:center;
                             font-weight:600;
                             color:#374151;
                             border-bottom:1px solid #e5e7eb;
@@ -105,11 +107,22 @@
                     <tr>
                         <td
                             style="padding:8px 12px; text-align:right; font-weight:600; color:#374151; white-space:nowrap;">
-                            Total
+                            Total a Pagar
                         </td>
                         <td
                             style="padding:8px 12px; text-align:right; font-weight:800; color:#111827; white-space:nowrap;">
                             ${{ number_format(collect($items)->sum('total'), 2) }}
+                        </td>
+                        <td style="padding:8px 12px; text-align:left; font-weight:600; color:#374151;">—</td>
+                    </tr>
+                    <tr>
+                        <td
+                            style="padding:8px 12px; text-align:right; font-weight:600; color:#374151; white-space:nowrap;">
+                            Total Generado
+                        </td>
+                        <td
+                            style="padding:8px 12px; text-align:right; font-weight:800; color:#111827; white-space:nowrap;">
+                            ${{ number_format($totalToGenerated, 2) }}
                         </td>
                         <td style="padding:8px 12px; text-align:left; font-weight:600; color:#374151;">—</td>
                     </tr>
