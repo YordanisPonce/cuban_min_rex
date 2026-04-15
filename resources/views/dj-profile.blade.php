@@ -1,6 +1,7 @@
 @extends('layouts.app')
 @php
     use App\Enums\NumEnum;
+    use App\Enums\SectionEnum;
 @endphp
 
 @section('title', $dj->name . ' – ' . config('app.name'))
@@ -151,7 +152,7 @@
                 </thead>
                 <tbody id="remixBody">
                     @php $i = 0; @endphp
-                    @foreach ($dj->files()->orderBy('download_count')->take(5)->get() as $file)
+                    @foreach ($dj->files()->section(SectionEnum::MAIN->value)->orderBy('download_count')->take(5)->get() as $file)
                         <tr class="remix-row" id="{{ $file->id }}" data-intro="{{ $file->intro() }}">
                             <td style="color:var(--muted);font-weight:600;">{{ ++$i }}</td>
                             <td>
