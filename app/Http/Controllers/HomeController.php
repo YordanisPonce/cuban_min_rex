@@ -105,7 +105,7 @@ class HomeController extends Controller
                     'sub' => $playlist->user->name,
                     'tag' => '',
                     'genre' => $playlist->folder?->name ?? '',
-                    'imgs' => [$playlist->cover ?? $playlist->user->photo ?? config('app.logo_alter')],
+                    'imgs' => [$playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter')],
                     'downloads' => $playlist->downloads->count(),
                     'route' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
                 ];
