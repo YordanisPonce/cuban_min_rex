@@ -57,7 +57,7 @@
 
                 <hr style="border:none;border-top:1px solid var(--border);margin:1.5rem 0;">
 
-                <div class="add-info"><i class="fas fa-info-circle"></i> Al continuar estás aceptando nuestros <a href="{{ route('terms') }}"><strong>Términos y Condiciones de Uso</strong></a></div>.
+                <div class="add-info"><i class="fas fa-info-circle"></i> Al continuar estás aceptando nuestros <a href="{{ route('terms') }}"><strong>Términos y Condiciones de Uso</strong></a>.</div>
 
                 <button class="pay-btn" onclick="proccessPayment()">REALIZAR PAGO $ {{ number_format($cart->get_cart_count(), 2) }}</button>
                 <div class="pay-secure"><i class="fas fa-lock"></i> Pago 100% seguro y encriptado</div>
