@@ -53,7 +53,7 @@
 
     <div class="container">
         <div class="section" data-aos="fade-up" data-aos-delay="300">
-            <div class="section-title"><span class="dot"></span> PACKS <span class="gold">PARA DJS</span></div>
+            <div class="section-title"><div><span class="dot"></span> PACKS <span class="gold">PARA DJS</span></div></div>
             <div class="cards-grid">
                 @foreach ($packs as $pack)
                     @include('partials.pack-card', ['item' => $pack])
