@@ -24,7 +24,7 @@
                 <div class="dj-avatar"><i class="fas fa-user"></i></div>
                 <div>
                     <span class="dj-name">{{ $item->user->name }}</span>
-                    <span class="dj-sub">{{ $item->folder->name }}</span>
+                    <span class="dj-sub">{{ $item->folder?->name ?? '' }}</span>
                 </div>
             </div>
             <div class="card-actions">
