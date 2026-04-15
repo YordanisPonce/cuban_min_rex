@@ -101,19 +101,23 @@ class PlayListController extends Controller
             ];
         });
 
-        $similar = PlayList::where('id', '!=' ,$playlist->id)->where('folder_id', $playlist->folder->id)->where('user_id', $playlist->user->id)
-            ->orderBy('created_at', 'desc')->take(4)->get();
+        $similar = [];
 
-        $similar = $similar->transform(function ($s) {
-            return [
-                'id' => (string) $s->id,
-                'date' => $s->created_at,
-                'title' => $s->name,
-                'img' => $s->cover ? $s->getCoverUrl() : $s->user->photo ?? config('app.logo_alter'),
-                'tracks' => $s->items->count(),
-                'url' => route('playlist.show', str_replace(' ', '_', $s->name)),
-            ];
-        });
+        if($playlist){
+            $similar = PlayList::where('id', '!=' ,$playlist->id)->where('folder_id', $playlist->folder->id)->where('user_id', $playlist->user->id)
+                ->orderBy('created_at', 'desc')->take(4)->get();
+
+            $similar = $similar->transform(function ($s) {
+                return [
+                    'id' => (string) $s->id,
+                    'date' => $s->created_at,
+                    'title' => $s->name,
+                    'img' => $s->cover ? $s->getCoverUrl() : $s->user->photo ?? config('app.logo_alter'),
+                    'tracks' => $s->items->count(),
+                    'url' => route('playlist.show', str_replace(' ', '_', $s->name)),
+                ];
+            });
+        }
 
         $index = 4;
 
