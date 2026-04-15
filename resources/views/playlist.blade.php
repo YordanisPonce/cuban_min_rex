@@ -1,328 +1,310 @@
 @extends('layouts.app')
 
 @php
-    $cover = $playlist->cover ? $playlist->getCoverUrl() : ($playlist->user?->photo ? $playlist->user?->photo : config('app.logo'));
-    
+    use App\Enums\NumEnum;
+
+    $cover = $playlist->cover
+        ? $playlist->getCoverUrl()
+        : ($playlist->user?->photo
+            ? $playlist->user?->photo
+            : config('app.logo'));
+
     $success = session('success');
     $error = session('error');
 @endphp
 
-@section('title', "PlayLists – ".config('app.name'))
+@section('title', $playlist->name . ' – ' . config('app.name'))
 
 @push('styles')
-<link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
-<style>
-    .playlist-card{
-        background-color: #12131C77 !important;
-        margin: 0 auto !important;
-        padding: 0 auto;
-
-        &>.card-body{
-            margin: 0 !important;
-            padding: 2rem !important;
-            background-color: #12131CAA !important;
-        }
-    }
-
-    section#audioPlayer{
-        transition: all 0.3s ease-in;
-        transform: translateY(160px);
-    }
-    
-    .landing-footer .footer-top {
-        border-top-left-radius: 0rem !important;
-        border-top-right-radius: 0rem !important;
-    }
-
-    .audio-player-controls:hover{
-        transform: scale(1.5);
-    }
-
-    #audioPlayer{
-        position: sticky;
-        bottom: 0;
-        width: 100%;
-        z-index: 10;
-    }
-
-    footer{
-        z-index: 11;
-    }
-
-    .btn-buy{
-        transition: all 0.3s ease !important;
-
-        &>span{
-            transition: all 0.4s ease-in !important;
-        }
-
-        &:hover{
-            width: 100px !important;
-            border-radius: 17px !important;
-            gap: 10px;
-
-            &>span{
-                display: block !important;
-            }
-        }
-    }
-
-    table{
-        width: 100%;
-        border-collapse: collapse;
-        color: #ccc;
-
-        &>thead{
-            border-bottom: 1px solid #ccc;
-            &>tr{
-                &>th{
-                    padding: 0.75rem;
-                    text-align: left;
-                    font-weight: 500;
-                }
-                &>th:nth-child(1){
-                    width: 40px;
-                }
-                &>th:nth-child(3){
-                    width: 120px;
-                }
-            }
-        }
-        &>tbody{
-            padding: 10px auto !important;
-            &>tr{
-                margin: 10px auto !important;
-                transition: all 0.2s ease-in !important;
-                &>td{
-                    padding: 0.75rem;
-
-                    &>div>a:hover{
-                        color: var(--bs-primary) !important;
-                    }
-                }
-                &>td:nth-child(3){
-                    transform: scale(0);
-                    transition: all 0.2s ease-in !important;
-                }
-                &:hover{
-                    background-color: rgba(255, 255, 255, 0.1);
-                    cursor: pointer;
-                    border-radius: 12px !important;
-
-                    &>td:nth-child(3){
-                        transform: scale(1);
-                    }
-                }
-            }
-        }
-    }
-
-    @media (max-width: 768px) {
-        table>tbody>tr>td:nth-child(3){
-            transform: scale(1);
-        }
-    }
-</style>
+    <link rel="stylesheet" href="{{ asset('assets/css/playlist-details.css') }}" />
 @endpush
 
 @section('content')
-<section id="landingReviews" class="section-py bg-body mt-10">
-    <div class="container">
-        <div class="row">
-            <div class="col-12">
-                <div class="playlist-card card">
-                    <div class="card-header">
-                        <div class="container">
-                            <div class="row g-2">
-                                <div class="col-md-3 col-12 d-flex justify-content-center">
-                                    <img src="{{ $cover }}" class="rounded" alt="{{ $playlist->name }}" style="height: 200px; width: 200px">
-                                </div>
-                                <div class="col-md-9 col-12">
-                                    <div class="mb-4 mt-5">
-                                        <span class="badge bg-label-primary">PlayList</span>
-                                    </div>
-                                    <div class="mb-3">
-                                        <h1>{{ $playlist->name }}</h1>
-                                    </div>
-                                    <div class="mb-3">
-                                        <div class="d-flex align-items-center mt-2">
-                                            <div class="avatar avatar-sm me-2 overflow-hidden rounded-circle position-relative">
-                                                <img src="{{$playlist->user?->photo ? $playlist->user?->photo : config('app.logo')}}" alt="{{$playlist->user?->name}}" class="rounded-circle img-fluid">
-                                                <div class="dark-screen" style="background-color: rgba(0, 0, 0, 0.4);"></div>
-                                            </div>
-                                            <div>
-                                            <a href="{{ route('dj', str_replace(' ', '_', $playlist->user?->name ?? 'CubanPool'))}}" class="mb-0" style="font-size: 0.8rem;">{{$playlist->user?->name ?? 'CubanPool'}}</a> • {{$playlist->created_at->year}} • {{ $playlist->items()->count() }} {{ Str::plural('Canción', $playlist->items()->count()) }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="card-body">
-                        <div class="row g-4 mb-4">
-                            <div class="d-flex align-items-center gap-3">
-                                <a id="playlist-btn" class="btn btn-success rounded-circle" style="width: 50px; height: 50px; padding: 10px;" onclick="playList()" data-status="pause"><i class="icon-base ti tabler-player-play-filled"></i></a>
-                                @if($playlist->canBeDownload())
-                                    <a href="{{route('playlist.download', str_replace(' ', '_', $playlist->name) )}}" class="btn btn-light rounded-circle" style="width: 30px; height: 30px; padding: 5px;"><i class="icon-base ti tabler-download"></i></a>
-                                @else
-                                    @if($playlist->isInCart())
-                                        <a href="{{ route('playlist.remove.cart', str_replace(' ', '_', $playlist->name)) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
-                                    @else
-                                        <a href="{{ route('playlist.add.cart', str_replace(' ', '_', $playlist->name)) }}" class="btn btn-light rounded-circle text-nowrap overflow-hidden btn-buy" style="width: 30px; height: 30px; padding: 5px;"><span class="d-none">$ {{$playlist->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
-                                    @endif
-                                @endif
-                            </div>
-                            @auth
-                                @if (auth()->user()->hasActivePlan() && !$playlist->canBeDownload())
-                                    <div class="alert alert-warning mb-0" role="alert">
-                                        <span class="ps-1"> ⚠️ Debes adquirir un plan mayor para descargar playlists y/o sus canciones.</span>
-                                    </div>
-                                @endif
-                            @endauth
-                        </div>
-                        <div class="row g-4">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Canción</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach($playlist->items as $index => $item)
-                                    <tr>
-                                        <td>{{ $index + 1 }}</td>
-                                        <td class="text-wrap">{{ $item->title ?? 'Archivo sin nombre' }}</td>
-                                        <td> 
-                                            <div class="d-flex gap-2 align-items-center justify-content-end">
-                                                @if($playlist->canBeDownload())
-                                                    <a href="{{ route('playlist.download_item', [str_replace(' ', '_', $playlist->name), $item->id]) }}"><i class="icon-base ti tabler-download"></i></a>
-                                                @else
-                                                    @if($item->isInCart())
-                                                        <a href="{{ route('playlist.remove.item.cart', [str_replace(' ', '_', $playlist->name), $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-x"></i></a>
-                                                    @else
-                                                        <a href="{{ route('playlist.add.item.cart', [str_replace(' ', '_', $playlist->name), $item->id]) }}" class="d-flex gap-2 align-items-center justify-content-center"><span class="d-flex gap-1">$ {{$item->price}}</span> <i class="icon-base ti tabler-shopping-cart-plus"></i></a>
-                                                    @endif   
-                                                @endif
-                                                <a data-index="{{$index}}" onclick="playAudio(this.dataset.index)"><i class="icon-base ti tabler-player-play-filled"></i></a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
+    <div class="main">
+        
+        <div class="playlist-header">
+            <img class="playlist-cover" src="{{ $cover }}" alt="Club Latino Mix">
+            <div class="playlist-meta">
+                <div class="playlist-label"><i class="fas fa-list"></i> Playlist</div>
+                <h1 class="playlist-title">{{ $playlist->name }}</h1>
+                <p class="playlist-desc">{{ $playlist->description }}</p>
+                <div class="playlist-info-row">
+                    <div class="playlist-creator"><img src="{{ $playlist->user->photo ?? config('app.logo') }}"
+                            alt="{{ $playlist->user->name }}"><span>{{ $playlist->user->name }}</span></div>
+                    <span><i class="fas fa-music"></i> {{ $playlist->items->count() }} pistas</span>
+                    <span><i class="fas fa-download"></i> {{ NumEnum::letter_format($playlist->downloads->count()) }}
+                        descargas</span>
+                </div>
+                <div class="playlist-actions">
+                    <button class="btn-play-all" onclick="playAllTracks()"><i class="fas fa-play"></i> Reproducir
+                        Todo</button>
+                    <button class="btn-secondary" onclick="playRandom()"><i class="fas fa-random"></i> Aleatorio</button>
+                    @if ($playlist->canBeDownload())
+                        <a class="btn-secondary" href="{{ route('playlist.download', $playlist->name) }}"><i
+                                class="fas fa-cart-plus"></i> Descargar Completa</a>
+                    @else 
+                        <a class="btn-secondary" href="{{ route('playlist.add.cart', $playlist->name) }}"><i
+                                class="fas fa-cart-plus"></i> Comprar Todo – ${{ $playlist->price }}</a>
+                    @endif
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title"><i class="fas fa-list-ol"></i> Canciones</h2>
+        <div class="track-header">
+            <span>#</span><span>Título</span><span>Descargas</span><span
+                style="text-align:center;">Precio</span><span></span>
+        </div>
+        <div id="trackList"></div>
+
+        <div style="margin-top:3rem;">
+            <h2 class="section-title"><i class="fas fa-th-large"></i> Playlists Similares</h2>
+            <div class="similar-grid" id="similarGrid">
+            </div>
+            @if ($similar->count() === 0)
+                <div style="text-align: center; color: var(--fg-muted); width: 100%">Sin recomendaciones</div>
+            @endif
+        </div>
+    </div>
+
+    <div class="bottom-player container" id="bottom-player">
+        <div class="player-inner">
+            <div class="player-track">
+                <img id="player-img" src="" alt="">
+                <div class="track-info">
+                    <div class="track-title" id="player-title">—</div>
+                    <div class="track-artist" id="player-artist">—</div>
+                </div>
+            </div>
+            <div class="player-controls">
+                <div class="waveform">
+                    @for ($i = 0; $i < 60; $i++)
+                        <div class="bar"></div>
+                    @endfor
+                </div>
+                <div class="controls">
+                    <button onclick="playPreviousTrack()"><i class="fa-solid fa-backward-fast"></i></button>
+                    <!-- <button><i class="fa-solid fa-backward-step"></i></button> -->
+                    <button class="main-play" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
+                    <!-- <button><i class="fa-solid fa-forward-step"></i></button> -->
+                    <button onclick="playNextTrack()"><i class="fa-solid fa-forward-fast"></i></button>
+                    <div class="close">
+                        <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</section>
-<section id="audioPlayer">
-    <div class="container">
-        <div class="row">
-            <!-- Audio Player -->
-            <div class="col-12">
-                <div class="card">
-                    <h5 class="card-header d-flex justify-content-between">
-                        <span class="cursor-pointer audio-player-controls hidden-xl" onclick="playPrevAudio()"><i class="icon-base ti tabler-chevron-left icon-md scaleX-n1-rtl"></i></span>
-                        <span id="plyr-audio-name" class="d-block w-100 text-nowrap overflow-hidden"
-                            style="text-overflow:ellipsis; text-align:center">Audio</span>
-                        <span class="cursor-pointer audio-player-controls hidden-xl" onclick="playNextAudio()"><i class="icon-base ti tabler-chevron-right icon-md scaleX-n1-rtl"></i></span>
-                    </h5>
-                    <div class="card-body">
-                        <audio class="w-100" id="plyr-audio-player" type="audio/mp3" src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3" controls></audio>
-                    </div>
-                </div>
-            </div>
-            <!-- /Audio Player -->
-        </div>
-    </div>
-</section>
 @endsection
 
 @push('scripts')
-<script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
-<script>
-    new Plyr("#plyr-audio-player");
+    <script>
+        const tracks = @json($tracks);
 
-    const audioPlayer = document.getElementById('audioPlayer');
-    const audio = document.getElementById('plyr-audio-player');
-    const tracks = @json($playlist->getPlayList());
-    const names = @json($playlist->items()->get()->pluck('title')->toArray());
-
-    if (tracks.length <= 1) {
-        document.querySelectorAll('.audio-player-controls').forEach(control => {
-            control.style.display="none";
+        const tl = document.getElementById('trackList');
+        tracks.forEach((t, i) => {
+            tl.innerHTML += `<div class="track-row" id="${t.id}">
+    <div style="position:relative;text-align:center;"><span class="track-num">${i + 1}</span><div class="track-play-icon" onclick="handleCardPlay(${t.id})"><i class="fas fa-play"></i></div></div>
+    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title">${t.title}</div><div class="track-artist">${t.artist}</div></div></div>
+    <div class="track-downloads"><i class="fas fa-download" style="margin-right:3px;font-size:.65rem;"></i>${t.downloads}</div>
+    <div class="track-price">${t.price}</div><div><a class="btn-secondary add-to-cart" href="${t.addToCart}"><i class="fas fa-cart-plus"></i> <span>Añadir</span></a></div>
+  </div>`;
         });
-    }
 
-    function showAudioPlayer() {
-        audioPlayer.style.transform = 'translateY(0)';
-        audio.play();
-    }
+        const similar = @json($similar);
 
-    function hiddenAudioPlayer() {
-        audioPlayer.style.transform = 'translateY(160px)';
-        audio.pause();
-    }
+        const sg = document.getElementById('similarGrid');
 
-    function playList(){
-        const play = document.getElementById('playlist-btn');
-        if(play.dataset.status==='pause'){
-            play.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
-            play.dataset.status = 'play';
-            audio.src = tracks[0];
-            const name = names[0] === null ? 'Archivo sin nombre' : names[0];
-            document.getElementById('plyr-audio-name').textContent = "{{$playlist->name}}" + ' - ' + name;
-            showAudioPlayer();
-        } else {
-            play.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
-            play.dataset.status = 'pause';
-            hiddenAudioPlayer();
+        similar.forEach(s => {
+            sg.innerHTML += `<div class="similar-card" onclick=" window.location = '${s.url}'">
+                <img src="${s.img}" alt="${s.title}" loading="lazy">
+                <div class="similar-card-info"><div class="similar-card-title">${s.title}</div><div class="similar-card-sub">${s.tracks} pistas</div></div>
+            </div>`;
+        });
+
+        let currentTrack = null;
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = 0;
+        let timerInterval = null;
+        let randomPlay = false;
+
+        const audioPlayer = document.createElement('audio');
+
+        function closePlayer() {
+            const player = document.getElementById('bottom-player');
+            player.classList.remove('active');
+            player.querySelector(".waveform").classList.remove('playing');
+            document.querySelectorAll('.track-row').forEach(card => {
+                card.classList.remove('playing');
+                card.querySelector('.track-play-icon i').className = 'fa-solid fa-play';
+            });
+            isPlaying = false;
+            audioPlayer.pause();
+            currentTrack = null;
         }
-    }
 
-    function playNextAudio() {
-        const currentIndex = tracks.findIndex(track => track === audio.src);
-        const nextIndex = (currentIndex + 1) % tracks.length;
-        const name = names[nextIndex] === null ? 'Archivo sin nombre' : names[nextIndex];
-        audio.src = tracks[nextIndex];
-        document.getElementById('plyr-audio-name').textContent = "{{$playlist->name}}" + ' - ' + name;
-        audio.play();
-    }
+        function updatePlayerUI() {
+            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            const el = document.getElementById('bottom-player');
+            if (!currentTrack) {
+                el.classList.remove('active');
+                el.querySelector(".waveform").classList.remove('playing');
+                return
+            }
+            el.classList.add('active');
+            let waves = el.querySelector(".waveform");
+            isPlaying ? waves.classList.add('playing') : waves.classList.remove('playing');
+            document.getElementById('player-img').src = currentTrack.img;
+            document.getElementById('player-title').textContent = '#' + (getRemixIndex(currentTrack.id) + 1) + ' ' +
+                currentTrack.title;
+            document.getElementById('player-artist').textContent = currentTrack.artist;
+            const icon = document.querySelector('#player-play-btn i');
+            icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+            document.querySelectorAll('.track-row').forEach(card => {
+                const id = card.id;
+                const icon = card.querySelector('.track-play-icon i');
+                if (id === currentTrack.id && isPlaying) {
+                    icon.className = 'fa-solid fa-pause';
+                    card.classList.add('playing');
+                } else {
+                    icon.className = 'fa-solid fa-play';
+                    card.classList.remove('playing');
+                }
+            });
+        }
 
-    function playAudio(index){
-        audio.src = tracks[index];
-        const name = names[index] === null ? 'Archivo sin nombre' : names[index];
-        document.getElementById('plyr-audio-name').textContent = "{{$playlist->name}}" + ' - ' + name;
-        showAudioPlayer();
-    }
+        function setLoader(e) {
+            document.querySelectorAll('.track-row').forEach(card => {
+                const id = card.id;
+                const btn = card.querySelector('.track-play-icon i');
+                if (id === e) {
+                    btn.className = 'fa fa-spinner fa-spin';
+                    card.classList.add('playing');
+                }
+            });
+        }
 
-    // Cuando termina un audio, cargar el siguiente
-    audio.addEventListener("ended", () => {
-        playNextAudio();
-    });
-</script>
+        function playTrack(track) {
+            setLoader(track.id);
 
-@isset($error)
-<script>
-    Swal.fire({
-        title: 'Error',
-        text: '{{ $error }}',
-        icon: 'error'
-    });
-</script>
-@endisset
-@isset($success)
-<script>
-    Swal.fire({
-        title: ' ',
-        text: '{{ $success }}',
-        icon: 'success'
-    });
-</script>
-@endisset
+            audio = new Audio(track.url);
+
+            audio.addEventListener("canplaythrough", () => {
+                audioPlayer.src = audio.src;
+                audioPlayer.play();
+            });
+
+            audioPlayer.addEventListener("play", () => {
+                currentTrack = track;
+                currentTime = 0;
+                duration = track.duration;
+                isPlaying = true;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                if (currentTrack != tracks[tracks.length - 1]) {
+                    playNextTrack();
+                } else {
+                    isPlaying = false;
+                    updatePlayerUI();
+                }
+            });
+        }
+
+        function togglePlay() {
+            if (!currentTrack) return;
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+            updatePlayerUI();
+        }
+
+        function handleCardPlay(id) {
+            if (currentTrack && currentTrack.id === id) {
+                togglePlay();
+                return
+            }
+            const r = tracks.find(x => x.id == id);
+            if (r) playTrack(r);
+            else Swal.fire("Error", "Track not found", "error");
+        }
+
+        function playAllTracks() {
+            if (tracks.length > 0) {
+                playTrack(tracks[0]);
+                randomPlay = false;
+            }
+        }
+
+        function playRandom() {
+            if (tracks.length > 0) {
+                const randomIndex = Math.floor(Math.random() * tracks.length);
+                playTrack(tracks[randomIndex]);
+                randomPlay = true;
+            }
+        }
+
+        function getRemixIndex(id) {
+            return tracks.findIndex(x => x.id == id);
+        }
+
+        function playNextTrack() {
+            if (!currentTrack) return;
+            if (randomPlay) {
+                playRandom();
+            } else {
+                const idx = getRemixIndex(currentTrack.id);
+                if (idx >= 0 && idx < tracks.length - 1) {
+                    playTrack(tracks[idx + 1]);
+                } else {
+                    playTrack(tracks[0]);
+                }
+            }
+        }
+
+        function playPreviousTrack() {
+            if (!currentTrack) return;
+            if (randomPlay) {
+                playRandom();
+            } else {
+                const idx = getRemixIndex(currentTrack.id);
+                if (idx > 0) {
+                    playTrack(tracks[idx - 1]);
+                } else {
+                    playTrack(tracks[tracks.length - 1]);
+                }
+            }
+        }
+
+        document.getElementById('player-play-btn').addEventListener('click', togglePlay);
+    </script>
+
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: 'Error',
+                text: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
+    @isset($success)
+        <script>
+            Swal.fire({
+                title: ' ',
+                text: '{{ $success }}',
+                icon: 'success'
+            });
+        </script>
+    @endisset
 @endpush

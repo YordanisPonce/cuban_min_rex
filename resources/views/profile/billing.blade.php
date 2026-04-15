@@ -1,401 +1,457 @@
 @extends('layouts.app')
 @php
+    $success = session('success');
+    $error = session('error');
+
     use Carbon\Carbon;
+    $countries = [
+        'Alemania',
+        'Andorra',
+        'Argentina',
+        'Armenia',
+        'Australia',
+        'Austria',
+        'Bélgica',
+        'Bolivia',
+        'Bosnia y Herzegovina',
+        'Brasil',
+        'Canadá',
+        'Chile',
+        'China',
+        'Colombia',
+        'Costa Rica',
+        'Cuba',
+        'Dinamarca',
+        'Ecuador',
+        'Egipto',
+        'El Salvador',
+        'Emiratos Árabes Unidos',
+        'España',
+        'Estados Unidos',
+        'Estonia',
+        'Etiopía',
+        'Filipinas',
+        'Francia',
+        'Ghana',
+        'Grecia',
+        'Guatemala',
+        'Honduras',
+        'India',
+        'Indonesia',
+        'Irak',
+        'Irán',
+        'Italia',
+        'Japón',
+        'Kenia',
+        'Malasia',
+        'Marruecos',
+        'México',
+        'Nicaragua',
+        'Noruega',
+        'Nigeria',
+        'Panamá',
+        'Paraguay',
+        'Perú',
+        'Polonia',
+        'Portugal',
+        'República Checa',
+        'República Dominicana',
+        'Rumanía',
+        'Rusia',
+        'Reino Unido',
+        'Sudáfrica',
+        'Suecia',
+        'Suiza',
+        'Tailandia',
+        'Tanzania',
+        'Uganda',
+        'Uruguay',
+        'Venezuela',
+        'Vietnam',
+    ];
 @endphp
-@section('title', 'Perfil de Usuario')
+@section('title', 'Editar Perfil - ' . config('app.name'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/edit-profile.css') }}" />
+    <style>
+        :root {
+            --bg: #000;
+            --bg-card: #000;
+            --bg-elevated: #221f1a;
+            --bg-input: #2a2520;
+            --primary: #f5a623;
+            --primary-hover: #e09010;
+            --text: #ece5d8;
+            --text-muted: #8a7e6b;
+            --border: #2e2a24;
+            --danger: #e74c3c;
+            --success: #27ae60;
+        }
+    </style>
 @endpush
 
 @section('content')
-    <!-- Content wrapper -->
-    <div class="content-wrapper pt-10 bg-body">
-        <!-- Content -->
-        <div class="container-xxl flex-grow-1 container-p-y mt-10">
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <div class="nav-align-top">
-                        <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('profile.edit') }}"><i
-                                        class="icon-base ti tabler-users icon-sm me-1_5"></i> Información de Usuario</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link active text-black" href="{{ route('profile.billing') }}"><i
-                                        class="icon-base ti tabler-bookmark icon-sm me-1_5"></i> Información de
-                                    Facturación</a>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="card mb-6">
-                        <!-- Current Plan -->
-                        <h5 class="card-header">Plan Actual</h5>
-                        <div class="card-body">
-                            <div class="row row-gap-6">
-                                @if (Auth::user()->hasActivePlan() && Auth::user()->currentPlan)
-                                    <div class="col-md-6 mb-1">
-                                        <div class="mb-6">
-                                            <h6 class="mb-1">Tu Plan Actual es {{ Auth::user()->currentPlan->name }}</h6>
-                                            {!! Auth::user()->currentPlan->description !!}
-                                        </div>
-                                        <div class="mb-6">
-                                            @php
-                                                Carbon::setLocale('es');
-                                                $expDate = Carbon::parse(
-                                                    auth()->user()->plan_expires_at,
-                                                )->translatedFormat('d \d\e F \d\e Y H:i');
-                                            @endphp
-                                            <h6 class="mb-1">Activo hasta el {{ $expDate }}</h6>
-                                            <p>Te enviearemos una notificación cuando esté cerca de expirar</p>
-                                        </div>
-                                        <div>
-                                            <h6 class="mb-1">
-                                                <span class="me-1">${{ Auth::user()->currentPlan->price }}/mes </span>
-                                                @if (Auth::user()->currentPlan->is_recomended)
-                                                    <span class="badge bg-label-primary rounded-pill">Recomendado</span>
-                                                @endif
-                                            </h6>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        @if (Auth::user()->planExpirationDays()->days <= 5)
-                                            <div class="alert alert-warning mb-6" role="alert">
-                                                <h5 class="alert-heading mb-1 d-flex align-items-center">
-                                                    <span class="alert-icon rounded"><i
-                                                            class="icon-base ti tabler-alert-triangle icon-md"></i></span>
-                                                    <span>¡Necesitamos tu atención!</span>
-                                                </h5>
-                                                <span class="ms-11 ps-1">Tu plan requiere actualización</span>
-                                            </div>
-                                        @else
-                                            <div class="alert alert-success mb-6" role="alert">
-                                                <h5 class="alert-heading mb-1 d-flex align-items-center">
-                                                    <span>¡Plan activo!</span>
-                                                </h5>
-                                                <span class="ps-1">Tu plan está activo y no requiere actualización, ahora
-                                                    puedes disfrutar de todos los beneficios asociados</span>
-                                            </div>
-                                        @endif
-                                        <div class="plan-statistics">
-                                            <div class="d-flex justify-content-between">
-                                                <h6 class="mb-1">Días</h6>
-                                                <h6 class="mb-1">
-                                                    {{ Auth::user()->currentPlan->duration_months * 30 - Auth::user()->planExpirationDays()->days }}
-                                                    de {{ Auth::user()->currentPlan->duration_months * 30 }} Días</h6>
-                                            </div>
-                                            <div class="progress rounded mb-1">
-                                                @php
-                                                    $percent =
-                                                        Auth::user()->planExpirationDays()->days > 0
-                                                            ? ((Auth::user()->currentPlan?->duration_months * 30 -
-                                                                    Auth::user()->planExpirationDays()->days) /
-                                                                    (Auth::user()->currentPlan?->duration_months *
-                                                                        30)) *
-                                                                100
-                                                            : '100';
-                                                @endphp
-                                                <div class="progress-bar rounded" style="width: {{ $percent }}%"
-                                                    role="progressbar"
-                                                    aria-valuenow="{{ Auth::user()->currentPlan?->duration_months * 30 - Auth::user()->planExpirationDays()->days }}"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="{{ Auth::user()->currentPlan->duration_months * 30 }}">
-                                                </div>
-                                            </div>
-                                            <small>{{ Auth::user()->planExpirationDays()->days }} días restantes hasta que
-                                                tu plan requiera actualización</small>
-                                        </div>
-                                        <div class="plan-statistics">
-                                            <div class="d-flex justify-content-between">
-                                                <h6 class="mb-1">Descargas Realizadas</h6>
-                                                <h6 class="mb-1">
-                                                    {{ Auth::user()->getCurrentMonthDownloads() }}
-                                                    de {{ Auth::user()->currentPlan->downloads }} este mes.</h6>
-                                            </div>
-                                            {{--    <div class="progress rounded mb-1">
-                                                @php
-                                                    $percent =
-                                                        Auth::user()->currentPlan->downloads > 0
-                                                            ? (Auth::user()->getCurrentMonthDownloads() /
-                                                                    Auth::user()->currentPlan->downloads) *
-                                                                100
-                                                            : '100';
-                                                @endphp
-                                                <div class="progress-bar rounded" style="width: {{ $percent }}%"
-                                                    role="progressbar"
-                                                    aria-valuenow="{{ Auth::user()->getCurrentMonthDownloads() }}"
-                                                    aria-valuemin="0"
-                                                    aria-valuemax="{{ Auth::user()->currentPlan->downloads }}">
-                                                </div>
-                                            </div>
-                                            <small>{{ Auth::user()->currentPlan->downloads - Auth::user()->getCurrentMonthDownloads() }}
-                                                días restantes este mes.</small> --}}
-                                        </div>
-                                    </div>
-                                    <div class="col-12 d-flex gap-2 flex-wrap">
-                                        <button class="btn btn-primary me-2 text-black" data-bs-toggle="modal"
-                                            data-bs-target="#pricingModal">Actualizar Plan</button>
-                                        <a class="btn btn-dark me-2" href="{{ route('profile.billingLink') }}">Gestionar suscripción</a>
-                                        <button class="btn btn-label-danger cancel-subscription"
-                                            onclick="mostrarAdvertencia()">Cancelar Suscripción</button>
-                                    </div>
-                                @else
-                                    @if (!Auth::user()->hasActivePlan())
-                                        <div class="alert alert-warning mb-6 h-fit" role="alert">
-                                            <h5 class="alert-heading mb-1 d-flex align-items-center">
-                                                <span class="alert-icon rounded"><i
-                                                        class="icon-base ti tabler-alert-triangle icon-md"></i></span>
-                                                <span>¡Actualmente no posee ningun plan activo!</span>
-                                            </h5>
-                                            <span class="ms-11 ps-1">Por favor adquiera un plan para poder disfrutar de sus
-                                                beneficios.</span>
-                                        </div>
-                                    @else
-                                        <div class="alert alert-success mb-6" role="alert">
-                                            <h5 class="alert-heading mb-1 d-flex align-items-center">
-                                                <span>¡Membresía activa!</span>
-                                            </h5>
-                                            @php
-                                                Carbon::setLocale('es');
-                                                $expDate = Carbon::parse(
-                                                    auth()->user()->plan_expires_at,
-                                                )->translatedFormat('d \d\e F \d\e Y');
-                                            @endphp
-                                            <span class="ps-1">Aún puedes disfrutar de todos los beneficios asociados a tu
-                                                antiguo plan durante <strong>{{ Auth::user()->planExpirationDays()->days }}
-                                                    días</strong>, por favor considere renovarla antes de
-                                                <strong>{{ $expDate }}</strong> o adquirir una nueva membresía.</span>
-                                        </div>
-                                    @endif
-                                    <div class="col-12 d-flex gap-2 flex-wrap">
-                                        <button class="btn btn-primary me-2 text-black" data-bs-toggle="modal"
-                                            data-bs-target="#pricingModal">Adquirir Plan</button>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                        <!-- /Current Plan -->
-                    </div>
-                    <div class="card mb-6">
-                        <!-- Billing Address -->
-                        <h5 class="card-header">Datos de Facturación</h5>
-                        <div class="card-body">
-                            <form id="formAccountSettings" method="POST" action="{{ route('profile.updateBilling') }}">
-                                @csrf
-                                <div class="row g-6">
-                                    <div class="col-12">
-                                        <label for="billingAddress" class="form-label">Dirección de Facturación</label>
-                                        <input type="text" class="form-control" id="billingAddress" name="address"
-                                            placeholder="Dirección de Facturación"
-                                            value="{{ Auth::user()->billing ? Auth::user()->billing->address : '' }}"
-                                            required />
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="mobileNumber" class="form-label">Teléfono</label>
-                                        <input class="form-control mobile-number" type="text" id="mobileNumber"
-                                            name="phone"
-                                            value="{{ Auth::user()->billing ? Auth::user()->billing->phone : '' }}"
-                                            placeholder="+34 600 123 456" required />
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="country" class="form-label">País</label>
-                                        <select id="country" class="form-select select2" name="country" required>
-                                            <option value="">Seleccionar</option>
-                                            @php
-                                                $countries = [
-                                                    'Alemania',
-                                                    'Andorra',
-                                                    'Argentina',
-                                                    'Armenia',
-                                                    'Australia',
-                                                    'Austria',
-                                                    'Bélgica',
-                                                    'Bolivia',
-                                                    'Bosnia y Herzegovina',
-                                                    'Brasil',
-                                                    'Canadá',
-                                                    'Chile',
-                                                    'China',
-                                                    'Colombia',
-                                                    'Costa Rica',
-                                                    'Cuba',
-                                                    'Dinamarca',
-                                                    'Ecuador',
-                                                    'Egipto',
-                                                    'El Salvador',
-                                                    'Emiratos Árabes Unidos',
-                                                    'España',
-                                                    'Estados Unidos',
-                                                    'Estonia',
-                                                    'Etiopía',
-                                                    'Filipinas',
-                                                    'Francia',
-                                                    'Ghana',
-                                                    'Grecia',
-                                                    'Guatemala',
-                                                    'Honduras',
-                                                    'India',
-                                                    'Indonesia',
-                                                    'Irak',
-                                                    'Irán',
-                                                    'Italia',
-                                                    'Japón',
-                                                    'Kenia',
-                                                    'Malasia',
-                                                    'Marruecos',
-                                                    'México',
-                                                    'Nicaragua',
-                                                    'Noruega',
-                                                    'Nigeria',
-                                                    'Panamá',
-                                                    'Paraguay',
-                                                    'Perú',
-                                                    'Polonia',
-                                                    'Portugal',
-                                                    'República Checa',
-                                                    'República Dominicana',
-                                                    'Rumanía',
-                                                    'Rusia',
-                                                    'Reino Unido',
-                                                    'Sudáfrica',
-                                                    'Suecia',
-                                                    'Suiza',
-                                                    'Tailandia',
-                                                    'Tanzania',
-                                                    'Uganda',
-                                                    'Uruguay',
-                                                    'Venezuela',
-                                                    'Vietnam',
-                                                ];
-                                            @endphp
-                                            @foreach ($countries as $country)
-                                                <option value="{{ $country }}"
-                                                    {{ Auth::user()->billing ? (Auth::user()->billing->country == $country ? 'selected' : '') : '' }}>
-                                                    {{ $country }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <label for="zipCode" class="form-label">Código Postal</label>
-                                        <input type="text" class="form-control zip-code" id="zipCode"
-                                            name="postal" placeholder="231465"
-                                            value="{{ Auth::user()->billing ? Auth::user()->billing->postal : '' }}"
-                                            maxlength="6" required />
-                                    </div>
-                                </div>
-                                <div class="mt-6">
-                                    <button type="submit" class="btn btn-primary me-3 text-black">Guardar cambios</button>
-                                </div>
-                            </form>
-                        </div>
-                        <!-- /Billing Address -->
-                    </div>
-                    <div class="card">
-                        <!-- Billing History -->
-                        <h5 class="card-header text-md-start text-center">Historial de facturas</h5>
-                        <div class="card-datatable table-responsive border-top">
-                            <table class="invoice-list-table table border-top">
-                                <thead>
-                                    <tr>
-                                        <th></th>
-                                        <th>Compra</th>
-                                        <th>Cantidad Pagada</th>
-                                        <th class="text-truncate">Fecha de Pago</th>
-                                        <th>Estado</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @foreach ($orders as $order)
-                                        <tr>
-                                            <td></td>
-                                            <td>
-                                                @if ($order->plan)
-                                                    Plan: {{ $order->plan->name }}
-                                                @else 
-                                                    {{ count($order->order_items ?? [])}} Archivos: <br>
-                                                    @foreach ($order->order_items as $key => $value)
-                                                        {{ $value->file->name }} <br>
-                                                    @endforeach
-                                                @endif
-                                            </td>
-                                            <td>{{ $order->amount }}</td>
-                                            <td>{{ $order->status === 'paid' ? $order->paid_at : $order->created_at }}</td>
-                                            <td>{{ $order->status === 'paid' ? 'Pagado' : ($order->status === 'pending' ? 'Pendiente' : 'Fallida') }}
-                                            </td>
-                                            <td></td>
-                                        </tr>
-                                    @endforeach
-                                </tbody>
-                            </table>
-                        </div>
-                        <!--/ Billing History -->
-                    </div>
+    <div class="page-container" style="margin-top: 50px;">
+        <!-- Header -->
+        <div class="page-header">
+            <div>
+                <a class="back-btn" href="{{ route('profile.edit') }}"><i class="fas fa-arrow-left"></i></a>
+                <h1>Editar Perfil</h1>
+            </div>
+            <div>
+                <button class="btn btn-primary" onclick="saveChanges()">Guardar cambios</button>
+            </div>
+        </div>
+
+        <!-- Avatar -->
+        <div class="avatar-section">
+            <div class="avatar-cover">
+                <img src="{{ $user->cover ?? config('app.logo_alter') }}" alt="avatar">
+                <div class="overlay"></div>
+            </div>
+            <div class="avatar-editor">
+                <img src="{{ $user->photo ?? config('app.logo_alter') }}" alt="avatar">
+                <div class="edit-overlay" onclick="changeAvatar()"><i class="fas fa-pencil"></i></div>
+            </div>
+            <div class="avatar-info">
+                <h3>{{ $user->name }}</h3>
+                <p>Miembro desde {{ Carbon::parse($user->created_at)->format('M \d\e Y') }}</p>
+                <div class="avatar-actions">
+                    <button class="btn btn-primary" onclick="changeCover()"><i class="fas fa-image"></i> Cambiar Portada</button>
+                    <a class="btn btn-outline" href="{{ route('profile.restorePhoto') }}" onclick="return confirm('¿Estás seguro de que quieres eliminar tu foto?');">Eliminar</a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Modal -->
-    <!-- Pricing Modal -->
-    <div class="modal fade" id="pricingModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-simple modal-pricing">
-            <div class="modal-content">
-                <div class="modal-body">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    <!-- Pricing Plans -->
-                    <div class="container mt-5">
-                        <div class="text-center mb-3">
-                            <span class="badge bg-label-primary">Planes de suscripción</span>
-                        </div>
-                        <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
-                        <p class="text-center text-body-secondary mb-6">
-                            Disfruta sin límites con beneficios a tu medida.
-                        </p>
+        <!-- Tabs -->
+        <div class="tabs-container">
+            <div class="tabs-nav">
+                <button class="tab-btn active" data-tab="personal">
+                    <i class="fas fa-user"></i>&nbsp; Personal
+                </button>
+                <button class="tab-btn" data-tab="social">
+                    <i class="fas fa-share-alt"></i>&nbsp; Redes Sociales
+                </button>
+                <button class="tab-btn" data-tab="seguridad">
+                    <i class="fas fa-shield-alt"></i>&nbsp; Seguridad
+                </button>
+            </div>
+        </div>
 
-                        <div class="pricing-table">
-                            @foreach ($plans as $plan)
-                                @include('../partials.plans-card', ['plan'=>$plan])
+        <!-- Tab: Personal -->
+        <div class="tab-content active" id="tab-personal">
+            <div class="form-section">
+                <div class="form-section-title">Información Personal</div>
+                <div class="form-section-desc">Esta información será visible en tu perfil público.</div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Nombre <span class="required">*</span></label>
+                        <input type="text" value="{{ $user->name }}" placeholder="Tu nombre" name="name">
+                    </div>
+                    <div class="form-group">
+                        <label>Email <span class="required">*</span></label>
+                        <input type="email" value="{{ $user->email }}" placeholder="tu@email.com" name="email">
+                    </div>
+                    <div class="form-group">
+                        <label>Email PayPal</label>
+                        <input type="email" value="{{ $user->paypal_email }}" placeholder="alternativo@email.com"
+                            name="paypal_email">
+                        <span class="hint"><i class="fas fa-info-circle"></i> Importante para monetizar</span>
+                    </div>
+                    <div class="form-group full">
+                        <label>Biografía</label>
+                        <textarea placeholder="Cuéntanos sobre ti..." name="bio">{{ $user->bio }}</textarea>
+                        <span class="hint"><i class="fas fa-info-circle"></i> Máximo 500 caracteres</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="form-section-title">Facturación</div>
+                <div class="form-section-desc">Información de contacto privada usada para facturación, no se mostrará
+                    públicamente.</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Dirección</label>
+                        <input type="text" placeholder="Calle, número, municipio..."
+                            value="{{ $user->billing->address }}" name="address">
+                    </div>
+                    <div class="form-group">
+                        <label>Teléfono</label>
+                        <input type="tel" value="{{ $user->billing->phone }}" placeholder="+53 5 XXXXXXX"
+                            name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label>País</label>
+                        <select name="country">
+                            @foreach ($countries as $country)
+                                <option value="{{ $country }}"
+                                    {{ $user->billing->country === $country ? 'selected' : '' }}>{{ $country }}
+                                </option>
                             @endforeach
-                        </div>
+                        </select>
                     </div>
-                    <!--/ Pricing Plans -->
+                    <div class="form-group">
+                        <label>Código Postal</label>
+                        <input type="text" value="{{ $user->billing->postal }}" placeholder="Código postal"
+                            name="postal">
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    <!--/ Pricing Modal -->
-    <script src="../../assets//js/pages-pricing.js"></script>
-    <!--/ Modal -->
-    </div>
-    <!-- / Content -->
+
+        <!-- Tab: Social -->
+        <div class="tab-content" id="tab-social">
+            <div class="form-section">
+                <div class="form-section-title">Redes Sociales</div>
+                <div class="form-section-desc">Conecta tus redes sociales para que tus seguidores te encuentren.</div>
+                <div class="social-row"><i class="fab fa-instagram"></i><input type="url"
+                        value="{{ $user->socialLinks?->instagram }}" placeholder="https://instagram.com/..."
+                        name="instagram"></div>
+                <div class="social-row"><i class="fab fa-tiktok"></i><input type="url"
+                        value="{{ $user->socialLinks?->tiktok }}" placeholder="https://tiktok.com/@..." name="tiktok">
+                </div>
+                <div class="social-row"><i class="fab fa-youtube"></i><input type="url"
+                        value="{{ $user->socialLinks?->youtube }}" placeholder="https://youtube.com/@..." name="youtube">
+                </div>
+                <div class="social-row"><i class="fab fa-spotify"></i><input type="url"
+                        value="{{ $user->socialLinks?->spotify }}" placeholder="https://open.spotify.com/artist/..."
+                        name="spotify"></div>
+                <div class="social-row"><i class="fab fa-facebook"></i><input type="url"
+                        value="{{ $user->socialLinks?->facebook }}" placeholder="https://facebook.com/..."
+                        name="facebook">
+                </div>
+                <div class="social-row"><i class="fab fa-x"></i><input type="url"
+                        value="{{ $user->socialLinks?->twitter }}" placeholder="https://x.com/..." name="twitter"></div>
+                <div class="social-row"><i class="fas fa-globe"></i><input type="url"
+                        value="{{ $user->socialLinks?->site }}" placeholder="https://tusitio.com" name="site"></div>
+            </div>
+        </div>
+
+        <!-- Tab: Seguridad -->
+        <div class="tab-content" id="tab-seguridad">
+            <div class="form-section">
+                <div class="form-section-title">Cambiar Contraseña</div>
+                <div class="form-section-desc">Asegúrate de usar una contraseña segura y única.</div>
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label>Contraseña actual <span class="required">*</span></label>
+                        <input type="password" placeholder="••••••••" name="current_password">
+                    </div>
+                    <div class="form-group">
+                        <label>Nueva contraseña <span class="required">*</span></label>
+                        <input type="password" placeholder="Mínimo 8 caracteres" name="new_password">
+                    </div>
+                    <div class="form-group">
+                        <label>Confirmar contraseña <span class="required">*</span></label>
+                        <input type="password" placeholder="Repite la contraseña" name="confirm_password">
+                    </div>
+                </div>
+            </div>
+            {{-- 
+            <div class="form-section danger-zone">
+                <div class="form-section-title"><i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Zona
+                    de
+                    peligro</div>
+                <div class="form-section-desc">Acciones irreversibles sobre tu cuenta.</div>
+                <div class="toggle-row">
+                    <div class="toggle-info">
+                        <h4>Eliminar cuenta permanentemente</h4>
+                        <p>Se borrarán todos tus datos. Esta acción no se puede deshacer.</p>
+                    </div>
+                    <button class="btn-sm btn-outline-sm">Eliminar</button>
+                </div>
+            </div>
+            --}}
+        </div>
     </div>
 @endsection
 
 @push('scripts')
     <script>
-        function mostrarAdvertencia(e) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esta acción no se puede deshacer.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, continuar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    document.querySelector('#loader').style.display = 'flex';
-                    window.location.href = '/payment/cancel-subscription';
-                }
-            });
-        }
-
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                document.querySelector('#loader').style.display = 'flex';
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
             });
         });
+
+        function collectData() {
+            const data = {
+                name: document.querySelector('input[name="name"]').value,
+                email: document.querySelector('input[name="email"]').value,
+                paypal_email: document.querySelector('input[name="paypal_email"]').value,
+                bio: document.querySelector('textarea[name="bio"]').value,
+                address: document.querySelector('input[name="address"]').value,
+                phone: document.querySelector('input[name="phone"]').value,
+                country: document.querySelector('select[name="country"]').value,
+                postal: document.querySelector('input[name="postal"]').value,
+                instagram: document.querySelector('input[name="instagram"]').value,
+                tiktok: document.querySelector('input[name="tiktok"]').value,
+                youtube: document.querySelector('input[name="youtube"]').value,
+                spotify: document.querySelector('input[name="spotify"]').value,
+                facebook: document.querySelector('input[name="facebook"]').value,
+                twitter: document.querySelector('input[name="twitter"]').value,
+                site: document.querySelector('input[name="site"]').value,
+            };
+            return data;
+        }
+
+        function generateFormWithData(data) {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '{{ route('profile.update') }}';
+            form.style.display = 'none';
+
+            // Agregar token CSRF
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+
+            // Agregar método PUT
+            const methodInput = document.createElement('input');
+            methodInput.type = 'hidden';
+            methodInput.name = '_method';
+            methodInput.value = 'POST';
+            form.appendChild(methodInput);
+
+            // Agregar campos con los datos
+            for (const key in data) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = key;
+                input.value = data[key];
+                form.appendChild(input);
+            }
+
+            document.body.appendChild(form);
+            return form;
+        }
+
+        function sendForm(form) {
+            form.submit();
+        }
+
+        function saveChanges() {
+            const data = collectData();
+            const form = generateFormWithData(data);
+            sendForm(form);
+        }
+
+        function changeAvatar() {
+            // create a new input to select files
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('photo', file);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    fetch('{{ route('profile.update') }}', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Avatar actualizado',
+                                text: data.message,
+                                icon: 'success'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error al actualizar avatar',
+                                text: data.message,
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            title: 'Error al actualizar avatar',
+                            text: 'Ocurrió un error inesperado.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            };
+            fileInput.click();
+        }
+
+        function changeCover() {
+            // create a new input to select files
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = 'image/*';
+            fileInput.onchange = () => {
+                const file = fileInput.files[0];
+                if (file) {
+                    const formData = new FormData();
+                    formData.append('cover', file);
+                    formData.append('_token', '{{ csrf_token() }}');
+
+                    fetch('{{ route('profile.update') }}', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                title: 'Portada actualizado',
+                                text: data.message,
+                                icon: 'success'
+                            }).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                title: 'Error al actualizar la portada',
+                                text: data.message,
+                                icon: 'error'
+                            });
+                        }
+                    })
+                    .catch(() => {
+                        Swal.fire({
+                            title: 'Error al actualizar la portada',
+                            text: 'Ocurrió un error inesperado.',
+                            icon: 'error'
+                        });
+                    });
+                }
+            };
+            fileInput.click();
+        }
     </script>
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: 'Error al enviar el formulario',
+                text: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
+    @isset($success)
+        <script>
+            Swal.fire({
+                title: 'Completado',
+                text: '{{ $success }}',
+                icon: 'success'
+            });
+        </script>
+    @endisset
 @endpush

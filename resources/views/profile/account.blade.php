@@ -2,184 +2,231 @@
 @php
     $success = session('success');
     $error = session('error');
+
+    use Carbon\Carbon;
 @endphp
 
-@section('title', 'Perfil de Usuario')
+@section('title', 'Perfil - ' . config('app.name'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/css/profile.css') }}" />
 @endpush
 
 @section('content')
-    <!-- Content wrapper -->
-    <div class="content-wrapper pt-10 bg-body">
-        <!-- Content -->
-        <div class="container-xxl flex-grow-1 container-p-y mt-10">
-            <div class="row mt-3">
-                <div class="col-md-12">
-                    <div class="nav-align-top">
-                        <ul class="nav nav-pills flex-column flex-md-row mb-6 gap-md-0 gap-2">
-                            <li class="nav-item">
-                                <a class="nav-link active text-black" href="{{ route('profile.edit') }}"><i
-                                        class="icon-base ti tabler-users icon-sm me-1_5"></i> Información de Usuario</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ route('profile.billing') }}"><i
-                                        class="icon-base ti tabler-bookmark icon-sm me-1_5"></i> Información de
-                                    Facturación</a>
-                            </li>
-                        </ul>
+    <div class="page-wrapper container">
+        <!-- MAIN -->
+        <div class="main-content">
+
+            <!-- COVER / PROFILE HEADER -->
+            <div class="profile-cover">
+                <div class="profile-cover-overlay" style="
+    background: linear-gradient(135deg, rgba(15, 13, 11, .5), rgba(15, 13, 11, .3)), url('{{ $user->cover ?? $user->photo ?? config('app.logo_alter') }}') center/cover;"></div>
+                <div class="profile-header">
+                    <div class="avatar-wrap">
+                        <img src="{{ $user->photo ?? config('app.logo_alter') }}" alt="Avatar">
                     </div>
-                    <div class="card mb-6">
-                        <!-- Account -->
-                        <div class="card-body pt-4">
-                            @if (Auth::user()->role !== 'user' && !Auth::user()->paypal_email)
-                            <div class="alert alert-danger mb-6" role="alert">
-                                <h5 class="alert-heading mb-1 d-flex align-items-center">
-                                    <span class="alert-icon rounded"><i
-                                            class="icon-base ti tabler-alert-triangle icon-md"></i></span>
-                                    <span>¡Necesitamos tu atención!</span>
-                                </h5>
-                                <span class="ms-11 ps-1">No tienes Definido un Paypal E-mail, no podrás recibir pagos hasta que lo definas.</span>
-                            </div>
+                    <div class="profile-info">
+                        <div class="profile-level">
+                            @if ($user->role == 'worker')
+                                <i class="fas fa-music"></i> DJ
+                            @elseif ($user->role == 'developer')
+                                <i class="fas fa-tv"></i> DESARROLLO
+                            @else
+                                @if ($user->hasActivePlan())
+                                    <i class="fas fa-crown"></i> VIP
+                                @else
+                                    <i class="fas fa-star"></i> MIEMBRO
+                                @endif
                             @endif
-                            <form id="formUserSettings" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
-                                @csrf
-                                <div class="d-flex align-items-start align-items-sm-center gap-6">
-                                    <img src="{{ Auth::user()->photo ? Auth::user()->photo : config('app.logo') }}" alt="user-avatar" class="d-block w-px-100 h-px-100 rounded" id="uploadedAvatar" />
-                                    <div class="button-wrapper">
-                                        <label for="upload" class="btn btn-primary me-3 mb-4 text-black" tabindex="0">
-                                            <span class="d-none d-sm-block">Subir Logo Personal</span>
-                                            <i class="icon-base ti tabler-upload d-block d-sm-none"></i>
-                                            <input type="file" id="upload" name="photo" class="account-file-input" hidden accept="image/png, image/jpeg" onchange="document.getElementById('formUserSettings').submit()"/>
-                                        </label>
-                                        <a role="button" class="btn btn-label-secondary account-image-reset mb-4" href="{{ route('profile.restorePhoto') }}">
-                                            <i class="icon-base ti tabler-reset d-block d-sm-none"></i>
-                                            <span class="d-none d-sm-block">Reestablecer</span>
-                                        </a>
-
-                                        <div>Permitido JPG o PNG.</div>
-                                    </div>
-                                </div>
-                                <div class="row gy-4 gx-6 mb-6">
-                                    <div class="col-md-12 form-control-validation">
-                                        <label for="firstName" class="form-label">Nombre</label>
-                                        <input class="form-control" type="text" id="name" name="name"
-                                            value="{{ Auth::user()->name }}" autofocus />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label for="email" class="form-label">E-mail</label>
-                                        <input class="form-control" type="text" id="email" name="email"
-                                            value="{{ Auth::user()->email }}" placeholder="john.doe@example.com" />
-                                    </div>
-                                    @if (Auth::user()->role !== 'user')
-                                    <div class="col-md-6">
-                                        <label for="email" class="form-label">PayPal E-mail</label>
-                                        <input class="form-control" type="text" id="email" name="paypal_email" style="{{ Auth::user()->paypal_email ? '' : 'border-color: var(--bs-danger);' }}"
-                                            value="{{ Auth::user()->paypal_email }}" placeholder="john.doe@example.com" />
-                                    </div>
-                                    @endif
-                                </div>
-                                <div class="mt-2">
-                                    <button type="submit" class="btn btn-primary me-3 text-black">Guardar Cambios</button>
-                                    <button type="reset" class="btn btn-label-secondary">Cancelar</button>
-                                </div>
-                            </form>
                         </div>
-                        <!-- /Account -->
-                    </div>
-                    <!-- Change Password -->
-                    <div class="card mb-6">
-                        <h5 class="card-header">Cambiar Contraseña</h5>
-                        <div class="card-body pt-1">
-                            <form id="formAccountSettings" method="POST" action="{{ route('profile.changePassword') }}">
-                                @csrf
-                                <div class="row mb-sm-6 mb-2">
-                                    <div class="col-md-6 form-password-toggle form-control-validation">
-                                        <label class="form-label" for="currentPassword">Contraseña Actual</label>
-                                        <div>
-                                            <input class="form-control" type="password" name="currentPassword"
-                                                id="currentPassword"
-                                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                                required />
-                                            <!-- <span class="input-group-text cursor-pointer"><i class="icon-base ti tabler-eye-off icon-xs"></i></span> -->
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row gy-sm-6 gy-2 mb-sm-0 mb-2">
-                                    <div class="mb-6 col-md-6 form-password-toggle form-control-validation">
-                                        <label class="form-label" for="newPassword">Nueva Contraseña</label>
-                                        <div>
-                                            <input class="form-control" type="password" id="newPassword" name="newPassword"
-                                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                                required minlength="8" />
-                                        </div>
-                                    </div>
-
-                                    <div class="mb-6 col-md-6 form-password-toggle form-control-validation">
-                                        <label class="form-label" for="confirmPassword">Confirmar Nueva Contraseña</label>
-                                        <div>
-                                            <input class="form-control" type="password" name="confirmPassword"
-                                                id="confirmPassword"
-                                                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                                                required minlength="8" />
-                                        </div>
-                                    </div>
-                                </div>
-                                <h6 class="text-body">Requisitos de Contraseña:</h6>
-                                <ul class="ps-4 mb-0">
-                                    <li class="mb-4">Mínimo 8 carácteres de longitud</li>
-                                </ul>
-                                <div class="mt-6">
-                                    <button type="submit" class="btn btn-primary me-3 text-black">Cambiar Contraseña</button>
-                                </div>
-                            </form>
+                        <h1>{{ $user->name }}</h1>
+                        <div class="handle"> </div>
+                        <div class="profile-meta">
+                            <span><i class="fas fa-calendar"></i>Miembro desde {{ Carbon::parse($user->created_at)->format('M \d\e\ Y') }}</span>
                         </div>
                     </div>
-                    <!--/ Change Password -->
-                    <div class="card">
-                        <h5 class="card-header">Eliminar Cuenta</h5>
-                        <div class="card-body">
-                            <div class="mb-6 col-12">
-                                <div class="alert alert-warning">
-                                    <h5 class="alert-heading mb-1">¿Estás seguro que quieres eliminar tu cuenta?</h5>
-                                    <p class="mb-0">Una vez que elimines la cuenta, no podras recuperarla.</p>
-                                </div>
+                </div>
+                <a class="edit-btn" href="{{ route('profile.billing') }}"><i class="fas fa-pen"></i> <span>Editar Perfil</span></a>
+                @if($user->role != 'user') <a class="panel-btn" href="{{ route('filament.admin.pages.dashboard') }}"><i class="fas fa-dashboard"></i> <span>Panel de Control</span></a> @endif
+                <a class="logout-btn" href="{{ route('logout-user') }}"><i class="fas fa-right-from-bracket"></i> <span>Cerrar Sesión</span></a>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-download"></i></div>
+                    <div>
+                        <div class="stat-value">{{ $user->downloads->count() }}</div>
+                        <div class="stat-label">Descargadas Realizadas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+                    <div>
+                        <div class="stat-value">{{ $user->sales->count() }}</div>
+                        <div class="stat-label">Compras Directas</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
+                    <div>
+                        <div class="stat-value">{{ $subs }}</div>
+                        <div class="stat-label">Suscripciones</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
+                    <div>
+                        <div class="stat-value">{{ $currentPlan ?? 'Sin Plan Activo' }}</div>
+                        <div class="stat-label">PLAN ACTUAL</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="two-col">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Información Personal</h3>
+                    </div>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <div>
+                                <div class="info-label">Email</div>
+                                <div class="info-value">{{ $user->email }} @if($user->email_verified_at) <span class="verified">✓ Verificado</span> @endif</div>
                             </div>
-                            <a id="deactivate-account" onClick="mostrarAdvertencia()"
-                                class="btn btn-danger text-white">Eliminar Cuenta</a>
+                        </div>
+                        <div class="info-item">
+                            <i class="fa-brands fa-paypal"></i>
+                            <div>
+                                <div class="info-label">PayPal</div>
+                                <div class="info-value">{{ $user->phone ?? 'Sin Establecer' }} <i class="fas fa-info-circle" style="font-size: 0.7rem; cursor: pointer" title="Necesario para monetizar"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Datos de Facturación    </h3>
+                    </div>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <div>
+                                <div class="info-label">Teléfono</div>
+                                <div class="info-value">{{ $user->billing->phone ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-location-dot"></i>
+                            <div>
+                                <div class="info-label">Dirección</div>
+                                <div class="info-value">{{ $user->billing->address ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-globe"></i>
+                            <div>
+                                <div class="info-label">País</div>
+                                <div class="info-value">{{ $user->billing->country ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-globe"></i>
+                            <div>
+                                <div class="info-label">Código postal</div>
+                                <div class="info-value">{{ $user->billing->postal ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Redes Sociales</h3>
+                    </div>
+                    <div class="info-list">
+                        <div class="info-item">
+                            <i class="fab fa-facebook"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->facebook ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-instagram"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->instagram ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-youtube"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->youtube ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-tiktok"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->tiktok ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-spotify"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->spotify ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fab fa-x"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->twitter ?? 'Sin Establecer' }}</div>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-globe"></i>
+                            <div>
+                                <div class="info-value">{{ $user->socialLinks?->site ?? 'Sin Establecer' }}</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
+
+            <div class="two-col" style="grid-template-columns: 100%">
+                <div class="section-card">
+                    <div class="section-header">
+                        <h3>Actividad Reciente</h3>
+                    </div>
+                    <div class="activity-list">
+                        @foreach ($recentActivity as $activity)
+                            <div class="activity-item">
+                                <div>
+                                    <div class="activity-icon">
+                                        @if ($activity['type'] === 1) 
+                                            <i class="fas fa-crown"></i>
+                                        @else
+                                            <i class="fas fa-download"></i>
+                                        @endif
+                                    </div>
+                                    <div class="act-text">{{ $activity['title'] }}<br><strong>{{ $activity['description'] }}</strong></div>
+                                </div>
+                                <div class="act-price">
+                                    <div class="act-amount"><i class="fas fa-dollar-sign"></i> {{ number_format($activity['amount'], 2) }}</div>
+                                    <div class="act-status {{ $activity['status'] === 'paid' ? 'success' : ( $activity['status'] === 'pending' ? '' : 'danger' ) }}"> {{ $activity['status'] === 'paid' ? 'Completada' : ( $activity['status'] === 'pending' ? 'Pendiente' : 'Fallida' ) }}</div>
+                                    <div class="act-time">{{ $activity['date'] }}</div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <!-- / Content -->
     </div>
 @endsection
 
 @push('scripts')
-    <script>
-        function mostrarAdvertencia(e) {
-            Swal.fire({
-                title: '¿Estás seguro?',
-                text: 'Esta acción no se puede deshacer.',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, continuar',
-                cancelButtonText: 'Cancelar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    window.location.href = '/profile/delete';
-                }
-            });
-        }
 
-        document.querySelectorAll('form').forEach(form => {
-            form.addEventListener('submit', function(e) {
-                document.querySelector('#loader').style.display = 'flex';
-            });
-        });
-    </script>
     @isset($error)
         <script>
             Swal.fire({

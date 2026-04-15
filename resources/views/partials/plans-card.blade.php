@@ -4,26 +4,25 @@
         auth()->user()->current_plan_id === $plan->id &&
         auth()->user()->hasActivePlan();
 @endphp
-<div class="pricing-card">
-    <spam class="type">{{$plan->name}}</spam>
-    <div class="price" data-content="${{$plan->price}}"><span>$</span>{{$plan->price}}</div>
-    <h5 class="plan">plan</h5>
-    <div class="details mb-5">
-        <p>Duración: {{$plan->duration_months}} {{$plan->duration_months > 1 ? 'meses' : 'mes'}}</p>
-        <p>Descargas por archivo: {{$plan->downloads}}</p>
+<div class="plan-card">
+    <span class="plan-badge"></span>
+    <div id="icon"></div>
+    <div class="plan-name">{{$plan->name}}</div>
+    <div class="plan-price"><sup>$</sup>{{$plan->price}}</div>
+    <div class="plan-period">POR MES</div>
+    <ul class="plan-features">
+        <li><i class="fas fa-check"></i><span><strong>Límite de descargas: {{ $plan->downloads }}</strong></span></li>
         @if ($plan->features)
             @foreach ($plan->features as $item)
-                <p>{{ $item['value'] }}</p>
+                <li><i class="fas fa-check"></i><span><strong>{{ $item['value']}}</strong></span></li>
             @endforeach
         @endif
-    </div>
+    </ul>
     @if ($isActive)
-    <div class="buy-button active">
-        <h3 class="btn"><a style="color: gray">Ya lo tienes</a></h3>
-    </div>
+        <button class="plan-btn filled">ACTUAL</button>
     @else
-    <a  href="{{ route('payment.form', str_replace(' ', '_', $plan->name)) }}" class="buy-button">
-        <h3 class="btn">Adquirir</h3>
+    <a  href="{{ route('payment.form', str_replace(' ', '_', $plan->name)) }}" class="plan-btn filled">
+        ESCOGER PLAN
     </a>
     @endif
 </div>

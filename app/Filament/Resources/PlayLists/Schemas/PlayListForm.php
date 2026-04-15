@@ -2,10 +2,12 @@
 
 namespace App\Filament\Resources\PlayLists\Schemas;
 
+use App\Enums\FolderTypeEnum;
 use Dom\Text;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Tabs;
@@ -42,6 +44,11 @@ class PlayListForm
                                     ->directory('playlists/covers')
                                     ->disk('public')
                                     ->columnSpanFull(),
+                                Select::make('folder_id')
+                                    ->label('Carpeta')
+                                    ->options(fn () => \App\Models\Folder::where('type',  FolderTypeEnum::PLAYLIST->value)->pluck('name', 'id'))
+                                    ->searchable()
+                                    ->preload(),
                             ])
                             ->columns(2),
                     ])

@@ -1,5 +1,9 @@
 <?php
 
+use App\Models\SeoText;
+
+$seo = SeoText::firstOrCreate([]);
+
 return [
 
     /*
@@ -13,11 +17,15 @@ return [
     |
     */
 
-    'name' => env('APP_NAME', 'Laravel'),
+    'name' => $seo->app_name ?? env('APP_NAME', 'Laravel'),
 
-    'logo' => env('APP_URL').'/assets/img/favicon/cubanpool logo AZUL 3d.png',
+    'keywords' => $seo->app_keywords ?? env('APP_KEYWORDS', 'Laravel'),
 
-    'logo_alter' => env('APP_URL').'/assets/img/favicon/cubanpool logo dorado 3d.png',
+    'description' => $seo->app_description ?? env('APP_DESCRIPTION', 'A Laravel proyect'),
+
+    'logo' => $seo->app_logo ? $seo->logoUrl() :  env('APP_URL').'/assets/img/logo_alter.png',
+
+    'logo_alter' => env('APP_URL').'/assets/img/logo_alter.png',
 
     /*
     |--------------------------------------------------------------------------

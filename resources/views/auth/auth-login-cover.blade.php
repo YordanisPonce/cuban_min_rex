@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta name="robots" content="noindex, nofollow" />
-    <title>@yield('title', 'Cuban_Mix_Rex')</title>
+    <title>@yield('title', 'Iniciar sesión - '.config('app.name'))</title>
 
     <meta name="description" content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
     <!-- Canonical SEO -->
@@ -39,7 +39,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/" />
     <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&amp;ampdisplay=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
     <!-- Vendors CSS -->
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/iconify-icons.css') }}" />
 
@@ -81,45 +83,52 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css') }}"/>
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/@form-validation/form-validation.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/page-auth.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" />
 
     @stack('styles')
     <style>
-      :root{
-          --bs-primary: #00FF9F !important; /* Color de Bottones */
-          /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
+        :root {
+            --bs-primary: var(--primray) !important;
+            /* Color de Bottones */
+            /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
 
-          --download-button: #FF2EC4 !important;
-          --play-button: #00C8FF !important;
-      }
+            --download-button: #FF2EC4 !important;
+            --play-button: #00C8FF !important;
+        }
+
+        body {
+            background: url('{{ asset('assets/img/bg.png') }}') no-repeat center center fixed;
+            background-color: rgba(20, 18, 16, .65);
+            background-blend-mode: overlay;
+            background-size: cover;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary) !important;
+            color: #fff !important;
+        }
+
+        h1.text-center{
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            justify-content: center;
+
+            & img{
+                width: 50px;
+                height: 50px;
+            }
+        }
     </style>
 </head>
 
-<body style="background-color: #000 !important">
+<body>
     <div class="authentication-wrapper authentication-cover">
-        <!-- Logo -->
-        <a href="{{ url('/') }}" class="app-brand auth-cover-brand">
-            <span class="app-brand-logo demo">
-                <span class="text-primary">
-                    <img src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"
-                                style="width: 100px; height: 50px; object-fit: contain; border-radius: 50%">
-                </span>
-            </span>
-            <span class="app-brand-text demo text-heading fw-bold">{{ config('app.name') }}</span>
-        </a>
-        <!-- /Logo -->
-
-        <div class="authentication-inner row m-0">
-            <!-- Left side illustration -->
-            <div class="d-none d-xl-flex col-xl-8 p-0">
-                <div class="auth-cover-bg d-flex justify-content-center align-items-center">
-                    <img src="{{ asset('assets/img/illustrations/auth-login-illustration-light.png') }}" alt="auth-login-cover" class="my-5 auth-illustration" />
-                    <img src="{{ asset('assets/img/illustrations/bg-shape-image-light.png') }}" alt="auth-login-cover" class="platform-bg" />
-                </div>
-            </div>
-
+        <div class="authentication-inner row m-0 flex justify-content-center">
             <!-- Login form -->
-            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg p-sm-12 p-6" style="background-color: #000 !important">
-                <div class="w-px-400 mx-auto mt-12 pt-5">
+            <div class="d-flex col-12 col-xl-4 align-items-center authentication-bg mx-10" style="background-color: rgba(0,0,0,.5) !important; border-radius: 18px">
+                <div class="w-px-400 mx-auto">
+                    <h1 class="text-center"><img class="app_logo" src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"> {{ config('app.name') }}</h1>
                     <h4 class="mb-1">Bienvenido a {{ config('app.name') }}! 👋</h4>
                     <p class="mb-6">Por favor autentiquese para comenzar la experiencia.</p>
 
@@ -150,7 +159,7 @@
                                 <label class="form-check-label" for="remember-me"> Recuérdame </label>
                             </div>
                             @if (Route::has('password.request'))
-                                <a href="{{ route('password.request') }}"><p class="mb-0">¿Olvidó su contraseña?</p></a>
+                                <a href="{{ route('password.request') }}" class="text-primary"><p class="mb-0">¿Olvidó su contraseña?</p></a>
                             @endif
                         </div>
 
@@ -159,7 +168,7 @@
 
                     <p class="text-center mb-4">
                         <span>Nuevo en nuestra plataforma?</span>
-                        <a href="{{ route('register') }}"><span>Crea una cuenta</span></a>
+                        <a href="{{ route('register') }}" class="text-primary"><span>Crea una cuenta</span></a>
                     </p>
 
                     {{-- <div class="divider my-6">

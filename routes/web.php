@@ -11,10 +11,15 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\FollowController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlayListController;
 use App\Http\Middleware\IsUserMiddleware;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\PlayList;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
@@ -33,7 +38,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login'); // mostrar login
     Route::post('/login', [AuthenticatedSessionController::class, 'store']); // procesar login
-    Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout'); // logout
+    Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout-user'); // logout
 
     Route::get('/auth/callback/google', function () {
         $googleUser = Socialite::driver('google')->user();
@@ -85,41 +90,17 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/payment/cup/{file}', [PaymentController::class, 'showCUPForm'])->name('payment.cup.form');
     Route::post('/payment/cup/{file}/pay', [PaymentController::class, 'processCUPPayment'])->name('payment.cup.proccess');
 
-    Route::get('/faq', [HomeController::class, 'faq'])->name('faq');
-    Route::get('/radio', [HomeController::class, 'radio'])->name('radio');
-    Route::get('/contact', [HomeController::class, 'contact'])->name('contact');
-    Route::post('/contact/send', [HomeController::class, 'sendContactForm'])->name('contact.form');
     Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
+    Route::get('/djs', [HomeController::class, 'djs'])->name('djs');
     Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
     Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
+    Route::get('/remixes/exclusives', [HomeController::class, 'exclusiveRemixes'])->name('remixes.exclusives');
+    Route::get('/videos/exclusives', [HomeController::class, 'exclusiveVideos'])->name('videos.exclusives');
     Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
 
     Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
 
-    Route::get('/search', [SearchController::class, 'search'])->name('search');
-
-    Route::get('/categories/{category}/list', [CategoryController::class, 'show'])
-        ->name('category.show');
-
-    Route::get('/categories/{category}/collections', [CategoryController::class, 'showCollections'])
-        ->name('category.showCollections');
-
-    Route::get('/collections', [CollectionController::class, 'index'])
-        ->name('collection.index');
-    Route::get('/radio/collections', [CollectionController::class, 'radio'])
-        ->name('radio.collection.index');
-    Route::get('/collections/news', [CollectionController::class, 'news'])
-        ->name('collection.news');
-    Route::get('/collections/recommended', [CollectionController::class, 'recommended'])
-        ->name('collection.recommended');
-    Route::get('/collections/DJ/{dj}', [CollectionController::class, 'dj'])
-        ->name('collection.dj');
-
-    Route::get('/collection/{collection}', [CollectionController::class, 'show'])
-        ->name('collection.show');
-
-    Route::get('/collection/{collection}/play/{file}', [FileController::class, 'play'])
-        ->name('file.play');
+    Route::get('/packs', [CollectionController::class, 'index'])->name('collection.index');
 
     Route::get('/file/{file}', [FileController::class, 'download'])
         ->name('file.download');
@@ -129,22 +110,17 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     Route::get('/cart/pay', [FileController::class, 'pay'])
         ->name('file.pay');
-    
+
+    Route::get('/radio', [HomeController::class, 'radio'])->name('radio');
+    Route::get('/radio/remixes', [HomeController::class, 'radio_remixes'])->name('radio.remixes');
     Route::get('/radio/file/{file}/pay', [FileController::class, 'payFile'])
         ->name('radio.file.pay');
-
-    Route::get('/collection/download/{collection}', [CollectionController::class, 'download'])
-        ->name('collection.download');
 
     // Webhook de Stripe
     Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
         ->name('stripe.webhook');
 
     Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
-
-    // routes/web.php
-    Route::get('/collections/{collection}/playlist', [\App\Http\Controllers\CollectionController::class, 'playlist'])
-        ->name('collections.playlist');
 
     Route::get('files/download/{path}', function (string $path) {
         if (!request()->hasValidSignature()) {
@@ -175,17 +151,78 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
 
     Route::get('/playlists', [PlayListController::class, 'index'])->name('playlist.index');
-    Route::get('/playlists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
-    Route::get('/playlists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');
-    Route::get('/playlists/{playlist}/download_item/{itemId}', [PlayListController::class, 'download_item'])->name('playlist.download_item');
-    Route::get('/playlists/{playlist}/add_to_cart', [PlayListController::class, 'addToCart'])->name('playlist.add.cart');
-    Route::get('/playlists/{playlist}/add_item_to_cart/{itemId}', [PlayListController::class, 'addItemToCart'])->name('playlist.add.item.cart');
-    Route::get('/playlists/{playlist}/remove_to_cart', [PlayListController::class, 'removeToCart'])->name('playlist.remove.cart');
-    Route::get('/playlists/{playlist}/remove_item_to_cart/{itemId}', [PlayListController::class, 'removeItemToCart'])->name('playlist.remove.item.cart');
+    Route::get('/playlists/lists', [PlayListController::class, 'list'])->name('playlist.list');
+    Route::get('/playlists/lists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
+    Route::get('/playlists/lists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');
+    Route::get('/playlists/lists/{playlist}/download_item/{itemId}', [PlayListController::class, 'download_item'])->name('playlist.download_item');
+    Route::get('/playlists/lists/{playlist}/add_to_cart', [PlayListController::class, 'addToCart'])->name('playlist.add.cart');
+    Route::get('/playlists/lists/{playlist}/add_item_to_cart/{itemId}', [PlayListController::class, 'addItemToCart'])->name('playlist.add.item.cart');
+    Route::get('/playlists/lists/{playlist}/remove_to_cart', [PlayListController::class, 'removeToCart'])->name('playlist.remove.cart');
+    Route::get('/playlists/lists/{playlist}/remove_item_to_cart/{itemId}', [PlayListController::class, 'removeItemToCart'])->name('playlist.remove.item.cart');
+    Route::get('/playlists-get-tracks/{id}', function($id){
+        $playlist = PlayList::find($id);
 
+        $tracks = $playlist->items()->get()->transform(function ($track) use($playlist) {
+            return [
+                'id' => (string) $track->id,
+                'date' => $track->created_at,
+                'artist' => $playlist->user->name,
+                'title' => $track->title,
+                'img' => $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo'),
+                'bpm' => null,
+                'playlist_id' => $playlist->id,
+                'duration' => 120,
+                'genre' => null,
+                'badge' => null,
+                'price' => $track->price,
+                'url' => Storage::disk('s3')->url($track->file_path),
+                'downloads' => $track->downloads->count(),
+                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
+                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
+                'addToCart' => route('playlist.add.item.cart', [$playlist->name, $track->id]),
+            ];
+        });
+
+        if($playlist) return response()->json(['tracks' => $tracks]);
+
+        return response(null, 404);
+    });
+
+    // Rutas para textos legales
+    Route::get('/legal', [HomeController::class, 'legal'])->name('legal');
+    Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
+    Route::get('/cookies', [HomeController::class, 'cookies'])->name('cookies');
+    Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
+
+    
+    Route::get('/djs/{dj}/follow', [FollowController::class, 'follow'])
+        ->middleware('auth')
+        ->name('follow');
+    Route::get('/djs/{dj}/ntf', [FollowController::class, 'ntf'])
+        ->middleware('auth')
+        ->name('ntf');
+
+    Route::get('/notifications', [HomeController::class, 'ntfs'])
+        ->middleware('auth')
+        ->name('ntfs');
+
+    Route::post('/notifications/update-settings', [HomeController::class, 'ntfs_setting_update'])
+        ->middleware('auth')
+        ->name('ntfs.update');
+
+    Route::get('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+        ->middleware('auth')
+        ->name('ntfs.read.all');
+
+    Route::get('/notifications/delete-all', [NotificationController::class, 'deleteAll'])
+        ->middleware('auth')
+        ->name('ntfs.delete.all');
+
+    Route::get('/notifications/delete/{id}', [NotificationController::class, 'delete'])
+        ->middleware('auth')
+        ->name('ntfs.delete');
 
     require __DIR__ . '/auth.php';
-    require __DIR__ . '/api.php';
 });
 
 

@@ -24,6 +24,8 @@ class File extends Model
         'status',
         'sections',
         'download_count',
+        'musical_note',
+        'isExclusive',
     ];
 
     /**
@@ -149,6 +151,10 @@ class File extends Model
     public function scopeSection($query, $section)
     {
         return $query->whereJsonContains('sections', $section);
+    }
+    
+    public function intro(){
+        return Storage::disk('s3')->url($this->file);
     }
 
     /**

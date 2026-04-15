@@ -5,6 +5,7 @@ namespace App\Filament\Widgets;
 use App\Enums\SectionEnum;
 use App\Models\Order;
 use App\Models\Sale;
+use App\Models\User;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -94,6 +95,18 @@ class DevStatsWidget extends BaseWidget
 
             Stat::make('Comision total', '$ '.$plansComision + $comision)
                 ->description('Comision Ventas + Suscripciones')
+                ->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)
+                ->color('success'),
+
+            Stat::make('Total Generado Sin Liquidar', '$ '. User::getGeneratedAmount())
+                ->extraAttributes(['style' => 'background-color: #ccffaa;'])
+                ->description('Ventas + Suscripciones')
+                ->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)
+                ->color('success'),
+
+            Stat::make('Pendiente Por Cobrar', '$ '. User::getDevUnpaidCommition())
+                ->extraAttributes(['style' => 'background-color: #aaffcc;'])
+                ->description('Ventas + Suscripciones')
                 ->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)
                 ->color('success'),
         ];

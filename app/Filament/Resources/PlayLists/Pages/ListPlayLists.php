@@ -2,10 +2,13 @@
 
 namespace App\Filament\Resources\PlayLists\Pages;
 
+use App\Enums\FolderTypeEnum;
 use App\Filament\Resources\PlayLists\PlayListResource;
+use App\Http\Controllers\NotificationController;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
@@ -29,6 +32,11 @@ class ListPlayLists extends ListRecords
                         TextInput::make('name')->label('Nombre de la Playlist')->required()->columnSpanFull(),
                         TextInput::make('price')->label('Precio total')->numeric()->prefix('$ ')->default(0.00),
                         TextInput::make('items_price')->label('Precio de los Audios por separado')->numeric()->prefix('$ ')->default(0.00),
+                        Select::make('folder_id')
+                            ->label('Carpeta')
+                            ->options(fn () => \App\Models\Folder::where('type', FolderTypeEnum::PLAYLIST->value)->pluck('name', 'id'))
+                            ->searchable()
+                            ->preload(),
                         FileUpload::make('items')
                             ->label('Archivos')
                             ->helperText('Puedes subir múltiples archivos de audio para esta playlist. Mientras mayor cantidad de archivos, más tiempo tomará el procesamiento. Se paciente, por favor.')
@@ -67,6 +75,13 @@ class ListPlayLists extends ListRecords
                         ]);
                         // Eliminar el archivo temporal después de procesarlo
                         unlink($stream);
+                    }
+
+                    $followers = $file->user->followers;
+                    foreach ($followers as $follower) {
+                        if ($follower->ntfs_prefs->new_remixes) {
+                            NotificationController::sendPlayListNtf($follower->id, $playlist->id);
+                        }
                     }
                     // Retornar un mensaje de éxito o redirigir
                     Notification::make()->title('Playlist creada exitosamente')->success()->send();

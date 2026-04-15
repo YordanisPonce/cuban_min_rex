@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class OrderResource extends Resource
 {
@@ -27,6 +28,8 @@ class OrderResource extends Resource
     protected static ?int $navigationSort = 6;
 
     protected static ?string $pluralModelLabel = 'Órdenes';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Gestión';
 
     public static function canAccess(): bool
     {

@@ -13,6 +13,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class FileResource extends Resource
 {
@@ -25,6 +26,8 @@ class FileResource extends Resource
     protected static ?int $navigationSort = 4;
     
     protected static string|null $label = 'Archivos';
+
+    protected static string|UnitEnum|null $navigationGroup = 'Archivos';
 
     public static function form(Schema $schema): Schema
     {

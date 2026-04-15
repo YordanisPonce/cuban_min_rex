@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Files\Schemas;
 
+use App\Enums\FolderTypeEnum;
 use App\Enums\SectionEnum;
 use App\Models\Category;
 use Filament\Forms\Components\Select;
@@ -12,6 +13,7 @@ use Illuminate\Support\Str;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Livewire\Features\SupportFileUploads\TemporaryUploadedFile;
 
 class FileForm
@@ -38,14 +40,8 @@ class FileForm
                 TextInput::make('bpm')
                     ->label('BPM')
                     ->required(),
-                Select::make('status')
-                    ->label('Estado')
-                    ->required()
-                    ->options([
-                        'active' => 'Activo',
-                        'inactive' => 'Inactivo',
-                    ])
-                    ->default('active'),
+                TextInput::make('musical_note')
+                    ->label('Nota'),
                 FileUpload::make('poster')
                     ->label('Subir Poster')
                     ->image()
@@ -79,6 +75,25 @@ class FileForm
                     })
                     ->multiple()
                     ->required(),
+                
+                Select::make('status')
+                    ->label('Estado')
+                    ->required()
+                    ->options([
+                        'active' => 'Activo',
+                        'inactive' => 'Inactivo',
+                    ])
+                    ->default('active'),
+
+                Select::make('folder_id')
+                    ->label('Carpeta')
+                    ->options(fn () => \App\Models\Folder::where('type',  FolderTypeEnum::PACKS->value)->pluck('name', 'id'))
+                    ->searchable()
+                    ->preload(),
+
+                Toggle::make('isExclusive')
+                    ->label('Contenido exclusivo')
+                    ->default(false),
 
             ]);
     }

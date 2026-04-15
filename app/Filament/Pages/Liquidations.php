@@ -23,6 +23,8 @@ use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Toggle;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Utilities\Get as UtilitiesGet;
+use UnitEnum;
+
 class Liquidations extends Page
 {
     protected string $view = 'filament.pages.liquidations';
@@ -32,6 +34,8 @@ class Liquidations extends Page
     protected static ?int $navigationSort = 1;
 
     protected static BackedEnum|string|null $navigationIcon = Heroicon::CurrencyDollar;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Cotización';
 
     public static function canAccess(): bool
     {

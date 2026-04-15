@@ -41,10 +41,6 @@ class UsersTable
                     ->label('Confirmación del Correo')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('role')
-                    ->label('Rol')
-                    ->searchable()
-                    ->getStateUsing(fn($record) => $record->role === 'admin' ? 'Administrador' : ($record->role === 'worker' ? 'Trabajador' : 'Usuario')),
                 TextColumn::make('currentPlan.name')
                     ->label('Subscripción Activa'),
                 TextColumn::make('created_at')
@@ -63,13 +59,6 @@ class UsersTable
                     ->label('Subscripción activa')
                     ->toggle()
                     ->query(fn(Builder $query): Builder => $query->whereNot('current_plan_id', null)),
-                SelectFilter::make('role')
-                    ->label('Rol')
-                    ->options([
-                        'user' => 'Usuario',
-                        'worker' => 'Trabajador',
-                        'admin' => 'Administrador',
-                    ]),
             ])->filtersTriggerAction(
                 fn(Action $action) => $action
                     ->button()
@@ -201,7 +190,7 @@ class UsersTable
             ->toolbarActions([
             ])
             ->modifyQueryUsing(
-                fn($record): Builder => auth()->user()?->role === 'admin' ? User::query()->whereNot('role', 'developer')->orderBy('id', 'desc') : User::query()->whereNot('current_plan_id')->orderBy('id', 'desc')
+                fn($record): Builder => auth()->user()?->role === 'admin' ? User::query()->where('role', 'user')->orderBy('id', 'desc') : User::query()->whereNotNull('current_plan_id')->orderBy('id', 'desc')
             );
     }
 

@@ -1,62 +1,54 @@
 @extends('layouts.app')
 
-@section('title', "Djs – ".config('app.name'))
+@section('title', 'Djs – ' . config('app.name'))
 
-@section('content')
-<section class="section-py bg-body mt-10 mt-md-0">
-    @php $hasDjs = isset($djs) && count($djs) > 0; @endphp
+@push('styles')
+    <link rel="stylesheet" href="{{ asset('assets/css/djs.css') }}">
+@endpush
 
-    @if ($hasDjs)
-        @foreach($djs as $dj)
-            @if ($dj->files()->count() > 0)
-                @include('partials.dj', [
-                    'id' => $dj->id,
-                    'badge' => 'DJ',
-                    'title' => $dj->name,
-                    'subtitle' => ' ',
-                    'ctaText' => 'Ver Más',
-                    'ctaHref' => route('search', ['categories' => '','remixers' => $dj->name, 'search' => '']),
-
-                    'packs' => $dj->collections()->take(10)->get(),
-                    'singles' => $dj->files()->orderBy('created_at', 'desc')->take(10)->get(),
-
-                ])
-            @endif
-        @endforeach
-        <hr class="m-0 mt-6 mt-md-12">
-        <nav class="container mt-3" style="margin: auto;">
-            <ul class="pagination" style="--bs-pagination-border-radius: 0%;">
-                @if ($djs->onFirstPage())
-                    <li class="page-item disabled"><span class="page-link">←</span></li>
-                @else
-                    <li class="page-item"><a class="page-link" href="{{ $djs->previousPageUrl() }}">←</a></li>
-                @endif
-
-                @for ($i = 1; $i <= $djs->lastPage(); $i++)
-                    @if ($i == $djs->currentPage())
-                        <li class="page-item active"><span class="page-link">{{ $i }}</span></li>
-                    @else
-                        <li class="page-item"><a class="page-link" href="{{ $djs->url($i) }}">{{ $i }}</a></li>
-                    @endif
-                @endfor
-
-                @if ($djs->hasMorePages())
-                    <li class="page-item"><a class="page-link" href="{{ $djs->nextPageUrl() }}">→</a></li>
-                @else
-                    <li class="page-item disabled"><span class="page-link">→</span></li>
-                @endif
-            </ul>
-        </nav>
-    @else
-    <section class="section-py">
+@section('content')<!-- HERO -->
+    <section class="hero container">
+        <div class="hero-bg">
+            <img style="width: 100%" src="{{ asset('assets/img/hero-base.jpeg') }}" alt="hero-banner">
+            <div class="overlay"></div>
+        </div>
         <div class="container">
-            <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                <h3 class="h5 fw-bold mb-2">Aún no tenemos Djs destacados</h3>
-                <p class="text-body-secondary mb-3"> </p>
-                <a href="{{ route('home') }}" class="btn btn-label-primary">Regresar</a>
+            <h1 data-aos="fade-right" data-aos-delay="300">DJS<br><span class="text-primary">DESTACADOS</span></h1>
+            <p data-aos="fade-right" data-aos-delay="500">Descubre a los mejores DJs disponibles para tus fiestas y eventos.
+            </p>
+            <ul>
+                <li data-aos="fade-right" data-aos-delay="700"><strong>+1000 tracks</strong> actualizados semanalmente.</li>
+            </ul>
+            <div class="hero-buttons">
+                <a href="{{ route('plans') }}" data-aos="fade-right" data-aos-delay="1100" class="btn-primary"><i class="fas fa-crown"></i>
+                    LOS MEJORES REMIXES</a>
+                <a href="{{ route('plans') }}" data-aos="fade-right" data-aos-delay="1300" class="btn-outline"
+                    style="display:inline-flex;align-items:center;gap:8px"><i class="fas fa-crown"></i>
+                    VER PLANES</a>
             </div>
         </div>
     </section>
-    @endif
-</section>
+
+    <div class="djs-container">
+        <p class="page-subtitle"></p>
+
+        <!-- FILTERS -->
+        <form class="filters">
+            <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Buscar DJs..." name="search" id="searchInput" value="{{ request('search') }}" onchange="this.form.submit()">
+            </div>
+        </form>
+
+        <!-- DJ GRID -->
+        <div class="dj-grid" id="djGrid">
+            @foreach ($djs as $dj)
+                @include('partials.dj-card', ['item' => $dj])
+            @endforeach
+        </div>
+
+        <div>
+            {{ $djs->onEachSide(1)->links() }}
+        </div>
+    </div>
 @endsection

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Storage;
 
 class PlayListItem extends Model
@@ -33,6 +34,11 @@ class PlayListItem extends Model
     public function playList(): BelongsTo
     {
         return $this->belongsTo(PlayList::class);
+    }
+
+    public function downloads(): HasMany
+    {
+        return $this->hasMany(Download::class);
     }
 
     public function getFileUrl()

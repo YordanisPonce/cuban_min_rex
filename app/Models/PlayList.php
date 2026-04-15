@@ -14,6 +14,7 @@ class PlayList extends Model
         'description',
         'user_id',
         'is_public',
+        'folder_id',
         'price'
     ];
 
@@ -26,6 +27,21 @@ class PlayList extends Model
     public function items()
     {
         return $this->hasMany(PlayListItem::class);
+    }
+
+    public function downloads()
+    {
+        return $this->hasMany(Download::class);
+    }
+
+    public function sales()
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function folder(): BelongsTo
+    {
+        return $this->belongsTo(Folder::class);
     }
 
     /**
@@ -75,6 +91,9 @@ class PlayList extends Model
             $firstPlan = Plan::orderBy('price')->first();
 
             if($user->hasActivePlan() && $user->current_plan_id){
+                if($user->plan_start_at){
+                    return $user->get_current_plan_consume_downloads() < $user->plan->downloads && $user->current_plan_id != $firstPlan->id;
+                }
                 return $user->current_plan_id != $firstPlan->id;
             }
         }

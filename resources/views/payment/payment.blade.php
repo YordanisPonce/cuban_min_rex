@@ -3,12 +3,10 @@
 @section('title', 'Checkout')
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />
+    <link rel="stylesheet" href="{{ asset('/assets/css/payment.css') }}" />
 @endpush
 
 @section('content')
-
-    <!-- Sección de Checkout -->
     <section class="section-py bg-body mt-10 mt-md-1">
         <div class="container mt-5">
             <div class="card px-3">
@@ -18,8 +16,7 @@
                         <h4 class="mb-2">Finalizar compra</h4>
                         <p class="mb-2">
                             {{ isset($planId)
-                                ? 'Todos los planes incluyen funciones avanzadas para impulsar tu música.
-                                                        Escoge el plan que mejor se adapte a tus necesidades.'
+                                ? 'Todos los planes incluyen funciones avanzadas para impulsar tu música. Escoge el plan que mejor se adapte a tus necesidades.'
                                 : 'Antes de proceder con el pago revise bien los datos de facturación. Una vez realizado el pago se le enviará un correo con el enlace de descarga del archivo.' }}
                         </p>
                         <h4 class="mb-2">Detalles de facturación</h4>
@@ -155,11 +152,13 @@
                     </div>
 
                     <!-- Resumen del Pedido -->
-                    <div class="col-lg-5 card-body p-md-8">
-                        <h4 class="mb-2">Resumen del pedido</h4>
-                        <p class="mb-8">
-                            Gestiona y controla tus pedidos antes, durante y después de la compra.
-                        </p>
+                    <div class="card-body plan-details">
+                        <div class="pay-start">
+                            <h4 class="mb-2">Resumen del pedido</h4>
+                            <p class="mb-8">
+                                Gestiona y controla tus pedidos antes, durante y después de la compra.
+                            </p>
+                        </div>
 
                         <div class="bg-lighter p-6 rounded">
                             @isset($planId)
@@ -169,34 +168,36 @@
                                         @if ($plan->description)
                                             <p>{!! $plan->description !!}</p>
                                         @endif
-                                        <p>Cantidad de descargas: {{ $plan->downloads }}</p>
-                                        <div class="d-flex align-items-center mb-4">
+                                        <ul class="plan-features">
+                                            <li><i class="fas fa-check"></i><span><strong>Límite de descargas:
+                                                        {{ $plan->downloads }}</strong></span></li>
+                                            @if ($plan->features)
+                                                @foreach ($plan->features as $item)
+                                                    <li><i
+                                                            class="fas fa-check"></i><span><strong>{{ $item['value'] }}</strong></span>
+                                                    </li>
+                                                @endforeach
+                                            @endif
+                                        </ul>
+                                        <div class="plan-price">
                                             <h1 class="text-heading mb-0">$ {{ $plan->price }}</h1>
                                             <sub class="h6 text-body mb-n3">/mes</sub>
                                         </div>
                                     @endif
                                 @endforeach
                             @endisset
-
-                            @isset($file)
-                                <p>Música a comprar: {{ $file->name }}</p>
-                                <div class="d-flex align-items-center mb-4">
-                                    <h1 class="text-heading mb-0">$ {{ $file->price }}</h1>
-                                </div>
-                            @endisset
                         </div>
 
-                        <div class="mt-5">
-
+                        <div class="pay-end">
                             <div class="d-grid mt-5">
-                                <button id="checkoutBtn" class="btn btn-success" form="checkoutForm">
+                                <button id="checkoutBtn" class="btn-pay btn-primary" form="checkoutForm">
                                     <span class="me-2">Proceder con el pago</span>
                                     <i class="icon-base ti tabler-arrow-right scaleX-n1-rtl"></i>
                                 </button>
                             </div>
 
-                            <p class="mt-8">
-                                Al continuar, aceptas nuestros Términos de Servicio y la Política de Privacidad.
+                            <p>
+                                <i class="fas fa-info-circle"></i> Al continuar, aceptas nuestros <a href="{{ route('terms') }}"><strong>Términos de Servicio</strong></a> y la <a href="{{ route('privacy') }}"><strong>Política de Privacidad</strong></a>.
                                 Ten en cuenta que los pagos no son reembolsables.
                             </p>
                         </div>
@@ -208,90 +209,82 @@
     <!--/ Sección de Checkout -->
 
 @endsection
-
 @push('scripts')
     <script src="{{ asset('assets/vendor/js/dropdown-hover.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/mega-dropdown.js') }}"></script>
     <script src="{{ asset('assets/js/pages-pricing.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @push('scripts')
-        <script src="{{ asset('assets/vendor/js/dropdown-hover.js') }}"></script>
-        <script src="{{ asset('assets/vendor/js/mega-dropdown.js') }}"></script>
-        <script src="{{ asset('assets/js/pages-pricing.js') }}"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.getElementById("checkoutForm");
+            const button = document.getElementById("checkoutBtn");
 
-        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const form = document.getElementById("checkoutForm");
-                const button = document.getElementById("checkoutBtn");
+            button.addEventListener("click", function(e) {
+                e.preventDefault();
 
-                button.addEventListener("click", function(e) {
-                    e.preventDefault();
+                Swal.fire({
+                    title: '¿Proceder con el pago?',
+                    text: "Serás redirigido a Stripe para completar tu pago.",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, continuar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        const requiredFields = form.querySelectorAll('[required]');
+                        let allFilled = true;
 
-                    Swal.fire({
-                        title: '¿Proceder con el pago?',
-                        text: "Serás redirigido a Stripe para completar tu pago.",
-                        icon: 'warning',
-                        showCancelButton: true,
-                        confirmButtonText: 'Sí, continuar',
-                        cancelButtonText: 'Cancelar'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            const requiredFields = form.querySelectorAll('[required]');
-                            let allFilled = true;
-
-                            requiredFields.forEach(field => {
-                                if (!field.value.trim()) {
-                                    allFilled = false;
-                                }
-                            });
-
-                            if (allFilled) {
-                                let formData = new FormData(form);
-                                document.querySelector('#loader').style.display = 'flex';
-                                fetch(form.action, {
-                                        method: "POST",
-                                        headers: {
-                                            "X-CSRF-TOKEN": document.querySelector(
-                                                'input[name="_token"]').value
-                                        },
-                                        body: formData
-                                    })
-                                    .then(async res => {
-                                        let data;
-                                        try {
-                                            data = await res.json();
-                                        } catch {
-                                            document.querySelector('#loader').style.display =
-                                                'none';
-                                            throw new Error(
-                                            "Respuesta inesperada del servidor");
-                                        }
-
-                                        if (res.ok && data.url) {
-                                            window.location.href = data.url;
-                                        } else {
-                                            document.querySelector('#loader').style.display =
-                                                'none';
-                                            Swal.fire("Error", data.error ??
-                                                "No se pudo generar la sesión de pago",
-                                                "error");
-                                        }
-                                    })
-                                    .catch(err => {
-                                        document.querySelector('#loader').style.display = 'none';
-                                        Swal.fire("Error", err.message, "error");
-                                    });
-                            } else {
-                                Swal.fire("Error",
-                                    "Por favor, rellene todos los campos del formulario de facturación.",
-                                    "error");
+                        requiredFields.forEach(field => {
+                            if (!field.value.trim()) {
+                                allFilled = false;
                             }
+                        });
+
+                        if (allFilled) {
+                            let formData = new FormData(form);
+                            document.querySelector('#loader').style.display = 'flex';
+                            fetch(form.action, {
+                                    method: "POST",
+                                    headers: {
+                                        "X-CSRF-TOKEN": document.querySelector(
+                                            'input[name="_token"]').value
+                                    },
+                                    body: formData
+                                })
+                                .then(async res => {
+                                    let data;
+                                    try {
+                                        data = await res.json();
+                                    } catch {
+                                        document.querySelector('#loader').style.display =
+                                            'none';
+                                        throw new Error(
+                                            "Respuesta inesperada del servidor");
+                                    }
+
+                                    if (res.ok && data.url) {
+                                        window.location.href = data.url;
+                                    } else {
+                                        document.querySelector('#loader').style.display =
+                                            'none';
+                                        Swal.fire("Error", data.error ??
+                                            "No se pudo generar la sesión de pago",
+                                            "error");
+                                    }
+                                })
+                                .catch(err => {
+                                    document.querySelector('#loader').style.display = 'none';
+                                    Swal.fire("Error", err.message, "error");
+                                });
+                        } else {
+                            Swal.fire("Error",
+                                "Por favor, rellene todos los campos del formulario de facturación.",
+                                "error");
                         }
-                    });
+                    }
                 });
             });
-        </script>
-    @endpush
+        });
+    </script>
 @endpush

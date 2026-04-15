@@ -1,35 +1,39 @@
+
 @php
-use App\Models\Cart;
-$cover = $item->cover ? $item->getCoverUrl() : ($item->user?->photo ? $item->user?->photo : config('app.logo'));
+    use Carbon\Carbon;
 @endphp
 
-<div class="col-lg-2 col-md-3 col-sm-4 col-6">
-    <div class="list-card card bg-transparent" style="max-width: 175px; margin: 0 auto;">
-        <div class="card-body p-2">
-            <div class="position-relative overflow-hidden" style="height: 150px;">
+<div id="{{ $item->id }}" class="playlist-card pack-card">
+    <div class="cover ph" style="aspect-ratio:16/10">
+        @if ( Carbon::parse($item->created_at)->isCurrentDay() )
+            <div class="badge">NEW</div>
+        @endif
+        <!--<div class="lock"><i class="fa-solid fa-lock"></i></div>-->
+        <div class="play-overlay" onclick="handlePlay({{ $item->id }})"><i class="fas fa-play"></i></div>
+        <img class="playlist-cover" src="{{ $item->cover ? $item->getCoverUrl() : $item->user->photo ?? config('app.logo_alter') }}"/>
+    </div>
+    <div class="card-body">
+        <div class="card-title"><a href="{{ route('playlist.show', $item->name)}}"><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</a></div>
+        <div class="card-meta">
+            <span><i class="fas fa-music"></i> {{ $item->items->count() }} </span>
+            <span>{{ $item->bpm ?? '' }}</span>
+            <span><i class="fas fa-dollar-sign"></i> {{ $item->price }}</span>
+        </div>
+        <div class="card-footer">
+            <div class="dj-info">
+                <div class="dj-avatar"><i class="fas fa-user"></i></div>
                 <div>
-                    <img src="{{$cover}}" alt="{{$item->name}}" class="rounded img-fluid bg-black" style="height: 150px; width: 100%;">
+                    <span class="dj-name">{{ $item->user->name }}</span>
+                    <span class="dj-sub">{{ $item->folder->name }}</span>
                 </div>
-                <p class="position-absolute start-0 bottom-0 p-1 m-0 d-flex align-items-center gap-1"><i class="icon-base ti tabler-music"></i> {{$item->items->count()}}</p>
-                <a 
-                    class="btn btn-success rounded-circle position-absolute" 
-                    style="width: 50px; height: 50px; padding: 10px; right: 10px" 
-                    data-name="{{$item->name}}"
-                    data-status="pause"
-                    onclick='playList(this,@json($item->getPlayList()),@json($item->items->pluck("name")->toArray()))'
-                ><i class="icon-base ti tabler-player-play-filled"></i></a>
             </div>
-            <div class="p-2">
-                <div style="font-size: 18px" class="overflow-hidden"><a href="{{ route('playlist.show', str_replace(' ', '_', $item->name)) }}" class="w-100">{{$item->name}}</a></div>
-                <div class="d-flex align-items-center mt-2">
-                    <div class="avatar avatar-sm me-2 overflow-hidden rounded-circle position-relative">
-                        <img src="{{$item->user?->photo ? $item->user?->photo : config('app.logo')}}" alt="{{$item->user?->name}}" class="rounded-circle img-fluid">
-                        <div class="dark-screen" style="background-color: rgba(0, 0, 0, 0.4);"></div>
-                    </div>
-                    <div>
-                        <p class="mb-0" style="font-size: 0.8rem;">{{$item->user?->name ?? 'CubanPool'}}</p>
-                    </div>
-                </div>
+            <div class="card-actions">
+                <span><i class="fas fa-fire text-primary"></i> {{ $item->downloads->count() }}</span>
+                @if ($item->canBeDownload())
+                    <a href="{{ route('playlist.download', str_replace(' ', '_' , $item->name)) }}"><i class="fas fa-download"></i></a>
+                @else
+                    <a href="{{ route('playlist.add.cart', str_replace(' ', '_' , $item->name) ) }}"><i class="fas fa-shopping-cart"></i></a>
+                @endif
             </div>
         </div>
     </div>

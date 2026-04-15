@@ -1,5 +1,5 @@
 <div style="margin-top: 20px;">
-    <form wire:submit="save">
+    <form wire:submit="save"  style="width: 100%; margin: auto;">
         {{ $this->form }}
 
         <div style="margin-top: 20px;">
@@ -9,7 +9,7 @@
         </div>
     </form>
 
-     <div style="margin-top: 20px; margin-bottom: 20px;">
+    <div style="width: 100%; margin-top: 20px; margin-bottom: 20px;">
         {{ $this->table }}
     </div>
 

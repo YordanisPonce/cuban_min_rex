@@ -1,0 +1,395 @@
+/* Hero */
+.hero {
+    position: relative;
+    padding: 100px 0 60px;
+    overflow: hidden;
+    min-height: 420px;
+    width: 100%;
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0
+}
+
+.hero-bg img {
+    max-width: 1200px;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16/9;
+    right: 0;
+    position: absolute;
+}
+
+.hero-bg .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--bg) 20%, transparent), linear-gradient(0deg, var(--bg), transparent 20%)
+}
+
+.hero .container {
+    position: relative;
+    max-width: 1400px;
+    z-index: 2
+}
+
+.hero h1 {
+    font-size: 3.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px
+}
+
+.hero h1 .accent {
+    color: var(--primary);
+    font-style: italic
+}
+
+.hero p {
+    color: var(--fg-muted);
+    font-size: 1rem;
+    max-width: 420px;
+    margin-bottom: 24px
+}
+
+.hero-stats {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    margin-top: 20px;
+    font-size: .85rem;
+    color: var(--fg-muted)
+}
+
+.hero-stats span {
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary)
+}
+
+.hero ul {
+    list-style: none;
+    margin-top: 12px;
+    font-size: 13px;
+    color: var(--text-muted)
+}
+
+.hero ul li::before {
+    content: '•';
+    color: var(--primary);
+    margin-right: 8px
+}
+
+.hero ul li strong {
+    color: var(--primary)
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px
+}
+
+.djs-container{
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 0;
+}
+
+/* USER BAR */
+.user-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: .75rem 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.user-bar .notif {
+    position: relative;
+    color: var(--muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.user-bar .notif .badge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    width: 14px;
+    height: 14px;
+    background: #e04040;
+    border-radius: 50%;
+    font-size: .55rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.user-bar .user {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.user-bar .user img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid var(--primary);
+}
+
+/* MAIN */
+.main {
+    margin-top: 56px;
+    padding: 1rem 2rem 4rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* HEADER */
+.page-title {
+    font-size: 2rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin-bottom: .25rem;
+}
+
+.page-title span {
+    color: var(--primary);
+}
+
+.page-subtitle {
+    font-size: .9rem;
+    color: var(--muted);
+    margin-bottom: 1.5rem;
+}
+
+/* FILTERS */
+.filters {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    padding: 1rem;
+}
+
+.search-box {
+    flex: 1;
+    min-width: 200px;
+    max-width: 400px;
+    position: relative;
+}
+
+.search-box input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .6rem .75rem .6rem 2.2rem;
+    font-size: .85rem;
+    color: var(--fg);
+    font-family: inherit;
+    outline: none;
+    transition: border-color .2s;
+}
+
+.search-box input:focus {
+    border-color: var(--primary);
+}
+
+.search-box input::placeholder {
+    color: var(--muted);
+}
+
+.search-box i {
+    position: absolute;
+    left: .75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: .85rem;
+}
+
+.tag-filters {
+    display: flex;
+    gap: 0;
+    border: 1px solid var(--primary);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tag-btn {
+    padding: .5rem 1rem;
+    font-size: .8rem;
+    font-weight: 600;
+    background: transparent;
+    color: var(--muted);
+    border: none;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: inherit;
+}
+
+.tag-btn.active {
+    background: var(--primary);
+    color: var(--bg);
+}
+
+.tag-btn:not(:last-child) {
+    border-right: 1px solid var(--primary);
+}
+
+.tag-btn:hover:not(.active) {
+    color: var(--primary);
+}
+
+.filter-select {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .5rem .75rem;
+    font-size: .8rem;
+    color: var(--muted);
+    font-family: inherit;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 1.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%238a7a66' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .5rem center;
+}
+
+/* DJ GRID */
+.dj-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1.25rem;
+    padding: 0 1rem;
+}
+
+/* DJ CARD */
+.dj-card {
+    position: relative;
+    border: 1px solid var(--primary);
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card);
+    transition: transform .2s, box-shadow .2s;
+    cursor: pointer;
+}
+
+.dj-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 30px rgba(245, 166, 35, .15);
+}
+
+.dj-card-img {
+    width: 100%;
+    aspect-ratio: 9/10;
+    object-fit: cover;
+    display: block;
+}
+
+.dj-card-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(15, 13, 11, .85) 0%, rgba(15, 13, 11, .1) 50%, transparent 100%);
+    pointer-events: none;
+}
+
+.dj-card-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+}
+
+.dj-card-name {
+    font-size: 1.1rem;
+    font-weight: 800;
+    font-style: italic;
+    margin-bottom: .15rem;
+}
+
+.dj-card-genres {
+    font-size: .75rem;
+    color: var(--muted);
+    margin-bottom: .6rem;
+}
+
+.dj-card-btn {
+    display: inline-block;
+    border: 1px solid var(--primary);
+    color: var(--primary);
+    font-size: .7rem;
+    font-weight: 700;
+    padding: .35rem .85rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    transition: all .2s;
+    cursor: pointer;
+    background: transparent;
+}
+
+.dj-card-btn:hover {
+    background: var(--primary);
+    color: var(--bg);
+}
+
+@media(max-width:1024px) {
+    .dj-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media(max-width:768px) {
+
+    .main {
+        padding: 1rem 1rem 4rem;
+    }
+
+    .dj-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: .75rem;
+    }
+
+    .filters {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: 100%;
+    }
+
+    .page-title {
+        font-size: 1.4rem;
+    }
+}
+
+@media(max-width:480px) {
+    .dj-grid {
+        grid-template-columns: 1fr;
+    }
+}

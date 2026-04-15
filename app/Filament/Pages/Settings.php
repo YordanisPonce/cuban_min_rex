@@ -24,6 +24,7 @@ use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+use UnitEnum;
 
 class Settings extends Page implements HasForms, HasTable
 {
@@ -38,6 +39,8 @@ class Settings extends Page implements HasForms, HasTable
     protected static ?string $title = 'Pagos en CUP';
 
     protected static ?int $navigationSort = 9999;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Configuraciones';
 
     public ?array $data = [];
 

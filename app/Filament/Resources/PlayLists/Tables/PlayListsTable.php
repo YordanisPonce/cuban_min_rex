@@ -22,6 +22,10 @@ class PlayListsTable
                     ->label('Archivos')
                     ->default(fn ($record) => $record->items()->count())
                     ->alignCenter(),
+                TextColumn::make('folder.name')
+                    ->label('Carpeta')
+                    ->default(fn ($record) => $record->folder?->name ?? 'Sin carpeta')
+                    ->searchable(),
                 TextColumn::make('price')
                     ->label('Precio')
                     ->prefix('$ '),

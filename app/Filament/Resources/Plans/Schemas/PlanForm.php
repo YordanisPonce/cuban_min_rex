@@ -49,7 +49,7 @@ class PlanForm
                     ->numeric()
                     ->default(1),
                 TextInput::make('downloads')
-                    ->label('Descargas por usuario')
+                    ->label('Límite de descargas')
                     ->required()
                     ->numeric()
                     ->default(1),

@@ -36,10 +36,12 @@ class PlansTable
                 TextColumn::make('duration_months')
                     ->label('Meses de duración')
                     ->numeric()
+                    ->alignCenter()
                     ->sortable(),
                 TextColumn::make('downloads')
-                    ->label('Descargas por usuario')
+                    ->label('Límite de descargas')
                     ->numeric()
+                    ->alignCenter()
                     ->sortable(),
                 // IconColumn::make('is_recommended')
                 //     ->label('Recomendado')

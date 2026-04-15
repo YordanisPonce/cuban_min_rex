@@ -6,14 +6,13 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport"
-        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <!-- <meta name="robots" content="noindex, nofollow" /> -->
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>@yield('title', config('app.name'))</title>
 
     <!-- Canonical SEO --> 
-    <link rel="canonical" href="{{ config('app.url') }}" /> 
-    <meta name="keywords" content="{{ config('app.name') }}, música, remixes, dj, descargas, mp3, sets, mixes, electrónica, edm, descargar música, escuchar música online, dj tools, producer tools, club music, dance music" /> 
-    <meta name="description" content="Escucha y descarga música, remixes exclusivos y contenido para DJs en {{ config('app.name') }}. La mejor plataforma para descubrir nuevos sonidos y apoyar a tus DJs favoritos." /> 
+    <link rel="canonical" href="{{ config('app.url') }}"> 
+    <meta name="keywords" content="{{ config('app.keywords') }}"> 
+    <meta name="description" content="{{ config('app.description') }}"> 
     <meta name="author" content="{{ config('app.name') }}"> 
     <meta name="robots" content="index, follow"> 
     <meta name="language" content="es"> 
@@ -22,10 +21,11 @@
     <meta name="revisit-after" content="7 days"> 
     
     <!-- Open Graph (Facebook, WhatsApp, Instagram) --> 
-    <meta property="og:title" content="{{ config('app.name') }} - Música, Remixes y Descargas" /> 
-    <meta property="og:type" content="website" /> <meta property="og:image" content="{{ config('app.logo') }}" /> 
-    <meta property="og:description" content="Descubre, escucha y descarga música y remixes exclusivos para DJs. Actualizado diariamente." /> 
-    <meta property="og:site_name" content="{{ config('app.name') }}" /> 
+    <meta property="og:title" content="{{ config('app.name') }} - Música, Remixes y Descargas"> 
+    <meta property="og:type" content="website"> 
+    <meta property="og:image" content="{{ config('app.logo') }}"> 
+    <meta property="og:description" content="{{ config('app.description') }}"> 
+    <meta property="og:site_name" content="{{ config('app.name') }}"> 
     <meta property="og:url" content="{{ config('app.url') }}"> 
     <meta property="og:locale" content="es_ES"> 
     
@@ -34,7 +34,7 @@
     <meta name="twitter:title" content="{{ config('app.name') }} - Música y Remixes"> 
     <meta name="twitter:description" content="Escucha y descarga música, remixes y contenido exclusivo para DJs."> 
     <meta name="twitter:image" content="{{ config('app.logo') }}"> 
-    <meta name="twitter:site" content="@{{ config('app.name') }}"> 
+    <meta name="twitter:site" content="{{ '@'.config('app.name') }}"> 
     
     <!-- Mobile & PWA --> 
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
@@ -61,7 +61,7 @@
     @endif
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ asset('favicon.ico') }}" />
+    <link rel="icon" href="{{ config('app.logo') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/" />
@@ -72,208 +72,33 @@
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/fonts/iconify-icons.css') }}" />
 
-    <!-- Core CSS -->
-    <!-- build:css assets/vendor/css/theme.css  -->
-
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/node-waves/node-waves.css') }}" />
-
-    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/pickr/pickr-themes.css') }}" />
-
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/core.css') }}" />
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/demo.css') }}" />
-
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page.css') }}" />
-
-    <!-- Vendors CSS -->
-
-    <!-- endbuild -->
-
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/nouislider/nouislider.css') }}" />
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/swiper/swiper.css') }}" />
 
     <!-- Page CSS -->
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link rel="stylesheet" href="{{ asset('assets/vendor/css/pages/front-page-landing.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" />
 
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page-payment.css') }}" />
-
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pricing.css') }}" />
-
-    <!-- Helpers -->
-    <script src="{{ asset('assets/vendor/js/helpers.js') }}"></script>
-    <!--! Template customizer & Theme config files MUST be included after core stylesheets and helpers.js in the <head> section -->
-
-    <!--? Template customizer: To hide customizer set displayCustomizer value false in config.js.  -->
-    <script src="{{ asset('assets/vendor/js/template-customizer.js') }}"></script>
-
-    <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
-
-    <script src="{{ asset('assets/js/front-config.js') }}"></script>
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/aos/aos.css') }}" />
+    <script src="{{ asset('assets/vendor/libs/aos/aos.js') }}"></script>
 
     <style>
-        :root {
-            --bs-primary: #00FF9F !important;
-            /* Color de Bottones */
-            /*--bs-paper-bg: #00C8FF !important; /* Color de las Cards */
-
-            --download-button: #FF2EC4 !important;
-            --play-button: #00C8FF !important;
-        }
-
-        /* Estilo para el loader */
-        .loader {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .carousel-item {
-            max-height: 100vh;
-
-            img {
-                height: 100%;
-            }
-        }
-
-        .dark-screen {
-            width: 100%;
-            height: 100vh;
-            background-color: black;
-            opacity: 0.6;
-            position: absolute;
-            top: 0;
-            left: 0;
-        }
-
-        .categories h3 {
-            cursor: pointer;
-            color: currentColor;
-        }
-
-        .categories h3>small {
-            color: #54b9c5;
-            white-space: nowrap;
-        }
-
-        .categories .card {
-            transition: all ease 1s;
-            max-width: 100%;
-        }
-
-        .categories .card:hover {
-            cursor: pointer;
-        }
-
-        .categories .card .dark-screen {
-            height: 100% !important;
-        }
-
-        .categories .card:hover .dark-screen {
-            display: block !important;
-        }
-
-        .swiper-button-prev:after,
-        .swiper-button-next:after {
-            font-size: 25px !important;
-        }
-
-        .card-relationed {
-            overflow: hidden;
-        }
-
-        .card-relationed:hover .dark-screen {
-            display: block !important;
-        }
-
-        .dropdown-item:hover {
-            color: black;
-        }
-
-        .bg-body {
-            background-color: transparent !important;
-        }
-
-        .play-button:hover, .btn-icon:hover{
-            color: var(--bs-primary) !important;
-        }
-
         body {
-            /* The image used */
-            background-image: linear-gradient(rgba(0, 0, 0, .7), rgba(0, 0, 0, .7)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg.jpeg') }}");
-
-            /* Create the parallax scrolling effect */
-            background-attachment: fixed;
-            background-position: center;
-            background-repeat: no-repeat;
+            background: url('{{ asset('assets/img/bg.png') }}') no-repeat center center fixed;
+            background-color: rgba(20, 18, 16, .65);
+            background-blend-mode: overlay;
             background-size: cover;
-        }
-
-        .bg-mobile{
-            position: fixed;
-            width: 100%;
-            height: 100vh;
-            bottom: 0;
-            top: 0;
-            z-index: -1;
-            display: none;
-
-            img{
-                width: 100%;
-                height: 100%;
-                object-fit: cover;
-            }
-
-            .dark-screen{
-                opacity: 0.5;
-            }
-        }
-
-        @media(max-width: 450px) {
-            .carousel-item {
-                height: 100vh;
-
-                img {
-                    height: 100%;
-                }
-            }
-        }
-
-        @media(max-width: 767px) {
-            .card-relationed img {
-                max-height: 150px !important;
-            }
-
-            .navbar-djs .dropdown-menu{
-                position: relative !important;
-            }
-
-            body {
-                background-image: linear-gradient(rgba(0, 0, 0, .5), rgba(0, 0, 0, .5)), url("{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}");
-            }
-
-            .bg-mobile{
-                display: block;
-            }
-        }
-
-        @media(max-width: 992px) {
-            .mt-xs-10 {
-                margin-top: 3.6rem;
-            }
         }
     </style>
 
     @stack('styles')
 </head>
 
-<body class="d-flex flex-column bg-body " style="height: 100vh">
+<body style="height: 100vh">
     @if (env('APP_ENV') == 'production')
         <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5J3LMKC" height="0" width="0"
                 style="display: none; visibility: hidden"></iframe></noscript>
@@ -291,28 +116,22 @@
         </div>
     @else
         @include('partials.navbar')
-        <div class="bg-mobile">
+        {{--<div class="bg-mobile">
             <img src="{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}">
             <div class="dark-screen"></div>    
-        </div>
+        </div>--}}
 
         <main>
             @yield('content')
         </main>
 
         @include('partials.footer')
-
-        @if (env('APP_ENV') == 'production')
-            <div class="buy-now">
-                <a href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599"
-                    target="_blank" class="btn btn-danger btn-buy-now">Buy Now</a>
-            </div>
-        @endif
     @endif
 
-    <div class="loader" id="loader">
-        <div class="spinner-border" role="status">
-
+    <div class="window-loader" id="wloader">
+        <div>
+            <i class="fa fa-spinner fa-spin"></i>
+            <span>Cargando...</span>
         </div>
     </div>
 
@@ -334,14 +153,27 @@
     <script src="{{ asset('assets/vendor/libs/swiper/swiper.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- Main JS -->
+    {{--<!-- Main JS -->
     <script src="{{ asset('assets/js/front-main.js') }}"></script>
 
     <!-- Page JS -->
-    {{--     <script src="{{ asset('assets/js/front-page-landing.js') }}"></script> --}}
+         <script src="{{ asset('assets/js/front-page-landing.js') }}"></script> --}}
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function(){
+            document.getElementById('navbarToggle').addEventListener('click', function(){
+                document.getElementById('navBar').classList.toggle('active');
+            });
+            
+            document.getElementById('wloader').style.display = 'none';
+        })
+        AOS.init({
+            duration: 1500, // duración en ms
+            once: true     // animar solo una vez
+        });
+    </script>
 
     @stack('scripts')
-
 </body>
 
 </html>

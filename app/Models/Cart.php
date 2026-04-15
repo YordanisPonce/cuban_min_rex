@@ -34,8 +34,8 @@ class Cart extends Model
     /**
      * Get the total amount in the cart.
      */
-    public function get_cart_count() {
-        $count = 0;
+    public function get_cart_count(): float {
+        $count = 0.00;
         foreach($this->cart_items as $item) {
             if($item->file) {
                 $count += $item->file->price;

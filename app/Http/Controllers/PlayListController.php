@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FolderTypeEnum;
 use App\Models\Category;
 use App\Models\Download;
 use App\Models\PlayList;
 use App\Models\User;
 use App\Models\Cart;
+use App\Models\Folder;
 use App\Models\PlayListItem;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -21,15 +24,53 @@ class PlayListController extends Controller
      */
     public function index()
     {
-        // NavBar Data
-        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::whereHas('files')->orderBy('name')->get();
+        $name = request()->get("title");
+        $dj = request()->get("dj");
 
-        $name = request()->get("search") ?? "";
+        $playlists = PlayList::whereHas('items')->orderBy('created_at')->paginate(4)->withQueryString();
 
-        $playlists = PlayList::where('name', 'like', "%{$name}%")->orderBy('created_at', 'desc')->paginate(30)->withQueryString();
+        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->take(3)->get();
 
-        return view('playlists', compact('djs', 'categories', 'playlists'));
+        $index = 4;
+
+        return view('playlists', compact('index', 'playlists', 'folders'));
+    }
+    /**
+     * Display a listing of the resource.
+     */
+    public function list()
+    {
+        $name = request()->get("title");
+        $dj = request()->get("dj");
+        $folder = request()->get("folder");
+
+        $playlists = PlayList::whereHas('items');
+        
+        if($name){
+            $playlists = $playlists->where('name', 'like', '%'.$name.'%');
+        }
+
+        if($dj){
+            $playlists = $playlists->whereHas('user', function($q) use ($dj) {
+                $q->where('name',  'like', '%'.str_replace('_', ' ', $dj).'%');
+            });
+        }
+
+        if($folder){
+            $playlists = $playlists->whereHas('folder', function($q) use ($folder) {
+                $q->where('name',  'like', '%'.str_replace('_', ' ', $folder).'%');
+            });
+        }
+    
+        $playlists = $playlists->paginate(10)->withQueryString();
+
+        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->get();
+
+        $djs = User::whereHas('playlists')->get();
+
+        $index = 4;
+
+        return view('playlists-list', compact('index', 'playlists', 'djs','folders'));
     }
 
     /**
@@ -37,13 +78,46 @@ class PlayListController extends Controller
      */
     public function show(string $name)
     {
-        // NavBar Data
-        $categories = Category::where('show_in_landing', true)->orderBy('name')->get();
-        $djs = User::whereHas('files')->orderBy('name')->get();
 
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
 
-        return view('playlist', compact('djs', 'categories', 'playlist'));
+        $tracks = $playlist->items()->get()->transform(function ($track) use($playlist) {
+            return [
+                'id' => (string) $track->id,
+                'date' => $track->created_at,
+                'artist' => $playlist->user->name,
+                'title' => $track->title,
+                'img' => $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter'),
+                'bpm' => null,
+                'duration' => 120,
+                'genre' => null,
+                'badge' => null,
+                'price' => $track->price,
+                'url' => $track->file_path ? Storage::disk('s3')->url($track->file_path) : '',
+                'downloads' => $track->downloads->count(),
+                'canDownload' => $playlist->canBeDownload(),
+                'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
+                'addToCart' => route('playlist.add.item.cart', [$playlist->name, $track->id]),
+            ];
+        });
+
+        $similar = PlayList::where('id', '!=' ,$playlist->id)->where('folder_id', $playlist->folder->id)->where('user_id', $playlist->user->id)
+            ->orderBy('created_at', 'desc')->take(4)->get();
+
+        $similar = $similar->transform(function ($s) {
+            return [
+                'id' => (string) $s->id,
+                'date' => $s->created_at,
+                'title' => $s->name,
+                'img' => $s->cover ? $s->getCoverUrl() : $s->user->photo ?? config('app.logo_alter'),
+                'tracks' => $s->items->count(),
+                'url' => route('playlist.show', str_replace(' ', '_', $s->name)),
+            ];
+        });
+
+        $index = 4;
+
+        return view('playlist', compact('playlist', 'index', 'tracks', 'similar'));
     }
 
     /**
@@ -89,6 +163,7 @@ class PlayListController extends Controller
 
             return Response::download($zipFilePath)->deleteFileAfterSend(true);
         }
+        return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
     }
 
     /**
@@ -114,6 +189,7 @@ class PlayListController extends Controller
 
             return Response::download(Storage::disk('s3')->path($item->file_path), $fullname);
         }
+        return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
     }
 
     /**

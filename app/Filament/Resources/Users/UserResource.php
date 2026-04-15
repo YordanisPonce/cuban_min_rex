@@ -13,7 +13,9 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Gate;
+use UnitEnum;
 
 class UserResource extends Resource
 {
@@ -26,6 +28,8 @@ class UserResource extends Resource
     protected static string|null $label = 'Usuarios';
 
     protected static ?int $navigationSort = 8;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Usuarios';
 
     public static function form(Schema $schema): Schema
     {
@@ -53,5 +57,10 @@ class UserResource extends Resource
             'edit' => EditUser::route('/{record}/edit'),
         ];
 
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('role', 'user');
     }
 }

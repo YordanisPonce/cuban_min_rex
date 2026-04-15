@@ -27,6 +27,7 @@ class PaymentController extends Controller
         return view('payment.payment', [
             'planId' => $planId,
             'plans' => $plans,
+            'index' => 7,
             'categories' => Category::where('show_in_landing', true)->get(),
             'djs' => User::where('role', 'worker')->orderBy('name')->get(),
             'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
@@ -158,14 +159,7 @@ class PaymentController extends Controller
         return view('payment.cup_payment', [
             'file' => $file,
             'setting' => $setting,
-            'categories' => Category::where('show_in_landing', true)->get(),
-            'djs' => User::where('role', 'worker')->orderBy('name')->get(),
-            'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-                return $item->files()->count() > 0;
-            }),
-            'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-                return $item->files()->count() > 0;
-            })
+            'index' => 6,
         ]);
     }
 

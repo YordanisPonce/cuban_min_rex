@@ -47,6 +47,7 @@ class StripeWebhookController extends CashierController
                 $order->save();
 
                 $user->current_plan_id = $plan->id;
+                $user->plan_starts_at = Carbon::now();
                 $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
                 $user->save();
 
@@ -174,6 +175,7 @@ class StripeWebhookController extends CashierController
                 $user->current_plan_id = (int) $planId;
             }
             $user->plan_expires_at = $periodEnd;
+            $user->plan_starts_at = Carbon::now();
             $user->save();
 
             $lastOrder = Order::query()
@@ -225,6 +227,7 @@ class StripeWebhookController extends CashierController
                     $order->save(); 
                     
                     $user->current_plan_id = $plan->id; 
+                    $user->plan_starts_at = Carbon::now();
                     $user->plan_expires_at = now()->addMonths($plan->duration_months); 
                     $user->save(); 
                     

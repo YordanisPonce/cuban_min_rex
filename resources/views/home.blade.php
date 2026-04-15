@@ -5,55 +5,30 @@
     $error = session('error');
 @endphp
 
-@section('title', 'Inicio – ' . config('app.name'))
+@section('title', 'Inicio - ' . config('app.name'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('/assets/vendor/libs/plyr/plyr.css') }}" />
+    <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}" />
     <style>
-        .player--dark {
-            background-color: #12131C !important;
-            color: #fff;
-        }
-
-        footer {
-            z-index: 11;
-        }
-
-        section#audioPlayer {
-            transition: all 0.3s ease-in;
-            transform: translateY(160px);
-        }
-
-        #audioPlayer {
-            position: sticky;
-            bottom: 0;
-            width: 100%;
-            z-index: 10;
-        }
-
-        .bg-body {
-            background-color: transparent !important;
-        }
-
-        .list-card:hover{
-            transform: scale(.95);
-            transition: transform 0.3s ease-in, background-color 0.3s ease-in;
-            background-color: rgba(133,133,133,0.3) !important;
-        }
-
-        .btn-success{
-            transform: scale(0) !important;
-            bottom: 10px;
-            transition: all 0.3s ease-in !important;
-        }
-
-        .list-card:hover .btn-success{
-            transform: scale(1) !important;
-        }
-
-        @media (max-width: 400px) {
-            .packs-link {
-                bottom: -12px !important;
+        @media(max-width: 720px){
+            .hero{
+                height: 50vh;
+                display: flex;
+                align-items: flex-end;
+            }
+            .hero .hero-gradient {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to right, var(--bg) 0%, rgba(15, 13, 11, .8) 20%, transparent 100%);
+            }
+            .hero h1, .hero h1 span{
+                font-size: 1.5rem;
+            }
+            .hero p{
+                font-size: 1rem;
+            }
+            .hero span{
+                font-size: 0.75rem;
             }
         }
     </style>
@@ -61,457 +36,439 @@
 
 @section('content')
 
-    {{-- =========================
-       HEADER DE BUSQUEDA
-    ========================== --}}
-    <section class="section first-section-pt help-center-header position-relative overflow-hidden ">
+    <!-- HERO -->
+    <section class="hero container">
+        <div class="hero-slides" id="heroSlides"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-gradient-b"></div>
         <div class="container">
-            <div class="row align-items-center g-10">
-                <div class="col-lg-3">
-                    <div class="ratio ratio-4x3 rounded-4 overflow-hidden border border-dark-subtle">
-                        <img src="{{ config('app.logo_alter') }}" alt="Arte destacado"
-                            class="w-100 h-100 object-fit-cover">
-                        <div class="dark-screen" style="opacity: 0.5;"></div>
-                    </div>
-                </div>
-                <div class="col-lg-9">
-                    <span class="badge bg-label-primary mb-3">{{ config('app.name') }}</span>
-                    <h1 class="display-6 fw-bold mb-2">Descubre tu música favorita</h1>
-                    <p class="text-primary mb-4">
-                        Encuentra el ritmo perfecto y descubre tu próxima pista favorita.
-                    </p>
-                    {{-- Formulario buscador --}}
-                    <form action="{{ route('remixes') }}" method="GET" class="d-flex align-items-center gap-2">
-                        <div class="input-group">
-                            <input type="text" name="search" class="form-control form-control-lg"
-                                placeholder="Buscar" required>
-                            <button type="submit" class="btn btn-primary btn-lg px-4 z-0">
-                                <i class="ti tabler-search"></i>
-                            </button>
-                        </div>
-                    </form>
-                </div>
+            <h1 data-aos="fade-right" data-aos-delay="300">REMIXES<br>EXCLUSIVOS<br><span class="accent">PARA DJS
+                    LATINOS</span></h1>
+            <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intros, mashups y más musical para hacer historia
+                en la pista.</p>
+            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
+                href="{{ route('remixes') }}">+ 11000 REMIXES EXCLUSIVOS</a>
+            <div class="hero-stats">
+                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +1000 REMIXES
+                    EXCLUSIVOS</span>
+                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
             </div>
         </div>
     </section>
 
-    {{-- =========================
-       NUEVOS LANZAMIENTOS
-    ========================== --}}
-    <section id="home-new" class="section-py">
-
-        @php $hasNew = isset($newItems) && count($newItems) > 0; @endphp
-
-        @if ($hasNew)
-            <div class="container">
-                <div class="text-center mb-3">
-                    <span class="badge bg-label-primary">Novedades</span>
-                </div>
-                <h2 class="text-center fw-bold mb-2">Estrenos de la semana</h2>
-                <p class="text-center text-body-secondary mb-6">
-
-                </p>
-                <div class="row">
-                    <div class="d-md-grid" style="grid-template-columns: repeat(2, 1fr); row-gap: 4px; column-gap: 24px;">
-                        @foreach ($newItems as $item)
-                            @include('partials.line-card', ['item' => $item])
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <div class="text-center mb-3">
-                            <span class="badge bg-label-primary">Novedades</span>
-                        </div>
-                        <h2 class="text-center fw-bold mb-2">Estrenos de la semana</h2>
-                        <p class="text-body-secondary mb-0">Singles y packs recién salidos. Lo último de tus artistas
-                            favoritos.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">No hay lanzamientos recientes</h3>
-                    <p class="text-body-secondary mb-3">Vuelve pronto: actualizamos esta sección con nuevos estrenos.</p>
-                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
-                </div>
-            </div>
-        @endif
-    </section>
-
-    <hr class="m-0 mt-6 mt-md-12">
-
-    {{-- =========================
-       TOPS LANZAMIENTOS
-    ========================== --}}
-    <section id="home-tops" class="section-py mt-10">
-
-        @php $hasTops = isset($tops) && count($tops) > 0; @endphp
-
-        @if ($hasTops)
-            <div class="container">
-                <div class="text-center mb-3">
-                    <span class="badge bg-label-primary">TOPS</span>
-                </div>
-                <h2 class="text-center fw-bold mb-2">TOP REMIXES</h2>
-                <div class="row">
-                    @php
-                        $pos = 1;
-                        $column2 = $tops->slice(5);
-                    @endphp
-                    <div class="col-md-6">
-                        @foreach ($tops as $item)
-                            @if ($pos <= 5)
-                                @include('partials.line-card', ['item' => $item, 'top' => $pos])
-                                @php
-                                    $pos = $pos + 1;
-                                @endphp
-                            @endif
-                        @endforeach
-                    </div>
-                    <div class="col-md-6">
-                        @foreach ($column2 as $item)
-                            @include('partials.line-card', ['item' => $item, 'top' => $pos])
-                            @php
-                                $pos = $pos + 1;
-                            @endphp
-                        @endforeach
-                    </div>
-                </div>
-            </div>
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <span class="badge bg-label-primary mb-2">TOPS</span>
-                        <h2 class="h3 fw-bold mb-1">TOP REMIXES</h2>
-                        <p class="text-body-secondary mb-0"> </p>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">No hay tops lanzamientos</h3>
-                    <p class="text-body-secondary mb-3">Vuelve pronto: actualizamos esta sección con nuevos estrenos.</p>
-                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Explorar catálogos</a>
-                </div>
-            </div>
-        @endif
-    </section>
-
-    <hr class="m-0 mt-6 mt-md-12">
-
-    {{-- =========================
-        NUEVAS PLAYLIST
-    ========================== --}}
-    <section id="home-playlist" class="section-py mt-10">
-
-        @php $hasPlsylidt = isset($recentPlaylist) && count($recentPlaylist) > 0; @endphp
-
-        @if ($hasPlsylidt)
-            <div class="container">
-                <div class="text-center mb-3">
-                    <span class="badge bg-label-primary">Explorar</span>
-                </div>
-                <div class="relative">
-                    <h2 class="text-center fw-bold mb-6 mb-md-2">Playlist Recientes</h2>
-                    <a href="{{ route('playlist.index') }}" class="position-absolute end-0 packs-link"
-                        style="bottom: 15px">Ver todos →</a>
-                </div>
-                <div class="row">
-                    @foreach ($recentPlaylist as $item)
-                        @include('partials.playlist-card', ['item' => $item])
-                    @endforeach
-                </div>
-            </div>
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <span class="badge bg-label-primary mb-2">Explorar</span>
-                        <h2 class="h3 fw-bold mb-1">Playlist Recientess</h2>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">Sin playlist por ahora</h3>
-                    <p class="text-body-secondary mb-3">Estamos preparando nuevas playlist por artista y estilo.</p>
-                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Buscar artistas</a>
-                </div>
-            </div>
-        @endif
-    </section>
-
-    <hr class="m-0 mt-6 mt-md-12">
-
-    {{-- =========================
-       PACKS DE ARTISTAS
-    ========================== --}}
-    <section id="home-collections" class="section-py mt-10">
-
-        @php $hasArtists = isset($artistCollections) && count($artistCollections) > 0; @endphp
-
-        @if ($hasArtists)
-            <div class="container">
-                <div class="text-center mb-3">
-                    <span class="badge bg-label-primary">Explorar</span>
-                </div>
-                <div class="relative">
-                    <h2 class="text-center fw-bold mb-6 mb-md-2">Packs de artistas</h2>
-                    <a href="{{ route('collection.index') }}" class="position-absolute end-0 packs-link"
-                        style="bottom: 15px">Ver todos →</a>
-                </div>
-                <div class="row">
-                    @foreach ($artistCollections as $item)
-                        @include('partials.pack-card', ['item' => $item])
-                    @endforeach
-                </div>
-            </div>
-        @else
-            <div class="container mb-3">
-                <div class="d-flex align-items-end justify-content-between">
-                    <div>
-                        <span class="badge bg-label-primary mb-2">Explorar</span>
-                        <h2 class="h3 fw-bold mb-1">Packs de artistas</h2>
-                        <p class="text-body-secondary mb-0">Discografías esenciales, playlists temáticas y selecciones por
-                            mood.
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="container">
-                <div class="border rounded-4 p-4 p-md-5 text-center bg-body">
-                    <h3 class="h5 fw-bold mb-2">Sin packs por ahora</h3>
-                    <p class="text-body-secondary mb-3">Estamos preparando nuevas selecciones por artista y estilo.</p>
-                    <a href="{{ route('remixes') }}" class="btn btn-outline-secondary">Buscar artistas</a>
-                </div>
-            </div>
-        @endif
-    </section>
-
-    <hr class="m-0 mt-6 mt-md-12">
-
-    {{-- =========================
-       GÉNEROS POPULARES
-    ========================== --}}
-    <section id="home-genres" class="section-py">
+    <!-- REMIXES NUEVOS -->
+    <section class="section">
         <div class="container">
-            <div class="d-flex align-items-end justify-content-between mb-3">
-                <div>
-                    <span class="badge bg-label-primary mb-2">Explorar</span>
-                    <h2 class="h3 fw-bold mb-1">Géneros populares</h2>
-                    <p class="text-body-secondary mb-0">Elige un género y empieza a escuchar.</p>
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-fire"></i> REMIXES <span class="accent">RECIENTES</span>
                 </div>
+                <a href="{{ route('remixes') }}" class="btn-outline">VER TODOS LOS REMIXES »</a>
             </div>
-
-            <div class="d-flex flex-wrap gap-2">
-                @foreach ($ctg as $genre)
-                    <a href="{{ route('remixes', ['categories' => $genre->name]) }}"
-                        class="btn btn-sm btn-outline-secondary rounded-pill px-3">{{ $genre->name }}</a>
-                @endforeach
-            </div>
+            <div class="cards-grid" id="remixes-grid"></div>
         </div>
     </section>
 
-    <hr class="m-0 mt-6 mt-md-12">
-
-    <section id="home-pricing" class="section-py bg-body landing-pricing mt-10">
-        <div class="container mt-5">
-            <div class="text-center mb-3">
-                <span class="badge bg-label-primary">Planes de suscripción</span>
-            </div>
-            <h2 class="text-center fw-bold mb-2">Elige tu plan musical</h2>
-            <p class="text-center text-body-secondary mb-10">
-                Disfruta sin límites con beneficios a tu medida.
-            </p>
-            <div class="pricing-table">
-                @foreach ($plans as $plan)
-                    @include('partials.plans-card', ['plan' => $plan])
-                @endforeach
-            </div>
-        </div>
-        <div class="window-notice" id="video-player">
-            <div class="content">
-                <div class="container-xxl flex-grow-1 container-p-y w-100">
-                    <div class="row gy-6">
-                        <!-- Video Player -->
-                        <div class="col-12">
-                            <div class="card" style="position: relative; max-height: 100vh">
-                                <h5 class="card-header d-block text-nowrap overflow-hidden"
-                                    style="text-overflow:ellipsis; width: 90%" id="video-title">Nombre del Video</h5>
-                                <spam style="position: absolute; top: 24px; right: 24px; cursor: pointer"
-                                    onclick="stopVideo()">✖️</spam>
-                                <div class="card-body w-100 h-100">
-                                    <video class="w-100" style="max-height: 70dvh;" id="plyr-video-player"
-                                        oncontextmenu="return false;" playsinline controls></video>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- /Video Player -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="audioPlayer">
+    <!-- PLAYLISTS -->
+    <section class="section">
         <div class="container">
-            <div class="row">
-                <!-- Audio Player -->
-                <div class="col-12">
-                    <div class="card">
-                        <h5 class="card-header d-flex justify-content-between">
-                            <span id="plyr-audio-name" class="d-block w-100 text-nowrap overflow-hidden"
-                                style="text-overflow:ellipsis; text-align:center">Audio</span>
-                        </h5>
-                        <div class="card-body">
-                            <audio class="w-100" id="plyr-audio-player" type="audio/mp3"
-                                src="https://demos.pixinvent.com/vuexy-html-admin-template/assets/audio/Water_Lily.mp3"
-                                controls></audio>
-                        </div>
-                    </div>
-                </div>
-                <!-- /Audio Player -->
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-headphones"></i> PLAYLISTS <span class="accent">PARA
+                        DJs</span></div>
+                <a href="{{ route('playlist.index') }}" class="btn-outline">VER TODAS LAS PLAYLISTS »</a>
             </div>
+            <div id="playlists-list"></div>
         </div>
     </section>
+
+    <!-- TOP DESCARGADOS -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-trophy"></i> TOP <span class="accent">DJS</span>
+                </div><a href="{{ route('djs') }}" class="btn-outline">VER TODOS LOS DJS »</a>
+            </div>
+            <div class="cards-grid" id="top-djs-grid"></div>
+        </div>
+    </section>
+
+    <!-- DJS DESTACADOS -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-music"></i> SONIDOS <span class="accent">DESTACADOS</span>
+                </div>
+            </div>
+            <div class="genres-scroll" id="genres-scroll"></div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta container">
+        <div class="cta-bg">
+            <img src="{{ asset('assets/img/hero-base.jpeg') }}" alt="cta-img">
+            <div class="overlay"></div>
+        </div>
+        <div class="container">
+            <h2 data-aos="zoom-in" data-aos-delay="300"><i class="fa-solid fa-bolt"></i> LLEVA TU DJ SET AL SIGUIENTE NIVEL
+            </h2>
+            <ul>
+                <li data-aos="fade-right" data-aos-delay="1000"><i class="fa-solid fa-check"></i> Acceso a contenido
+                    exclusivo de remixes premium</li>
+                <li data-aos="fade-right" data-aos-delay="1100"><i class="fa-solid fa-check"></i> Recibe actualizaciones
+                    semanales con nuevos tracks</li>
+                <li data-aos="fade-right" data-aos-delay="1200"><i class="fa-solid fa-check"></i> Paga de forma parcial o
+                    descarga sin límites</li>
+                <li data-aos="fade-right" data-aos-delay="1300"><i class="fa-solid fa-check"></i> Pagos seguros y
+                    encriptados</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- BOTTOM PLAYER -->
+    <div class="bottom-player" id="bottom-player">
+        <div class="player-inner">
+            <div class="player-track">
+                <img id="player-img" src="" alt="">
+                <div class="track-info">
+                    <div class="track-title" id="player-title">—</div>
+                    <div class="track-artist" id="player-artist">—</div>
+                </div>
+            </div>
+            <div class="player-controls">
+                <div class="waveform">
+                    @for ($i = 0; $i < 60; $i++)
+                        <div class="bar"></div>
+                    @endfor
+                </div>
+                <div class="controls">
+                    <button onclick="playPreviousTrack()"><i class="fa-solid fa-backward-fast"></i></button>
+                    <!--<button><i class="fa-solid fa-backward-step"></i></button>-->
+                    <button class="main-play" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
+                    <!--<button><i class="fa-solid fa-forward-step"></i></button>-->
+                    <button onclick="playNextTrack()"><i class="fa-solid fa-forward-fast"></i></button>
+                    <div class="close">
+                        <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
-    <script src="{{ asset('/assets/vendor/libs/plyr/plyr.js') }}"></script>
     <script>
-        new Plyr("#plyr-video-player"), new Plyr("#plyr-audio-player");
-    </script>
-    <script>
-        const audioExtensions = ['.mp3', '.wav', '.ogg', '.m4a'];
-        const videoExtensions = ['.mp4', '.avi', '.mov', '.wmv', '.mkv'];
+        // ===== DATA =====
 
-        window.addEventListener('DOMContentLoaded', function() {
-            document.body.classList.remove('bg-body');
-        })
+        const remixes = @json($newItems);
 
-        function stopVideo() {
-            let video = document.getElementById('plyr-video-player');
-            document.getElementById('video-player').style.display = 'none';
-            video.pause();
+        const playlists = @json($playlists);
+
+        const topDjs = @json($tops);
+
+        const genres = @json($geners);
+
+        const audioPlayer = document.createElement('audio');
+
+        // HERO SLIDESHOW
+        const heroImages = @json($banners);
+        
+        const slidesEl = document.getElementById('heroSlides');
+        let currentSlide = 0;
+        heroImages.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            slide.innerHTML = `<img src="${src}" alt="DJ hero ${i + 1}">`;
+            slidesEl.appendChild(slide);
+        });
+
+        function goToSlide(n) {
+            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === n));
+            currentSlide = n;
         }
+        setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
 
-        function playAudio(element) {
-            let audio = document.getElementById('plyr-audio-player');
-            let video = document.getElementById('plyr-video-player');
-            const rute = element.dataset.rute;
-            const mode = element.dataset.status;
-            video.pause();
-            fetch(rute, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                })
-                .then(response => response.json())
-                .then(data => {
-                    data = data.filter(item => item.id === parseInt(element.id));
-                    const extension = data[0].url.substring(data[0].url.lastIndexOf('.')).toLowerCase();
-                    if (audioExtensions.includes(extension)) {
-                        if (mode === "off") {
-                            audio.src = data[0].url;
-                            document.getElementById('audioPlayer').style.transform = 'translateY(0)';
-                            document.getElementById('plyr-audio-name').innerText = data[0].title;
-                            audio.play();
-                            element.dataset.status = "on";
-                            element.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
-                        } else {
-                            audio.pause();
-                            document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
-                            element.dataset.status = "off";
-                            element.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
-                        }
-                    } else {
-                        audio.pause();
-                        document.getElementById('audioPlayer').style.transform = 'translateY(160px)';
-                        document.querySelectorAll('.play-button').forEach(button=>{
-                            button.dataset.status = "off";
-                            button.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
-                        });
-                        video.src = data[0].url;
-                        document.getElementById('video-title').innerText = data[0].title;
-                        document.getElementById('video-player').style.display = 'block';
-                        video.play();
-                    }
-                })
-                .catch(error => {
-                    Swal.fire("Error", error.message, "error");
-                });
-        }
+        // ===== PLAYER STATE =====
+        let currentTrack = null;
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = 0;
+        let timerInterval = null;
 
-        const audioPlayer = document.getElementById('audioPlayer');
-        const audio = document.getElementById('plyr-audio-player');
-        var tracks = [];
-        var names = [];
-        var currentPlayList = "";
-
-        if (tracks.length <= 1) {
-            document.querySelectorAll('.audio-player-controls').forEach(control => {
-                control.style.display="none";
+        function closePlayer() {
+            const player = document.getElementById('bottom-player');
+            player.classList.remove('active');
+            player.querySelector(".waveform").classList.remove('playing');
+            document.querySelectorAll('.remix-card').forEach(card => {
+                const wf = card.querySelector('.waveform').classList.remove('playing');
+                card.querySelector('.play-btn i').className = 'fa-solid fa-play';
             });
+            isPlaying = false;
+            audioPlayer.pause();
+            currentTrack = null;
         }
 
-        function cleanBtns(except){
-            document.querySelectorAll('.btn-success').forEach(btn => {
-                if (btn !== except) {
-                    btn.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
-                    btn.dataset.status = 'pause';
+        function updatePlayerUI() {
+            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            const el = document.getElementById('bottom-player');
+            if (!currentTrack) {
+                el.classList.remove('active');
+                el.querySelector(".waveform").classList.remove('playing');
+                document.querySelectorAll('.remix-card').forEach(card => {
+                    const wf = card.querySelector('.waveform');
+                    wf.classList.remove('playing');
+                });
+                return
+            }
+            el.classList.add('active');
+            let waves = el.querySelector(".waveform");
+            isPlaying ? waves.classList.add('playing') : waves.classList.remove('playing');
+            document.getElementById('player-img').src = currentTrack.img;
+            document.getElementById('player-title').textContent = currentTrack.title;
+            document.getElementById('player-artist').textContent = currentTrack.artist;
+            //const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
+            //document.getElementById('player-progress-fill').style.width = pct + '%';
+            //document.getElementById('player-time').textContent = formatTime(currentTime) + ' | -' + formatTime(Math.max(0, duration - currentTime));
+            const icon = document.querySelector('#player-play-btn i');
+            icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
+            // Update mini-player buttons
+            document.querySelectorAll('.remix-card').forEach(card => {
+                const id = card.dataset.id;
+                const icon = card.querySelector('.play-btn i');
+                if (id === currentTrack.id && isPlaying) {
+                    icon.className = 'fa-solid fa-pause'
+                } else {
+                    icon.className = 'fa-solid fa-play'
+                }
+                const wf = card.querySelector('.waveform');
+                if (id === currentTrack.id && isPlaying) {
+                    wf.classList.add('playing');
+                } else {
+                    wf.classList.remove('playing');
                 }
             });
         }
 
-        function showAudioPlayer() {
-            audioPlayer.style.transform = 'translateY(0)';
-            audio.play();
-        }
-
-        function hiddenAudioPlayer() {
-            audioPlayer.style.transform = 'translateY(160px)';
-            audio.pause();
-        }
-
-        function playList(playlist, tracksList, namesList) {
-            tracks = tracksList;
-            names = namesList;
-            currentPlayList = playlist.dataset.name;
-            cleanBtns(playlist);
-            if(playlist.dataset.status==='pause'){
-                playlist.innerHTML = '<i class="icon-base ti tabler-player-pause-filled"></i>';
-                playlist.dataset.status = 'play';
-                audio.src = tracks[0];
-                const name = names[0] === null ? "Track " + (0 + 1) : names[0];
-                document.getElementById('plyr-audio-name').textContent = currentPlayList + ' - ' + name;
-                showAudioPlayer();
-            } else {
-                playlist.innerHTML = '<i class="icon-base ti tabler-player-play-filled"></i>';
-                playlist.dataset.status = 'pause';
-                hiddenAudioPlayer();
-            }
-            
-
-            // Cuando termina un audio, cargar el siguiente
-            audio.addEventListener("ended", () => {
-                playNextAudio();
+        function setLoader(e) {
+            document.querySelectorAll('.remix-card').forEach(card => {
+                const id = card.dataset.id;
+                const btn = card.querySelector('.play-btn i');
+                if (id === e) {
+                    btn.className = 'fa fa-spinner fa-spin';
+                }
             });
         }
 
-        function playNextAudio() {
-            const currentIndex = tracks.findIndex(track => track === audio.src);
-            const nextIndex = (currentIndex + 1) % tracks.length;
-            const name = names[nextIndex] === null ? "Track " + (nextIndex + 1) : names[nextIndex];
-            audio.src = tracks[nextIndex];
-            document.getElementById('plyr-audio-name').textContent = currentPlayList + ' - ' + name;
-            audio.play();
+        function playTrack(track) {
+            setLoader(track.id);
+
+            audio = new Audio(track.url);
+
+            audio.addEventListener("canplaythrough", () => {
+                audioPlayer.src = audio.src;
+                audioPlayer.play();
+            });
+
+            audioPlayer.addEventListener("play", () => {
+                currentTrack = track;
+                currentTime = 0;
+                duration = track.duration;
+                isPlaying = true;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
         }
+
+        function togglePlay() {
+            if (!currentTrack) return;
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+            updatePlayerUI();
+        }
+
+        // ===== RENDER =====
+        // Remixes
+        let delay = 1;
+        document.getElementById('remixes-grid').innerHTML = remixes.map(r => `
+        <div class="remix-card" data-id="${r.id}"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}">
+            <div class="thumb">
+            <img src="${r.img}" alt="${r.title}" loading="lazy">
+            ${r.isNew?'<span class="tag-new">NEW</span>':''}
+            </div>
+            <div class="info">
+            <div class="title">${r.title}</div>
+            <div class="artist">${r.artist}</div>
+            <div class="genre">${r.genre}</div>
+            <div class="mini-player">
+                <button class="play-btn" onclick="handleCardPlay('${r.id}')"><i class="fa-solid fa-play"></i></button>
+                <div class="waveform">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="mini-actions">
+                    ${ r.canDownload ? '<a href="' + r.downloadLink + '" ><i class="fa-solid fa-download"></i></a>' : '<a href="' + r.addToCart +'" ><i class="ti tabler-shopping-cart-plus"></i></a>'}
+                </div>
+            </div>
+            <div class="meta"><span>BPM · ${r.bpm}</span> <span>${ !r.canDownload ? '$ '+r.price : ''}</span></div>
+            </div>
+        </div>
+        `).join('');
+
+        // Playlists
+        let prank = 0;
+        delay = 1;
+        document.getElementById('playlists-list').innerHTML = playlists.map(p => `
+        <div class="playlist-row"   data-aos="fade-right"  data-aos-delay="${ delay++*300 + 100}">
+            <div class="playlist-column">
+                <span class="playlist-rank">#${++prank}</span>
+                <div class="playlist-imgs">${p.imgs.map(i=>`<img src="${i}" alt="" loading="lazy">`).join('')}</div>
+                <div class="playlist-info"><h3>${p.title}</h3><p>${p.sub}</p></div>
+            </div>
+            <div class="playlist-column">
+                <div class="playlist-stats">
+                    <span class="playlist-tag">HOT</span>
+                    <span class="playlist-genre"></span>
+                    <span class="playlist-bpm"></span>
+                    <span class="playlist-downloads"><i class="fa-solid fa-fire"></i> ${p.downloads}</span>
+                </div>
+                <a href="${p.route}" class="btn-primary">VER PLAYLIST</a>
+            </div>
+        </div>
+        `).join('');
+
+        // Top DJs
+        delay = 1;
+        document.getElementById('top-djs-grid').innerHTML = topDjs.map(d => `
+        <div class="dj-card"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}">
+            <div class="thumb"><img src="${d.img}" alt="${d.name}" loading="lazy"></div>
+            <div class="info">
+            <div class="name">${d.name}</div>
+            <div class="genres">${d.genres}</div>
+            <div class="actions">
+                <a href="${d.route}" class="btn-primary" style="font-size:.75rem;padding:6px 14px">VER DJ</a>
+                <p style="color:var(--fg-muted);cursor:pointer">${d.downloads} <i class="fa-solid fa-download"></i></p>
+            </div>
+            </div>
+        </div>
+        `).join('');
+
+        // Genres
+        delay = 0;
+        document.getElementById('genres-scroll').innerHTML = genres.map(g => `
+        <a href="${g.route}" class="genre-item"  data-aos="zoom-in"  data-aos-delay="${ delay++*100 + 100}">
+            <span class="genre-icon"><i class="fa-solid ${g.icon}"></i></span>
+            <span>${g.name}</span>
+        </a>
+        `).join('');
+
+        // ===== EVENT HANDLERS =====
+        function handleCardPlay(id) {
+            if (currentTrack && currentTrack.id === id) {
+                togglePlay();
+                return
+            }
+            const r = remixes.find(x => x.id === id);
+            if (r) playTrack(r);
+            else Swal.fire("Error", "Track not found", "error");
+        }
+
+        function getRemixIndex(id) {
+            return remixes.findIndex(x => x.id === id);
+        }
+
+        //reproducir siguiente al currenttrack si es el ultimo reproducir el primero
+        function playNextTrack() {
+            if (!currentTrack) return;
+            const idx = getRemixIndex(currentTrack.id);
+            if (idx >= 0 && idx < remixes.length - 1) {
+                playTrack(remixes[idx + 1]);
+            } else {
+                playTrack(remixes[0]);
+            }
+        }
+
+        // reproducir anterior al currenttrack si es el primero reproducir el ultimo
+        function playPreviousTrack() {
+            if (!currentTrack) return;
+            const idx = getRemixIndex(currentTrack.id);
+            if (idx > 0) {
+                playTrack(remixes[idx - 1]);
+            } else {
+                playTrack(remixes[remixes.length - 1]);
+            }
+        }
+
+        document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
     @isset($error)
         <script>

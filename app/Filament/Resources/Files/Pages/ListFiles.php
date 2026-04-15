@@ -2,8 +2,10 @@
 
 namespace App\Filament\Resources\Files\Pages;
 
+use App\Enums\FolderTypeEnum;
 use App\Enums\SectionEnum;
 use App\Filament\Resources\Files\FileResource;
+use App\Http\Controllers\NotificationController;
 use App\Models\Category;
 use App\Models\Collection;
 use App\Models\File;
@@ -15,6 +17,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -67,6 +70,8 @@ class ListFiles extends ListRecords
                     TextInput::make('bpm')
                         ->label('BPM')
                         ->required(),
+                    TextInput::make('musical_note')
+                        ->label('Nota Musical'),
                     Select::make('categories')
                         ->label('Selecciona la/las Categoría(s)')
                         ->searchable()
@@ -91,6 +96,18 @@ class ListFiles extends ListRecords
                         })
                         ->multiple()
                         ->required(),
+
+                    Select::make('folder_id')
+                        ->label('Carpeta')
+                        ->options(fn () => \App\Models\Folder::where('type',  FolderTypeEnum::PACKS->value)->pluck('name', 'id'))
+                        ->helperText('Solo para Packs')
+                        ->searchable()
+                        ->preload(),
+
+                    Toggle::make('isExclusive')
+                        ->label('Contenido Exclusivo')
+                        ->helperText('Si es exclusivo, solo se venderá, no entrará en en los planes de suscripción')
+                        ->default(false),
                 ])->action(function (array $data): void {
                     try {
                         
@@ -114,12 +131,15 @@ class ListFiles extends ListRecords
                         // Crear registro principal
                         $file = new File();
                         $file->name = $data['name'] ?? basename($data['file'] ?? $data['original_file']);
+                        $file->folder_id = $data['folder_id'] ?? null;
                         $file->file = $data['file'] ?? ' ';
                         $file->poster = $webpPath ?? '';
                         $file->original_file = $data['original_file'] ?? ' ';
                         $file->user_id = Auth::user()->id;
                         $file->price = $data['price'] ?? 0;
                         $file->bpm = $data['bpm'];
+                        $file->musical_note = $data['musical_note'] ?? null;
+                        $file->is_exclusive = $data['isExclusive'] ?? false;
                         $file->sections = $data['sections'];
                         $file->save();
                         $file->categories()->sync($data['categories']);
@@ -197,6 +217,8 @@ class ListFiles extends ListRecords
                                         $newFile->user_id = Auth::user()->id;
                                         $newFile->price = $filePrice;
                                         $newFile->bpm = $data['bpm'];
+                                        $newFile->musical_note = $data['musical_note'] ?? null;
+                                        $newFile->is_exclusive = $data['isExclusive'] ?? false;
                                         $newFile->status = "inactive";
                                         $newFile->sections = $data['sections'];
                                         $newFile->save();
@@ -225,6 +247,13 @@ class ListFiles extends ListRecords
 
                             // ✅ 5) Borrar el archivo local (public) ya que está en S3
                             Storage::disk('public')->delete($data['original_file']);
+                        }
+
+                        $followers = $file->user->followers;
+                        foreach ($followers as $follower) {
+                            if ($follower->ntfs_prefs->new_remixes) {
+                                NotificationController::sendRemixNtf($follower->id, $file->id);
+                            }
                         }
 
                     } catch (\Throwable $e) {

@@ -25,6 +25,7 @@ use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
+use Illuminate\Support\HtmlString;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 
@@ -40,8 +41,7 @@ class AdminPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->brandLogo(config('app.logo'))
-            ->brandLogoHeight('70px')
+            ->brandLogo(new HtmlString('<div style="display: flex; align-items: center; gap: 10px"><img style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover; flex-shrink: 0;" src="'.config('app.logo').'" alt="'.config('app.name').'"> '. config('app.name') .'</div>'))
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([
@@ -72,7 +72,15 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->globalSearch(false);
+            ->globalSearch(false)
+            ->sidebarCollapsibleOnDesktop()
+            ->navigationGroups([
+                'Cotización',
+                'Archivos',
+                'Usuarios',
+                'Gestión',
+                'Configuraciones'
+            ]);
         ;
     }
 }

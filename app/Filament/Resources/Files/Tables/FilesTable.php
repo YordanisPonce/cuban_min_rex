@@ -13,6 +13,7 @@ use Filament\Tables\Table;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Filament\Actions\Action;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Response;
 
@@ -31,6 +32,11 @@ class FilesTable
                     ->sortable(),
                 TextColumn::make('bpm')
                     ->label('BPM')
+                    ->searchable(),
+                TextColumn::make('musical_note')
+                    ->label('Nota')
+                    ->default('-')
+                    ->alignCenter()
                     ->searchable(),
                 TextColumn::make('categories')
                     ->label('Categorías')
@@ -56,6 +62,19 @@ class FilesTable
                     ->label('Secciones a mostrar')
                     ->badge()
                     ->formatStateUsing(fn(string $state) => SectionEnum::getTransformName($state)),
+                IconColumn::make('isExclusive')
+                    ->label('Exclusivo')
+                    ->alignCenter()
+                    ->icons(fn(string $state) => match ($state) {
+                        '1' => ['heroicon-o-check-circle'],
+                        '0' => ['heroicon-o-x-circle'],
+                        default => ucfirst($state),
+                    })
+                    ->colors(fn(string $state) => match ($state) {
+                        '1' => ['success'],
+                        '0' => ['danger'],
+                        default => ['primary'],
+                    }),
                 TextColumn::make('created_at')
                     ->label('Fecha de creación')
                     ->dateTime()
@@ -102,21 +121,24 @@ class FilesTable
                     ->label('Filtros'),
             )
             ->recordActions([
-                // Action::make('download')
-                //     ->label('Descargar')
-                //     ->hidden(fn($record) => Auth::user()->id != $record->user_id)
-                //     ->icon(svg('entypo-download'))
-                //     ->action(function ($record) {
-                //         $path = storage_path('app/public/'.$record->file);
-                //         return Response::download($path);
-                //     }),
+                Action::make('setExclusive')
+                    ->label(fn($record) => $record->isExclusive ? 'Quitar exclusivo' : 'Hacer exclusivo')
+                    ->requiresConfirmation()
+                    ->modalHeading(fn($record) => $record->isExclusive ? 'Quitar exclusivo' : 'Hacer exclusivo')
+                    ->modalDescription(fn($record) => $record->isExclusive ? '¿Estás seguro de que deseas quitar el estado exclusivo de este archivo? Se podrá descargar con cualquier plan de suscripción.' : '¿Estás seguro de que deseas marcar este archivo como exclusivo? Solo podrá ser comprado individualmente y no formará parte de ningún plan de suscripción.')
+                    ->action(function ($record) {
+                        $record->isExclusive = !$record->isExclusive;
+                        $record->save();
+                    })
+                    ->icon(fn($record) => $record->isExclusive ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->color(fn($record) => $record->isExclusive ? 'danger' : 'success'),
                 EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Editar'),
                 DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                    DeleteBulkAction::make()->label('Eliminar Seleccionados'),
+                ])->label('Acciones en Lote'),
             ])
             ->modifyQueryUsing(
                 fn(EloquentBuilder $query) => auth()->user()->role!=='admin' ? $query->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc') : $query->orderBy('created_at', 'desc')

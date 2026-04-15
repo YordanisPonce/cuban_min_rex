@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
 
@@ -32,12 +33,16 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'photo',
+        'cover',
         'role',
         'is_admin',
         'paypal_email',
         'email_verified_at',
         'downloadToken',
+        'current_plan_id',
+        'plan_start_at',
         'plan_expires_at',
+        'bio',
     ];
 
     /**
@@ -125,6 +130,11 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasOne(Billing::class);
     }
 
+    public function socialLinks()
+    {
+        return $this->hasOne(SocialLink::class);
+    }
+
     public function cart()
     {
         return $this->hasOne(Cart::class);
@@ -163,6 +173,26 @@ class User extends Authenticatable implements FilamentUser
     public function playlists()
     {
         return $this->hasMany(PlayList::class);
+    }
+    
+    public function follows(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+    
+    public function followers(): HasMany
+    {
+        return $this->hasMany(Follow::class, 'follow_id');
+    }
+
+    public function notifications(): HasMany
+    {
+        return $this->hasMany(Notification::class, 'user_id');
+    }
+
+    public function ntfs_prefs(): HasOne
+    {
+        return $this->hasOne(NotificationSettings::class, 'user_id');
     }
 
     public function totalUnliquidatedDownloads(): int
@@ -512,6 +542,10 @@ class User extends Authenticatable implements FilamentUser
             }
         }
         return $totalPaid + $this->paidSaleLiquidation();
+    }
+
+    public function get_current_plan_consume_downloads(){
+        return $this->downloads()->whereBetween('created_at', [$this->plan_start_at, $this->plan_expires_at])->count();
     }
 
     public function getFileDownloadsAtSubscriptionPeriod($fileId)

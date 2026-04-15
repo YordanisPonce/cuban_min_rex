@@ -61,49 +61,57 @@ class FileController extends Controller
             if (auth()->user()->currentPlan) {
                 $plan = auth()->user()->currentPlan;
             } else {
-                $plan = Order::where('user_id', auth()->user()->id)->orderBy('created_at', 'desc')->first()?->plan;
+                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
             if($plan){
-                if (auth()->user()->getFileDownloadsAtSubscriptionPeriod($id) < $plan->downloads) {
-                    $file = File::find($id);
+                if(auth()->user()->plan_start_at){
+                    if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
+                        $file = File::find($id);
 
-                    $path = $file->original_file;
+                        $path = $file->original_file;
 
-                    if (!Storage::disk('s3')->exists($path)) {
-                        abort(404);
+                        if (!Storage::disk('s3')->exists($path)) {
+                            abort(404);
+                        }
+
+                        $file->download_count = $file->download_count + 1;
+                        $file->save();
+
+                        $download = new Download();
+                        $download->user_id = auth()->user()->id;
+                        $download->file_id = $file->id;
+                        $download->save();
+                        $ext = pathinfo($path, PATHINFO_EXTENSION);
+                        $downloadName = "$file->name.$ext";
+                        return Storage::disk('s3')->download($path, $downloadName);
                     }
+                } else {
+                    if (auth()->user()->getFileDownloadsAtSubscriptionPeriod($id) < $plan->downloads) {
+                        $file = File::find($id);
 
-                    $file->download_count = $file->download_count + 1;
-                    $file->save();
+                        $path = $file->original_file;
 
-                    $download = new Download();
-                    $download->user_id = auth()->user()->id;
-                    $download->file_id = $file->id;
-                    $download->save();
-                    $ext = pathinfo($path, PATHINFO_EXTENSION);
-                    $downloadName = "$file->name.$ext";
-                    return Storage::disk('s3')->download($path, $downloadName);
+                        if (!Storage::disk('s3')->exists($path)) {
+                            abort(404);
+                        }
+
+                        $file->download_count = $file->download_count + 1;
+                        $file->save();
+
+                        $download = new Download();
+                        $download->user_id = auth()->user()->id;
+                        $download->file_id = $file->id;
+                        $download->save();
+                        $ext = pathinfo($path, PATHINFO_EXTENSION);
+                        $downloadName = "$file->name.$ext";
+                        return Storage::disk('s3')->download($path, $downloadName);
+                    }
                 }
-                return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
-            
+                return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');            
             }
         }
-
-        Log::debug("No entorn a ningun descargar");
         return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
-    }
-
-    public function play(string $collectionId, string $id)
-    {
-        $track = File::orderBy('created_at', 'desc')->get()
-            ->map(fn($f) => [
-                'id' => $f->id,
-                'url' => Storage::disk('s3')->url($f->url ?? $f->file), // adapta si ya guardas rutas absolutas
-                'title' => $f->title ?? $f->name,
-            ]);
-
-        return response()->json($track);
     }
 
     public function pay()
