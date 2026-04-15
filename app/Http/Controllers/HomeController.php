@@ -83,18 +83,35 @@ class HomeController extends Controller
             ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as downloads, play_lists.cover as cover, users.photo as photo')
             ->groupBy(['title', 'dj', 'cover', 'photo'])
             ->orderBy('downloads', 'desc')->take(3)->get();
-
+        
         $playlists->transform(function ($playlist) {
             return [
                 'title' => $playlist->title,
                 'sub' => $playlist->dj,
                 'tag' => '',
-                'genre' => $playlist->folder->name ?? '',
+                'genre' => $playlist->folder?->name ?? '',
                 'imgs' => [$playlist->cover ?? $playlist->photo ?? config('app.logo_alter')],
                 'downloads' => $playlist->downloads,
                 'route' => route('playlist.show', str_replace(' ', '_', $playlist->title)),
             ];
         });
+
+        if ($playlists->count() === 0) {
+            $playlists = PlayList::orderBy('downloads', 'desc')->take(3)->get();
+            
+            $playlists->transform(function ($playlist) {
+                return [
+                    'title' => $playlist->name,
+                    'sub' => $playlist->user->name,
+                    'tag' => '',
+                    'genre' => $playlist->folder?->name ?? '',
+                    'imgs' => [$playlist->cover ?? $playlist->user->photo ?? config('app.logo_alter')],
+                    'downloads' => $playlist->downloads->count(),
+                    'route' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
+                ];
+            });
+        }
+
 
         $geners = Category::join('category_files', 'categories.id', 'category_files.category_id')
             ->join('files', 'files.id', 'category_files.file_id')
