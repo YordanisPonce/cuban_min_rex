@@ -158,7 +158,7 @@
                                 <div class="remix-info">
                                     <button class="remix-play" onclick="handlePlay({{ $file->id }})"><i
                                             class="fas fa-play"></i></button>
-                                    <img class="remix-cover" src="{{ $file->poster ?? ($dj->photo ?? config('app.name')) }}}"
+                                    <img class="remix-cover" src="{{ $file->poster ?? ($dj->photo ?? config('app.name')) }}"
                                         alt="{{ $file->name }}">
                                     <div>
                                         <div class="remix-title">{{ $file->name }}</div>
