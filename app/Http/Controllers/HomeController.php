@@ -97,7 +97,7 @@ class HomeController extends Controller
         });
 
         if ($playlists->count() === 0) {
-            $playlists = PlayList::orderBy('downloads', 'desc')->take(3)->get();
+            $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
             
             $playlists->transform(function ($playlist) {
                 return [
