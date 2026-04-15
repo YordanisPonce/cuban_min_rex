@@ -1447,7 +1447,7 @@ footer {
 
 @media (min-width: 1160px) {
     footer {
-        max-height: 200px;
+        max-height: 300px;
     }
 }
 
