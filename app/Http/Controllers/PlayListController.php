@@ -104,7 +104,7 @@ class PlayListController extends Controller
         $similar = [];
 
         if($playlist){
-            $similar = PlayList::where('id', '!=' ,$playlist->id)->where('folder_id', $playlist->folder->id)->where('user_id', $playlist->user->id)
+            $similar = PlayList::where('id', '!=' ,$playlist->id)->where('folder_id', $playlist->folder?->id ?? null)->where('user_id', $playlist->user->id)
                 ->orderBy('created_at', 'desc')->take(4)->get();
 
             $similar = $similar->transform(function ($s) {
