@@ -366,8 +366,6 @@
             playTrack(id, url);
         }
 
-        renderExclusives();
-
         document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
     @isset($error)
