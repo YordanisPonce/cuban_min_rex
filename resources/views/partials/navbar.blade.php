@@ -29,9 +29,9 @@
             @endauth
             <a href="{{ route('cart') }}" class="btn btn-primary btn-cart"><i class="ti tabler-shopping-cart"></i><span class="cart-badge">{{ Cart::get_current_cart()->cart_items->count() }}</span><span class="cart-amount">$ {{ number_format(Cart::get_current_cart()->get_cart_count(), 2) }}</span></a>
             @auth
-                <a href="{{ route('profile.edit') }}" class="btn-primary"><i class="fa-solid fa-user"></i> PERFIL</a>
+                <a href="{{ route('profile.edit') }}" class="btn-primary"><i class="fa-solid fa-user"></i><span class="login-label"> PERFIL</a></a>
             @else  
-                <a href="{{ route('login') }}" class="btn-primary">ACCEDER</a>
+                <a href="{{ route('login') }}" class="btn-primary"><i class="fa-solid fa-arrow-right-to-bracket"></i><span class="login-label"> ACCEDER</span></a>
             @endauth
             <button class="hamburger" id="navbarToggle"><i class="fa-solid fa-bars"></i></button>
         </div>
