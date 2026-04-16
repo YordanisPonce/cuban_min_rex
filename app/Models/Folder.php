@@ -24,7 +24,7 @@ class Folder extends Model
         return $this->hasMany(Playlist::class, 'folder_id');
     }
 
-    protected function coverIimage(): Attribute
+    protected function cover_image(): Attribute
     {
 
         $isFrontend = request()->input('is_frontend');
