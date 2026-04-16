@@ -1987,6 +1987,12 @@ body>.skiptranslate>iframe {
     #google_translator select {
         max-width: 100px;
     }
+
+    .hero-btns{
+        flex-direction: column;
+        display: flex;
+        gap: 10px;
+    }
 }
 
 @media(max-width:900px) {

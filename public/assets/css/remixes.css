@@ -634,6 +634,17 @@
 }
 
 /* Responsive */
+@media (max-width: 450px) {
+    .track-right{
+        flex-direction: column !important;
+
+        &>div{
+            justify-content: space-between;
+        }
+    }
+}
+
+
 @media(max-width:768px) {
 
     .track-card {
