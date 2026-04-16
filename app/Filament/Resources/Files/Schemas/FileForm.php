@@ -46,12 +46,14 @@ class FileForm
                     ->label('Subir Poster')
                     ->image()
                     ->disk('s3')
+                    ->directory('images')
                     ->columnSpanFull(),
                 FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
+                    ->directory('files')
                     ->columnSpanFull(),
 
                 FileUpload::make('original_file')
@@ -59,7 +61,9 @@ class FileForm
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
+                    ->directory('files')
                     ->columnSpanFull(),
+
                 Select::make('sections')
                     ->label('Secciones a mostrar')
                     ->options(function () {
