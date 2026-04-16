@@ -309,61 +309,6 @@
             return data;
         }
 
-        function generateFormWithData(data) {
-            const form = document.createElement('form');
-            form.method = 'POST';
-            form.action = '{{ route('profile.update') }}';
-            form.style.display = 'none';
-
-            // Agregar token CSRF
-            const csrfInput = document.createElement('input');
-            csrfInput.type = 'hidden';
-            csrfInput.name = '_token';
-            csrfInput.value = '{{ csrf_token() }}';
-            form.appendChild(csrfInput);
-
-            // Agregar método PUT
-            const methodInput = document.createElement('input');
-            methodInput.type = 'hidden';
-            methodInput.name = '_method';
-            methodInput.value = 'POST';
-            form.appendChild(methodInput);
-
-            // Agregar campos con los datos
-            for (const key in data) {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = key;
-                input.value = data[key];
-                form.appendChild(input);
-            }
-
-            //agregar los archivos
-            const photoInput = document.querySelector('input[name="photo"]');
-            const coverInput = document.querySelector('input[name="cover"]');
-            if (photoInput.files[0]) {
-                const photoFileInput = document.createElement('input');
-                photoFileInput.type = 'file';
-                photoFileInput.name = 'photo';
-                photoFileInput.files = photoInput.files;
-                form.appendChild(photoFileInput);
-            }
-            if (coverInput.files[0]) {
-                const coverFileInput = document.createElement('input');
-                coverFileInput.type = 'file';
-                coverFileInput.name = 'cover';
-                coverFileInput.files = coverInput.files;
-                form.appendChild(coverFileInput);
-            }
-
-            document.body.appendChild(form);
-            return form;
-        }
-
-        function sendForm(form) {
-            form.submit();
-        }
-
         function saveChanges() {
             const formData = new FormData();
 
