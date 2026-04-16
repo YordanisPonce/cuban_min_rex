@@ -100,7 +100,7 @@
                 <h1>Editar Perfil</h1>
             </div>
             <div>
-                <button class="btn btn-primary" onclick="saveChanges()">Guardar cambios</button>
+                <button id="save" class="btn btn-primary" onclick="saveChanges()"><i class="fas fa-save"></i> Guardar cambios</button>
             </div>
         </div>
 
@@ -310,6 +310,8 @@
         }
 
         function saveChanges() {
+            document.querySelector('#save>i').className = "fa fa-spinner fa-spin";
+
             const formData = new FormData();
 
             const data = collectData();
