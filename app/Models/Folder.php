@@ -28,10 +28,8 @@ class Folder extends Model
     protected function cover_image(): Attribute
     {
 
-        $isFrontend = request()->input('is_frontend');
-
         return Attribute::make(
-            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
+            get: fn($item) => $item ? Storage::disk('s3')->url($item) : $item
         );
     }
 }
