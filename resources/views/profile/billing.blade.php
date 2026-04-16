@@ -378,10 +378,10 @@
                             });
                         }
                     })
-                    .catch(() => {
+                    .catch((e) => {
                         Swal.fire({
                             title: 'Error al actualizar avatar',
-                            text: 'Ocurrió un error inesperado.',
+                            text: 'Ocurrió un error inesperado: '+ e.message,
                             icon: 'error'
                         });
                     });

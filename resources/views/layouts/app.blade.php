@@ -9,37 +9,37 @@
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <title>@yield('title', config('app.name'))</title>
 
-    <!-- Canonical SEO --> 
-    <link rel="canonical" href="{{ config('app.url') }}"> 
-    <meta name="keywords" content="{{ config('app.keywords') }}"> 
-    <meta name="description" content="{{ config('app.description') }}"> 
-    <meta name="author" content="{{ config('app.name') }}"> 
-    <meta name="robots" content="index, follow"> 
-    <meta name="language" content="es"> 
-    <meta name="distribution" content="global"> 
-    <meta name="rating" content="general"> 
-    <meta name="revisit-after" content="7 days"> 
-    
-    <!-- Open Graph (Facebook, WhatsApp, Instagram) --> 
-    <meta property="og:title" content="{{ config('app.name') }} - Música, Remixes y Descargas"> 
-    <meta property="og:type" content="website"> 
-    <meta property="og:image" content="{{ config('app.logo') }}"> 
-    <meta property="og:description" content="{{ config('app.description') }}"> 
-    <meta property="og:site_name" content="{{ config('app.name') }}"> 
-    <meta property="og:url" content="{{ config('app.url') }}"> 
-    <meta property="og:locale" content="es_ES"> 
-    
-    <!-- Twitter Cards --> 
-    <meta name="twitter:card" content="summary_large_image"> 
-    <meta name="twitter:title" content="{{ config('app.name') }} - Música y Remixes"> 
-    <meta name="twitter:description" content="Escucha y descarga música, remixes y contenido exclusivo para DJs."> 
-    <meta name="twitter:image" content="{{ config('app.logo') }}"> 
-    <meta name="twitter:site" content="{{ '@'.config('app.name') }}"> 
-    
-    <!-- Mobile & PWA --> 
-    <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <meta name="theme-color" content="#000000"> 
-    <meta name="mobile-web-app-capable" content="yes"> 
+    <!-- Canonical SEO -->
+    <link rel="canonical" href="{{ config('app.url') }}">
+    <meta name="keywords" content="{{ config('app.keywords') }}">
+    <meta name="description" content="{{ config('app.description') }}">
+    <meta name="author" content="{{ config('app.name') }}">
+    <meta name="robots" content="index, follow">
+    <meta name="language" content="es">
+    <meta name="distribution" content="global">
+    <meta name="rating" content="general">
+    <meta name="revisit-after" content="7 days">
+
+    <!-- Open Graph (Facebook, WhatsApp, Instagram) -->
+    <meta property="og:title" content="{{ config('app.name') }} - Música, Remixes y Descargas">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="{{ config('app.logo') }}">
+    <meta property="og:description" content="{{ config('app.description') }}">
+    <meta property="og:site_name" content="{{ config('app.name') }}">
+    <meta property="og:url" content="{{ config('app.url') }}">
+    <meta property="og:locale" content="es_ES">
+
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ config('app.name') }} - Música y Remixes">
+    <meta name="twitter:description" content="Escucha y descarga música, remixes y contenido exclusivo para DJs.">
+    <meta name="twitter:image" content="{{ config('app.logo') }}">
+    <meta name="twitter:site" content="{{ '@' . config('app.name') }}">
+
+    <!-- Mobile & PWA -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
 
     @if (env('APP_ENV') == 'production')
@@ -76,9 +76,10 @@
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/swiper/swiper.css') }}" />
 
     <!-- Page CSS -->
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" />
@@ -116,10 +117,10 @@
         </div>
     @else
         @include('partials.navbar')
-        {{--<div class="bg-mobile">
+        {{-- <div class="bg-mobile">
             <img src="{{ asset('assets/img/front-pages/backgrounds/remixes-bg-mobile.jpg') }}">
             <div class="dark-screen"></div>    
-        </div>--}}
+        </div> --}}
 
         <main>
             @yield('content')
@@ -134,6 +135,19 @@
             <span>Cargando...</span>
         </div>
     </div>
+
+    <script>
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                    pageLanguage: 'es',
+                    includedLanguages: 'es,en'
+                },
+                'google_translator'
+            );
+        }
+    </script>
+
+    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
     <!-- Core JS -->
     <!-- build:js assets/vendor/js/theme.js  -->
@@ -153,23 +167,23 @@
     <script src="{{ asset('assets/vendor/libs/swiper/swiper.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    {{--<!-- Main JS -->
+    {{-- <!-- Main JS -->
     <script src="{{ asset('assets/js/front-main.js') }}"></script>
 
     <!-- Page JS -->
          <script src="{{ asset('assets/js/front-page-landing.js') }}"></script> --}}
 
     <script>
-        window.addEventListener('DOMContentLoaded', function(){
-            document.getElementById('navbarToggle').addEventListener('click', function(){
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('navbarToggle').addEventListener('click', function() {
                 document.getElementById('navBar').classList.toggle('active');
             });
-            
+
             document.getElementById('wloader').style.display = 'none';
         })
         AOS.init({
             duration: 1500, // duración en ms
-            once: true     // animar solo una vez
+            once: true // animar solo una vez
         });
     </script>
 

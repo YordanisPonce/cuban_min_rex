@@ -19,6 +19,7 @@
             <li><a href="{{ route('plans') }}" class="{{$index===7 ? 'active' : ''}}">PLANES</a></li>
         </ul>
         <div class="nav-right">
+            <div id="google_translator"></div>
             <button class="icon-btn" onclick="document.getElementById('search').classList.toggle('active')"><i class="fa-solid fa-magnifying-glass" style="color:var(--fg-muted);cursor:pointer"></i></button>
             @auth
                 <a href="{{ route('ntfs') }}" class="icon-btn">
