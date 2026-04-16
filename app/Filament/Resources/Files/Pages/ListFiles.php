@@ -139,7 +139,7 @@ class ListFiles extends ListRecords
                         $file->price = $data['price'] ?? 0;
                         $file->bpm = $data['bpm'];
                         $file->musical_note = $data['musical_note'] ?? null;
-                        $file->is_exclusive = $data['isExclusive'] ?? false;
+                        $file->isExclusive = $data['isExclusive'] ?? false;
                         $file->sections = $data['sections'];
                         $file->save();
                         $file->categories()->sync($data['categories']);
