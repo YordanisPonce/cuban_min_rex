@@ -107,19 +107,23 @@
         <!-- Avatar -->
         <div class="avatar-section">
             <div class="avatar-cover">
-                <img src="{{ $user->cover ?? config('app.logo_alter') }}" alt="avatar">
+                <img id="cover_preview" src="{{ $user->cover ?? config('app.logo_alter') }}" alt="avatar">
+                <input id="cover_input" type="file" name="cover" />
                 <div class="overlay"></div>
             </div>
             <div class="avatar-editor">
-                <img src="{{ $user->photo ?? config('app.logo_alter') }}" alt="avatar">
+                <img id="photo_preview" src="{{ $user->photo ?? config('app.logo_alter') }}" alt="avatar">
+                <input id="photo_input" type="file" name="photo" style="width: 0px" />
                 <div class="edit-overlay" onclick="changeAvatar()"><i class="fas fa-pencil"></i></div>
             </div>
             <div class="avatar-info">
                 <h3>{{ $user->name }}</h3>
                 <p>Miembro desde {{ Carbon::parse($user->created_at)->format('M \d\e Y') }}</p>
                 <div class="avatar-actions">
-                    <button class="btn btn-primary" onclick="changeCover()"><i class="fas fa-image"></i> Cambiar Portada</button>
-                    <a class="btn btn-outline" href="{{ route('profile.restorePhoto') }}" onclick="return confirm('¿Estás seguro de que quieres eliminar tu foto?');">Eliminar</a>
+                    <button class="btn btn-primary" onclick="changeCover()"><i class="fas fa-image"></i> Cambiar
+                        Portada</button>
+                    <a class="btn btn-outline" href="{{ route('profile.restorePhoto') }}"
+                        onclick="return confirm('¿Estás seguro de que quieres eliminar tu foto?');">Eliminar</a>
                 </div>
             </div>
         </div>
@@ -213,7 +217,8 @@
                         value="{{ $user->socialLinks?->tiktok }}" placeholder="https://tiktok.com/@..." name="tiktok">
                 </div>
                 <div class="social-row"><i class="fab fa-youtube"></i><input type="url"
-                        value="{{ $user->socialLinks?->youtube }}" placeholder="https://youtube.com/@..." name="youtube">
+                        value="{{ $user->socialLinks?->youtube }}" placeholder="https://youtube.com/@..."
+                        name="youtube">
                 </div>
                 <div class="social-row"><i class="fab fa-spotify"></i><input type="url"
                         value="{{ $user->socialLinks?->spotify }}" placeholder="https://open.spotify.com/artist/..."
@@ -297,6 +302,9 @@
                 facebook: document.querySelector('input[name="facebook"]').value,
                 twitter: document.querySelector('input[name="twitter"]').value,
                 site: document.querySelector('input[name="site"]').value,
+                current_password: document.querySelector('input[name="current_password"]').value,
+                new_password: document.querySelector('input[name="new_password"]').value,
+                confirm_password: document.querySelector('input[name="confirm_password"]').value,
             };
             return data;
         }
@@ -330,6 +338,24 @@
                 form.appendChild(input);
             }
 
+            //agregar los archivos
+            const photoInput = document.querySelector('input[name="photo"]');
+            const coverInput = document.querySelector('input[name="cover"]');
+            if (photoInput.files[0]) {
+                const photoFileInput = document.createElement('input');
+                photoFileInput.type = 'file';
+                photoFileInput.name = 'photo';
+                photoFileInput.files = photoInput.files;
+                form.appendChild(photoFileInput);
+            }
+            if (coverInput.files[0]) {
+                const coverFileInput = document.createElement('input');
+                coverFileInput.type = 'file';
+                coverFileInput.name = 'cover';
+                coverFileInput.files = coverInput.files;
+                form.appendChild(coverFileInput);
+            }
+
             document.body.appendChild(form);
             return form;
         }
@@ -339,102 +365,68 @@
         }
 
         function saveChanges() {
+            const formData = new FormData();
+
             const data = collectData();
-            const form = generateFormWithData(data);
-            sendForm(form);
+            for (const key in data) {
+                formData.append(key, data[key]);
+            }
+
+            const photoInput = document.querySelector('input[name="photo"]');
+            const coverInput = document.querySelector('input[name="cover"]');
+
+            if (photoInput.files.length > 0) {
+                formData.append('photo', photoInput.files[0]);
+            }
+
+            if (coverInput.files.length > 0) {
+                formData.append('cover', coverInput.files[0]);
+            }
+
+            formData.append('_token', '{{ csrf_token() }}');
+            formData.append('_method', 'POST');
+
+            fetch('{{ route('profile.update') }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    if (response.redirected) {
+                        window.location.href = response.url;
+                    }
+                })
+                .catch(error => console.error('Error:', error));
         }
 
         function changeAvatar() {
-            // create a new input to select files
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.onchange = () => {
-                const file = fileInput.files[0];
-                if (file) {
-                    const formData = new FormData();
-                    formData.append('photo', file);
-                    formData.append('_token', '{{ csrf_token() }}');
-
-                    fetch('{{ route('profile.update') }}', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                title: 'Avatar actualizado',
-                                text: data.message,
-                                icon: 'success'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error al actualizar avatar',
-                                text: data.message,
-                                icon: 'error'
-                            });
-                        }
-                    })
-                    .catch((e) => {
-                        Swal.fire({
-                            title: 'Error al actualizar avatar',
-                            text: 'Ocurrió un error inesperado: '+ e.message,
-                            icon: 'error'
-                        });
-                    });
-                }
-            };
-            fileInput.click();
+            document.getElementById('photo_input').click();
         }
+
+        document.getElementById('photo_input').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('photo_preview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
 
         function changeCover() {
-            // create a new input to select files
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.onchange = () => {
-                const file = fileInput.files[0];
-                if (file) {
-                    const formData = new FormData();
-                    formData.append('cover', file);
-                    formData.append('_token', '{{ csrf_token() }}');
-
-                    fetch('{{ route('profile.update') }}', {
-                        method: 'POST',
-                        body: formData
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            Swal.fire({
-                                title: 'Portada actualizado',
-                                text: data.message,
-                                icon: 'success'
-                            }).then(() => {
-                                location.reload();
-                            });
-                        } else {
-                            Swal.fire({
-                                title: 'Error al actualizar la portada',
-                                text: data.message,
-                                icon: 'error'
-                            });
-                        }
-                    })
-                    .catch(() => {
-                        Swal.fire({
-                            title: 'Error al actualizar la portada',
-                            text: 'Ocurrió un error inesperado.',
-                            icon: 'error'
-                        });
-                    });
-                }
-            };
-            fileInput.click();
+            document.getElementById('cover_input').click();
         }
+
+        document.getElementById('cover_input').addEventListener('change', function() {
+            const file = this.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('cover_preview').src = e.target.result;
+                }
+                reader.readAsDataURL(file);
+            }
+        });
     </script>
     @isset($error)
         <script>
