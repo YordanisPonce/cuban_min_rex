@@ -31,7 +31,7 @@
             @auth
                 <a href="{{ route('profile.edit') }}" class="btn-primary"><i class="fa-solid fa-user"></i><span class="login-label"> PERFIL</a></a>
             @else  
-                <a href="{{ route('login') }}" class="btn-primary"><i class="fa-solid fa-arrow-right-to-bracket"></i><span class="login-label"> ACCEDER</span></a>
+                <a href="{{ route('login') }}" class="btn-primary"><i class="fa-solid fa-arrow-right-to-bracket"></i> <span class="login-label">ACCEDER</span></a>
             @endauth
             <button class="hamburger" id="navbarToggle"><i class="fa-solid fa-bars"></i></button>
         </div>

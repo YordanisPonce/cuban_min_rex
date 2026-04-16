@@ -2,7 +2,7 @@
 
 use App\Models\SeoText;
 
-$seo = SeoText::firstOrCreate([]);
+$seo = SeoText::first();
 
 return [
 
