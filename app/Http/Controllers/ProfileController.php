@@ -75,7 +75,7 @@ class ProfileController extends Controller
      */
     public function update(Request $request)
     {   
-        try{
+        /*try{
         
             $photo = $request->file('photo');
             
@@ -173,9 +173,9 @@ class ProfileController extends Controller
 
             $success = "Información modificada correctamente";
             return redirect()->back()->with('success', $success);
-        } catch(\Throwable $th){
+        /*} catch(\Throwable $th){
             return redirect()->back()->with('error', 'Error al guardar la informacion: '.$th->getMessage());
-        }
+        }*/
     }
 
     public function restorePhoto(){
