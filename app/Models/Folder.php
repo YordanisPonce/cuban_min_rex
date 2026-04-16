@@ -24,7 +24,7 @@ class Folder extends Model
         return $this->hasMany(Playlist::class, 'folder_id');
     }
 
-    protected function getCoverUrl()
+    public function getCoverUrl()
     {
 
         return $this->cover_image ? Storage::disk('s3')->url($this->cover_image) : null;
