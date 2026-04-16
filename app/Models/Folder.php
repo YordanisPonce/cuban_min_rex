@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Storage;
 
 class Folder extends Model
@@ -25,11 +24,9 @@ class Folder extends Model
         return $this->hasMany(Playlist::class, 'folder_id');
     }
 
-    protected function cover_image(): Attribute
+    protected function getCoverUrl()
     {
 
-        return Attribute::make(
-            get: fn($item) => $item ? Storage::disk('s3')->url($item) : $item
-        );
+        return $this->cover_image ? Storage::disk('s3')->url($this->cover_image) : null;
     }
 }
