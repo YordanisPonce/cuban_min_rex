@@ -90,6 +90,16 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
+    protected function cover(): Attribute
+    {
+
+        $isFrontend = request()->input('is_frontend');
+
+        return Attribute::make(
+            get: fn($item) => $item && $isFrontend ? Storage::disk('s3')->url($item) : $item
+        );
+    }
+
     // === Socialite ===
     public function getSocialiteAvatarUrl(): ?string
     {
