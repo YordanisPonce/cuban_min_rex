@@ -1993,6 +1993,10 @@ body>.skiptranslate>iframe {
         display: flex;
         gap: 10px;
     }
+
+    .filter-dropdown{
+        width: 100%;
+    }
 }
 
 @media(max-width:900px) {
