@@ -9,7 +9,7 @@
     <div id="icon"></div>
     <div class="plan-name">{{$plan->name}}</div>
     <div class="plan-price"><sup>$</sup>{{$plan->price}}</div>
-    <div class="plan-period">{{ $plan->duration_months > 1 ? 'POR ' . $plan->duration_months . ' MESES' : '' }}</div>
+    <div class="plan-period">{{ $plan->duration_months > 3 ? 'POR ' . $plan->duration_months . ' MESES' : '' }}</div>
     <ul class="plan-features">
         <li><i class="fas fa-check"></i><span><strong>Límite de descargas: {{ $plan->downloads }}</strong></span></li>
         @if ($plan->features)
