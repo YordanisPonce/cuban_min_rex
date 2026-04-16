@@ -1,6 +1,6 @@
 <!doctype html>
 
-<html lang="en" class="layout-navbar-fixed layout-wide" dir="ltr" data-skin="default" data-bs-theme="dark"
+<html lang="es" class="layout-navbar-fixed layout-wide" dir="ltr" data-skin="default" data-bs-theme="dark"
     data-assets-path="{{ asset('assets/') }}" data-template="front-pages">
 
 <head>
