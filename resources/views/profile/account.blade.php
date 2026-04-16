@@ -114,28 +114,28 @@
                             <i class="fas fa-phone"></i>
                             <div>
                                 <div class="info-label">Teléfono</div>
-                                <div class="info-value">{{ $user->billing->phone ?? 'Sin Establecer' }}</div>
+                                <div class="info-value">{{ $user->billing?->phone ?? 'Sin Establecer' }}</div>
                             </div>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-location-dot"></i>
                             <div>
                                 <div class="info-label">Dirección</div>
-                                <div class="info-value">{{ $user->billing->address ?? 'Sin Establecer' }}</div>
+                                <div class="info-value">{{ $user->billing?->address ?? 'Sin Establecer' }}</div>
                             </div>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-globe"></i>
                             <div>
                                 <div class="info-label">País</div>
-                                <div class="info-value">{{ $user->billing->country ?? 'Sin Establecer' }}</div>
+                                <div class="info-value">{{ $user->billing?->country ?? 'Sin Establecer' }}</div>
                             </div>
                         </div>
                         <div class="info-item">
                             <i class="fas fa-globe"></i>
                             <div>
                                 <div class="info-label">Código postal</div>
-                                <div class="info-value">{{ $user->billing->postal ?? 'Sin Establecer' }}</div>
+                                <div class="info-value">{{ $user->billing?->postal ?? 'Sin Establecer' }}</div>
                             </div>
                         </div>
                     </div>

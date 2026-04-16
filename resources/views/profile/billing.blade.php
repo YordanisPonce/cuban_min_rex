@@ -175,11 +175,11 @@
                     <div class="form-group full">
                         <label>Dirección</label>
                         <input type="text" placeholder="Calle, número, municipio..."
-                            value="{{ $user->billing->address }}" name="address">
+                            value="{{ $user->billing?->address }}" name="address">
                     </div>
                     <div class="form-group">
                         <label>Teléfono</label>
-                        <input type="tel" value="{{ $user->billing->phone }}" placeholder="+53 5 XXXXXXX"
+                        <input type="tel" value="{{ $user->billing?->phone }}" placeholder="+53 5 XXXXXXX"
                             name="phone">
                     </div>
                     <div class="form-group">
@@ -187,14 +187,14 @@
                         <select name="country">
                             @foreach ($countries as $country)
                                 <option value="{{ $country }}"
-                                    {{ $user->billing->country === $country ? 'selected' : '' }}>{{ $country }}
+                                    {{ $user->billing?->country === $country ? 'selected' : '' }}>{{ $country }}
                                 </option>
                             @endforeach
                         </select>
                     </div>
                     <div class="form-group">
                         <label>Código Postal</label>
-                        <input type="text" value="{{ $user->billing->postal }}" placeholder="Código postal"
+                        <input type="text" value="{{ $user->billing?->postal }}" placeholder="Código postal"
                             name="postal">
                     </div>
                 </div>
