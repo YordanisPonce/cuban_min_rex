@@ -12,49 +12,31 @@
 @endpush
 
 @section('content')
+    
     <!-- HERO -->
     <section class="hero container">
-        <div class="hero-bg">
-            <img style="width: 100%" src="{{ asset('assets/img/hero-base.jpeg') }}" alt="hero-banner">
-            <div class="overlay"></div>
-        </div>
+        <div class="hero-slides" id="heroSlides"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-gradient-b"></div>
         <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">PLAYLISTS<br>PARA <span class="text-primary">DJs LATINOS</span>
-            </h1>
-            <p data-aos="fade-right" data-aos-delay="500">Sets listos para pista, organizados por energía, género y momento.
-            </p>
-            <div class="hero-btns">
-                <button class="btn btn-primary" data-aos="fade-right" data-aos-delay="700"><i class="fas fa-play"></i>
-                    EXPLORAR PLAYLISTS</button>
-                <button class="btn btn-outline" data-aos="fade-right" data-aos-delay="900"><i class="fas fa-crown"></i>
-                    CREAR MI PLAYLIST</button>
+            <h1 data-aos="fade-right" data-aos-delay="300">PLAYLISTS<br><span class="accent">PARA DJS
+                    LATINOS</span></h1>
+            <p data-aos="fade-right" data-aos-delay="500">Sets listos para pista, organizados por energía, género y momento.</p>
+            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
+                href="{{ route('plans') }}"><i class="fas fa-crown"></i> EXPLORAR PLAYLISTS</a>
+            <div class="hero-stats">
+                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +100 PLAYLISTS
+                    EXCLUSIVAS</span>
+                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
             </div>
         </div>
     </section>
-
-    {{-- 
-    <div class="filters-bar">
-        <form id="filter-form" class="filter-dropdowns">
-            <select class="filter-dropdown" onChange="document.getElementById('filter-form').submit()" name="dj"
-                data-aos="fade-in" data-aos-delay="700">
-                <option value=""><span><label>DJ:</label> TODOS</span></option>
-                @foreach ($djs as $dj)
-                    <option {{ request()->get('dj') === str_replace(' ', '_', $dj->name) ? 'selected' : '' }}
-                        value="{{ str_replace(' ', '_', $dj->name) }}"><span><label>DJ:</label> {{ $dj->name }}</span>
-                    </option>
-                @endforeach
-            </select>
-            <input type="text" class="filter-dropdown" placeholder="Nombre: "
-                onChange="document.getElementById('filter-form').submit()" name="title"
-                value="{{ request()->get('title') }}" data-aos="fade-in" data-aos-delay="900" />
-        </form>
-    </div> --}}
 
     <div class="container">
         <div class="section" data-aos="fade-up" data-aos-delay="300">
             <div class="section-title">
                 <div><span class="dot"></span><span class="gold">DESTACADAS</span></div>
-                <a class="btn btn-outline" href="{{ route('playlist.list') }}">VER TODAS</a>
+                <a class="btn btn-outline" href="{{ route('playlist.list') }}">VER TODAS »</a>
             </div>
             <div class="cards-grid">
                 @foreach ($playlists as $playlist)
@@ -67,6 +49,7 @@
         <div class="section" data-aos="fade-up" data-aos-delay="500">
             <div class="section-title">
                 <div><span class="dot"></span> POR <span class="gold">GÉNERO</span></div>
+                <a class="btn btn-outline" href="{{ route('folders') }}">VER TODOS »</a>
             </div>
             <div class="cards-grid">
                 @foreach ($folders as $f)
@@ -286,5 +269,24 @@
         }
 
         document.getElementById('player-play-btn').addEventListener('click', togglePlay);
+    </script>
+    <script>
+        // HERO SLIDESHOW
+        const heroImages = @json($banners);
+        
+        const slidesEl = document.getElementById('heroSlides');
+        let currentSlide = 0;
+        heroImages.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            slide.innerHTML = `<img src="${src}" alt="DJ hero ${i + 1}">`;
+            slidesEl.appendChild(slide);
+        });
+
+        function goToSlide(n) {
+            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === n));
+            currentSlide = n;
+        }
+        setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
     </script>
 @endpush

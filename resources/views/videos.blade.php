@@ -77,29 +77,23 @@
 @endpush
 
 @section('content')
-    
     <!-- HERO -->
     <section class="hero container">
-        <div class="hero-bg">
-            <img style="width: 100%" src="{{ asset('assets/img/hero-base.jpeg') }}" alt="hero-banner">
-            <div class="overlay"></div>
-        </div>
+        <div class="hero-slides" id="heroSlides"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-gradient-b"></div>
         <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">REMIXES<br>EXCLUSIVOS<br><span class="gold">PARA DJS
+            <h1 data-aos="fade-right" data-aos-delay="300">REMIXES<br>EXCLUSIVOS<br><span class="accent">PARA DJS
                     LATINOS</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intro/outro, mashups y versiones listas para pista.
-            </p>
-            <ul>
-                <li data-aos="fade-right" data-aos-delay="700"><strong>+1000 tracks</strong> actualizados semanalmente.</li>
-                <li data-aos="fade-right" data-aos-delay="900"><strong>Formatos:</strong> Intro, Outro, Clean, Dirty,
-                    Acapella</li>
-            </ul>
-            <div class="hero-buttons">
-                <a href="{{ route('plans') }}" data-aos="fade-right" data-aos-delay="1100" class="btn-primary"><i class="fas fa-crown"></i>
-                    DESCARGAR REMIXES</a>
-                <a href="{{ route('plans') }}" data-aos="fade-right" data-aos-delay="1300" class="btn-outline"
-                    style="display:inline-flex;align-items:center;gap:8px"><i class="fas fa-crown"></i>
-                    VER PLANES</a>
+            <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intros, mashups y más musical para hacer historia
+                en la pista.</p>
+            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
+                href="{{ route('plans') }}"><i class="fas fa-crown"></i> REMIXES
+                    EXCLUSIVOS</a>
+            <div class="hero-stats">
+                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +1000 REMIXES
+                    EXCLUSIVOS</span>
+                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
             </div>
         </div>
     </section>
@@ -135,19 +129,6 @@
                 data-aos="fade-in" data-aos-delay="900"
             />
         </form>
-        <!--
-        <div class="filter-tags">
-            <span class="filter-tag"><i class="fas fa-music"></i> Intro</span>
-            <span class="filter-tag"><i class="fas fa-check-circle"></i> Clean</span>
-            <span class="filter-tag"><i class="fas fa-exchange-alt"></i> Dirty/Eoutro</span>
-            <span class="filter-tag"><i class="fas fa-walking"></i> Rido</span>
-            <span class="filter-tag"><i class="fas fa-headphones"></i> Mashup</span>
-            <span class="filter-tag">Mashup</span>
-            <span class="filter-tag">Transition</span>
-            <span class="filter-tag"><i class="fas fa-lock"></i> Ano</span>
-            <span class="filter-tag"><i class="fas fa-star"></i> Porasos</span>
-        </div>
-        -->
     </div>
 
     <!-- Tracks -->
@@ -367,6 +348,25 @@
         }
 
         document.getElementById('player-play-btn').addEventListener('click', togglePlay);
+    </script>
+    <script>
+        // HERO SLIDESHOW
+        const heroImages = @json($banners);
+        
+        const slidesEl = document.getElementById('heroSlides');
+        let currentSlide = 0;
+        heroImages.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            slide.innerHTML = `<img src="${src}" alt="DJ hero ${i + 1}">`;
+            slidesEl.appendChild(slide);
+        });
+
+        function goToSlide(n) {
+            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === n));
+            currentSlide = n;
+        }
+        setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
     </script>
     @isset($error)
         <script>

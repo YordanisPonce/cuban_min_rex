@@ -189,6 +189,8 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         return response(null, 404);
     });
 
+    Route::get('/playlists/genres/', [PlayListController::class, 'folders'])->name('folders');
+
     // Rutas para textos legales
     Route::get('/legal', [HomeController::class, 'legal'])->name('legal');
     Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');

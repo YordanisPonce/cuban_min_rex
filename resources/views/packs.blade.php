@@ -21,15 +21,23 @@
 @endpush
 
 @section('content')
-    <!-- HERO -->
     <section class="hero container">
-        <div class="hero-bg">
-            <img style="width: 100%" src="{{ asset('assets/img/hero-base.jpeg') }}" alt="hero-banner">
-            <div class="overlay"></div>
-        </div>
+        <div class="hero-slides" id="heroSlides"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-gradient-b"></div>
         <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">PACKS<br>PARA <span class="text-primary">DJs LATINOS</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Sets listos para pista, organizados por energía, género y momento.</p>
+            <h1 data-aos="fade-right" data-aos-delay="300">PACKS<br><span class="accent">PARA DJS
+                    LATINOS</span></h1>
+            <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intros, mashups y más musical para hacer historia
+                en la pista.</p>
+            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
+                href="{{ route('plans') }}"><i class="fas fa-crown"></i> REMIXES
+                    EXCLUSIVOS</a>
+            <div class="hero-stats">
+                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +10 PACKS
+                    EXCLUSIVOS</span>
+                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
+            </div>
         </div>
     </section>
 
@@ -226,5 +234,24 @@
         }
 
         document.getElementById('player-play-btn').addEventListener('click', togglePlay);
+    </script>
+    <script>
+        // HERO SLIDESHOW
+        const heroImages = @json($banners);
+        
+        const slidesEl = document.getElementById('heroSlides');
+        let currentSlide = 0;
+        heroImages.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            slide.innerHTML = `<img src="${src}" alt="DJ hero ${i + 1}">`;
+            slidesEl.appendChild(slide);
+        });
+
+        function goToSlide(n) {
+            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === n));
+            currentSlide = n;
+        }
+        setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
     </script>
 @endpush

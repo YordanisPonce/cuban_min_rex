@@ -26,7 +26,7 @@
                 <div class="dj-avatar"><i class="fas fa-user"></i></div>
                 <div>
                     <span class="dj-name">{{ $item['artist'] }}</span>
-                    <span class="dj-sub">Real Records</span>
+                    <span class="dj-sub">{{ $item['folder'] }}</span>
                 </div>
             </div>
             <div class="card-actions">

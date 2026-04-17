@@ -9,10 +9,9 @@
 @section('content')
     <!-- HERO -->
     <section class="hero container">
-        <div class="hero-bg">
-            <img style="width: 100%" src="{{ asset('assets/img/hero-base.jpeg') }}" alt="hero-banner">
-            <div class="overlay"></div>
-        </div>
+        <div class="hero-slides" id="heroSlides"></div>
+        <div class="hero-gradient"></div>
+        <div class="hero-gradient-b"></div>
         <div class="container">
             <h1 data-aos="fade-right" data-aos-delay="300">LLEVA <span class="accent">TU MÚSICA</span> AL
                 <br>SIGUIENTE NIVEL
@@ -92,5 +91,24 @@
             premiunPlan.appendChild(icon);
             
         });
+    </script>
+    <script>
+        // HERO SLIDESHOW
+        const heroImages = @json($banners);
+        
+        const slidesEl = document.getElementById('heroSlides');
+        let currentSlide = 0;
+        heroImages.forEach((src, i) => {
+            const slide = document.createElement('div');
+            slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            slide.innerHTML = `<img src="${src}" alt="DJ hero ${i + 1}">`;
+            slidesEl.appendChild(slide);
+        });
+
+        function goToSlide(n) {
+            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === n));
+            currentSlide = n;
+        }
+        setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
     </script>
 @endpush

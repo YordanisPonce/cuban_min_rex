@@ -9,33 +9,9 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}" />
-    <style>
-        @media(max-width: 720px){
-            .hero{
-                height: 50vh;
-                display: flex;
-                align-items: flex-end;
-            }
-            .hero .hero-gradient {
-                position: absolute;
-                inset: 0;
-                background: linear-gradient(to right, var(--bg) 0%, rgba(15, 13, 11, .8) 20%, transparent 100%);
-            }
-            .hero h1, .hero h1 span{
-                font-size: 1.5rem;
-            }
-            .hero p{
-                font-size: 1rem;
-            }
-            .hero span{
-                font-size: 0.75rem;
-            }
-        }
-    </style>
 @endpush
 
 @section('content')
-
     <!-- HERO -->
     <section class="hero container">
         <div class="hero-slides" id="heroSlides"></div>
@@ -47,7 +23,8 @@
             <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intros, mashups y más musical para hacer historia
                 en la pista.</p>
             <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
-                href="{{ route('remixes') }}">+ 11000 REMIXES EXCLUSIVOS</a>
+                href="{{ route('plans') }}"><i class="fas fa-crown"></i> REMIXES
+                    EXCLUSIVOS</a>
             <div class="hero-stats">
                 <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +1000 REMIXES
                     EXCLUSIVOS</span>
@@ -396,7 +373,7 @@
             </div>
             <div class="playlist-column">
                 <div class="playlist-stats">
-                    <span class="playlist-tag">HOT</span>
+                    <span class="playlist-tag">${p.genre}</span>
                     <span class="playlist-genre"></span>
                     <span class="playlist-bpm"></span>
                     <span class="playlist-downloads"><i class="fa-solid fa-fire"></i> ${p.downloads}</span>

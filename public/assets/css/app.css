@@ -1895,17 +1895,17 @@ footer {
     }
 }
 
-.review-form{
+.review-form {
     width: 100%;
     min-width: 300px;
     max-width: 600px;
 
-    &>h2{
+    &>h2 {
         width: 100%;
     }
 }
 
-.form-rating{
+.form-rating {
     display: flex;
     gap: 10px;
     justify-content: flex-start;
@@ -1948,7 +1948,7 @@ footer {
     border: none;
 }
 
-.reviews-container{
+.reviews-container {
     width: 100%;
     display: grid;
     background: var(--bg);
@@ -1957,14 +1957,14 @@ footer {
     gap: 20px;
 
 
-    &>div{
+    &>div {
         padding: 2rem 1rem;
         display: flex;
         flex-direction: column;
         gap: 20px;
         width: 100%;
 
-        &>h2{
+        &>h2 {
             width: 100%;
         }
     }
@@ -1974,7 +1974,7 @@ footer {
     }
 }
 
-.review-item{
+.review-item {
     background: var(--bg2);
     color: white;
     display: flex;
@@ -1986,23 +1986,23 @@ footer {
     border-radius: 12px;
 }
 
-.review-item .review-header{
+.review-item .review-header {
     display: flex;
     align-items: center;
     gap: 10px;
     justify-content: space-between;
 
-    & strong{
+    & strong {
         font-size: 1.25rem;
     }
 
-    & span{
+    & span {
         font-size: 0.75rem;
         color: var(--fg-muted);
     }
 }
 
-.review-item .rating{
+.review-item .rating {
     font-size: 0.75rem;
     width: 100%;
     display: flex;
@@ -2018,10 +2018,11 @@ footer {
 }
 
 @media (max-width: 900px) {
-    .reviews-container{
+    .reviews-container {
         grid-template-columns: 100%;
     }
 }
+
 /* GOOGLE TRASLATOR */
 
 body>.skiptranslate>iframe {
@@ -2046,6 +2047,165 @@ body>.skiptranslate>iframe {
         border-radius: 6px !important;
         font-size: 0.9rem !important;
         max-width: 150px;
+    }
+}
+
+/* HERO */
+.hero {
+    position: relative;
+    padding: 100px 0 60px;
+    overflow: hidden;
+    min-height: 420px
+}
+
+.hero-bg {
+    position: absolute;
+    inset: 0
+}
+
+.hero-bg img {
+    max-width: 1200px;
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 16/9;
+    right: 0;
+    position: absolute;
+}
+
+.hero-bg .overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, var(--bg) 20%, transparent), linear-gradient(0deg, var(--bg), transparent 20%)
+}
+
+.hero-slides {
+    position: absolute;
+    inset: 0;
+}
+
+.hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transition: opacity 1.2s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-gradient {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to right, var(--bg) 0%, rgba(15, 13, 11, .8) 40%, transparent 100%);
+}
+
+.hero-gradient-b {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--bg) 0%, transparent 50%, rgba(15, 13, 11, .5) 100%);
+}
+
+
+.hero .container {
+    position: relative;
+    z-index: 2
+}
+
+.hero h1 {
+    font-size: 3.2rem;
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 16px
+}
+
+.hero h1 .accent {
+    color: var(--primary);
+    font-style: italic
+}
+
+.hero p {
+    color: var(--fg-muted);
+    font-size: 1rem;
+    max-width: 420px;
+    margin-bottom: 24px
+}
+
+.hero-stats {
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    margin-top: 20px;
+    font-size: .85rem;
+    color: var(--fg-muted)
+}
+
+.hero-stats span {
+    display: flex;
+    align-items: center;
+    gap: 6px
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--primary)
+}
+
+@media(max-width: 720px) {
+    .hero {
+        height: 80vh;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    .hero .container {
+        width: 100%
+    }
+
+    .hero-slides {
+        height: 420px;
+    }
+
+    .hero-slide {
+        overflow: hidden;
+    }
+
+    .hero-slide img {
+        object-fit: fill;
+        transform: translateX(-25%) scale(1.5);
+    }
+
+    .hero .hero-gradient {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to right, var(--bg) 0%, rgba(15, 13, 11, .8) 0%, transparent 100%);
+    }
+
+    .hero .hero-gradient-b {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, var(--bg) 0%, rgba(15, 13, 11, .8) 50%, transparent 100%);
+    }
+
+    .hero h1,
+    .hero h1 span {
+        font-size: 1.5rem !important;
+    }
+
+    .hero p {
+        font-size: 1rem;
+    }
+
+    .hero span {
+        font-size: 0.75rem;
     }
 }
 

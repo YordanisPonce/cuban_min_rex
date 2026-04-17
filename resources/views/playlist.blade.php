@@ -20,8 +20,7 @@
 @endpush
 
 @section('content')
-    <div class="main">
-        
+    <div class="main"> 
         <div class="playlist-header">
             <img class="playlist-cover" src="{{ $cover }}" alt="Club Latino Mix">
             <div class="playlist-meta">
@@ -288,7 +287,7 @@
 
         document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
-
+    
     @isset($error)
         <script>
             Swal.fire({

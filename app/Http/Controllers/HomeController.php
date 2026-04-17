@@ -89,7 +89,7 @@ class HomeController extends Controller
                 'title' => $playlist->title,
                 'sub' => $playlist->dj,
                 'tag' => '',
-                'genre' => $playlist->folder?->name ?? '',
+                'genre' => $playlist->folder?->name ?? 'HOT',
                 'imgs' => [$playlist->cover ?? $playlist->photo ?? config('app.logo_alter')],
                 'downloads' => $playlist->downloads,
                 'route' => route('playlist.show', str_replace(' ', '_', $playlist->title)),
@@ -327,9 +327,23 @@ class HomeController extends Controller
         
         $plans = Plan::orderBy('price')->get();
 
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
         $index = 7;
 
-        return view('plans', compact('index', 'plans'));
+        return view('plans', compact('index', 'plans', 'banners'));
     }
 
     public function djs()
@@ -355,10 +369,24 @@ class HomeController extends Controller
                 'route' => route('dj', str_replace(' ', '_', $dj->name)),
             ];
         });
+        
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
 
         $index = 1;
 
-        return view('djs', compact('index', 'djs'));
+        return view('djs', compact('index', 'djs', 'banners'));
     }
 
     public function dj($name)
@@ -485,10 +513,24 @@ class HomeController extends Controller
             ->groupBy('bpm')
             ->orderBy('bpm')
             ->get('bpm');
+        
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
 
         $index = 2;
 
-        return view('remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives'));
+        return view('remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives', 'banners'));
     }
 
     public function exclusiveRemixes(Request $request)
@@ -566,10 +608,24 @@ class HomeController extends Controller
             ->groupBy('bpm')
             ->orderBy('bpm')
             ->get('bpm');
+        
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
 
         $index = 2;
 
-        return view('exclusive-remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms'));
+        return view('exclusive-remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'banners'));
     }
 
     public function exclusiveVideos(Request $request)
@@ -648,9 +704,23 @@ class HomeController extends Controller
             ->orderBy('bpm')
             ->get('bpm');
 
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
         $index = 3;
 
-        return view('exclusive-videos', compact('index', 'tracks', 'djs', 'genres', 'bpms'));
+        return view('exclusive-videos', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'banners'));
     }
 
     public function videos(Request $request)
@@ -733,9 +803,23 @@ class HomeController extends Controller
             ->orderBy('bpm')
             ->get('bpm');
 
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
         $index = 3;
 
-        return view('videos', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives'));
+        return view('videos', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives', 'banners'));
     }
 
     public function cart(Request $request)

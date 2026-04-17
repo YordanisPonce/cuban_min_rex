@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'PlayLists - ' . config('app.name'))
+@section('title', 'Folders - ' . config('app.name'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/playlist.css') }}" />
@@ -33,24 +33,6 @@
     
     <div class="filters-bar">
         <form id="filter-form" class="filter-dropdowns">
-            <select class="filter-dropdown" onChange="document.getElementById('filter-form').submit()" name="dj"
-                data-aos="fade-in" data-aos-delay="700">
-                <option value=""><span><label>DJ:</label> TODOS</span></option>
-                @foreach ($djs as $dj)
-                    <option {{ request()->get('dj') === str_replace(' ', '_', $dj->name) ? 'selected' : '' }}
-                        value="{{ str_replace(' ', '_', $dj->name) }}"><span><label>DJ:</label> {{ $dj->name }}</span>
-                    </option>
-                @endforeach
-            </select>
-            <select class="filter-dropdown" onChange="document.getElementById('filter-form').submit()" name="folder"
-                data-aos="fade-in" data-aos-delay="700">
-                <option value=""><span><label>Género:</label> TODOS</span></option>
-                @foreach ($folders as $f)
-                    <option {{ request()->get('folder') === str_replace(' ', '_', $f->name) ? 'selected' : '' }}
-                        value="{{ str_replace(' ', '_', $f->name) }}"><span><label>Género:</label> {{ $f->name }}</span>
-                    </option>
-                @endforeach
-            </select>
             <input type="text" class="filter-dropdown" placeholder="Nombre: "
                 onChange="document.getElementById('filter-form').submit()" name="title"
                 value="{{ request()->get('title') }}" data-aos="fade-in" data-aos-delay="900" />
@@ -60,21 +42,21 @@
     <div class="container">
         <div class="section" data-aos="fade-up" data-aos-delay="300">
             <div class="cards-grid">
-                @foreach ($playlists as $playlist)
-                    @include('partials.playlist-card', ['item' => $playlist])
+                @foreach ($folders as $folder)
+                    @include('partials.folder-card', ['item' => $folder])
                 @endforeach
             </div>
         </div>
     </div>
 
     <div class="container" data-aos="fade-up" data-aos-delay="300" style="margin-bottom: 1rem">
-        @if ($playlists->count() === 0)
+        @if ($folders->count() === 0)
             <div class="empty">
                 <span><i class="fas fa-close"></i></span>
-                <h3>No se han enontrado <span class="text-primary">PLAYLIST</span> que cumplan con los filtros</h3>
+                <h3>No se han enontrado <span class="text-primary">CARPETAS</span> que cumplan con los filtros</h3>
             </div>
         @endif
-        {{ $playlists->onEachSide(1)->links() }}
+        {{ $folders->onEachSide(1)->links() }}
     </div>
 
     <!-- BOTTOM PLAYER -->

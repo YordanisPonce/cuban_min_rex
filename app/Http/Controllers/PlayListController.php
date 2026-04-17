@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\FolderTypeEnum;
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Download;
 use App\Models\PlayList;
@@ -29,12 +30,27 @@ class PlayListController extends Controller
 
         $playlists = PlayList::whereHas('items')->orderBy('created_at')->paginate(4)->withQueryString();
 
-        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->take(3)->get();
+        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->take(4)->get();
+
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
 
         $index = 4;
 
-        return view('playlists', compact('index', 'playlists', 'folders'));
+        return view('playlists', compact('index', 'playlists', 'folders', 'banners'));
     }
+
     /**
      * Display a listing of the resource.
      */
@@ -68,9 +84,54 @@ class PlayListController extends Controller
 
         $djs = User::whereHas('playlists')->get();
 
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
         $index = 4;
 
-        return view('playlists-list', compact('index', 'playlists', 'djs','folders'));
+        return view('playlists-list', compact('index', 'playlists', 'djs','folders', 'banners'));
+    }
+
+    public function folders()
+    {
+        $name = request()->get("title");
+
+        $folders = Folder::whereHas('playlists');
+        
+        if($name){
+            $folders = $folders->where('name', 'like', '%'.$name.'%');
+        }
+    
+        $folders = $folders->paginate(10)->withQueryString();
+
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
+        $index = 4;
+
+        return view('folders', compact('index', 'folders', 'banners'));
     }
 
     /**
@@ -119,9 +180,23 @@ class PlayListController extends Controller
             });
         }
 
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
         $index = 4;
 
-        return view('playlist', compact('playlist', 'index', 'tracks', 'similar'));
+        return view('playlist', compact('playlist', 'index', 'tracks', 'similar', 'banners'));
     }
 
     /**

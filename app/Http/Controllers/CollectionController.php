@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Enums\SectionEnum;
+use App\Models\Banner;
 use App\Models\Category;
 use App\Models\Download;
 use App\Models\Collection;
@@ -45,6 +46,7 @@ class CollectionController extends Controller
                 'bpm' => $pack->bpm,
                 'duration' => 120,
                 'genre' => $pack->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
+                'folder' => $pack->folder?->name ?? '',
                 'badge' => null,
                 'price' => $pack->price,
                 'url' => Storage::disk('s3')->url($pack->file),
@@ -60,9 +62,23 @@ class CollectionController extends Controller
 
         $djs = User::whereHas('files', fn($q) => $q->zips())->orderBy('name')->get();
 
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
         $index = 5;
 
-        return view('packs', compact('index', 'djs', 'packs'));
+        return view('packs', compact('index', 'djs', 'packs', 'banners'));
     }
 
     public function radio()
