@@ -21,7 +21,7 @@ class Folder extends Model
 
     public function playlists()
     {
-        return $this->hasMany(Playlist::class, 'folder_id');
+        return $this->hasMany(PlayList::class, 'folder_id');
     }
 
     public function getCoverUrl()
