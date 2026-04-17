@@ -132,17 +132,37 @@ class SeoText extends Page implements HasForms
             ->send();
     }
 
+    public function resetLogo(){
+        $setting = model::firstOrCreate();
+
+        $setting->update([
+            'app_logo' => null,
+        ]);
+
+        Notification::make()
+            ->title('Logo Reiniciado, ya puede escoger otro')
+            ->success()
+            ->send();
+    }
+
     protected function getFormActions(): array
     {
         return [
             Action::make('save')
                 ->label('Guardar Configuración')
+                ->color('success')
+                ->icon('heroicon-o-check-circle')
                 ->action('save'),
+            Action::make('reset_logo')
+                ->label('Reiniciar Logo')
+                ->color('danger')
+                ->icon('heroicon-o-trash')
+                ->action('resetLogo'),
         ];
     }
 
     protected function logoUrl(){
-        $setting = model::firstOrCreate([]);
+        $setting = model::firstOrCreate();
         return $setting->logoUrl();
     }
 }

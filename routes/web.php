@@ -16,6 +16,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PlayListController;
+use App\Http\Controllers\ReviewController;
 use App\Http\Middleware\IsUserMiddleware;
 use App\Models\Cart;
 use App\Models\CartItem;
@@ -201,6 +202,17 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/djs/{dj}/ntf', [FollowController::class, 'ntf'])
         ->middleware('auth')
         ->name('ntf');
+    Route::post('/djs/{dj}/review', [ReviewController::class, 'rating_dj'])
+        ->middleware('auth')
+        ->name('rating.dj');
+
+    Route::get('/reviews', [ReviewController::class, 'index'])
+        ->middleware('auth')
+        ->name('reviews');
+
+    Route::post('/reviews/submit', [ReviewController::class, 'submit'])
+        ->middleware('auth')
+        ->name('submit.review');
 
     Route::get('/notifications', [HomeController::class, 'ntfs'])
         ->middleware('auth')

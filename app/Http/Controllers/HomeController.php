@@ -381,7 +381,9 @@ class HomeController extends Controller
             }
         }
 
-        return view('dj-profile', compact('index', 'dj', 'isFollow', 'isNtf'));
+        $review = auth()->check() ? \App\Models\Review::where('user_id', auth()->user()->id)->where('dj_id', $dj->id)->first() : null;
+
+        return view('dj-profile', compact('index', 'dj', 'isFollow', 'isNtf', 'review'));
     }
 
     public function sendContactForm(Request $request)

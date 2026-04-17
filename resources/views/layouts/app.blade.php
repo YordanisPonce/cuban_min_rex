@@ -90,7 +90,7 @@
     <style>
         body {
             background: url('{{ asset('assets/img/bg.png') }}') no-repeat center center fixed;
-            background-color: rgba(20, 18, 16, .65);
+            background-color: rgba(0, 0, 0, .75);
             background-blend-mode: overlay;
             background-size: cover;
         }

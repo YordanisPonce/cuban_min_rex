@@ -1,4 +1,10 @@
 <x-filament-panels::page>
+    <x-filament::card>
+        <div style='text-align: justify; display:flex; gap:10px;'>
+            <x-filament::icon icon="heroicon-o-information-circle" /> Una vez que se hagan cambios en esta sección, se deve consultar con el desarrollador para aplicarlos a nivel de sistema.
+        </div>
+    </x-filament::card>
+
     <form wire:submit="save"  style="width: 100%; margin: auto;">
         {{ $this->form }}
 
