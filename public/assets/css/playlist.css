@@ -362,7 +362,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    max-width: 100pxs;
+    max-width: 100px;
 }
 
 .playlist-card .card-actions {
@@ -678,4 +678,10 @@
     justify-content: center;
     color: var(--primary);
     font-size: 1.6rem
+}
+
+@media (max-width: 450px) {
+    .playlist-card .dj-sub {
+        max-width: 140px;
+    }
 }
