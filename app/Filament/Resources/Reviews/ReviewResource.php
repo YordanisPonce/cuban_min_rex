@@ -26,6 +26,11 @@ class ReviewResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = 'Gestión';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()->role != 'developer';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return ReviewForm::configure($schema);

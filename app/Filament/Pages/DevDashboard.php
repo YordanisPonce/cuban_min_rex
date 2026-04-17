@@ -20,6 +20,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use UnitEnum;
 
 class DevDashboard extends Page implements HasTable
 {
@@ -39,6 +40,8 @@ class DevDashboard extends Page implements HasTable
     protected static ?string $title = "Ganancias CubanPool";
 
     protected static ?int $navigationSort = 2;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Cotización';
 
     public function mount(): void
     {

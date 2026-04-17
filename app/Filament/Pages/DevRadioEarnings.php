@@ -18,6 +18,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
+use UnitEnum;
 
 class DevRadioEarnings extends Page implements HasTable
 {
@@ -37,6 +38,8 @@ class DevRadioEarnings extends Page implements HasTable
     protected static ?string $title = 'Ganancias Emisora';
 
     protected static ?int $navigationSort = 3;
+
+    protected static string|UnitEnum|null $navigationGroup = 'Cotización';
 
     public function mount(): void
     {

@@ -12,14 +12,25 @@
     <style>
         @media(max-width: 720px){
             .hero{
-                height: 50vh;
+                min-height: 50vh;
+                padding: 10px 0;
                 display: flex;
+                flex-direction: column;
                 align-items: flex-end;
+            }
+            .hero-slides, .hero-slide{
+                position: unset;
+                min-height: 420px;
             }
             .hero .hero-gradient {
                 position: absolute;
                 inset: 0;
-                background: linear-gradient(to right, var(--bg) 0%, rgba(15, 13, 11, .8) 20%, transparent 100%);
+                background: linear-gradient(to right, var(--bg) 0%, rgba(15, 13, 11, .8) 10%, transparent 100%);
+            }
+            .hero .hero-gradient-b {
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(to top, var(--bg) 0%, rgba(15, 13, 11, .8) 60%, transparent 100%);
             }
             .hero h1, .hero h1 span{
                 font-size: 1.5rem;
