@@ -358,7 +358,11 @@
 .playlist-card .dj-sub {
     font-size: .6rem;
     color: var(--text-muted);
-    display: block
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100pxs;
 }
 
 .playlist-card .card-actions {

@@ -90,6 +90,10 @@
     color: var(--fg);
 }
 
+.playlist-creator:hover span{
+    color: var(--primary);
+}
+
 .playlist-actions {
     display: flex;
     gap: .75rem;

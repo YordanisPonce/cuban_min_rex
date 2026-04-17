@@ -25,12 +25,12 @@
         <div class="playlist-header">
             <img class="playlist-cover" src="{{ $cover }}" alt="Club Latino Mix">
             <div class="playlist-meta">
-                <div class="playlist-label"><i class="fas fa-list"></i> Playlist</div>
+                <div class="playlist-label"><span class="track-genre"><i class="fas fa-list"></i> {{ $playlist->folder?->name ?? 'Playlist' }}</span></div>
                 <h1 class="playlist-title">{{ $playlist->name }}</h1>
                 <p class="playlist-desc">{{ $playlist->description }}</p>
                 <div class="playlist-info-row">
-                    <div class="playlist-creator"><img src="{{ $playlist->user->photo ?? config('app.logo') }}"
-                            alt="{{ $playlist->user->name }}"><span>{{ $playlist->user->name }}</span></div>
+                    <a class="playlist-creator" href="{{ route('dj', str_replace(' ', '_', $playlist->user->name)) }}"><img src="{{ $playlist->user->photo ?? config('app.logo') }}"
+                            alt="{{ $playlist->user->name }}"><span>{{ $playlist->user->name }}</span></a>
                     <span><i class="fas fa-music"></i> {{ $playlist->items->count() }} pistas</span>
                     <span><i class="fas fa-download"></i> {{ NumEnum::letter_format($playlist->downloads->count()) }}
                         descargas</span>

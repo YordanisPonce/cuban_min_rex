@@ -68,7 +68,7 @@
         </div>
     </div>
 
-    <div class="container" data-aos="fade-up" data-aos-delay="300">
+    <div class="container" data-aos="fade-up" data-aos-delay="300" style="margin-bottom: 1rem">
         @if ($playlists->count() === 0)
             <div class="empty">
                 <span><i class="fas fa-close"></i></span>
