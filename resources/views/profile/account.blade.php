@@ -48,6 +48,7 @@
                 </div>
                 <a class="edit-btn" href="{{ route('profile.billing') }}"><i class="fas fa-pen"></i> <span>Editar Perfil</span></a>
                 @if($user->role != 'user') <a class="panel-btn" href="{{ route('filament.admin.pages.dashboard') }}"><i class="fas fa-dashboard"></i> <span>Panel de Control</span></a> @endif
+                @if($user->hasActivePlan() && $user->current_plan_id) <a class="trash-btn" onclick="cancelSuscription()"><i class="fas fa-trash"></i> <span>Cancelar Suscripción</span></a> @endif
                 <a class="logout-btn" href="{{ route('logout-user') }}"><i class="fas fa-right-from-bracket"></i> <span>Cerrar Sesión</span></a>
             </div>
 
@@ -74,10 +75,24 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon"><i class="fas fa-crown"></i></div>
+                    <div class="stat-icon"><i class="fas fa-award"></i></div>
                     <div>
                         <div class="stat-value">{{ $currentPlan ?? 'Sin Plan Activo' }}</div>
-                        <div class="stat-label">PLAN ACTUAL</div>
+                        <div class="stat-label">SUSCRIPCIÓN ACTIVA</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                    <div>
+                        <div class="stat-value">{{ $user->hasActivePLan() ? 'Vence '.$timeLeft : 'Sin Plan Activo' }}</div>
+                        <div class="stat-label">TIEMPO RESTANTE DE SUSCRIPCIÓN</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-download"></i></div>
+                    <div>
+                        <div class="stat-value">{{ $user->hasActivePLan() ? $downloadLeft : 'Sin Plan Activo' }}</div>
+                        <div class="stat-label">DESCARGAS RESTANTES</div>
                     </div>
                 </div>
             </div>
@@ -226,7 +241,22 @@
 @endsection
 
 @push('scripts')
-
+    <script>
+        function cancelSuscription(){
+            Swal.fire({
+                    title: '¿Cancelar Suscripción?',
+                    text: "Si cancelas la suscripción mantendras los beneficios hasta que termine su plazo, sin embargo no se renovará.",
+                    icon: 'danger',
+                    showCancelButton: true,
+                    confirmButtonText: 'Sí, continuar',
+                    cancelButtonText: 'No, cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = "{{ route('payment.cancelSubscription') }}";
+                    }
+                });
+        }
+    </script>
     @isset($error)
         <script>
             Swal.fire({

@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\Plan;
 use App\Models\User;
 use Carbon\Carbon;
+use Carbon\CarbonInterface;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -29,21 +30,36 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
+
+        Carbon::setLocale('es');
+
         $user = auth()->user();
 
         $subs = $user->orders()->whereHas('plan')->where('status', 'paid')->count();
 
         $currentPlan = null;
 
+        $timeLeft = 0;
+
+        $downloadLeft = 0;
+
         if ($user->hasActivePlan()) {
-            if($user->current_plan_id) $currentPlan = $user->currentPlan->name;
+            if($user->current_plan_id){
+                $currentPlan = $user->currentPlan->name; 
+                $downloadLeft = $user->currentPlan->downloads - $user->get_current_plan_consume_downloads();
+            }
             else {
                 $plan = $user->orders()->whereHas('plan')->where('status','paid')->orderBy('created_at', 'desc')->first();
-                if($plan) $currentPlan = $plan->name;
+                if($plan){
+                    $currentPlan = $plan->name;
+                    $downloadLeft = $plan->downloads - $user->get_current_plan_consume_downloads();
+                }
             }
+            $timeLeft = Carbon::parse($user->plan_expires_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW);
+            $downloadLeft = $downloadLeft > 0 ? $downloadLeft : 0;
+            if(!$user->plan_start_at) $downloadLeft = 'Ilímitadas';
         }
-
-        Carbon::setLocale('es');
+        
 
         $recentActivity = $user->orders()->orderBy('created_at', 'desc')->take(5)->get()->transform( function($o){
             return [
@@ -52,13 +68,13 @@ class ProfileController extends Controller
                 'description' => $o->plan ? $o->plan->name : $o->order_items->count().' artículos',
                 'status' => $o->status,
                 'amount' => $o->amount,
-                'date' => Carbon::parse($o->created_at)->diffForHumans(now())
+                'date' => Carbon::parse($o->created_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW)
             ];
         });
 
         $index = 999;
 
-        return view('profile.account', compact('user', 'subs', 'index', 'currentPlan', 'recentActivity'));
+        return view('profile.account', compact('user', 'subs', 'index', 'currentPlan', 'recentActivity', 'downloadLeft', 'timeLeft'));
     }
 
     public function billing(Request $request): View

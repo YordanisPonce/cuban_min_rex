@@ -1,9 +1,3 @@
-@php
-    $isActive =
-        auth()->check() &&
-        auth()->user()->current_plan_id === $plan->id &&
-        auth()->user()->hasActivePlan();
-@endphp
 <div class="plan-card">
     <span class="plan-badge"></span>
     <div id="icon"></div>
@@ -18,7 +12,7 @@
             @endforeach
         @endif
     </ul>
-    @if ($isActive)
+    @if (auth()->user() && (auth()->user()->hasActivePlan() && auth()->user()->current_plan_id === $plan->id))
         <button class="plan-btn filled">ACTUAL</button>
     @else
     <a  href="{{ route('payment.form', str_replace(' ', '_', $plan->name)) }}" class="plan-btn filled">

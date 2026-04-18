@@ -200,6 +200,7 @@
 
 .edit-btn,
 .logout-btn,
+.trash-btn,
 .panel-btn {
     position: absolute;
     margin-top: 1rem;
@@ -229,10 +230,19 @@
     border: 1px solid var(--primary);
 }
 
+.trash-btn{
+    background-color: #e71515;
+    border: 1px solid #a71010;
+}
+
+.trash-btn:hover{
+    background-color: #a71010;
+}
+
 /* STAT CARDS */
 .stats-row {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     margin-bottom: 1.5rem;
 }
@@ -599,6 +609,7 @@
 
 .edit-btn,
 .panel-btn,
+.trash-btn,
 .logout-btn {
     position: unset;
     width: auto;
@@ -618,6 +629,7 @@
 
     .edit-btn,
     .panel-btn,
+    .trash-btn,
     .logout-btn {
         position: unset;
         width: auto;
