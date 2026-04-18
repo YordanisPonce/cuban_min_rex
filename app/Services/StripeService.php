@@ -27,7 +27,7 @@ class StripeService
 
             $product = $this->client->products->create([
                 'name' => $plan->name,
-                'description' => strip_tags($plan->description),
+                'description' => strip_tags($plan->description ?? 'A single plan of '.config('app.name')),
             ]);
 
             $plan->stripe_product_id = $product->id;
