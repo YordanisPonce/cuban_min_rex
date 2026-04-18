@@ -28,9 +28,9 @@ class PlayListController extends Controller
         $name = request()->get("title");
         $dj = request()->get("dj");
 
-        $playlists = PlayList::whereHas('items')->orderBy('created_at')->paginate(5)->withQueryString();
+        $playlists = PlayList::whereHas('items')->orderBy('created_at')->paginate(4)->withQueryString();
 
-        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->take(5)->get();
+        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->take(4)->get();
 
         $banners = Banner::where('active', true)->pluck('path');
 
@@ -78,7 +78,7 @@ class PlayListController extends Controller
             });
         }
     
-        $playlists = $playlists->paginate(10)->withQueryString();
+        $playlists = $playlists->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->get();
 
@@ -113,7 +113,7 @@ class PlayListController extends Controller
             $folders = $folders->where('name', 'like', '%'.$name.'%');
         }
     
-        $folders = $folders->paginate(10)->withQueryString();
+        $folders = $folders->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         $banners = Banner::where('active', true)->pluck('path');
 
