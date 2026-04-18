@@ -49,7 +49,7 @@ class HomeController extends Controller
                 'date' => $file->created_at,
                 'artist' => $file->user->name,
                 'title' => $file->name,
-                'img' => $file->poster ?? $file->user->photo ?? config('app.logo_alter'),
+                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
                 'bpm' => $file->bpm,
                 'duration' => 120,
                 'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
