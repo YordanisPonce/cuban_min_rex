@@ -356,13 +356,14 @@ button {
     height: 30px;
     min-height: 30px;
     display: flex;
-    align-items: end;
+    align-items: center;
     gap: 2px;
     overflow: hidden
 }
 
 .waveform .bar {
     width: 3px;
+    height: 4px;
     border-radius: 2px;
     background: var(--fg-muted);
     transition: background .3s
@@ -983,7 +984,7 @@ button {
     animation-delay: .06s
 }
 
-/* Static state: random heights */
+/* Static state: random heights
 .waveform:not(.playing) .bar:nth-child(1) {
     height: 12px
 }
@@ -1463,6 +1464,7 @@ button {
 .waveform:not(.playing) .bar:nth-child(120) {
     height: 14px
 }
+*/
 
 /* Footer */
 footer {
