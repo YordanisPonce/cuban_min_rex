@@ -64,6 +64,7 @@ class File extends Model
     {
         return $this->hasMany(Download::class);
     }
+
     protected function poster(): Attribute
     {
 
@@ -86,6 +87,13 @@ class File extends Model
             }
         );
     }
+
+    public function getPosterUrl(){
+        return ($this->poster)
+                    ? Storage::disk('s3')->url($this->poster)
+                    : null;
+    }
+
     public function monthlyEarning()
     {
         $total = 0;

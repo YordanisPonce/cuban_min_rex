@@ -42,7 +42,7 @@ class CollectionController extends Controller
                 'date' => $pack->created_at,
                 'artist' => $pack->user->name,
                 'title' => $pack->name,
-                'img' => $pack->poster ?? $pack->user->photo ?? config('app.logo_alter'),
+                'img' => $pack->getPosterUrl() ?? $pack->user->photo ?? config('app.logo_alter'),
                 'bpm' => $pack->bpm,
                 'duration' => 120,
                 'genre' => $pack->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
