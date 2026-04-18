@@ -65,29 +65,6 @@ class File extends Model
         return $this->hasMany(Download::class);
     }
 
-    protected function poster(): Attribute
-    {
-
-        $isFrontend = request()->input('is_frontend');
-
-        return Attribute::make(
-            get: function ($value) {
-
-                // ✅ En Filament/Livewire devuelve SIEMPRE el key (path) para que funcione preview/remove
-                if (request()->is('admin/*') || request()->is('filament/*') || request()->is('livewire/*')) {
-                    return $value;
-                }
-
-                // ✅ Solo frontend: devuelve URL si viene el flag
-                $isFrontend = request()->boolean('is_frontend');
-
-                return ($value && $isFrontend)
-                    ? Storage::disk('s3')->url($value)
-                    : $value;
-            }
-        );
-    }
-
     public function getPosterUrl(){
         return ($this->poster)
                     ? Storage::disk('s3')->url($this->poster)
