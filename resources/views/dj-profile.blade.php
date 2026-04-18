@@ -247,7 +247,7 @@
                 @else
                     <div style="margin-top:1rem;text-align:center;">
                         <a class="btn btn-primary"
-                            href="{{ route('playlist.index', ['dj' => str_replace(' ', '_', $dj->name)]) }}">VER MAS</a>
+                            href="{{ route('playlist.list', ['dj' => str_replace(' ', '_', $dj->name)]) }}">VER MAS</a>
                     </div>
                 @endif
             </div>
