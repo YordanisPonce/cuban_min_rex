@@ -89,6 +89,24 @@ button {
     flex-shrink: 0;
 }
 
+.text-center{
+    text-align: center;
+}
+
+.payment_response{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 2rem 1rem !important;
+}
+
+.payment_response img{
+    max-width: 200px;
+}
+
 /* SPINNER LOADER */
 .window-loader {
     background-color: rgba(17, 18, 18, 0.85);

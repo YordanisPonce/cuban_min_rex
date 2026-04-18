@@ -84,9 +84,9 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         ->name('payment.form');
 
 
-    Route::view('/payment_ok', 'payment.ok')->name('payment.ok');
-    Route::view('/payment_ok2', 'payment.ok2')->name('payment.ok2');
-    Route::view('/payment_ko', 'payment.ko')->name('payment.ko');
+    Route::view('/payment_ok', 'payment.ok', ['index' => 999])->name('payment.ok');
+    Route::view('/payment_ok2', 'payment.ok2', ['index' => 999])->name('payment.ok2');
+    Route::view('/payment_ko', 'payment.ko', ['index' => 999])->name('payment.ko');
 
     Route::get('/payment/cup/{file}', [PaymentController::class, 'showCUPForm'])->name('payment.cup.form');
     Route::post('/payment/cup/{file}/pay', [PaymentController::class, 'processCUPPayment'])->name('payment.cup.proccess');
