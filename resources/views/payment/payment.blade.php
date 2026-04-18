@@ -212,7 +212,6 @@
 @push('scripts')
     <script src="{{ asset('assets/vendor/js/dropdown-hover.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/mega-dropdown.js') }}"></script>
-    <script src="{{ asset('assets/js/pages-pricing.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -243,7 +242,7 @@
 
                         if (allFilled) {
                             let formData = new FormData(form);
-                            document.querySelector('#loader').style.display = 'flex';
+                            document.querySelector('#wloader').style.display = 'flex';
                             fetch(form.action, {
                                     method: "POST",
                                     headers: {
@@ -257,7 +256,7 @@
                                     try {
                                         data = await res.json();
                                     } catch {
-                                        document.querySelector('#loader').style.display =
+                                        document.querySelector('#wloader').style.display =
                                             'none';
                                         throw new Error(
                                             "Respuesta inesperada del servidor");
@@ -266,7 +265,7 @@
                                     if (res.ok && data.url) {
                                         window.location.href = data.url;
                                     } else {
-                                        document.querySelector('#loader').style.display =
+                                        document.querySelector('#wloader').style.display =
                                             'none';
                                         Swal.fire("Error", data.error ??
                                             "No se pudo generar la sesión de pago",
@@ -274,7 +273,7 @@
                                     }
                                 })
                                 .catch(err => {
-                                    document.querySelector('#loader').style.display = 'none';
+                                    document.querySelector('#wloader').style.display = 'none';
                                     Swal.fire("Error", err.message, "error");
                                 });
                         } else {
