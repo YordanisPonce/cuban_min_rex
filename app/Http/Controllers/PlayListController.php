@@ -28,9 +28,9 @@ class PlayListController extends Controller
         $name = request()->get("title");
         $dj = request()->get("dj");
 
-        $playlists = PlayList::whereHas('items')->orderBy('created_at')->paginate(4)->withQueryString();
+        $playlists = PlayList::whereHas('items')->orderBy('created_at', 'desc')->paginate(5)->withQueryString();
 
-        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->take(4)->get();
+        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->orderBy('created_at', 'desc')->take(5)->get();
 
         $banners = Banner::where('active', true)->pluck('path');
 
