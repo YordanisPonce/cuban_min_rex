@@ -236,6 +236,8 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         ->middleware('auth')
         ->name('ntfs.delete');
 
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
+
     require __DIR__ . '/auth.php';
 });
 

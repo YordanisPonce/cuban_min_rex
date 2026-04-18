@@ -1,0 +1,104 @@
+.avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--primary);
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+h1 {
+    font-size: 1.25rem;
+}
+
+.search-header{
+    display: grid;
+    grid-template-columns: 45% 45%;
+    align-items: center;
+    gap: 10%;
+    margin-bottom: 1rem;
+}
+
+.search{
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    color: white;
+    border-radius: 12px;
+    padding: 10px;
+    width: 100%;
+}
+
+.results {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.result-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 1rem;
+    border-radius: 12px;
+}
+
+.result-meta {
+    display: flex;
+    gap: 10px;
+}
+
+.result-data {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.result-name {
+    font-size: 1rem;
+}
+
+.result-name:hover {
+    color: var(--primary);
+}
+
+.result-cover {
+    width: 60px;
+    height: 60px;
+}
+
+.result-artist {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--fg-muted);
+    font-size: 0.8rem;
+}
+
+.result-artist:hover {
+    color: var(--primary);
+    cursor: pointer;
+}
+
+@media (max-width: 900px) {
+    .result-name {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .result-card .btn{
+        display: none;
+    }
+
+    .search-header{
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+        flex-direction: column-reverse;
+    }
+}

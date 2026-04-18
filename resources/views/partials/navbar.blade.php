@@ -55,7 +55,7 @@
         <div class="search-card">
             <img src="{{ asset('assets/img/hero-base.jpeg') }}" alt="search-banner" />
             <div class="overlay"></div>
-            <form action="{{ route('remixes') }}">
+            <form action="{{ route('search') }}">
                 <a id="search-modal-toggle" onclick="document.getElementById('search').classList.toggle('active')"><i class="fa-solid fa-close"></i></a>
                 <div class="search-hero">
                     <h1 data-aos="fade-up" data-aos-delay="100"><i class="fa-solid fa-compact-disc text-primary"></i> {{ config('app.name') }}</h1>
@@ -67,7 +67,7 @@
                     </ul>
                 </div>
                 <div class="input-group" data-aos="fade-up" data-aos-delay="1200">
-                    <input type="text" name="title" placeholder="Bucar remix..."/>
+                    <input type="text" name="name" placeholder="Bucar remix..."/>
                     <button type="submit" class="btn btn-primary"><span><i class="fa-solid fa-magnifying-glass"></i></span></button>
                 </div>
             </form>

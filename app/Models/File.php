@@ -137,6 +137,16 @@ class File extends Model
     {
         return $query->whereJsonContains('sections', $section);
     }
+
+    public function scopeSearch($query, array $words, bool $full_search = false){
+        return $query->where(function ($q) use ($words, $full_search) {
+            foreach ($words as $word) {
+                $full_search
+                    ? $q->where('name', 'LIKE', '%' . $word . '%')
+                    : $q->orWhere('name', 'LIKE', '%' . $word . '%');
+            }
+        });
+    }
     
     public function intro(){
         return Storage::disk('s3')->url($this->file);

@@ -44,6 +44,16 @@ class PlayList extends Model
         return $this->belongsTo(Folder::class);
     }
 
+    public function scopeSearch($query, array $words, bool $full_search = false){
+        return $query->where(function ($q) use ($words, $full_search) {
+            foreach ($words as $word) {
+                $full_search
+                    ? $q->where('name', 'LIKE', '%' . $word . '%')
+                    : $q->orWhere('name', 'LIKE', '%' . $word . '%');
+            }
+        });
+    }
+
     /**
      * Get the playlist items file paths
      * 
@@ -62,7 +72,7 @@ class PlayList extends Model
     
     public function getCoverUrl()
     {
-        return Storage::disk('s3')->url($this->cover);
+        return $this->cover ? Storage::disk('s3')->url($this->cover) : null;
     }
 
     /**

@@ -51,6 +51,16 @@ class PlayListItem extends Model
         return Storage::disk('s3')->url($this->cover);
     }
 
+    public function scopeSearch($query, array $words, bool $full_search = false){
+        return $query->where(function ($q) use ($words, $full_search) {
+            foreach ($words as $word) {
+                $full_search
+                    ? $q->where('title', 'LIKE', '%' . $word . '%')
+                    : $q->orWhere('title', 'LIKE', '%' . $word . '%');
+            }
+        });
+    }
+
     /**
      * Verify if the playlist item has in current user cart
      * 
