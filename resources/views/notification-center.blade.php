@@ -17,7 +17,7 @@
 @section('content')
     <div class="main">
         <div class="page-header">
-            <h1><i class="fas fa-envelope" style="color: var(--primary); margin-right: 10px;"></i>Notificaciones de Email</h1>
+            <h1><i class="fas fa-envelope" style="color: var(--primary); margin-right: 10px;"></i>Notificaciones</h1>
             <p>Gestiona tus preferencias y revisa las notificaciones recibidas</p>
         </div>
 
