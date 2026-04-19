@@ -100,7 +100,7 @@
                 <form class="email-prefs" id="prefs-view" method="POST" action="{{ route('ntfs.update') }}">
                     @csrf
                     <div class="panel-header" style="padding: 0 0 20px; margin-bottom: 1rem;">
-                        <h2>Preferencias de Email</h2>
+                        <h2>Preferencias</h2>
                         @if (auth()->user()->hasActivePlan())  
                             <input type="submit" class="btn btn-primary" style="cursor: pointer" value="Guardar cambios">
                         @endif
@@ -108,7 +108,7 @@
 
                     <div class="prefs-section">
                         <h3>Notificaciones de contenido</h3>
-                        <p>Controla qué notificaciones de contenido recibes por email</p>
+                        <p>Controla qué notificaciones de contenido recibes</p>
                         <div class="pref-item {{ !auth()->user()->hasActivePlan() ? 'disabled' : '' }}">
                             <div>
                                 @if (!auth()->user()->hasActivePlan())
