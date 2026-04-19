@@ -100,36 +100,7 @@
             </ul>
         </div>
     </section>
-
-    <!-- BOTTOM PLAYER -->
-    <div class="bottom-player" id="bottom-player">
-        <div class="player-inner">
-            <div class="player-track">
-                <img id="player-img" src="" alt="">
-                <div class="track-info">
-                    <div class="track-title" id="player-title">—</div>
-                    <div class="track-artist" id="player-artist">—</div>
-                </div>
-            </div>
-            <div class="player-controls">
-                <div class="waveform">
-                    @for ($i = 0; $i < 60; $i++)
-                        <div class="bar"></div>
-                    @endfor
-                </div>
-                <div class="controls">
-                    <button onclick="playPreviousTrack()"><i class="fa-solid fa-backward-fast"></i></button>
-                    <!--<button><i class="fa-solid fa-backward-step"></i></button>-->
-                    <button class="main-play" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
-                    <!--<button><i class="fa-solid fa-forward-step"></i></button>-->
-                    <button onclick="playNextTrack()"><i class="fa-solid fa-forward-fast"></i></button>
-                    <div class="close">
-                        <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('partials.bottom-player')
 @endsection
 
 @push('scripts')
@@ -143,8 +114,6 @@
         const topDjs = @json($tops);
 
         const genres = @json($geners);
-
-        const audioPlayer = document.createElement('audio');
 
         // HERO SLIDESHOW
         const heroImages = @json($banners);
@@ -163,117 +132,6 @@
             currentSlide = n;
         }
         setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
-
-        // ===== PLAYER STATE =====
-        let currentTrack = null;
-        let isPlaying = false;
-        let currentTime = 0;
-        let duration = 0;
-        let timerInterval = null;
-
-        function closePlayer() {
-            const player = document.getElementById('bottom-player');
-            player.classList.remove('active');
-            player.querySelector(".waveform").classList.remove('playing');
-            document.querySelectorAll('.remix-card').forEach(card => {
-                const wf = card.querySelector('.waveform').classList.remove('playing');
-                card.querySelector('.play-btn i').className = 'fa-solid fa-play';
-            });
-            isPlaying = false;
-            audioPlayer.pause();
-            currentTrack = null;
-        }
-
-        function updatePlayerUI() {
-            isPlaying ? audioPlayer.play() : audioPlayer.pause();
-            const el = document.getElementById('bottom-player');
-            if (!currentTrack) {
-                el.classList.remove('active');
-                el.querySelector(".waveform").classList.remove('playing');
-                document.querySelectorAll('.remix-card').forEach(card => {
-                    const wf = card.querySelector('.waveform');
-                    wf.classList.remove('playing');
-                });
-                return
-            }
-            el.classList.add('active');
-            let waves = el.querySelector(".waveform");
-            isPlaying ? waves.classList.add('playing') : waves.classList.remove('playing');
-            document.getElementById('player-img').src = currentTrack.img;
-            document.getElementById('player-title').textContent = currentTrack.title;
-            document.getElementById('player-artist').textContent = currentTrack.artist;
-            //const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
-            //document.getElementById('player-progress-fill').style.width = pct + '%';
-            //document.getElementById('player-time').textContent = formatTime(currentTime) + ' | -' + formatTime(Math.max(0, duration - currentTime));
-            const icon = document.querySelector('#player-play-btn i');
-            icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
-            // Update mini-player buttons
-            document.querySelectorAll('.remix-card').forEach(card => {
-                const id = card.dataset.id;
-                const icon = card.querySelector('.play-btn i');
-                if (id === currentTrack.id && isPlaying) {
-                    icon.className = 'fa-solid fa-pause'
-                } else {
-                    icon.className = 'fa-solid fa-play'
-                }
-                const wf = card.querySelector('.waveform');
-                if (id === currentTrack.id && isPlaying) {
-                    wf.classList.add('playing');
-                } else {
-                    wf.classList.remove('playing');
-                }
-            });
-        }
-
-        function setLoader(e) {
-            document.querySelectorAll('.remix-card').forEach(card => {
-                const id = card.dataset.id;
-                const btn = card.querySelector('.play-btn i');
-                if (id === e) {
-                    btn.className = 'fa fa-spinner fa-spin';
-                }
-            });
-        }
-
-        function playTrack(track) {
-            setLoader(track.id);
-
-            audio = new Audio(track.url);
-
-            audio.addEventListener("canplaythrough", () => {
-                audioPlayer.src = audio.src;
-                audioPlayer.play();
-            });
-
-            audioPlayer.addEventListener("play", () => {
-                currentTrack = track;
-                currentTime = 0;
-                duration = track.duration;
-                isPlaying = true;
-                updatePlayerUI();
-            });
-
-            audioPlayer.addEventListener("pause", () => {
-                isPlaying = false;
-                updatePlayerUI();
-            });
-
-            audioPlayer.addEventListener("ended", () => {
-                isPlaying = false;
-                updatePlayerUI();
-            });
-        }
-
-        function togglePlay() {
-            if (!currentTrack) return;
-            isPlaying = !isPlaying;
-            if (isPlaying) {
-                audioPlayer.play();
-            } else {
-                audioPlayer.pause();
-            }
-            updatePlayerUI();
-        }
 
         // ===== RENDER =====
         // Remixes
@@ -408,6 +266,109 @@
         </a>
         `).join('');
 
+        // ===== PLAYER STATE =====
+        let currentTrack = null;
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = 0;
+        let timerInterval = null;
+
+        const audioPlayer = document.getElementById('plyr-audio-player');
+
+        function closePlayer() {
+            const player = document.getElementById('bottom-player');
+            player.classList.remove('active');
+            document.querySelectorAll('.remix-card').forEach(card => {
+                const wf = card.querySelector('.waveform').classList.remove('playing');
+                card.querySelector('.play-btn i').className = 'fa-solid fa-play';
+            });
+            isPlaying = false;
+            audioPlayer.pause();
+            currentTrack = null;
+        }
+
+        function updatePlayerUI() {
+            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            const el = document.getElementById('bottom-player');
+            if (!currentTrack) {
+                el.classList.remove('active');
+                document.querySelectorAll('.remix-card').forEach(card => {
+                    const wf = card.querySelector('.waveform');
+                    wf.classList.remove('playing');
+                });
+                return
+            }
+            el.classList.add('active');
+            document.getElementById('player-img').src = currentTrack.img;
+            document.getElementById('player-title').textContent = currentTrack.title;
+            document.getElementById('player-artist').textContent = currentTrack.artist;
+            document.querySelectorAll('.remix-card').forEach(card => {
+                const id = card.dataset.id;
+                const icon = card.querySelector('.play-btn i');
+                if (id === currentTrack.id && isPlaying) {
+                    icon.className = 'fa-solid fa-pause'
+                } else {
+                    icon.className = 'fa-solid fa-play'
+                }
+                const wf = card.querySelector('.waveform');
+                if (id === currentTrack.id && isPlaying) {
+                    wf.classList.add('playing');
+                } else {
+                    wf.classList.remove('playing');
+                }
+            });
+        }
+
+        function setLoader(e) {
+            document.querySelectorAll('.remix-card').forEach(card => {
+                const id = card.dataset.id;
+                const btn = card.querySelector('.play-btn i');
+                if (id === e) {
+                    btn.className = 'fa fa-spinner fa-spin';
+                }
+            });
+        }
+
+        function playTrack(track) {
+            setLoader(track.id);
+
+            audio = new Audio(track.url);
+
+            audio.addEventListener("canplaythrough", () => {
+                audioPlayer.src = audio.src;
+                audioPlayer.play();
+            });
+
+            audioPlayer.addEventListener("play", () => {
+                currentTrack = track;
+                currentTime = 0;
+                duration = track.duration;
+                isPlaying = true;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+        }
+
+        function togglePlay() {
+            if (!currentTrack) return;
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+            updatePlayerUI();
+        }
+
         // ===== EVENT HANDLERS =====
         function handleCardPlay(id) {
             if (currentTrack && currentTrack.id === id) {
@@ -418,34 +379,6 @@
             if (r) playTrack(r);
             else Swal.fire("Error", "Track not found", "error");
         }
-
-        function getRemixIndex(id) {
-            return remixes.findIndex(x => x.id === id);
-        }
-
-        //reproducir siguiente al currenttrack si es el ultimo reproducir el primero
-        function playNextTrack() {
-            if (!currentTrack) return;
-            const idx = getRemixIndex(currentTrack.id);
-            if (idx >= 0 && idx < remixes.length - 1) {
-                playTrack(remixes[idx + 1]);
-            } else {
-                playTrack(remixes[0]);
-            }
-        }
-
-        // reproducir anterior al currenttrack si es el primero reproducir el ultimo
-        function playPreviousTrack() {
-            if (!currentTrack) return;
-            const idx = getRemixIndex(currentTrack.id);
-            if (idx > 0) {
-                playTrack(remixes[idx - 1]);
-            } else {
-                playTrack(remixes[remixes.length - 1]);
-            }
-        }
-
-        document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
     @isset($error)
         <script>

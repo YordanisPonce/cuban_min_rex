@@ -582,7 +582,7 @@
     align-items: center;
     gap: 12px;
     min-width: 0;
-    width: 25%
+    flex: 1
 }
 
 .player-track img {

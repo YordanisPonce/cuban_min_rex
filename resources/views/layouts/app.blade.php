@@ -85,6 +85,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" />
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/aos/aos.css') }}" />
+    <link rel="stylesheet" href="../../assets/vendor/libs/plyr/plyr.css" />
+    <script src="../../assets/vendor/libs/plyr/plyr.js"></script>
     <script src="{{ asset('assets/vendor/libs/aos/aos.js') }}"></script>
 
     <style>
@@ -93,6 +95,19 @@
             background-color: rgba(0, 0, 0, .75);
             background-blend-mode: overlay;
             background-size: cover;
+        }
+
+        .plyr {
+            --plyr-color-main: var(--primary);
+            --plyr-focus-visible-color: var(--primary-dark);
+            --plyr-menu-background: var(--bg3);
+            --plyr-video-control-color-hover: white;
+            --plyr-audio-control-color-hover: white;
+            --plyr-menu-color: white;
+        }
+
+        .plyr__menu, .plyr [data-plyr=pip]{
+            display: none;
         }
     </style>
 

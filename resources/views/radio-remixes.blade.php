@@ -73,13 +73,17 @@
             .track-price {
                 flex-direction: row;
             }
+
+            .hero-bg .overlay{
+                background: rgba(0,0,0,.7)
+            }
         }
     </style>
 @endpush
 
 @section('content')
 
-    <section class="hero container">
+    <section class="hero radio container">
         <div class="hero-bg">
             <img style="width: 100%" src="{{ asset('assets/img/emisora-portada.png') }}" alt="hero-banner">
             <div class="overlay"></div>
@@ -137,43 +141,13 @@
         @endif
         {{ $tracks->onEachSide(1)->links() }}
     </div>
-
-    <!-- BOTTOM PLAYER -->
-    <div class="bottom-player container" id="bottom-player">
-        <div class="player-inner">
-            <div class="player-track">
-                <img id="player-img" src="" alt="">
-                <div class="track-info">
-                    <div class="track-title" id="player-title">—</div>
-                    <div class="track-artist" id="player-artist">—</div>
-                </div>
-            </div>
-            <div class="player-controls">
-                <div class="waveform">
-                    @for ($i = 0; $i < 60; $i++)
-                        <div class="bar"></div>
-                    @endfor
-                </div>
-                <div class="controls">
-                    <button class="disabled"><i class="fa-solid fa-backward-fast"></i></button>
-                    <!-- <button><i class="fa-solid fa-backward-step"></i></button> -->
-                    <button class="main-play" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
-                    <!-- <button><i class="fa-solid fa-forward-step"></i></button> -->
-                    <button class="disabled"><i class="fa-solid fa-forward-fast"></i></button>
-                    <div class="close">
-                        <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    @include('partials.bottom-player')
     <div style="height:80px"></div>
 @endsection
 
 @push('scripts')
     <script>
-        const audioPlayer = document.createElement('audio');
+        const audioPlayer = document.getElementById('plyr-audio-player');
 
         // ===== PLAYER STATE =====
         let currentTrack = null;
@@ -192,7 +166,6 @@
         function closePlayer() {
             const player = document.getElementById('bottom-player');
             player.classList.remove('active');
-            player.querySelector(".waveform").classList.remove('playing');
             cleanCards();
             isPlaying = false;
             audioPlayer.pause();
@@ -204,7 +177,6 @@
             const el = document.getElementById('bottom-player');
             if (!currentTrack) {
                 el.classList.remove('active');
-                el.querySelector(".waveform").classList.remove('playing');
                 document.querySelectorAll('.track-card').forEach(card => {
                     const wf = card.querySelector('.waveform');
                     wf.classList.remove('playing');
@@ -212,14 +184,10 @@
                 return
             }
             el.classList.add('active');
-            let waves = el.querySelector(".waveform");
-            isPlaying ? waves.classList.add('playing') : waves.classList.remove('playing');
             let trackData = document.getElementById(currentTrack);
             document.getElementById('player-img').src = trackData.querySelector('img').src;
             document.getElementById('player-title').textContent = trackData.querySelector('.track-title').textContent;
             document.getElementById('player-artist').textContent = trackData.querySelector('.track-artist').textContent;
-            const icon = document.querySelector('#player-play-btn i');
-            icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
             // Update mini-player buttons
             document.querySelectorAll('.track-card').forEach(card => {
                 const id = card.id;
@@ -297,10 +265,6 @@
             let url = document.getElementById(`${id}`).dataset.intro;
             playTrack(id, url);
         }
-
-        renderExclusives();
-
-        document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
     @isset($error)
         <script>

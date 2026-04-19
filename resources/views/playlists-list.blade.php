@@ -8,6 +8,21 @@
         .filters-bar {
             max-width: 1400px;
         }
+        .btn-next,
+        .btn-prev{
+            color: white;
+            cursor: pointer;
+            transition: all .2s
+        }
+        .btn-next:hover,.btn-prev:hover {
+            transform: scale(1.2);
+            color: var(--primary)
+        }
+        .track-title{
+            justify-content: space-between;
+            display: flex;
+            gap: 20px;
+        }
     </style>
 @endpush
 
@@ -76,36 +91,7 @@
         @endif
         {{ $playlists->onEachSide(1)->links() }}
     </div>
-
-    <!-- BOTTOM PLAYER -->
-    <div class="bottom-player" id="bottom-player">
-        <div class="player-inner">
-            <div class="player-track">
-                <img id="player-img" src="" alt="">
-                <div class="track-info">
-                    <div class="track-title" id="player-title">—</div>
-                    <div class="track-artist" id="player-artist">—</div>
-                </div>
-            </div>
-            <div class="player-controls">
-                <div class="waveform">
-                    @for ($i = 0; $i < 60; $i++)
-                        <div class="bar"></div>
-                    @endfor
-                </div>
-                <div class="controls">
-                    <button onclick="playPreviousTrack()"><i class="fa-solid fa-backward-fast"></i></button>
-                    <!--<button><i class="fa-solid fa-backward-step"></i></button>-->
-                    <button class="main-play" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
-                    <!--<button><i class="fa-solid fa-forward-step"></i></button>-->
-                    <button onclick="playNextTrack()"><i class="fa-solid fa-forward-fast"></i></button>
-                    <div class="close">
-                        <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+    @include('partials.playlist-bottom-player')
 @endsection
 
 @push('scripts')
@@ -137,11 +123,14 @@
         let timerInterval = null;
         let randomPlay = false;
 
-        const audioPlayer = document.createElement('audio');
+        const audioPlayer = document.getElementById('plyr-audio-player');
 
         function cleanCards() {
             document.querySelectorAll('.playlist-card').forEach(card => {
-                card.querySelector('.play-overlay i').className = 'fa-solid fa-play';
+                let icon = card.querySelector('.play-overlay i');
+                if (icon) {
+                    icon.className = 'fa-solid fa-play';
+                }
                 card.classList.remove('playing');
             });
         }
@@ -149,7 +138,6 @@
         function closePlayer() {
             const player = document.getElementById('bottom-player');
             player.classList.remove('active');
-            player.querySelector(".waveform").classList.remove('playing');
             isPlaying = false;
             cleanCards();
             audioPlayer.pause();
@@ -161,24 +149,19 @@
             const el = document.getElementById('bottom-player');
             if (!currentTrack) {
                 el.classList.remove('active');
-                el.querySelector(".waveform").classList.remove('playing');
                 return
             }
             el.classList.add('active');
-            let waves = el.querySelector(".waveform");
-            isPlaying ? waves.classList.add('playing') : waves.classList.remove('playing');
             document.getElementById('player-img').src = currentTrack.img;
             document.getElementById('player-title').textContent = '#' + (getRemixIndex(currentTrack.id) + 1) + ' ' +
                 currentTrack.title;
             document.getElementById('player-artist').textContent = currentTrack.artist;
-            const icon = document.querySelector('#player-play-btn i');
-            icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
             document.querySelectorAll('.playlist-card').forEach(card => {
                 const id = card.id;
                 const btn = card.querySelector('.play-overlay i');
                 card.classList.remove('playing');
                 if (id == currentTrack.playlist_id) {
-                    btn.className = 'fa-solid fa-pause';
+                    if (btn) btn.className = 'fa-solid fa-pause';
                     card.classList.add('playing');
                 }
             });
@@ -189,7 +172,7 @@
                 const id = card.id;
                 const btn = card.querySelector('.play-overlay i');
                 if (id == e) {
-                    btn.className = 'fa fa-spinner fa-spin';
+                    if (btn) btn.className = 'fa fa-spinner fa-spin';
                     card.classList.add('playing');
                 }
             });
@@ -215,6 +198,7 @@
             audioPlayer.addEventListener("pause", () => {
                 isPlaying = false;
                 updatePlayerUI();
+                cleanCards();
             });
 
             audioPlayer.addEventListener("ended", () => {
@@ -222,7 +206,7 @@
                     playNextTrack();
                 } else {
                     isPlaying = false;
-                    updatePlayerUI();
+                    cleanCards();
                 }
             });
         }
@@ -240,22 +224,27 @@
 
         // ===== EVENT HANDLERS =====
         async function handlePlay(id) {
-            cleanCards();
-            setLoader(id);
+            if(!isPlaying){
+                cleanCards();
+                setLoader(id);
 
-            if (currentTrack && currentTrack.id === id) {
-                togglePlay();
-                return
-            }
+                if (currentTrack) {
+                    togglePlay();
+                    return
+                }
 
-            await getTracks(id);
+                await getTracks(id);
 
-            const r = tracks[0];
+                const r = tracks[0];
 
-            if (r) {
-                playTrack(r);
+                if (r) {
+                    playTrack(r);
+                } else {
+                    Swal.fire("Error", "Track not found", "error");
+                    cleanCards();
+                }
             } else {
-                Swal.fire("Error", "Track not found", "error");
+                togglePlay();
                 cleanCards();
             }
         }
@@ -285,8 +274,6 @@
                 playTrack(tracks[tracks.length - 1]);
             }
         }
-
-        document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
     <script>
         // HERO SLIDESHOW

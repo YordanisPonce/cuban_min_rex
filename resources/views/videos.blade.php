@@ -12,26 +12,38 @@
     <link rel="stylesheet" href="{{ asset('assets/css/remixes.css') }}" />
     <style>
         .bottom-player{
-            width: 300px;
-            height: 300px;
-            right: 20px;
+            width: 500px;
+            height: 500px;
             bottom: 20px;
+            right: 20px;
+            left: auto;
             border: 0.5px solid var(--primary);
             padding: 0;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 700px){
+            .bottom-player{
+                width: 300px;
+                height: 300px;
+            }
         }
 
         .bottom-player .player-inner{
             display: flex;
             flex-direction: column;
             width: 100%;
+            height: 100%;
             padding: 15px;
             gap: 5px;
 
             & .video-player{
                 width: 100%;
+                height: 100%;
 
-                & video{
+                & .plyr{
                     width: 100%;
+                    height: 100%;
                 }
             }
 
@@ -181,47 +193,14 @@
             @endif
         </div>
     </div>
-
-    <!-- BOTTOM PLAYER -->
-    <div class="bottom-player container" id="bottom-player">
-        <div class="player-inner">
-            <div class="player-track">
-                <img id="player-img" src="" alt="">
-                <div class="track-info">
-                    <div class="track-title" id="player-title">Nombre del Video</div>
-                    <div class="track-artist" id="player-artist">Autor</div>
-                </div>
-                <div class="close">
-                    <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
-                </div>
-            </div>
-            <div class="video-player">
-                <video src=" " oncontextmenu="return false;" />
-            </div>
-            <div class="player-controls">
-                <div class="waveform">
-                    @for ($i = 0; $i < 60; $i++)  
-                        <div class="bar"></div>
-                    @endfor
-                </div>
-                <div class="controls">
-                    <button class="disabled"><i class="fa-solid fa-backward-fast"></i></button>
-                    <!-- <button><i class="fa-solid fa-backward-step"></i></button> -->
-                    <button class="main-play" id="player-play-btn"><i class="fa-solid fa-play"></i></button>
-                    <!-- <button><i class="fa-solid fa-forward-step"></i></button> -->
-                    <button class="disabled"><i class="fa-solid fa-forward-fast"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    @include('partials.bottom-video-player')
     <div style="height:80px"></div>
 @endsection
 
 @push('scripts')
     <script>
 
-        const audioPlayer = document.querySelector('.video-player>video');
+        const audioPlayer = document.getElementById('plyr-video-player');
 
         // ===== PLAYER STATE =====
         let currentTrack = null;
@@ -240,7 +219,6 @@
         function closePlayer(){
             const player = document.getElementById('bottom-player');
             player.classList.remove('active');
-            player.querySelector(".waveform").classList.remove('playing');
             cleanCards();
             isPlaying = false;
             audioPlayer.pause();
@@ -252,7 +230,6 @@
             const el = document.getElementById('bottom-player');
             if (!currentTrack) {
                 el.classList.remove('active');
-                el.querySelector(".waveform").classList.remove('playing');
                 document.querySelectorAll('.track-card').forEach(card => {
                     const wf = card.querySelector('.waveform');
                     wf.classList.remove('playing');
@@ -260,14 +237,10 @@
                 return
             }
             el.classList.add('active');
-            let waves = el.querySelector(".waveform");
-            isPlaying ? waves.classList.add('playing') : waves.classList.remove('playing');
             let trackData = document.getElementById(currentTrack);
             document.getElementById('player-img').src = trackData.querySelector('img').src;
             document.getElementById('player-title').textContent = trackData.querySelector('.track-title').textContent;
             document.getElementById('player-artist').textContent = trackData.querySelector('.track-artist').textContent;
-            const icon = document.querySelector('#player-play-btn i');
-            icon.className = isPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play';
             // Update mini-player buttons
             document.querySelectorAll('.track-card').forEach(card => {
                 const id = card.id;
@@ -346,8 +319,6 @@
             let url = document.getElementById(`${id}`).dataset.intro;
             playTrack(id, url);
         }
-
-        document.getElementById('player-play-btn').addEventListener('click', togglePlay);
     </script>
     <script>
         // HERO SLIDESHOW

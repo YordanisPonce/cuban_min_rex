@@ -247,14 +247,14 @@
     display: none;
 }
 
-.track-info {
+.track-row .track-info {
     display: flex;
     align-items: center;
     gap: .75rem;
     min-width: 0;
 }
 
-.track-cover {
+.track-row .track-cover {
     width: 40px;
     height: 40px;
     border-radius: 6px;
@@ -262,7 +262,7 @@
     flex-shrink: 0;
 }
 
-.track-title {
+.track-row .track-title {
     font-weight: 600;
     font-size: .85rem;
     white-space: nowrap;
@@ -270,7 +270,7 @@
     text-overflow: ellipsis;
 }
 
-.track-artist {
+.track-row .track-artist {
     font-size: .75rem;
     color: var(--muted);
     white-space: nowrap;
@@ -278,7 +278,7 @@
     text-overflow: ellipsis;
 }
 
-.track-genre {
+.track-row .track-genre {
     font-size: .68rem;
     background: rgba(245, 166, 35, .1);
     color: var(--primary);
@@ -288,32 +288,32 @@
     text-align: center;
 }
 
-.track-bpm {
+.track-row .track-bpm {
     font-size: .8rem;
     color: var(--muted);
     text-align: center;
 }
 
-.track-duration {
+.track-row .track-duration {
     font-size: .8rem;
     color: var(--muted);
     text-align: center;
 }
 
-.track-downloads {
+.track-row .track-downloads {
     font-size: .8rem;
     color: var(--muted);
     text-align: center;
 }
 
-.track-price {
+.track-row .track-price {
     font-weight: 700;
     color: var(--primary);
     font-size: .85rem;
     text-align: center;
 }
 
-.track-actions {
+.track-row .track-actions {
     display: flex;
     gap: .4rem;
     justify-content: center;

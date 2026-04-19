@@ -176,7 +176,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
                 'genre' => null,
                 'badge' => null,
                 'price' => $track->price,
-                'url' => Storage::disk('s3')->url($track->file_path),
+                'url' => $track->file_path ? Storage::disk('s3')->url($track->file_path) : null,
                 'downloads' => $track->downloads->count(),
                 'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
                 'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
