@@ -8,9 +8,11 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 
@@ -51,15 +53,13 @@ class OrdersTable
                     ->formatStateUsing(fn(string $state) => match ($state) {
                         'paid' => 'Pagado',
                         'pending' => 'Pendiente',
-                        'failed' => 'Fallido',
-                        'canceled' => 'Cancelado',
+                        'failed' => 'Cancelada',
                         default => ucfirst($state),
                     })
                     ->colors(fn(string $state) => match ($state) {
                         'paid' => ['success'],
                         'pending' => ['warning'],
                         'failed' => ['danger'],
-                        'canceled' => ['danger'],
                         default => ['warning'],
                     })
                     ->sortable(),
@@ -86,9 +86,13 @@ class OrdersTable
                     ->options([
                         'paid' => 'Pagado',
                         'pending' => 'Pendiente',
-                        'failed' => 'Fallido',
-                        'canceled' => 'Cancelado',
+                        'failed' => 'Cancelada',
                     ]),
+                SelectFilter::make('user_id')
+                    ->label('Usuario')
+                    ->relationship('user','name', function(EloquentBuilder $query) {
+                        $query->whereHas('orders');
+                    }),
             ])
             ->recordActions([
                 EditAction::make(),
@@ -102,6 +106,28 @@ class OrdersTable
                     })
                     ->visible(function (Order $record) {
                         return $record->order_items()->count() > 0;
+                    }),
+                Action::make('cancel')
+                    ->label('Anular Orden')
+                    ->icon('heroicon-o-x-circle')
+                    ->requiresConfirmation()
+                    ->modalHeading('Cancelar Orden')
+                    ->modalDescription('¿Seguro? Esta acción influira en las cotizaciones y montos generados.')
+                    ->modalCancelActionLabel('No, Cancelar')
+                    ->modalSubmitActionLabel('Si, el pago fue reembolsado')
+                    ->action(function (Order $record) {
+                        $record->status = 'failed';
+                        $record->save();
+
+                        Notification::make()
+                            ->success()
+                            ->persistent()
+                            ->title('Orden Cancelada')
+                            ->body('La Orden #'.$record->id.' fue cancelada, no sera contada en las liquidaciones de la página')
+                            ->send();
+                    })
+                    ->visible(function (Order $record) {
+                        return $record->status === 'paid';
                     }),
             ])
 
