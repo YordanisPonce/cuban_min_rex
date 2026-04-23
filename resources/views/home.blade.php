@@ -9,6 +9,82 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}" />
+    <style>
+        .bottom-player.video{
+            width: 500px;
+            height: 500px;
+            bottom: 20px;
+            right: 20px;
+            left: auto;
+            border: 0.5px solid var(--primary);
+            padding: 0;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 700px){
+            .bottom-player.video{
+                width: 300px;
+                height: 300px;
+            }
+        }
+
+        .bottom-player.video .player-inner{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            gap: 5px;
+
+            & .video-player{
+                width: 100%;
+                height: 100%;
+
+                & .plyr{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            & .player-controls{
+                width: 100%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                & .waveform{
+                    width: 100%;
+                    height: auto;
+                    min-height: 30px;
+                }
+
+                & .main-play{
+                    width: 30px;
+                    height: 30px;
+
+                    &:hover{
+                        color: var(--text-muted)
+                    }
+                }
+            }
+
+            & .player-track{
+                display: grid;
+                width:100%;
+                position: relative;
+                gap: 10px;
+                grid-template-columns: 40px 1fr;
+                padding-right: 15px;
+
+                & .close{
+                    position: absolute;
+                    top: 10px;
+                    right: 0;
+                }
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -101,9 +177,29 @@
         </div>
     </section>
     @include('partials.bottom-player')
+    <div class="bottom-player video container" id="video-player">
+        <div class="player-inner">
+            <div class="player-track">
+                <img id="video-player-img" src="" alt="">
+                <div class="track-info">
+                    <div class="track-title" id="video-player-title">Nombre del Video</div>
+                    <div class="track-artist" id="video-player-artist">Autor</div>
+                </div>
+                <div class="close">
+                    <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
+                </div>
+            </div>
+            <div class="video-player">
+                <video class="w-100" poster="{{ config('app.logo') }}" id="plyr-video-player" playsinline controls></video>
+            </div>
+        </div>
+    </div>
 @endsection
 
 @push('scripts')
+    <script>
+        new Plyr("#plyr-video-player");
+    </script>
     <script>
         // ===== DATA =====
 
@@ -271,37 +367,62 @@
         let isPlaying = false;
         let currentTime = 0;
         let duration = 0;
+        let isVideo = false;
         let timerInterval = null;
 
         const audioPlayer = document.getElementById('plyr-audio-player');
+        const videoPlayer = document.getElementById('plyr-video-player');
 
         function closePlayer() {
             const player = document.getElementById('bottom-player');
+            const player2 = document.getElementById('video-player');
             player.classList.remove('active');
+            player2.classList.remove('active');
             document.querySelectorAll('.remix-card').forEach(card => {
                 const wf = card.querySelector('.waveform').classList.remove('playing');
                 card.querySelector('.play-btn i').className = 'fa-solid fa-play';
             });
             isPlaying = false;
             audioPlayer.pause();
+            videoPlayer.pause();
             currentTrack = null;
         }
 
         function updatePlayerUI() {
-            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            if(isPlaying){
+                if (isVideo) {
+                    videoPlayer.play();
+                    audioPlayer.pause();
+                } else {
+                    audioPlayer.play();
+                    videoPlayer.pause();
+                }
+            } else {
+                audioPlayer.pause();
+                videoPlayer.pause();
+            }
             const el = document.getElementById('bottom-player');
+            const elv = document.getElementById('video-player');
             if (!currentTrack) {
                 el.classList.remove('active');
+                elv.classList.remove('active');
                 document.querySelectorAll('.remix-card').forEach(card => {
                     const wf = card.querySelector('.waveform');
                     wf.classList.remove('playing');
                 });
                 return
             }
-            el.classList.add('active');
-            document.getElementById('player-img').src = currentTrack.img;
-            document.getElementById('player-title').textContent = currentTrack.title;
-            document.getElementById('player-artist').textContent = currentTrack.artist;
+            if (isVideo) {
+                elv.classList.add('active');
+                document.getElementById('video-player-img').src = currentTrack.img;
+                document.getElementById('video-player-title').textContent = currentTrack.title;
+                document.getElementById('video-player-artist').textContent = currentTrack.artist;
+            } else {
+                el.classList.add('active');
+                document.getElementById('player-img').src = currentTrack.img;
+                document.getElementById('player-title').textContent = currentTrack.title;
+                document.getElementById('player-artist').textContent = currentTrack.artist;
+            }
             document.querySelectorAll('.remix-card').forEach(card => {
                 const id = card.dataset.id;
                 const icon = card.querySelector('.play-btn i');
@@ -330,13 +451,46 @@
         }
 
         function playTrack(track) {
+            closePlayer();
             setLoader(track.id);
 
             audio = new Audio(track.url);
 
+            if(track.flag == 'video'){
+                isVideo = true;
+                audio = document.createElement('video');
+                audio.src = track.url;
+            } else {
+                isVideo = false;
+            }
+
             audio.addEventListener("canplaythrough", () => {
-                audioPlayer.src = audio.src;
-                audioPlayer.play();
+                if (isVideo) {
+                    videoPlayer.src = audio.src;
+                    videoPlayer.play();
+                } else {
+                    isVideo = false;
+                    audioPlayer.src = audio.src;
+                    audioPlayer.play();
+                }
+            });
+
+            videoPlayer.addEventListener("play", () => {
+                currentTrack = track;
+                currentTime = 0;
+                duration = track.duration;
+                isPlaying = true;
+                updatePlayerUI();
+            });
+
+            videoPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+
+            videoPlayer.addEventListener("ended", () => {
+                isPlaying = false;
+                updatePlayerUI();
             });
 
             audioPlayer.addEventListener("play", () => {
@@ -362,9 +516,16 @@
             if (!currentTrack) return;
             isPlaying = !isPlaying;
             if (isPlaying) {
-                audioPlayer.play();
+                if (isVideo) {
+                    videoPlayer.play();
+                    audioPlayer.pause();
+                } else {
+                    audioPlayer.play();
+                    videoPlayer.pause();
+                }
             } else {
                 audioPlayer.pause();
+                videoPlayer.pause();
             }
             updatePlayerUI();
         }
