@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan *)",
+      "Bash(APP_DEBUG=true php artisan --version)",
+      "Bash(php _debug.php)"
+    ]
+  }
+}

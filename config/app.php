@@ -2,7 +2,7 @@
 
 use App\Models\SeoText;
 
-$seo = SeoText::first();
+$seo = rescue(fn () => SeoText::first(), null, false);
 
 return [
 
@@ -17,13 +17,13 @@ return [
     |
     */
 
-    'name' => $seo->app_name ?? env('APP_NAME', 'Laravel'),
+    'name' => $seo?->app_name ?? env('APP_NAME', 'Laravel'),
 
-    'keywords' => $seo->app_keywords ?? env('APP_KEYWORDS', 'Laravel'),
+    'keywords' => $seo?->app_keywords ?? env('APP_KEYWORDS', 'Laravel'),
 
-    'description' => $seo->app_description ?? env('APP_DESCRIPTION', 'A Laravel proyect'),
+    'description' => $seo?->app_description ?? env('APP_DESCRIPTION', 'A Laravel proyect'),
 
-    'logo' => $seo->app_logo ? $seo->logoUrl() :  env('APP_URL').'/assets/img/logo_alter.png',
+    'logo' => $seo?->app_logo ? $seo->logoUrl() :  env('APP_URL').'/assets/img/logo_alter.png',
 
     'logo_alter' => env('APP_URL').'/assets/img/logo_alter.png',
 
