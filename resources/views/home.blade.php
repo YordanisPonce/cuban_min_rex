@@ -140,7 +140,8 @@
             <div class="cards-grid" id="mix-grid"></div>
         </div>
     </section>
-    
+
+    @if($exclusives->count() > 0)
     <section class="section">
         <div class="container">
             <div class="section-header">
@@ -150,6 +151,7 @@
             <div class="cards-grid" id="exclusives-grid"></div>
         </div>
     </section>
+    @endif
     
     <section class="section">
         <div class="container">
