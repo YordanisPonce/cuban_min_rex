@@ -141,17 +141,17 @@
         </div>
     </section>
 
-    @if($exclusives->count() > 0)
     <section class="section">
         <div class="container">
+            @if($exclusives->count() > 0)
             <div class="section-header">
                 <div class="section-title"><i class="fa-solid fa-lock"></i> CONTENIDO <span class="accent">EXCLUSIVO</span>
                 </div><a href="{{ route('remixes.exclusives') }}" class="btn-outline">VER MÁS »</a>
             </div>
+            @endif
             <div class="cards-grid" id="exclusives-grid"></div>
         </div>
     </section>
-    @endif
     
     <section class="section">
         <div class="container">
