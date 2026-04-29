@@ -97,7 +97,7 @@
         <!-- STATS -->
         <div class="stats-row">
             <div class="stat-card">
-                <div class="stat-value">{{ NumEnum::letter_format($dj->files()->count()) }}</div>
+                <div class="stat-value">{{ NumEnum::letter_format($dj->files()->audios()->count()) }}</div>
                 <div class="stat-label">Remixes</div>
             </div>
             <div class="stat-card">
@@ -165,7 +165,7 @@
                 </thead>
                 <tbody id="remixBody">
                     @php $i = 0; @endphp
-                    @foreach ($dj->files()->section(SectionEnum::MAIN->value)->orderBy('download_count')->take(5)->get() as $file)
+                    @foreach ($dj->files()->audios()->section(SectionEnum::MAIN->value)->orderBy('download_count')->take(5)->get() as $file)
                         <tr class="remix-row" id="{{ $file->id }}" data-intro="{{ $file->intro() }}">
                             <td style="color:var(--muted);font-weight:600;">{{ ++$i }}</td>
                             <td>
