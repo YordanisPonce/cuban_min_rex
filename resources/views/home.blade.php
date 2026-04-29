@@ -88,7 +88,7 @@
 @endpush
 
 @section('content')
-    <!-- HERO -->
+
     <section class="hero container">
         <div class="hero-slides" id="heroSlides"></div>
         <div class="hero-gradient"></div>
@@ -108,8 +108,7 @@
             </div>
         </div>
     </section>
-
-    <!-- REMIXES NUEVOS -->
+    
     <section class="section">
         <div class="container">
             <div class="section-header">
@@ -120,8 +119,7 @@
             <div class="cards-grid" id="remixes-grid"></div>
         </div>
     </section>
-
-    <!-- PLAYLISTS -->
+    
     <section class="section">
         <div class="container">
             <div class="section-header">
@@ -133,7 +131,26 @@
         </div>
     </section>
 
-    <!-- TOP DESCARGADOS -->
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-microphone"></i> MIX <span class="accent">SESSIONS</span>
+                </div><a href="{{ route('remixes', ['genre' => 'Mix']) }}" class="btn-outline">VER MÁS »</a>
+            </div>
+            <div class="cards-grid" id="mix-grid"></div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-lock"></i> CONTENIDO <span class="accent">EXCLUSIVO</span>
+                </div><a href="{{ route('remixes.exclusives') }}" class="btn-outline">VER MÁS »</a>
+            </div>
+            <div class="cards-grid" id="exclusives-grid"></div>
+        </div>
+    </section>
+    
     <section class="section">
         <div class="container">
             <div class="section-header">
@@ -143,8 +160,7 @@
             <div class="cards-grid" id="top-djs-grid"></div>
         </div>
     </section>
-
-    <!-- DJS DESTACADOS -->
+    
     <section class="section">
         <div class="container">
             <div class="section-header">
@@ -154,8 +170,7 @@
             <div class="genres-scroll" id="genres-scroll"></div>
         </div>
     </section>
-
-    <!-- CTA -->
+    
     <section class="cta container">
         <div class="cta-bg">
             <img src="{{ asset('assets/img/hero-base.jpeg') }}" alt="cta-img">
@@ -210,6 +225,10 @@
         const topDjs = @json($tops);
 
         const genres = @json($geners);
+
+        const mixes = @json($mixes);
+
+        const exclusives = @json($exclusives);
 
         // HERO SLIDESHOW
         const heroImages = @json($banners);
@@ -333,6 +352,176 @@
                     <span class="playlist-downloads"><i class="fa-solid fa-fire"></i> ${p.downloads}</span>
                 </div>
                 <a href="${p.route}" class="btn-primary">VER PLAYLIST</a>
+            </div>
+        </div>
+        `).join('');
+
+        // MIX
+        delay = 1;
+        document.getElementById('mix-grid').innerHTML = mixes.map(r => `
+        <div class="remix-card" data-id="${r.id}"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}">
+            <div class="thumb">
+            <img src="${r.img}" alt="${r.title}" loading="lazy">
+            ${r.isNew?'<span class="tag-new">NEW</span>':''}
+            </div>
+            <div class="info">
+            <div class="title">${r.title}</div>
+            <div class="artist">${r.artist}</div>
+            <div class="genre">${r.genre}</div>
+            <div class="mini-player">
+                <button class="play-btn" onclick="handleCardPlay('${r.id}')"><i class="fa-solid fa-play"></i></button>
+                <div class="waveform">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="mini-actions">
+                    ${ r.canDownload ? '<a href="' + r.downloadLink + '" ><i class="fa-solid fa-download"></i></a>' : '<a href="' + r.addToCart +'" ><i class="ti tabler-shopping-cart-plus"></i></a>'}
+                </div>
+            </div>
+            <div class="meta"><span>BPM · ${r.bpm}</span> <span>${ !r.canDownload ? '$ '+r.price : ''}</span></div>
+            </div>
+        </div>
+        `).join('');
+
+        // EXCLUSIVES
+        delay = 1;
+        document.getElementById('exclusives-grid').innerHTML = exclusives.map(r => `
+        <div class="remix-card" data-id="${r.id}"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}">
+            <div class="thumb">
+            <img src="${r.img}" alt="${r.title}" loading="lazy">
+            ${r.isNew?'<span class="tag-new">NEW</span>':''}
+            </div>
+            <div class="info">
+            <div class="title">${r.title}</div>
+            <div class="artist">${r.artist}</div>
+            <div class="genre">${r.genre}</div>
+            <div class="mini-player">
+                <button class="play-btn" onclick="handleCardPlay('${r.id}')"><i class="fa-solid fa-play"></i></button>
+                <div class="waveform">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+                <div class="mini-actions">
+                    ${ r.canDownload ? '<a href="' + r.downloadLink + '" ><i class="fa-solid fa-download"></i></a>' : '<a href="' + r.addToCart +'" ><i class="ti tabler-shopping-cart-plus"></i></a>'}
+                </div>
+            </div>
+            <div class="meta"><span>BPM · ${r.bpm}</span> <span>${ !r.canDownload ? '$ '+r.price : ''}</span></div>
             </div>
         </div>
         `).join('');
@@ -536,9 +725,22 @@
                 togglePlay();
                 return
             }
-            const r = remixes.find(x => x.id === id);
-            if (r) playTrack(r);
-            else Swal.fire("Error", "Track not found", "error");
+            let r = remixes.find(x => x.id === id);
+            if (r) {
+                playTrack(r);
+            } else {
+                r = mixes.find(x => x.id === id);
+                if(r) {
+                    playTrack(r);
+                } else {
+                    r = exclusives.find(x => x.id === id);
+                    if(r){
+                        playTrack(r);
+                    } else {
+                        Swal.fire("Error", "Track not found", "error");
+                    }
+                }
+            }
         }
     </script>
     @isset($error)

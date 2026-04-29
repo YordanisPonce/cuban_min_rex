@@ -29,6 +29,9 @@ class HomeController extends Controller
         $pageTitle = "Inicio";
 
         $newItems = File::where('isExclusive', false)
+            ->whereHas('categories',  function($q) {
+                $q->whereNot('name', 'Mix');
+            })
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
@@ -36,6 +39,9 @@ class HomeController extends Controller
             
         if ($newItems->count() == 0) {
             $newItems = File::audios()
+                ->whereHas('categories',  function($q) {
+                    $q->whereNot('name', 'Mix');
+                })
                 ->where('status', 'active')
                 ->where('isExclusive', false)
                 ->whereJsonContains('sections', SectionEnum::MAIN->value)
@@ -117,6 +123,68 @@ class HomeController extends Controller
             });
         }
 
+        $exclusives = File::where('status', 'active')
+            ->where('isExclusive', true)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->take(5)->get();
+
+        $exclusives->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
+            return [
+                'id' => (string) $file->id,
+                'date' => $file->created_at,
+                'artist' => $file->user->name,
+                'title' => $file->name,
+                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'duration' => 120,
+                'flag' => $flag,
+                'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
+                'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'canDownload' => false,
+                'downloadLink' => null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
+
+        $mixes = File::where('isExclusive', false)
+            ->whereHas('categories',  function($q) {
+                $q->where('name', 'Mix');
+            })
+            ->where('status', 'active')
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->orderBy('created_at', 'desc')->take(5)->get();
+        
+        $mixes->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
+            return [
+                'id' => (string) $file->id,
+                'date' => $file->created_at,
+                'artist' => $file->user->name,
+                'title' => $file->name,
+                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'duration' => 120,
+                'flag' => $flag,
+                'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
+                'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
+                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('file.download', $file->id) : null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
 
         $geners = Category::join('category_files', 'categories.id', 'category_files.category_id')
             ->join('files', 'files.id', 'category_files.file_id')
@@ -149,7 +217,7 @@ class HomeController extends Controller
 
         $index = 0;
 
-        return view('home', compact('pageTitle', 'geners', 'index', 'newItems', 'playlists', 'tops', 'banners'));
+        return view('home', compact('pageTitle', 'geners', 'index', 'newItems', 'playlists', 'tops', 'banners', 'mixes', 'exclusives'));
     }
 
     public function faq()
