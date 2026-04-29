@@ -1,15 +1,16 @@
 <?php
 
-namespace App\Filament\Widgets;
+namespace App\Livewire;
 
+use App\Enums\SectionEnum;
 use App\Models\Order;
 use Carbon\Carbon;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Facades\DB;
 
-class SuscriptionByMonthChart extends ChartWidget
+class RadioCUPSalesByMonthChart extends ChartWidget
 {
-    protected ?string $heading = 'Comision por suscripciones al mes ';
+    protected ?string $heading = 'Comision por ventas al mes (CUP)';
 
     protected ?string $description = 'Información sensible al filtro de año.';
 
@@ -35,7 +36,13 @@ class SuscriptionByMonthChart extends ChartWidget
     {
         $year = $this->year;
 
-        $query = Order::query()->whereHas('plan')->where('status','paid');
+        $query = Order::query()->where('status','paid')
+            ->where('currency', 'CUP')
+            ->whereHas('order_items', function($q){
+                $q->whereHas('file', function($q){
+                    $q->whereJsonContains('sections', SectionEnum::CUBANDJS->value)->orWhereJsonContains('sections', SectionEnum::CUBANDJS_LIVE_SESSIONS->value);
+                });
+            });;
 
         if ($year){
             $query->whereYear('created_at', $year);
@@ -43,7 +50,7 @@ class SuscriptionByMonthChart extends ChartWidget
 
         $data = $query->select(
                 DB::raw('MONTH(created_at) as month'),
-                DB::raw('SUM(amount) * 0.2 as count')
+                DB::raw('SUM(amount) * 0.1 as count')
             )
             ->groupBy('month')
             ->orderBy('month')
@@ -73,7 +80,7 @@ class SuscriptionByMonthChart extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Comisión por Suscripciones',
+                    'label' => 'Comisión por Ventas',
                     'data' => $chartData,
                     'backgroundColor' => '#10b981',
                     'borderColor' => '#059669',

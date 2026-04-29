@@ -269,7 +269,8 @@ class ListFiles extends ListRecords
 
                         throw $e;
                     }
-                }),
+                })
+                ->hidden(fn() => auth()->user()->role == 'developer'),
         ];
     }
 }

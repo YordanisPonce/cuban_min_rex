@@ -13,7 +13,7 @@ class FilePolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role !== 'developer';
+        return true;
     }
 
     /**

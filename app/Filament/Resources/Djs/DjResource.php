@@ -33,7 +33,7 @@ class DjResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->role === 'admin';
+        return auth()->user()->role === 'admin' || auth()->user()->role === 'developer';
     }
 
     public static function form(Schema $schema): Schema

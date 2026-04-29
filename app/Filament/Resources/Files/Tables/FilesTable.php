@@ -26,6 +26,10 @@ class FilesTable
                 TextColumn::make('name')
                     ->label('Nombre')
                     ->searchable(),
+                TextColumn::make('user.name')
+                    ->label('DJ')
+                    ->searchable()
+                    ->hidden(fn() => auth()->user()->role !='admin' && auth()->user()->role !='developer'),
                 TextColumn::make('price')
                     ->label('Precio')
                     ->money()
@@ -45,6 +49,10 @@ class FilesTable
                         return $record->categories->pluck('name');
                     })
                     ->default('Sin categoría'),
+                TextColumn::make('sections')
+                    ->label('Secciones a mostrar')
+                    ->badge()
+                    ->formatStateUsing(fn(string $state) => SectionEnum::getTransformName($state)),
                 TextColumn::make('status')
                     ->label('Estado')
                     ->badge()
@@ -58,10 +66,6 @@ class FilesTable
                         'inactive' => ['primary'],
                         default => ['primary'],
                     }),
-                TextColumn::make('sections')
-                    ->label('Secciones a mostrar')
-                    ->badge()
-                    ->formatStateUsing(fn(string $state) => SectionEnum::getTransformName($state)),
                 IconColumn::make('isExclusive')
                     ->label('Exclusivo')
                     ->alignCenter()
@@ -87,6 +91,12 @@ class FilesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('user_id')
+                    ->relationship('user', 'name', function($query){
+                        $query->whereHas('files');
+                    })
+                    ->label('DJ')
+                    ->hidden(fn() => auth()->user()->role!=='admin' && auth()->user()->role!=='developer'),
                 SelectFilter::make('categories')
                     ->relationship(name: 'categories', titleAttribute: 'name')
                     ->label('Categorías')
@@ -121,6 +131,19 @@ class FilesTable
                     ->label('Filtros'),
             )
             ->recordActions([
+                Action::make('setActive')
+                    ->label(fn($record) => $record->status === 'active' ? 'Desactivar' : 'Activar')
+                    ->action(function ($record) {
+                        if($record->status === 'active'){
+                            $record->status = 'inactive';
+                        } else {
+                            $record->status = 'active';
+                        }
+                        $record->save();
+                    })
+                    ->icon(fn($record) => $record->status === 'active' ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
+                    ->color(fn($record) => $record->status === 'active' ? 'danger' : 'success')
+                    ->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin'),
                 Action::make('setExclusive')
                     ->label(fn($record) => $record->isExclusive ? 'Quitar exclusivo' : 'Hacer exclusivo')
                     ->requiresConfirmation()
@@ -131,7 +154,8 @@ class FilesTable
                         $record->save();
                     })
                     ->icon(fn($record) => $record->isExclusive ? 'heroicon-o-x-circle' : 'heroicon-o-check-circle')
-                    ->color(fn($record) => $record->isExclusive ? 'danger' : 'success'),
+                    ->color(fn($record) => $record->isExclusive ? 'danger' : 'success')
+                    ->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin'),
                 EditAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Editar'),
                 DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record->user_id && Auth::user()->role != 'admin')->label('Eliminar'),
             ])
@@ -141,7 +165,7 @@ class FilesTable
                 ])->label('Acciones en Lote'),
             ])
             ->modifyQueryUsing(
-                fn(EloquentBuilder $query) => auth()->user()->role!=='admin' ? $query->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc') : $query->orderBy('created_at', 'desc')
+                fn(EloquentBuilder $query) => auth()->user()->role!=='admin' && auth()->user()->role!=='developer' ? $query->where('user_id', Auth::user()->id)->orderBy('created_at', 'desc') : $query->orderBy('created_at', 'desc')
             );
     }
 }

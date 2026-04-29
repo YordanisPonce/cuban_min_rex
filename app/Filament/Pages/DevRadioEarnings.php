@@ -3,9 +3,9 @@
 namespace App\Filament\Pages;
 
 use App\Enums\SectionEnum;
-use App\Filament\Widgets\DevRadioStatsWidget;
-use App\Filament\Widgets\RadioCUPSalesByMonthChart;
-use App\Filament\Widgets\RadioSalesByMonthChart;
+use App\Livewire\DevRadioStatsWidget;
+use App\Livewire\RadioCUPSalesByMonthChart;
+use App\Livewire\RadioSalesByMonthChart;
 use App\Livewire\DevRadioCUPSalesTable;
 use App\Models\Order;
 use BackedEnum;

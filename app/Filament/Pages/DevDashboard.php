@@ -3,11 +3,10 @@
 namespace App\Filament\Pages;
 
 use App\Enums\SectionEnum;
-use App\Filament\Widgets\DevStatsWidget;
-use App\Filament\Widgets\SalesByMonthChart;
-use App\Filament\Widgets\SuscriptionByMonthChart;
+use App\Livewire\DevStatsWidget;
+use App\Livewire\SalesByMonthChart;
+use App\Livewire\SuscriptionByMonthChart;
 use App\Livewire\DevSuscriptionTable;
-use App\Livewire\TabsWidget;
 use App\Models\Sale;
 use BackedEnum;
 use Carbon\Carbon;
