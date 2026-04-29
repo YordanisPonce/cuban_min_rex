@@ -113,7 +113,7 @@ class File extends Model
 
     public function scopeAudios($query)
     {
-        $ext =  ['.mp3', '.wav', '.ogg', '.m4a'];
+        $ext =  ['.mp3', '.wav', '.ogg', '.m4a', '.flac'];
 
         return $query->where(function ($q) use ($ext) {
             foreach ($ext as $e) {

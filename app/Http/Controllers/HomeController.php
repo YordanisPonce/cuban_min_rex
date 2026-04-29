@@ -51,7 +51,7 @@ class HomeController extends Controller
         $newItems->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
             $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
-            $auds =  ['mp3', 'wav', 'ogg', 'm4a'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
             $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
             $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
@@ -131,7 +131,7 @@ class HomeController extends Controller
         $exclusives->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
             $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
-            $auds =  ['mp3', 'wav', 'ogg', 'm4a'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
             $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
             $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
@@ -164,7 +164,7 @@ class HomeController extends Controller
         $mixes->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
             $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
-            $auds =  ['mp3', 'wav', 'ogg', 'm4a'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
             $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
             $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
