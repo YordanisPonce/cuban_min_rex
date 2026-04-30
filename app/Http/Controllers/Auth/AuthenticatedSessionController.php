@@ -33,6 +33,16 @@ class AuthenticatedSessionController extends Controller
 
         $user = Auth::user();
 
+        if($user->isBlocked()){
+            $msg = 'Usuario bloqueado. Razon: '. $user->block_reason . '. Para más información contante con soporte.';
+            
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            
+            redirect('/login')->with('error', $msg);
+        }
+
         if ($user->role === 'admin') {
             return redirect()->intended('/admin');
         }

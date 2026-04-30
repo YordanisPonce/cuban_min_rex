@@ -13,6 +13,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -43,6 +44,18 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('currentPlan.name')
                     ->label('Subscripción Activa'),
+                IconColumn::make('paypal_statys')->label('Bloqueado')
+                    ->icons([
+                        'heroicon-o-x-circle' => 'pending',
+                        'heroicon-o-check-circle' => 'verified',
+                    ])
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'verified',
+                    ])
+                    ->tooltip(fn($state) => $state === 'pending' ? 'No' : 'Si')
+                    ->default(fn($record) => $record->is_block === 1 ? 'verified' : 'pending')
+                    ->visible(fn() => auth()->user()->role === 'admin' || auth()->user()->role === 'developer'),
                 TextColumn::make('created_at')
                     ->label('Fecha de Creación')
                     ->dateTime()
@@ -107,6 +120,72 @@ class UsersTable
                     // Opcional: evita cerrar el modal si hay error de validación
                     ->closeModalByClickingAway(false),
                 /*                 DeleteAction::make()->label('Eliminar')->visible(fn() => auth()->user()?->role === 'admin'), */
+                Action::make('block')
+                    ->label('Bloquear')
+                    ->icon('heroicon-o-no-symbol')
+                    ->color('danger')
+                    ->visible(fn($record) => auth()->user()?->role === 'admin' && !$record->is_block)->requiresConfirmation()
+                    ->modalHeading('Bloquear cuenta')
+                    ->modalDescription('Antes de bloquear, escribe el motivo que se enviará al usuario por correo.')
+                    ->modalSubmitActionLabel('Bloquear y Enviar correo')
+                    ->modalCancelActionLabel('Cancelar')
+                    ->modalWidth('xl')->schema([
+                        TextInput::make('subject')
+                            ->label('Asunto del correo')
+                            ->required()
+                            ->maxLength(120)
+                            ->default('Tu cuenta ha sido bloqueada'),
+
+                        TextInput::make('message')
+                            ->label('Mensaje para el usuario')
+                            ->required()
+                            ->helperText('Este texto se enviará al correo del usuario.'),
+                    ])
+                    ->action(function (User $record, array $data) {
+                        // Evita auto-eliminarse (opcional)
+                        if (auth()->id() === $record->id) {
+                            Notification::make()
+                                ->title('Acción no permitida')
+                                ->body('No puedes bloquear tu propia cuenta.')
+                                ->danger()
+                                ->send();
+                            return;
+                        }
+
+                        $email = $record->email;
+                        $name = $record->name;
+
+                        try {
+
+                            Mail::to($email)->send(
+                                new \App\Mail\AccountDeletedMail(
+                                    userName: $name,
+                                    title: $data['subject'],
+                                    msg: $data['message'],
+                                )
+                            );
+
+                            $record->update([
+                                'is_block' => 1,
+                                'block_reason' => $data['message'],
+                            ]);
+
+                            Notification::make()
+                                ->title('Cuenta bloqueada')
+                                ->body('El usuario fue bloqueado, se envió el correo.')
+                                ->success()
+                                ->send();
+
+                        } catch (Throwable $e) {
+
+                            Notification::make()
+                                ->title('No se pudo bloquear')
+                                ->body('Ocurrió un error. No se bloqueo la cuenta. Detalle: ' . $e->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    })
+                    ->closeModalByClickingAway(false),
                 // ✅ DELETE PERSONALIZADO
                 Action::make('deleteWithEmail')
                     ->label('Eliminar')
@@ -186,6 +265,7 @@ class UsersTable
                         }
                     })
                     ->closeModalByClickingAway(false),
+                
             ])
             ->toolbarActions([
             ])

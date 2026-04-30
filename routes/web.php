@@ -38,7 +38,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login'); // mostrar login
-    Route::post('/login', [AuthenticatedSessionController::class, 'store']); // procesar login
+    Route::post('/login', [AuthenticatedSessionController::class, 'store'])->middleware(); // procesar login
     Route::get('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout-user'); // logout
 
     Route::get('/auth/callback/google', function () {

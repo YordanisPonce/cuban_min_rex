@@ -1,5 +1,8 @@
 <!doctype html>
-
+@php
+    $success = session('success');
+    $error = session('error');
+@endphp
 <html lang="en" class="layout-navbar-fixed layout-wide" dir="ltr" data-skin="default" data-bs-theme="dark" data-assets-path="{{ asset('assets/') }}" data-template="front-pages">
 <head>
     <meta charset="utf-8" />

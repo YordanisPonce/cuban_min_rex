@@ -43,6 +43,8 @@ class User extends Authenticatable implements FilamentUser
         'plan_start_at',
         'plan_expires_at',
         'bio',
+        'is_block',
+        'block_reason'
     ];
 
     /**
@@ -67,6 +69,10 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'downloadToken' => 'array',
         ];
+    }
+
+    function isBlocked(): bool {
+        return $this->is_block === 1;
     }
 
     // // === Filament ===
