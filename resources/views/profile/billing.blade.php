@@ -155,7 +155,7 @@
                     </div>
                     <div class="form-group">
                         <label>Email <span class="required">*</span></label>
-                        <input type="email" value="{{ $user->email }}" placeholder="tu@email.com" name="email">
+                        <input type="email" value="{{ $user->email }}" placeholder="tu@email.com" name="email" readonly>
                     </div>
                     <div class="form-group">
                         <label>Email PayPal</label>
