@@ -1,4 +1,5 @@
 @extends('layouts.app')
+
 @php
     use App\Enums\NumEnum;
     use App\Enums\SectionEnum;
@@ -51,9 +52,9 @@
     </style>
 @endpush
 
-@section('content')<!-- HERO -->
+@section('content')
     <div class="container" style="max-width:1300px; margin: 80px auto;">
-        <!-- HERO -->
+
         <div class="dj-hero">
             <img class="dj-hero-img" src="{{ $dj->cover ?? ($dj->photo ?? config('app.logo_alter')) }}" alt="DJ Cover">
             <div class="dj-hero-overlay"></div>
@@ -93,11 +94,10 @@
                 </div>
             </div>
         </div>
-
-        <!-- STATS -->
+        
         <div class="stats-row">
             <div class="stat-card">
-                <div class="stat-value">{{ NumEnum::letter_format($dj->files()->audios()->count()) }}</div>
+                <div class="stat-value">{{ NumEnum::letter_format($dj->files()->audios()->section(SectionEnum::MAIN->value)->count()) }}</div>
                 <div class="stat-label">Remixes</div>
             </div>
             <div class="stat-card">
@@ -141,14 +141,12 @@
                 </div>
             </div>
         @endif
-
-        <!-- TABS + REMIXES -->
+        
         <div class="tabs">
             <button class="tab-btn active" data-tab="remixes">TOP REMIXES</button>
             <button class="tab-btn" data-tab="playlists">TOP PLAYLISTS</button>
         </div>
-
-        <!-- REMIXES TAB -->
+        
         <div id="tab-remixes" class="tab-content">
             <table class="remix-table">
                 <thead>
@@ -218,8 +216,7 @@
                 @endif
             </div>
         </div>
-
-        <!-- PLAYLISTS TAB -->
+        
         <div id="tab-playlists" class="tab-content" style="display:none;">
             <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:1rem;"
                 id="playlistGrid">

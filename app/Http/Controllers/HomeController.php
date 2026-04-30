@@ -464,7 +464,7 @@ class HomeController extends Controller
 
     public function dj($name)
     {
-        $dj = User::where('users.name', 'like', str_replace('_', ' ', $name))->first();
+        $dj = User::where('name', 'like', str_replace('_', ' ', $name))->with('files')->first();
 
         $index = 1;
 
