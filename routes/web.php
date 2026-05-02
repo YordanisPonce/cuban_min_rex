@@ -95,8 +95,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/djs', [HomeController::class, 'djs'])->name('djs');
     Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
     Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
-    Route::get('/remixes/exclusives', [HomeController::class, 'exclusiveRemixes'])->name('remixes.exclusives');
-    Route::get('/videos/exclusives', [HomeController::class, 'exclusiveVideos'])->name('videos.exclusives');
+    Route::get('/exclusives', [HomeController::class, 'exclusives'])->name('exclusives');
     Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
 
     Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
@@ -151,7 +150,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     })->where('path', '.*')->name('public.files.download');
 
 
-    Route::get('/playlists', [PlayListController::class, 'index'])->name('playlist.index');
+    Route::get('/playlists', [PlayListController::class, 'folders'])->name('playlist.index');
     Route::get('/playlists/lists', [PlayListController::class, 'list'])->name('playlist.list');
     Route::get('/playlists/lists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
     Route::get('/playlists/lists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');
@@ -188,8 +187,6 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
         return response(null, 404);
     });
-
-    Route::get('/playlists/genres/', [PlayListController::class, 'folders'])->name('folders');
 
     // Rutas para textos legales
     Route::get('/legal', [HomeController::class, 'legal'])->name('legal');

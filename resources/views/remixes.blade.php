@@ -92,7 +92,7 @@
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
             <h2><i class="fas fa-lock"></i> <em>EXCLUSIVOS</em>  DE LA SEMANA</h2>
             @if ($exclusives->count() > 0)
-                <a class="btn btn-outline" href="{{ route('remixes.exclusives') }}">VER TODOS <i class="fas fa-angles-right"></i></a>
+                <a class="btn btn-outline" href="{{ route('exclusives') }}">VER TODOS <i class="fas fa-angles-right"></i></a>
             @endif
         </div>
         <div id="exclusives-list">
@@ -115,7 +115,7 @@
                 <div style="text-align:center;padding:4rem 1rem;color:var(--fg-muted);">
                     <i class="fa-solid fa-face-grin-beam-sweat" style="font-size:3rem;margin-bottom:1rem;"></i>
                     <div style="font-size:1.25rem;font-weight:600;margin-bottom:1rem;">Sin exclusivos esta semana</div>
-                    <a class="btn btn-outline" href="{{ route('remixes.exclusives') }}">VER TODOS <i class="fas fa-angles-right"></i></a>
+                    <a class="btn btn-outline" href="{{ route('exclusives') }}">VER TODOS <i class="fas fa-angles-right"></i></a>
                 </div>
             @endif
         </div>

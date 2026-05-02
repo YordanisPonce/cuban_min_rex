@@ -606,15 +606,14 @@ class HomeController extends Controller
         return view('remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives', 'banners'));
     }
 
-    public function exclusiveRemixes(Request $request)
+    public function exclusives(Request $request)
     {
         $title = request()->get('title');
         $genre = request()->get('genre');
         $bpm = request()->get('bpm');
         $dj = request()->get('dj');
 
-        $tracks = File::audios()
-            ->where('status', 'active')
+        $tracks = File::where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
 
@@ -641,6 +640,11 @@ class HomeController extends Controller
         $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         $tracks->getCollection()->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
                 'id' => (string) $file->id,
                 'date' => $file->created_at,
@@ -648,6 +652,7 @@ class HomeController extends Controller
                 'type' => 'Intro',
                 'title' => $file->name,
                 'badge' => null,
+                'flag' => $flag,
                 'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note ?? '7A',
@@ -696,104 +701,9 @@ class HomeController extends Controller
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
 
-        $index = 2;
+        $index = 8;
 
-        return view('exclusive-remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'banners'));
-    }
-
-    public function exclusiveVideos(Request $request)
-    {
-        $title = request()->get('title');
-        $genre = request()->get('genre');
-        $bpm = request()->get('bpm');
-        $dj = request()->get('dj');
-
-        $tracks = File::videos()
-            ->where('status', 'active')
-            ->where('isExclusive', true)
-            ->whereJsonContains('sections', SectionEnum::MAIN->value);
-
-        if($title) {
-            $tracks = $tracks->where('name',  'like', '%' . $title . '%');
-        }
-
-        if($dj){
-            $tracks = $tracks->whereHas('user',  function($q) use ($dj) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $dj) . '%');
-            });
-        }
-
-        if($genre){
-            $tracks = $tracks->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            });
-        }
-
-        if($bpm){
-            $tracks = $tracks->where('bpm', 'like', '%'.$bpm.'%');
-        }
-
-        $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-        $tracks->getCollection()->transform(function ($file) {
-            return [
-                'id' => (string) $file->id,
-                'date' => $file->created_at,
-                'artist' => $file->user?->name ?? 'Desconocido',
-                'type' => 'Intro',
-                'title' => $file->name,
-                'badge' => null,
-                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
-                'bpm' => $file->bpm,
-                'key' => $file->musical_note ?? '7A',
-                'duration' => 120,
-                'genre' => $file->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
-                'price' => $file->price,
-                'url' => Storage::disk('s3')->url($file->file),
-                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
-                'downloads' => $file->sales->count(),
-                'canDownload' => false,
-                'downloadLink' => null,
-                'addToCart' => route('file.add.cart', $file->id),
-            ];
-        });
-
-        $djs = User::whereHas('files', function($q){
-            $q->videos()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->where('isExclusive', true);
-        })->get();
-
-        $genres = Category::whereHas('files', function($q){
-            $q->videos()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->where('isExclusive', true);
-        })->orderBy('name')->get();
-
-        $bpms = File::videos()->where('status', 'active')
-            ->where('isExclusive', true)
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->groupBy('bpm')
-            ->orderBy('bpm')
-            ->get('bpm');
-
-        $banners = Banner::where('active', true)->pluck('path');
-
-        if($banners->count() > 0) 
-        {
-            $banners = $banners->toArray();
-
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
-
-        } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
-        }
-
-        $index = 3;
-
-        return view('exclusive-videos', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'banners'));
+        return view('exclusives', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'banners'));
     }
 
     public function videos(Request $request)

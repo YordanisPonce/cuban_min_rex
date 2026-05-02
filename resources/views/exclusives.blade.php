@@ -6,10 +6,86 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', 'Remixes - ' . config('app.name'))
+@section('title', 'Contenido Exclusivo - ' . config('app.name'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/remixes.css') }}" />
+    <style>
+        .bottom-player.video{
+            width: 500px;
+            height: 500px;
+            bottom: 20px;
+            right: 20px;
+            left: auto;
+            border: 0.5px solid var(--primary);
+            padding: 0;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 700px){
+            .bottom-player.video{
+                width: 300px;
+                height: 300px;
+            }
+        }
+
+        .bottom-player.video .player-inner{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            gap: 5px;
+
+            & .video-player{
+                width: 100%;
+                height: 100%;
+
+                & .plyr{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            & .player-controls{
+                width: 100%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                & .waveform{
+                    width: 100%;
+                    height: auto;
+                    min-height: 30px;
+                }
+
+                & .main-play{
+                    width: 30px;
+                    height: 30px;
+
+                    &:hover{
+                        color: var(--text-muted)
+                    }
+                }
+            }
+
+            & .player-track{
+                display: grid;
+                width:100%;
+                position: relative;
+                gap: 10px;
+                grid-template-columns: 40px 1fr;
+                padding-right: 15px;
+
+                & .close{
+                    position: absolute;
+                    top: 10px;
+                    right: 0;
+                }
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -73,7 +149,7 @@
     <!-- Tracks -->
     <div class="tracks-container" id="tracks-list" data-aos="fade-up" data-aos-delay="300">
         @foreach ($tracks as $track)
-            @include('partials.remix-card', ['item' => $track])
+            @include('partials.exclusives-card', ['item' => $track])
         @endforeach
     </div>
 
@@ -87,18 +163,37 @@
         {{ $tracks->onEachSide(1)->links() }}
     </div>
     @include('partials.bottom-player')
+    <div class="bottom-player video container" id="video-player">
+        <div class="player-inner">
+            <div class="player-track">
+                <img id="video-player-img" src="" alt="">
+                <div class="track-info">
+                    <div class="track-title" id="video-player-title">Nombre del Video</div>
+                    <div class="track-artist" id="video-player-artist">Autor</div>
+                </div>
+                <div class="close">
+                    <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>
+                </div>
+            </div>
+            <div class="video-player">
+                <video style="width: 100%; height: 100%" poster="{{ config('app.logo') }}" id="plyr-video-player" playsinline controls></video>
+            </div>
+        </div>
+    </div>
     <div style="height:80px"></div>
 @endsection
 
 @push('scripts')
     <script>
         const audioPlayer = document.getElementById('plyr-audio-player');
+        const videoPlayer = document.getElementById('plyr-video-player');
 
         // ===== PLAYER STATE =====
         let currentTrack = null;
         let isPlaying = false;
         let currentTime = 0;
         let duration = 0;
+        let isVideo = false;
         let timerInterval = null;
 
         function cleanCards() {
@@ -110,30 +205,52 @@
 
         function closePlayer() {
             const player = document.getElementById('bottom-player');
+            const player2 = document.getElementById('video-player');
             player.classList.remove('active');
+            player2.classList.remove('active');
             cleanCards();
             isPlaying = false;
             audioPlayer.pause();
+            videoPlayer.pause();
             currentTrack = null;
         }
 
         function updatePlayerUI() {
-            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            if(isPlaying){
+                if (isVideo) {
+                    videoPlayer.play();
+                    audioPlayer.pause();
+                } else {
+                    audioPlayer.play();
+                    videoPlayer.pause();
+                }
+            } else {
+                audioPlayer.pause();
+                videoPlayer.pause();
+            }
             const el = document.getElementById('bottom-player');
+            const elv = document.getElementById('video-player');
             if (!currentTrack) {
                 el.classList.remove('active');
-                document.querySelectorAll('.track-card').forEach(card => {
+                elv.classList.remove('active');
+                document.querySelectorAll('.remix-card').forEach(card => {
                     const wf = card.querySelector('.waveform');
                     wf.classList.remove('playing');
                 });
                 return
             }
-            el.classList.add('active');
             let trackData = document.getElementById(currentTrack);
-            document.getElementById('player-img').src = trackData.querySelector('img').src;
-            document.getElementById('player-title').textContent = trackData.querySelector('.track-title').textContent;
-            document.getElementById('player-artist').textContent = trackData.querySelector('.track-artist').textContent;
-            // Update mini-player buttons
+            if (isVideo) {
+                elv.classList.add('active');
+                document.getElementById('video-player-img').src = trackData.querySelector('img').src;
+                document.getElementById('video-player-title').textContent = trackData.querySelector('.track-title').textContent;
+                document.getElementById('video-player-artist').textContent = trackData.querySelector('.track-artist').textContent;
+            } else {
+                el.classList.add('active');
+                document.getElementById('player-img').src = trackData.querySelector('img').src;
+                document.getElementById('player-title').textContent = trackData.querySelector('.track-title').textContent;
+                document.getElementById('player-artist').textContent = trackData.querySelector('.track-artist').textContent;
+            }
             document.querySelectorAll('.track-card').forEach(card => {
                 const id = card.id;
                 const icon = card.querySelector('.play-btn i');
@@ -164,17 +281,46 @@
         function playTrack(id, url) {
             setLoader(id);
 
-            audio = new Audio(url);
+            audio = new Audio(/*url*/"http://localhost/demo-remixes.mp4");
+
+            if (isVideo) {
+                audio = document.createElement('video');
+                audio.src = /*url*/"http://localhost/demo-remixes.mp4";
+            }
 
             audio.addEventListener("canplaythrough", () => {
-                audioPlayer.src = audio.src;
-                audioPlayer.play();
+                if (isVideo) {
+                    videoPlayer.src = audio.src;
+                    videoPlayer.play();
+                } else {
+                    isVideo = false;
+                    audioPlayer.src = audio.src;
+                    audioPlayer.play();
+                }
+            });
+
+            videoPlayer.addEventListener("play", () => {
+                currentTrack = id;
+                currentTime = 0;
+                duration = 0;
+                isPlaying = true;
+                updatePlayerUI();
+            });
+
+            videoPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+
+            videoPlayer.addEventListener("ended", () => {
+                isPlaying = false;
+                updatePlayerUI();
             });
 
             audioPlayer.addEventListener("play", () => {
                 currentTrack = id;
                 currentTime = 0;
-                duration = 120;
+                duration = 0;
                 isPlaying = true;
                 updatePlayerUI();
             });
@@ -194,20 +340,34 @@
             if (!currentTrack) return;
             isPlaying = !isPlaying;
             if (isPlaying) {
-                audioPlayer.play();
+                if (isVideo) {
+                    videoPlayer.play();
+                    audioPlayer.pause();
+                } else {
+                    audioPlayer.play();
+                    videoPlayer.pause();
+                }
             } else {
                 audioPlayer.pause();
+                videoPlayer.pause();
             }
             updatePlayerUI();
         }
 
         function handlePlay(id) {
+            closePlayer();
             if (currentTrack && currentTrack === id) {
                 togglePlay();
                 return
             }
             cleanCards();
             let url = document.getElementById(`${id}`).dataset.intro;
+            let flag = document.getElementById(`${id}`).dataset.flag;
+            if (flag  == 'video') {
+                isVideo = true;
+            } else {
+                isVideo = false;
+            }
             playTrack(id, url);
         }
     </script>

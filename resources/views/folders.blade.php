@@ -53,7 +53,7 @@
         @if ($folders->count() === 0)
             <div class="empty">
                 <span><i class="fas fa-close"></i></span>
-                <h3>No se han enontrado <span class="text-primary">CARPETAS</span> que cumplan con los filtros</h3>
+                <h3>No se han enontrado <span class="text-primary">PLAYLISTS</span> que cumplan con los filtros</h3>
             </div>
         @endif
         {{ $folders->onEachSide(1)->links() }}

@@ -1,5 +1,8 @@
 @php
     use App\Models\Cart;
+    if (!isset($index)) {
+        $index = 9999;
+    }
 @endphp
 
 <nav class="nav" id="navBar">
@@ -13,6 +16,7 @@
             <li><a href="{{ route('djs') }}" class="{{$index===1 ? 'active' : ''}}">DJS</a></li>
             <li><a href="{{ route('remixes') }}" class="{{$index===2 ? 'active' : ''}}">REMIXES</a></li>
             <li><a href="{{ route('videos') }}" class="{{$index===3 ? 'active' : ''}}">VIDEOS</a></li>
+            <li><a href="{{ route('exclusives') }}" class="{{$index===8 ? 'active' : ''}}">EXCLUSIVOS</a></li>
             <li><a href="{{ route('playlist.index') }}" class="{{$index===4 ? 'active' : ''}}">PLAYLISTS</a></li>
             <li><a href="{{ route('collection.index') }}" class="{{$index===5 ? 'active' : ''}}">PACKS</a></li>
             <li><a href="{{ route('radio') }}" class="{{$index===6 ? 'active' : ''}}">EMISORA</a></li>
@@ -42,6 +46,7 @@
             <li><a href="{{ route('djs') }}" class="{{$index===1 ? 'active' : ''}}">DJS</a></li>
             <li><a href="{{ route('remixes') }}" class="{{$index===2 ? 'active' : ''}}">REMIXES</a></li>
             <li><a href="{{ route('videos') }}" class="{{$index===3 ? 'active' : ''}}">VIDEOS</a></li>
+            <li><a href="{{ route('exclusives') }}" class="{{$index===8 ? 'active' : ''}}">EXCLUSIVOS</a></li>
             <li><a href="{{ route('playlist.index') }}" class="{{$index===4 ? 'active' : ''}}">PLAYLISTS</a></li>
             <li><a href="{{ route('collection.index') }}" class="{{$index===5 ? 'active' : ''}}">PACKS</a></li>
             <li><a href="{{ route('radio') }}" class="{{$index===6 ? 'active' : ''}}">EMISORA</a></li>

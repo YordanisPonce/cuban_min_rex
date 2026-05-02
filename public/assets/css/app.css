@@ -2157,7 +2157,8 @@ body>.skiptranslate>iframe {
     font-size: 3.2rem;
     font-weight: 900;
     line-height: 1.1;
-    margin-bottom: 16px
+    margin-bottom: 16px;
+    visibility: hidden;
 }
 
 .hero h1 .accent {
@@ -2335,7 +2336,7 @@ body>.skiptranslate>iframe {
     }
 
     .nav.active {
-        height: 420px;
+        height: 460px;
     }
 
     .nav-links {
