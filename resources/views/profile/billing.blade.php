@@ -92,7 +92,8 @@
 @endpush
 
 @section('content')
-    <div class="page-container" style="margin-top: 50px;">
+    <form id="form" class="page-container" style="margin-top: 50px;" action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+        @csrf
         <!-- Header -->
         <div class="page-header">
             <div>
@@ -100,7 +101,7 @@
                 <h1>Editar Perfil</h1>
             </div>
             <div>
-                <button id="save" class="btn btn-primary" onclick="saveChanges()"><i class="fas fa-save"></i> Guardar cambios</button>
+                <button id="save" class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar cambios</button>
             </div>
         </div>
 
@@ -120,8 +121,8 @@
                 <h3>{{ $user->name }}</h3>
                 <p>Miembro desde {{ Carbon::parse($user->created_at)->format('M \d\e Y') }}</p>
                 <div class="avatar-actions">
-                    <button class="btn btn-primary" onclick="changeCover()"><i class="fas fa-image"></i> Cambiar
-                        Portada</button>
+                    <a class="btn btn-primary" onclick="changeCover()" role="button"><i class="fas fa-image"></i> Cambiar
+                        Portada</a>
                     <a class="btn btn-outline" href="{{ route('profile.restorePhoto') }}"
                         onclick="return confirm('¿Estás seguro de que quieres eliminar tu foto?');">Eliminar</a>
                 </div>
@@ -131,15 +132,15 @@
         <!-- Tabs -->
         <div class="tabs-container">
             <div class="tabs-nav">
-                <button class="tab-btn active" data-tab="personal">
+                <a class="tab-btn active" data-tab="personal" role="button">
                     <i class="fas fa-user"></i>&nbsp; Personal
-                </button>
-                <button class="tab-btn" data-tab="social">
+                </a>
+                <a class="tab-btn" data-tab="social" role="button">
                     <i class="fas fa-share-alt"></i>&nbsp; Redes Sociales
-                </button>
-                <button class="tab-btn" data-tab="seguridad">
+                </a>
+                <a class="tab-btn" data-tab="seguridad" role="button">
                     <i class="fas fa-shield-alt"></i>&nbsp; Seguridad
-                </button>
+                </a>
             </div>
         </div>
 
@@ -270,7 +271,7 @@
             </div>
             --}}
         </div>
-    </div>
+    </form>
 @endsection
 
 @push('scripts')
@@ -339,7 +340,7 @@
                 })
                 .then(response => {
                     if (response.redirected) {
-                        window.location.href = response.url;
+                        window.redirect = response.url;
                     }
                 })
                 .catch(error => console.error('Error:', error));
@@ -373,6 +374,11 @@
                 }
                 reader.readAsDataURL(file);
             }
+        });
+
+        document.getElementById('form').addEventListener('submit', function(e) {
+            //e.preventDefault();
+            document.getElementById('wloader').style.display = 'flex';
         });
     </script>
     @isset($error)
