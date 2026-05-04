@@ -7,6 +7,7 @@ namespace App\Filament\Resources\Users\Tables;
 
 use App\Mail\AccountDeletedMail;
 use App\Models\User;
+use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
@@ -42,9 +43,23 @@ class UsersTable
                     ->label('Confirmación del Correo')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('currentPlan.name')
-                    ->label('Subscripción Activa'),
-                IconColumn::make('paypal_statys')->label('Bloqueado')
+                TextColumn::make('suscription')
+                    ->label('Subscripción Activa')
+                    ->default(fn(User $record) => $record->hasActivePlan() ? $record->currentPlan->name : 'Sin Plan Activo'),
+                TextColumn::make('currentDownloads')
+                    ->label('Descargas')
+                    ->alignCenter()
+                    ->default(function(User $record){
+                        if ($record->hasActivePlan()) {
+                            if ($record->plan_start_at) {
+                                return $record->get_current_plan_consume_downloads() . ' / ' . $record->currentPlan->downloads;
+                            }
+                            return 'Ilimitadas';
+                        }
+                        return 'Sin Plan Activo';
+                    }),
+                IconColumn::make('block_status')->label('Bloqueado')
+                    ->alignCenter()
                     ->icons([
                         'heroicon-o-x-circle' => 'pending',
                         'heroicon-o-check-circle' => 'verified',
@@ -71,7 +86,7 @@ class UsersTable
                 Filter::make('current_plan_id')
                     ->label('Subscripción activa')
                     ->toggle()
-                    ->query(fn(Builder $query): Builder => $query->whereNot('current_plan_id', null)),
+                    ->query(fn(Builder $query): Builder => $query->whereNotNull('current_plan_id')->where('plan_expires_at', '>', Carbon::now())),
             ])->filtersTriggerAction(
                 fn(Action $action) => $action
                     ->button()
