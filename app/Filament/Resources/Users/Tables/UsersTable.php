@@ -57,7 +57,8 @@ class UsersTable
                             return 'Ilimitadas';
                         }
                         return 'Sin Plan Activo';
-                    }),
+                    })
+                    ->visible(fn() => auth()->user()->role === 'admin' || auth()->user()->role === 'developer'),
                 IconColumn::make('block_status')->label('Bloqueado')
                     ->alignCenter()
                     ->icons([
