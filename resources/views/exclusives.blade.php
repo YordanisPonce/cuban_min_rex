@@ -281,11 +281,11 @@
         function playTrack(id, url) {
             setLoader(id);
 
-            audio = new Audio(/*url*/"http://localhost/demo-remixes.mp4");
+            audio = new Audio(url);
 
             if (isVideo) {
                 audio = document.createElement('video');
-                audio.src = /*url*/"http://localhost/demo-remixes.mp4";
+                audio.src = url;
             }
 
             audio.addEventListener("canplaythrough", () => {
