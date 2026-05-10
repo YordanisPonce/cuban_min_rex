@@ -126,7 +126,7 @@ class HomeController extends Controller
         $exclusives = File::where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->take(5)->get();
+            ->orderBy('created_at', 'desc')->take(5)->get();
 
         $exclusives->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
