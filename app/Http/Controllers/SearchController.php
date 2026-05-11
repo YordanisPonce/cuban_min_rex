@@ -30,7 +30,7 @@ class SearchController extends Controller
                 'artist' => $e->user?->name ?? 'Desconocido',
                 'img' => $e->getPosterUrl() ?? $e->user?->photo ?? config('app.logo'),
                 'dj_logo' => $e->user?->photo ?? config('app.logo'),
-                'url' => route('remixes', ['title' => $e->name]),
+                'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('remixes', ['title' => $e->name]),
             ];
         });
 
@@ -44,7 +44,7 @@ class SearchController extends Controller
                 'artist' => $e->user->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
-                'url' => route('videos', ['title' => $e->name]),
+                'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('videos', ['title' => $e->name]),
             ];
         });
 
@@ -58,7 +58,7 @@ class SearchController extends Controller
                 'artist' => $e->user->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
-                'url' => route('collection.index', ['title' => $e->name]),
+                'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('collection.index', ['title' => $e->name]),
             ];
         });
 
