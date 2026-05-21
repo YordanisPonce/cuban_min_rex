@@ -13,6 +13,9 @@ class Download extends Model
         'liquidated',
         'play_list_id',
         'play_list_item_id',
+        'amount',
+        'user_amount',
+        'admin_amount'
     ];
 
     

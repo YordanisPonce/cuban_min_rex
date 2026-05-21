@@ -67,6 +67,7 @@ class Plan extends Model
     {
         return number_format($this->price, 2);
     }
+
     protected function image(): Attribute
     {
 
@@ -77,4 +78,7 @@ class Plan extends Model
         );
     }
 
+    public function price_by_downloads(): float {
+        return $this->price / $this->downloads;
+    }
 }

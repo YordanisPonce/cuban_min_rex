@@ -81,6 +81,9 @@ class FileController extends Controller
                         $download = new Download();
                         $download->user_id = auth()->user()->id;
                         $download->file_id = $file->id;
+                        $download->amount = auth()->user()->downloads_cost();
+                        $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                        $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
                         $download->save();
                         $ext = pathinfo($path, PATHINFO_EXTENSION);
                         $downloadName = "$file->name.$ext";
@@ -102,7 +105,11 @@ class FileController extends Controller
                         $download = new Download();
                         $download->user_id = auth()->user()->id;
                         $download->file_id = $file->id;
+                        $download->amount = auth()->user()->downloads_cost();
+                        $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                        $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
                         $download->save();
+
                         $ext = pathinfo($path, PATHINFO_EXTENSION);
                         $downloadName = "$file->name.$ext";
                         return Storage::disk('s3')->download($path, $downloadName);

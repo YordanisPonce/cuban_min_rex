@@ -837,4 +837,46 @@ class User extends Authenticatable implements FilamentUser
 
         return $subscriptions + $sales;
     }
+
+    /**
+     * Get the user current cost by downloads
+     */
+    public function downloads_cost() : float {
+        if ($this->hasActivePlan()) {
+            if($this->plan_start_at){
+                if ($this->current_plan_id) {
+                    $plan = Plan::find($this->current_plan_id);
+                    if($plan){
+                        return $plan->price_by_downloads();
+                    }
+                } else {
+                    $lasted_suscription = Order::where('user_id', $this->id)->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first();
+                    if ($lasted_suscription) {
+                        $lasted_plan_id = $lasted_suscription->plan_id;
+                        $lasted_plan = Plan::find($lasted_plan_id);
+                        if($lasted_plan){
+                            return $lasted_plan->price_by_downloads();
+                        }
+                    }
+                }
+            } else {
+                if ($this->current_plan_id) {
+                    $plan = Plan::find($this->current_plan_id);
+                    if($plan){
+                        return $plan->price / 100;
+                    }
+                } else {
+                    $lasted_suscription = Order::where('user_id', $this->id)->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first();
+                    if ($lasted_suscription) {
+                        $lasted_plan_id = $lasted_suscription->plan_id;
+                        $lasted_plan = Plan::find($lasted_plan_id);
+                        if($lasted_plan){
+                            return $lasted_plan->price / 100;
+                        }
+                    }
+                }
+            }
+        }
+        return 0;
+    }
 }
