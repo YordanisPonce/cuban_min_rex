@@ -37,6 +37,15 @@
             gap: 20px;
         }
     </style>
+    @if($playlist->canBeDownload())
+    <style>
+        @media(min-width: 800px){
+            .track-row, .track-header{
+                grid-template-columns: 40px 1fr 100px 100px 130px;
+            }
+        }
+    </style>
+    @endif
 @endpush
 
 @section('content')
@@ -60,7 +69,7 @@
                     <button class="btn-secondary" onclick="playRandom()"><i class="fas fa-random"></i> Aleatorio</button>
                     @if ($playlist->canBeDownload())
                         <a class="btn-secondary" href="{{ route('playlist.download', $playlist->name) }}"><i
-                                class="fas fa-cart-plus"></i> Descargar Completa</a>
+                                class="fas fa-download"></i> Descargar Completa</a>
                     @else 
                         <a class="btn-secondary" href="{{ route('playlist.add.cart', $playlist->name) }}"><i
                                 class="fas fa-cart-plus"></i> Comprar Todo – ${{ $playlist->price }}</a>
@@ -94,12 +103,21 @@
 
         const tl = document.getElementById('trackList');
         tracks.forEach((t, i) => {
-            tl.innerHTML += `<div class="track-row" id="${t.id}">
-    <div style="position:relative;text-align:center;"><span class="track-num">${i + 1}</span><div class="track-play-icon" onclick="handleCardPlay(${t.id})"><i class="fas fa-play"></i></div></div>
-    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title">${t.title}</div><div class="track-artist">${t.artist}</div></div></div>
-    <div class="track-downloads"><i class="fas fa-download" style="margin-right:3px;font-size:.65rem;"></i>${t.downloads}</div>
-    <div class="track-price">${t.price}</div><div><a class="btn-secondary add-to-cart" href="${t.addToCart}"><i class="fas fa-cart-plus"></i> <span>Añadir</span></a></div>
-  </div>`;
+            if(t.canDownload){
+                tl.innerHTML += `<div class="track-row" id="${t.id}">
+                    <div style="position:relative;text-align:center;"><span class="track-num">${i + 1}</span><div class="track-play-icon" onclick="handleCardPlay(${t.id})"><i class="fas fa-play"></i></div></div>
+                    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title">${t.title}</div><div class="track-artist">${t.artist}</div></div></div>
+                    <div class="track-downloads"><i class="fas fa-download" style="margin-right:3px;font-size:.65rem;"></i>${t.downloads}</div>
+                    <div class="track-price">${t.price}</div><div><a class="btn-secondary add-to-cart" href="${t.downloadLink}"><i class="fas fa-download"></i> <span>Descargar</span></a></div>
+                </div>`;
+            } else {
+                tl.innerHTML += `<div class="track-row" id="${t.id}">
+                    <div style="position:relative;text-align:center;"><span class="track-num">${i + 1}</span><div class="track-play-icon" onclick="handleCardPlay(${t.id})"><i class="fas fa-play"></i></div></div>
+                    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title">${t.title}</div><div class="track-artist">${t.artist}</div></div></div>
+                    <div class="track-downloads"><i class="fas fa-download" style="margin-right:3px;font-size:.65rem;"></i>${t.downloads}</div>
+                    <div class="track-price">${t.price}</div><div><a class="btn-secondary add-to-cart" href="${t.addToCart}"><i class="fas fa-cart-plus"></i> <span>Añadir</span></a></div>
+                </div>`;
+            }
         });
 
         const similar = @json($similar);
