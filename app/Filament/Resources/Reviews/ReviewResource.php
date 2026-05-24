@@ -28,7 +28,7 @@ class ReviewResource extends Resource
 
     public static function canAccess(): bool
     {
-        return auth()->user()->role != 'developer';
+        return true;
     }
 
     public static function form(Schema $schema): Schema
@@ -77,6 +77,6 @@ class ReviewResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return auth()->user()->role === 'admin' ? parent::getEloquentQuery() : parent::getEloquentQuery()->where('dj_id', auth()->user()->id);
+        return auth()->user()->role === 'admin' || auth()->user()->role === 'developer' ? parent::getEloquentQuery() : parent::getEloquentQuery()->where('dj_id', auth()->user()->id);
     }
 }

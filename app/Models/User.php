@@ -694,6 +694,118 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
+     * Get the number of Sales
+     */
+    function totalSalesCount() : int {
+        /*
+        |--------------------------------------------------------------------------
+        | VENTAS PENDIENTES DEL DJ
+        |--------------------------------------------------------------------------
+        |
+        | Sale tiene file_id, play_list_id y play_list_item_id igual que Download.
+        | Debemos unir correctamente para saber si el elemento pertenece al DJ.
+        */
+        $sales = Sale::query()
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->selectRaw("
+                COUNT(DISTINCT 
+                    COALESCE(sales.file_id, sales.play_list_id, sales.play_list_item_id),
+                    CASE
+                        WHEN sales.file_id IS NOT NULL THEN 'file'
+                        WHEN sales.play_list_id IS NOT NULL THEN 'playlist'
+                        WHEN sales.play_list_item_id IS NOT NULL THEN 'playlist_item'
+                    END
+                ) AS cnt
+            ")
+            ->value('cnt');
+
+        return $sales;
+    }
+
+    /**
+     * Get the number of Download
+     */
+    function totalDownloadsCount() : int {
+        $downloads = Download::query()
+            ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->selectRaw("
+                COUNT(DISTINCT 
+                    COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
+                    CASE
+                        WHEN downloads.file_id IS NOT NULL THEN 'file'
+                        WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
+                        WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
+                    END
+                ) AS cnt
+            ")
+            ->value('cnt');
+
+        return $downloads;
+    }
+
+    /**
+     * Get the amount of Sales
+     */
+    function totalSalesAmount() : int {
+        /*
+        |--------------------------------------------------------------------------
+        | VENTAS PENDIENTES DEL DJ
+        |--------------------------------------------------------------------------
+        |
+        | Sale tiene file_id, play_list_id y play_list_item_id igual que Download.
+        | Debemos unir correctamente para saber si el elemento pertenece al DJ.
+        */
+        $sales = Sale::query()
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.user_amount');
+
+        return $sales;
+    }
+
+    /**
+     * Get the amount of Download
+     */
+    function totalDownloadsAmount() : int {
+        $downloads = Download::query()
+            ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('downloads.user_amount');
+
+        return $downloads;
+    }
+
+    /**
      * Get the number of Pending Sales
      */
     function pendingSalesCount() : int {
@@ -729,6 +841,61 @@ class User extends Authenticatable implements FilamentUser
             ->value('cnt');
 
         return $sales;
+    }
+
+    /**
+     * Get the amount of Pending Sales
+     */
+    function pendingSalesAmount() : int {
+        /*
+        |--------------------------------------------------------------------------
+        | VENTAS PENDIENTES DEL DJ
+        |--------------------------------------------------------------------------
+        |
+        | Sale tiene file_id, play_list_id y play_list_item_id igual que Download.
+        | Debemos unir correctamente para saber si el elemento pertenece al DJ.
+        */
+        $sales = Sale::query()
+            ->where('sales.status', 'pending')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.user_amount');
+
+        return $sales;
+    }
+    
+    /**
+     * Get the amount of Downloads without liquidated
+     */
+    function pendingDownloadsAmount() : int {
+        /*
+        |--------------------------------------------------------------------------
+        | DESCARGAS PENDIENTES DEL DJ
+        |--------------------------------------------------------------------------
+        |
+        | Igual que antes, pero usando Download.
+        */
+        $downloads = Download::query()
+            ->where('downloads.liquidated', false)
+            ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('downloads.user_amount');
+
+        return $downloads;
     }
 
     /**
