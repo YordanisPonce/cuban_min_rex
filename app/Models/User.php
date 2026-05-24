@@ -948,7 +948,6 @@ class User extends Authenticatable implements FilamentUser
         return $sales + $downloads;
     }
 
-
     /**
      * Get the Pending Sales Query
      * 

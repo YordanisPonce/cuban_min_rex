@@ -15,7 +15,9 @@ class Download extends Model
         'play_list_item_id',
         'amount',
         'user_amount',
-        'admin_amount'
+        'admin_amount',
+        'customer_email',
+        'customer_phone',
     ];
 
     

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Banner;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Download;
@@ -119,6 +120,55 @@ class FileController extends Controller
             }
         }
         return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
+    }
+
+    public function getFree(string $id)
+    {
+        $file = File::find($id);
+        if (!$file || $file->price > 0) {
+            abort(403);
+        }
+
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
+        return view('freedownload', ['file' => $file, 'banners' => $banners]);
+    }
+
+    public function downloadFree(Request $request)
+    {
+        $id = $request->input('file_id');
+        $file = File::find($id);
+        if (!$file || $file->price > 0) {
+            abort(403);
+        }
+
+        $path = $file->original_file;
+        if (!Storage::disk('s3')->exists($path)) {
+            abort(404);
+        }
+
+        $download = new Download();
+        $download->user_id = auth()->check() ? auth()->user()->id : null;
+        $download->file_id = $file->id;
+        $download->customer_email = $request->input('email');
+        $download->customer_phone = $request->input('phone');
+        $download->save();
+
+        $ext = pathinfo($path, PATHINFO_EXTENSION);
+        $downloadName = "$file->name.$ext";
+        return Storage::disk('s3')->download($path, $downloadName);
     }
 
     public function pay()

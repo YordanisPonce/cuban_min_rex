@@ -163,4 +163,22 @@ class File extends Model
         $cartItem = $cart->cart_items()->where('file_id', $this->id)->first();
         return $cartItem !== null;
     }
+
+    public function getExtension()
+    {
+        return pathinfo($this->original_file, PATHINFO_EXTENSION);
+    }
+
+    public function getSize(){
+        $size = Storage::disk('s3')->size($this->file);
+        if ($size >= 1073741824) {
+            return number_format($size / 1073741824, 2) . ' GB';
+        } elseif ($size >= 1048576) {
+            return number_format($size / 1048576, 2) . ' MB';
+        } elseif ($size >= 1024) {
+            return number_format($size / 1024, 2) . ' KB';
+        } else {
+            return $size . ' B';
+        }
+    }
 }

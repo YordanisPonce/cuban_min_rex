@@ -235,6 +235,9 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     Route::get('/search', [SearchController::class, 'search'])->name('search');
 
+    Route::get('/download/{file}/free', [FileController::class, 'getFree'])->name('file.free.download');
+    Route::post('/download/{file}/free', [FileController::class, 'downloadFree'])->name('file.free.download.post');
+
     require __DIR__ . '/auth.php';
 });
 

@@ -31,15 +31,25 @@
         <div class="track-price">
             <div class="track-actions" style="color: var(--fg-muted); font-size: 0.8rem;">
                 @if (!$item['canDownload'])
-                    <span>{{ $item['price'] }} USD</span>@if ($cup_aviable)<span>{{ $item['price'] * $setting->currency_convertion_rate }} CUP</span>@endif
+                    @if ($item['price'] != 0)
+                        <span>{{ $item['price'] }} USD</span>
+                        @if ($cup_aviable)
+                            <span>{{ $item['price'] * $setting->currency_convertion_rate }} CUP</span>
+                        @endif
+                    @endif
                 @endif
             </div>
             <div class="track-bottom-actions">
-                <a href="{{ $item['usd_pay'] }}" class="btn btn-outline" title="PAGO USD"><i
-                        class="ti tabler-shopping-cart-plus"></i> USD</a>
-                @if ($cup_aviable)
-                    <a href="{{ $item['cup_pay'] }}" class="btn btn-outline" title="PAGO CUP"><i
-                            class="ti tabler-credit-card"></i> CUP</a>
+                @if ($item['price'] == 0)
+                    <a href="{{ route('file.free.download', $item['id']) }}" class="btn btn-outline" title="Descarga Gratuita"><i
+                        class="ti tabler-download"></i> OBTENER GRATIS</a>
+                @else
+                    <a href="{{ $item['usd_pay'] }}" class="btn btn-outline" title="PAGO USD"><i
+                            class="ti tabler-shopping-cart-plus"></i> USD</a>
+                    @if ($cup_aviable)
+                        <a href="{{ $item['cup_pay'] }}" class="btn btn-outline" title="PAGO CUP"><i
+                                class="ti tabler-credit-card"></i> CUP</a>
+                    @endif
                 @endif
             </div>
         </div>
