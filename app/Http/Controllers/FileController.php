@@ -46,7 +46,8 @@ class FileController extends Controller
                     abort(404);
                 }
                 $ext = pathinfo($path, PATHINFO_EXTENSION);
-                $downloadName = "$file->name.$ext";
+                $name = str_replace($file->name, ' ', '_');
+                $downloadName = "$name.$ext";
                 return Storage::disk('s3')->download($path, $downloadName);
             }
 
@@ -87,7 +88,8 @@ class FileController extends Controller
                         $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
                         $download->save();
                         $ext = pathinfo($path, PATHINFO_EXTENSION);
-                        $downloadName = "$file->name.$ext";
+                        $name = str_replace($file->name, ' ', '_');
+                        $downloadName = "$name.$ext";
                         return Storage::disk('s3')->download($path, $downloadName);
                     }
                 } else {
@@ -112,7 +114,8 @@ class FileController extends Controller
                         $download->save();
 
                         $ext = pathinfo($path, PATHINFO_EXTENSION);
-                        $downloadName = "$file->name.$ext";
+                        $name = str_replace($file->name, ' ', '_');
+                        $downloadName = "$name.$ext";
                         return Storage::disk('s3')->download($path, $downloadName);
                     }
                 }
@@ -167,7 +170,8 @@ class FileController extends Controller
         $download->save();
 
         $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $downloadName = "$file->name.$ext";
+        $name = str_replace($file->name, ' ', '_');
+        $downloadName = "$name.$ext";
         return Storage::disk('s3')->download($path, $downloadName);
     }
 

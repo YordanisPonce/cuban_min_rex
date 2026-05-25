@@ -48,7 +48,7 @@
             <div class="file-cover">
                 <img src="{{ $file->getPosterUrl() ?? config('app.logo_alter') }}" alt="Portada del remix">
                 <span class="free-badge">Gratis</span>
-                <div class="play-overlay"><i class="fas fa-play"></i></div>
+                <div class="play-overlay" onclick="playTrack()"><i class="fas fa-play"></i></div>
             </div>
 
             <div class="file-title">{{ $file->name }}</div>
@@ -144,6 +144,7 @@
 
     <!-- TOAST -->
     <div class="toast" id="toast"><i class="fas fa-check-circle"></i><span id="toastMsg">Mensaje</span></div>
+    @include('partials.bottom-player')
 @endsection
 
 @push('scripts')
@@ -249,5 +250,83 @@
                 });
             }
         });
+    </script>
+    <script>
+        const audioPlayer = document.getElementById('plyr-audio-player');
+
+        // ===== PLAYER STATE =====
+        let isPlaying = false;
+        let currentTime = 0;
+        let duration = 0;
+        let timerInterval = null;
+
+        function closePlayer() {
+            const player = document.getElementById('bottom-player');
+            player.classList.remove('active');
+            isPlaying = false;
+            audioPlayer.pause();
+            currentTrack = null;
+        }
+
+        function updatePlayerUI() {
+            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            const el = document.getElementById('bottom-player');
+            el.classList.add('active');
+            document.getElementById('player-img').src = "{{ $file->getPosterUrl() ?? config('app.logo_alter') }}";
+            document.getElementById('player-title').textContent = "{{ $file->name }}";
+            document.getElementById('player-artist').textContent = "{{ $file->user?->name ?? 'Desconocido' }}";
+        }
+
+        function setLoader() {
+            document.querySelector('.play-overlay').style.opacity = '1';
+            document.querySelector('.play-overlay i').className = 'fa fa-spinner fa-spin';
+        }
+
+        function setPause() {
+            document.querySelector('.play-overlay i').className = 'fas fa-pause';
+        }
+
+        function reset() {
+            document.querySelector('.play-overlay').style.opacity = '0';
+            document.querySelector('.play-overlay i').className = 'fas fa-play';
+        }
+
+
+        function playTrack() {
+            setLoader();
+
+            const url = "{{ $file->intro() }}";
+            
+            console.log(url);
+
+            audio = new Audio(url.replace('cubanminiles', "cubanmin/files"));
+
+            console.log(audio.src);
+
+            audio.addEventListener("canplaythrough", () => {
+                audioPlayer.src = audio.src;
+                audioPlayer.play();
+            });
+
+            audioPlayer.addEventListener("play", () => {
+                currentTime = 0;
+                duration = 120;
+                isPlaying = true;
+                setPause();
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                reset();
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                isPlaying = false;
+                reset();
+                updatePlayerUI();
+            });
+        }
     </script>
 @endpush
