@@ -206,7 +206,8 @@ class PlayListController extends Controller
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
         if($playlist->canBeDownload()){
             $zip = new ZipArchive();
-            $zipFileName = '' . $playlist->name . '.zip';
+            $name = str_replace(' ', '_', $playlist->name);
+            $zipFileName = '' . $name . '.zip';
             $zipFilePath = storage_path('app/public/files/zip' . $zipFileName);
 
             if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
@@ -263,8 +264,10 @@ class PlayListController extends Controller
             if (!Storage::disk('s3')->exists($path)) {
                 return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
             }
+
+            $name = str_replace(' ', '_', $item->title);
             
-            $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
+            $fullname = $name . '.' . pathinfo($path, PATHINFO_EXTENSION);
 
             return Response::download(Storage::disk('s3')->path($item->file_path), $fullname);
         }
