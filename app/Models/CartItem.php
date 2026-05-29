@@ -73,8 +73,8 @@ class CartItem extends Model
     public function removeRoute(): string {
         if($this->file) return route('file.remove.cart', $this->file->id);
 
-        if($this->playlist) return route('playlist.add.cart', str_replace(' ', '_', $this->playlist->name));
+        if($this->playlist) return route('playlist.add.cart', str_replace(' ', '_', $this->playlist?->name));
 
-        return route('playlist.add.item.cart', [str_replace(' ', '_', $this->playlist->name), $this->playlistItem->id]);
+        return route('playlist.add.item.cart', [str_replace(' ', '_', $this->playlist?->name), $this->playlistItem->id]);
     }
 }
