@@ -38,25 +38,25 @@ class CartItem extends Model
     {
         if($this->file) return $this->file->poster ?? $this->file->user->photo ?? config('app.logo');
 
-        if($this->playlist()) return $this->playlist->cover ?? $this->playlist->user->photo ?? config('app.logo');
+        if($this->playlist) return $this->playlist->cover ?? $this->playlist->user->photo ?? config('app.logo');
 
         return $this->playlistItem->playlist->cover ?? $this->playlistItem->playlist->user->photo ?? config('app.logo');
     }
 
     public function name(): string
     {
-        if($this->file) return 'REMIX: '.$this->file->name;
+        if($this->file) return 'REMIX: '.$this->file?->name;
 
-        if($this->playlist()) return 'PLAYLIST: '.$this->playlist->name;
+        if($this->playlist) return 'PLAYLIST: '.$this->playlist?->name;
 
-        return 'PLAYLIST SOUND: '.$this->playlistItem->title;
+        return 'PLAYLIST SOUND: '.$this->playlistItem?->title;
     }
 
     public function price(): float
     {
         if($this->file) return $this->file->price;
 
-        if($this->playlist()) return $this->playlist->price;
+        if($this->playlist) return $this->playlist->price;
 
         return $this->playlistItem->price;
     }

@@ -10,6 +10,7 @@ use App\Models\PlayList;
 use App\Models\User;
 use App\Models\Cart;
 use App\Models\Folder;
+use App\Models\Order;
 use App\Models\PlayListItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -205,48 +206,62 @@ class PlayListController extends Controller
     public function download(string $name) {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
         if($playlist->canBeDownload()){
-            $zip = new ZipArchive();
-            $name = str_replace(' ', '_', $playlist->name);
-            $zipFileName = '' . $name . '.zip';
-            $zipFilePath = storage_path('app/public/files/zip' . $zipFileName);
+            $plan = null;
 
-            if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
-                return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+            if (auth()->user()->currentPlan) {
+                $plan = auth()->user()->currentPlan;
+            } else {
+                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
-            $items = $playlist->items()->get();
+            if($plan || auth()->user()->role === 'admin'){
+                if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
+                    if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads || auth()->user()->role === 'admin') {
+                        $zip = new ZipArchive();
+                        $name = str_replace(' ', '_', $playlist->name);
+                        $zipFileName = '' . $name . '.zip';
+                        $zipFilePath = storage_path('app/public/files/zip' . $zipFileName);
 
-            $items = $items->filter(function ($item) {
-                return pathinfo(Storage::disk('s3')->url($item->file_path), PATHINFO_EXTENSION) !== 'zip';
-            });
+                        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+                            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+                        }
 
-            foreach ($items as $item) {
-                $path = Storage::disk('s3')->url($item->file_path);
-                if (Storage::disk('s3')->exists($path)) {
-                    $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
-                    $zip->addFile($path, $fullname);
-                } else {
-                    return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
+                        $items = $playlist->items()->get();
+
+                        $items = $items->filter(function ($item) {
+                            return pathinfo(Storage::disk('s3')->url($item->file_path), PATHINFO_EXTENSION) !== 'zip';
+                        });
+
+                        foreach ($items as $item) {
+                            $path = Storage::disk('s3')->url($item->file_path);
+                            if (Storage::disk('s3')->exists($path)) {
+                                $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
+                                $zip->addFile($path, $fullname);
+                            } else {
+                                return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
+                            }
+                        }
+
+                        $zip->close();
+
+                        if (!file_exists($zipFilePath)) {
+                            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
+                        }
+                        
+                        if(auth()->check() && auth()->user()->role !== 'admin'){
+                            $download = new Download();
+                            $download->user_id = auth()->check() ? auth()->user()->id : null;
+                            $download->play_list_id = $playlist->id;
+                            $download->amount = auth()->user()->downloads_cost();
+                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                            $download->save();
+                        }
+
+                        return Response::download($zipFilePath)->deleteFileAfterSend(true);
+                    }
                 }
             }
-
-            $zip->close();
-
-            if (!file_exists($zipFilePath)) {
-                return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
-            }
-            
-            if(auth()->check() && auth()->user()->role !== 'admin'){
-                $download = new Download();
-                $download->user_id = auth()->check() ? auth()->user()->id : null;
-                $download->play_list_id = $playlist->id;
-                $download->amount = auth()->user()->downloads_cost();
-                $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
-                $download->save();
-            }
-
-            return Response::download($zipFilePath)->deleteFileAfterSend(true);
         }
         return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
     }
@@ -257,28 +272,42 @@ class PlayListController extends Controller
     public function download_item(string $name, string $itemId) {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
         if($playlist->canBeDownload()){
-            $item = $playlist->items()->where('id', $itemId)->first();
+            $plan = null;
 
-            $path = Storage::disk('s3')->url($item->file_path);
-
-            if (!Storage::disk('s3')->exists($path)) {
-                return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
+            if (auth()->user()->currentPlan) {
+                $plan = auth()->user()->currentPlan;
+            } else {
+                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
-            if(auth()->check() && auth()->user()->role !== 'admin'){
-                $download = new Download();
-                $download->user_id = auth()->check() ? auth()->user()->id : null;
-                $download->play_list_item_id = $item->id;
-                $download->amount = auth()->user()->downloads_cost();
-                $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
-                $download->save();
-            }
+            if($plan || auth()->user()->role === 'admin'){
+                if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
+                    if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads || auth()->user()->role === 'admin') {
+                        $item = $playlist->items()->where('id', $itemId)->first();
 
-            $ext = pathinfo($path, PATHINFO_EXTENSION);
-            $downloadName = "$item->title.$ext";
-            /*return Storage::disk('s3')->download($path, $downloadName);*/
-            return downloadFileFromDisk('s3', $path, $downloadName);
+                        $path = Storage::disk('s3')->url($item->file_path);
+
+                        if (!Storage::disk('s3')->exists($path)) {
+                            return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
+                        }
+
+                        if(auth()->check() && auth()->user()->role !== 'admin'){
+                            $download = new Download();
+                            $download->user_id = auth()->check() ? auth()->user()->id : null;
+                            $download->play_list_item_id = $item->id;
+                            $download->amount = auth()->user()->downloads_cost();
+                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                            $download->save();
+                        }
+
+                        $ext = pathinfo($path, PATHINFO_EXTENSION);
+                        $downloadName = "$item->title.$ext";
+                        /*return Storage::disk('s3')->download($path, $downloadName);*/
+                        return downloadFileFromDisk('s3', $path, $downloadName);
+                    }
+                }
+            }
         }
         return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
     }
