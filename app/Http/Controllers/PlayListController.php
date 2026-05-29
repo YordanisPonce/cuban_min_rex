@@ -239,6 +239,9 @@ class PlayListController extends Controller
             $download = new Download();
             $download->user_id = auth()->check() ? auth()->user()->id : null;
             $download->play_list_id = $playlist->id;
+            $download->amount = auth()->user()->downloads_cost();
+            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
             $download->save();
 
             return Response::download($zipFilePath)->deleteFileAfterSend(true);
@@ -254,22 +257,25 @@ class PlayListController extends Controller
         if($playlist->canBeDownload()){
             $item = $playlist->items()->where('id', $itemId)->first();
 
-            $download = new Download();
-            $download->user_id = auth()->check() ? auth()->user()->id : null;
-            $download->play_list_item_id = $item->id;
-            $download->save();
-
             $path = Storage::disk('s3')->url($item->file_path);
 
             if (!Storage::disk('s3')->exists($path)) {
                 return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
             }
 
-            $name = str_replace(' ', '_', $item->title);
-            
-            $fullname = $name . '.' . pathinfo($path, PATHINFO_EXTENSION);
+            $download = new Download();
+            $download->user_id = auth()->check() ? auth()->user()->id : null;
+            $download->play_list_item_id = $item->id;
+            $download->amount = auth()->user()->downloads_cost();
+            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+            $download->save();
 
-            return Response::download(Storage::disk('s3')->path($item->file_path), $fullname);
+            /*$ext = pathinfo($path, PATHINFO_EXTENSION);
+            $name = str_replace(' ', '_', $file->name);
+            $downloadName = "$name.$ext";
+            return Storage::disk('s3')->download($path, $downloadName);*/
+            return downloadFileFromDisk('s3', $path);
         }
         return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
     }

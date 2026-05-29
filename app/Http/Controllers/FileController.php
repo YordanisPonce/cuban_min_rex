@@ -45,10 +45,12 @@ class FileController extends Controller
                 if (!Storage::disk('s3')->exists($path)) {
                     abort(404);
                 }
-                $ext = pathinfo($path, PATHINFO_EXTENSION);
+
+                /*$ext = pathinfo($path, PATHINFO_EXTENSION);
                 $name = str_replace(' ', '_', $file->name);
                 $downloadName = "$name.$ext";
-                return Storage::disk('s3')->download($path, $downloadName);
+                return Storage::disk('s3')->download($path, $downloadName);*/
+                return downloadFileFromDisk('s3', $path);
             }
 
             Log::debug("No entorn a ningun descargar");
@@ -87,10 +89,12 @@ class FileController extends Controller
                         $download->user_amount = auth()->user()->downloads_cost() * 0.7;
                         $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
                         $download->save();
-                        $ext = pathinfo($path, PATHINFO_EXTENSION);
+
+                        /*$ext = pathinfo($path, PATHINFO_EXTENSION);
                         $name = str_replace(' ', '_', $file->name);
                         $downloadName = "$name.$ext";
-                        return Storage::disk('s3')->download($path, $downloadName);
+                        return Storage::disk('s3')->download($path, $downloadName);*/
+                        return downloadFileFromDisk('s3', $path);
                     }
                 } else {
                     if (auth()->user()->getFileDownloadsAtSubscriptionPeriod($id) < $plan->downloads) {
@@ -113,10 +117,11 @@ class FileController extends Controller
                         $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
                         $download->save();
 
-                        $ext = pathinfo($path, PATHINFO_EXTENSION);
+                        /*$ext = pathinfo($path, PATHINFO_EXTENSION);
                         $name = str_replace(' ', '_', $file->name);
                         $downloadName = "$name.$ext";
-                        return Storage::disk('s3')->download($path, $downloadName);
+                        return Storage::disk('s3')->download($path, $downloadName);*/
+                        return downloadFileFromDisk('s3', $path);
                     }
                 }
                 return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');            
@@ -169,10 +174,11 @@ class FileController extends Controller
         $download->customer_phone = $request->input('phone');
         $download->save();
 
-        $ext = pathinfo($path, PATHINFO_EXTENSION);
+        /*$ext = pathinfo($path, PATHINFO_EXTENSION);
         $name = str_replace(' ', '_', $file->name);
         $downloadName = "$name.$ext";
-        return Storage::disk('s3')->download($path, $downloadName);
+        return Storage::disk('s3')->download($path, $downloadName);*/
+        return downloadFileFromDisk('s3', $path);
     }
 
     public function pay()
