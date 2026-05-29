@@ -12,7 +12,7 @@ class ResetCart extends Command
      *
      * @var string
      */
-    protected $signature = 'app:reset-cart {--email : usuario del carrito}';
+    protected $signature = 'app:reset-cart {--email= : usuario del carrito}';
 
     /**
      * The console command description.
