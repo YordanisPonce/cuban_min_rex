@@ -95,7 +95,7 @@ class FileController extends Controller
                         $ext = pathinfo($path, PATHINFO_EXTENSION);
                         $downloadName = "$file->name.$ext";
                         /*return Storage::disk('s3')->download($path, $downloadName);*/
-                        return downloadFileFromDisk('s3', $path);
+                        return downloadFileFromDisk('s3', $path, $downloadName);
                     }
                 } else {
                     if (auth()->user()->getFileDownloadsAtSubscriptionPeriod($id) < $plan->downloads) {
