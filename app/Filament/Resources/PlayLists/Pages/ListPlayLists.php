@@ -77,12 +77,13 @@ class ListPlayLists extends ListRecords
                         unlink($stream);
                     }
 
-                    $followers = $file->user->followers;
+                    $followers = auth()->user()->followers;
                     foreach ($followers as $follower) {
                         if ($follower->ntfs_prefs->new_remixes) {
                             NotificationController::sendPlayListNtf($follower->id, $playlist->id);
                         }
                     }
+                    
                     // Retornar un mensaje de éxito o redirigir
                     Notification::make()->title('Playlist creada exitosamente')->success()->send();
                 } catch (\Throwable $th) {
