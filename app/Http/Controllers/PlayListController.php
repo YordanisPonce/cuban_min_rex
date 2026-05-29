@@ -235,14 +235,16 @@ class PlayListController extends Controller
             if (!file_exists($zipFilePath)) {
                 return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
             }
-
-            $download = new Download();
-            $download->user_id = auth()->check() ? auth()->user()->id : null;
-            $download->play_list_id = $playlist->id;
-            $download->amount = auth()->user()->downloads_cost();
-            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
-            $download->save();
+            
+            if(auth()->check() && auth()->user()->role !== 'admin'){
+                $download = new Download();
+                $download->user_id = auth()->check() ? auth()->user()->id : null;
+                $download->play_list_id = $playlist->id;
+                $download->amount = auth()->user()->downloads_cost();
+                $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                $download->save();
+            }
 
             return Response::download($zipFilePath)->deleteFileAfterSend(true);
         }
@@ -263,17 +265,18 @@ class PlayListController extends Controller
                 return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
             }
 
-            $download = new Download();
-            $download->user_id = auth()->check() ? auth()->user()->id : null;
-            $download->play_list_item_id = $item->id;
-            $download->amount = auth()->user()->downloads_cost();
-            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
-            $download->save();
+            if(auth()->check() && auth()->user()->role !== 'admin'){
+                $download = new Download();
+                $download->user_id = auth()->check() ? auth()->user()->id : null;
+                $download->play_list_item_id = $item->id;
+                $download->amount = auth()->user()->downloads_cost();
+                $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                $download->save();
+            }
 
             $ext = pathinfo($path, PATHINFO_EXTENSION);
-            $name = str_replace(' ', '_', $item->title);
-            $downloadName = "$name.$ext";
+            $downloadName = "$item->title.$ext";
             /*return Storage::disk('s3')->download($path, $downloadName);*/
             return downloadFileFromDisk('s3', $path, $downloadName);
         }

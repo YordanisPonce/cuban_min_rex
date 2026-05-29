@@ -67,8 +67,8 @@ class HomeController extends Controller
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
-                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
-                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('file.download', $file->id) : null,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
@@ -147,8 +147,8 @@ class HomeController extends Controller
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
-                'canDownload' => false,
-                'downloadLink' => null,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
@@ -180,8 +180,8 @@ class HomeController extends Controller
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
-                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
-                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('file.download', $file->id) : null,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
@@ -565,8 +565,8 @@ class HomeController extends Controller
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'downloads' => $file->download_count,
-                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
-                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('file.download', $file->id) : null,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
@@ -662,8 +662,8 @@ class HomeController extends Controller
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'downloads' => $file->sales->count(),
-                'canDownload' => false,
-                'downloadLink' => null,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
@@ -764,8 +764,8 @@ class HomeController extends Controller
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'downloads' => $file->download_count,
-                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
-                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('file.download', $file->id) : null,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });

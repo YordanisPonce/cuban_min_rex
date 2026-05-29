@@ -98,6 +98,10 @@ class PlayList extends Model
     {
         $user = auth()->check() ? auth()->user() : null;
         if($user){
+            if($user->role === 'admin'){
+                return true;
+            }
+
             $firstPlan = Plan::orderBy('price')->first();
 
             if($user->hasActivePlan() && $user->current_plan_id){

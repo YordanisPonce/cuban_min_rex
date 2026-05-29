@@ -109,17 +109,18 @@ class FileController extends Controller
                         $file->download_count = $file->download_count + 1;
                         $file->save();
 
-                        $download = new Download();
-                        $download->user_id = auth()->user()->id;
-                        $download->file_id = $file->id;
-                        $download->amount = auth()->user()->downloads_cost();
-                        $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                        $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
-                        $download->save();
+                        if(auth()->user()->role !== 'admin'){
+                            $download = new Download();
+                            $download->user_id = auth()->user()->id;
+                            $download->file_id = $file->id;
+                            $download->amount = auth()->user()->downloads_cost();
+                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
+                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                            $download->save();
+                        }
 
                         $ext = pathinfo($path, PATHINFO_EXTENSION);
-                        $name = str_replace(' ', '_', $file->name);
-                        $downloadName = "$name.$ext";
+                        $downloadName = "$file->name.$ext";
                         /*return Storage::disk('s3')->download($path, $downloadName);*/
                         return downloadFileFromDisk('s3', $path, $downloadName);
                     }
@@ -175,8 +176,7 @@ class FileController extends Controller
         $download->save();
 
         $ext = pathinfo($path, PATHINFO_EXTENSION);
-        $name = str_replace(' ', '_', $file->name);
-        $downloadName = "$name.$ext";
+        $downloadName = "$file->name.$ext";
         /*return Storage::disk('s3')->download($path, $downloadName);*/
         return downloadFileFromDisk('s3', $path, $downloadName);
     }

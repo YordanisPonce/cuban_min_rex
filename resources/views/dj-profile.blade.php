@@ -189,7 +189,7 @@
                             </td>
                             <td class="remix-price">{{ $file->price }}</td>
                             <td>
-                                @if (auth()->check() && auth()->user()->hasActivePlan())
+                                @if ($file->canBeDownload())
                                     <a class="btn-add-cart" href="{{ route('file.download', $file->id) }}"><i
                                             class="fas fa-download"></i> <span>Descargar</span></a>
                                 @else

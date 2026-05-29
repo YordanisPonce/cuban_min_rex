@@ -53,9 +53,9 @@ class CollectionController extends Controller
                 'downloads' => $pack->isExclusive ? $pack->sales->count() : $pack->download_count,
                 'items_count' => null,
                 'isNew' => Carbon::parse($pack->created_at)->isCurrentDay(),
-                'canDownload' => $pack->isExclusive ? false : (auth()->check() && auth()->user()->hasActivePlan()),
+                'canDownload' => $pack->canBeDownload(),
+                'downloadLink' => $pack->canBeDownload() ? route('file.download', $pack->id) : null,
                 'isExclusive' => $pack->isExclusive,
-                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('file.download', $pack->id) : null,
                 'addToCart' => route('file.add.cart', $pack->id),
             ];
         });

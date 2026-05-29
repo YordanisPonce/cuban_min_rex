@@ -181,4 +181,34 @@ class File extends Model
             return $size . ' B';
         }
     }
+
+    /**
+     * Verify if the current auth user can download the resource
+     * 
+     * @return bool
+     */
+    public function canBeDownload() : bool
+    {
+        $user = auth()->check() ? auth()->user() : null;
+        if($user){
+            if($user->role === 'admin'){
+                return true;
+            }
+
+            $lastPlan = Plan::orderBy('price', 'desc')->first();
+
+            if($user->hasActivePlan() && $user->current_plan_id){
+
+                if($user->plan_start_at){
+                    if ($this->isExclusive) {
+                        return $user->get_current_plan_consume_downloads() < $user->currentPlan->downloads && $user->current_plan_id === $lastPlan->id;
+                    }
+                    return $user->get_current_plan_consume_downloads() < $user->currentPlan->downloads;
+                }
+
+                return $this->isExclusive ? false : true;
+            }
+        }
+        return false;
+    }
 }

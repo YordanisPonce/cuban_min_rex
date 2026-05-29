@@ -3,18 +3,12 @@ use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 if (!function_exists('downloadFileFromDisk')) {
-    function downloadFileFromDisk(string $disk, string $path, ?string $downloadName = null): StreamedResponse
+    function downloadFileFromDisk(string $disk, string $path, string $downloadName): StreamedResponse
     {
         $storage = Storage::disk($disk);
 
         if (!$storage->exists($path)) {
             abort(404, 'Archivo no encontrado.');
-        }
-
-        if (!$downloadName) {
-            $ext  = pathinfo($path, PATHINFO_EXTENSION);
-            $name = pathinfo($path, PATHINFO_FILENAME);
-            $downloadName = $ext ? "$name.$ext" : $name;
         }
 
         $stream = $storage->readStream($path);
