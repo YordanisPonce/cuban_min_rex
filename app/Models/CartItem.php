@@ -63,17 +63,17 @@ class CartItem extends Model
 
     public function dj(): string
     {
-        if($this->file) return $this->file->user->name;
+        if($this->file) return $this->file->user?->name;
 
-        if($this->playlist()) return $this->playlist->user->name;
+        if($this->playlist) return $this->playlist->user?->name;
 
-        return $this->playlistItem->playlist->user->name;
+        return $this->playlistItem->playlist->user?->name;
     }
 
     public function removeRoute(): string {
         if($this->file) return route('file.remove.cart', $this->file->id);
 
-        if($this->playlist()) return route('playlist.add.cart', str_replace(' ', '_', $this->playlist->name));
+        if($this->playlist) return route('playlist.add.cart', str_replace(' ', '_', $this->playlist->name));
 
         return route('playlist.add.item.cart', [str_replace(' ', '_', $this->playlist->name), $this->playlistItem->id]);
     }
