@@ -36,11 +36,11 @@ class CartItem extends Model
 
     public function cover(): string
     {
-        if($this->file) return $this->file->poster ?? $this->file->user->photo ?? config('app.logo');
+        if($this->file) return $this->file->getPosterUrl() ?? $this->file->user->photo ?? config('app.logo');
 
-        if($this->playlist) return $this->playlist->cover ?? $this->playlist->user->photo ?? config('app.logo');
+        if($this->playlist) return $this->playlist->getCoverUrl() ?? $this->playlist->user->photo ?? config('app.logo');
 
-        return $this->playlistItem->playlist->cover ?? $this->playlistItem->playlist->user->photo ?? config('app.logo');
+        return $this->playlistItem->playlist->getCoverUrl() ?? $this->playlistItem->playlist->user->photo ?? config('app.logo');
     }
 
     public function name(): string
