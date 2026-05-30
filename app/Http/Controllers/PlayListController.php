@@ -15,6 +15,7 @@ use App\Models\PlayListItem;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use ZipArchive;
@@ -238,7 +239,7 @@ class PlayListController extends Controller
                                 $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
                                 $zip->addFile($path, $fullname);
                             } else {
-                                return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
+                                Log::error('El archivo ' . $path . ' no se ha encontrado.');
                             }
                         }
 
@@ -288,7 +289,7 @@ class PlayListController extends Controller
                         $path = Storage::disk('s3')->url($item->file_path);
 
                         if (!Storage::disk('s3')->exists($path)) {
-                            return response()->json(['error' => 'El archivo ' . $path . ' no se ha encontrado.'], 500);
+                            return redirect()->back()->with('error','El archivo no se ha encontrado.');
                         }
 
                         if(auth()->check() && auth()->user()->role !== 'admin'){
