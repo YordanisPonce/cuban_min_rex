@@ -286,7 +286,7 @@ class PlayListController extends Controller
                     if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads || auth()->user()->role === 'admin') {
                         $item = $playlist->items()->where('id', $itemId)->first();
 
-                        $path = Storage::disk('s3')->url($item->file_path);
+                        $path = $item->file_path;
 
                         /*if (!Storage::disk('s3')->exists($path)) {
                             return redirect()->back()->with('error','El archivo no se ha encontrado.');
