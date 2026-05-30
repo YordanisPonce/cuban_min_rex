@@ -13,7 +13,7 @@
         <img class="playlist-cover" src="{{ $item->cover ? $item->getCoverUrl() : $item->user->photo ?? config('app.logo_alter') }}"/>
     </div>
     <div class="card-body">
-        <div class="card-title"><a href="{{ route('playlist.show', $item->name)}}"><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</a></div>
+        <div class="card-title"><a href="{{ route('playlist.show', str_replace(' ', '_' , $item->name))}}"><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</a></div>
         <div class="card-meta">
             <span><i class="fas fa-music"></i> {{ $item->items->count() }} </span>
             <span>{{ $item->bpm ?? '' }}</span>

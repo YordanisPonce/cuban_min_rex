@@ -159,8 +159,8 @@ class PlayListController extends Controller
                 'url' => $track->file_path ? Storage::disk('s3')->url($track->file_path) : '',
                 'downloads' => $track->downloads->count(),
                 'canDownload' => $playlist->canBeDownload(),
-                'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
-                'addToCart' => route('playlist.add.item.cart', [$playlist->name, $track->id]),
+                'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_' , $playlist->name), $track->id]) : null,
+                'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_' , $playlist->name), $track->id]),
             ];
         });
 
