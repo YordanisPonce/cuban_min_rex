@@ -233,9 +233,9 @@
     position: absolute;
     top: 4px;
     left: 4px;
-    background: var(--tag-new);
+    background: green;
     color: #fff;
-    font-size: 9px;
+    font-size: 7px;
     font-weight: 800;
     padding: 2px 6px;
     border-radius: 3px
@@ -674,6 +674,10 @@
     .track-thumb img {
         width: 70%;
         height: auto;
+    }
+    
+    .track-thumb .tag-new {
+        font-size: 14px;
     }
 
     .filter-dropdowns {
