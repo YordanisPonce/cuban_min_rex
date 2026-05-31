@@ -2,7 +2,9 @@
     <div class="track-left">
         <div class="track-thumb">
             <img src="{{$item['img']}}" alt="{{$item['title']}}" loading="lazy">
-            {{$item['isNew'] ? '<span class="tag-new">NEW</span>':''}}
+            @if ($item['isNew']) 
+                <span class="tag-new">NEW</span>
+            @endif
         </div>
         <div class="track-info">
             <div class="track-title-row">
