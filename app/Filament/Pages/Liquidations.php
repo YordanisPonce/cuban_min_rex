@@ -232,172 +232,172 @@ class Liquidations extends Page
                         ->send();
                 })
             ,
-            Action::make('Repartir')
-                ->label('Repartir')
-                ->color('warning')
-                ->icon('heroicon-m-arrows-right-left')
-                ->requiresConfirmation()
-                ->modalHeading('Repartir (suscripciones 70% + ventas)')
-                ->modalDescription('Preview informativo antes de generar los payments.')
-                ->modalSubmitActionLabel('Sí, repartir')
-                ->modalCancelActionLabel('No, cancelar')
-                ->form([
-                    TextInput::make('gross')
-                        ->label('Gross ingresado (USD)')
-                        ->numeric()
-                        ->required()
-                        ->minValue(0.01)
-                        ->live(),
+            // Action::make('Repartir')
+            //     ->label('Repartir')
+            //     ->color('warning')
+            //     ->icon('heroicon-m-arrows-right-left')
+            //     ->requiresConfirmation()
+            //     ->modalHeading('Repartir (suscripciones 70% + ventas)')
+            //     ->modalDescription('Preview informativo antes de generar los payments.')
+            //     ->modalSubmitActionLabel('Sí, repartir')
+            //     ->modalCancelActionLabel('No, cancelar')
+            //     ->form([
+            //         TextInput::make('gross')
+            //             ->label('Gross ingresado (USD)')
+            //             ->numeric()
+            //             ->required()
+            //             ->minValue(0.01)
+            //             ->live(),
 
-                    Toggle::make('gross_includes_sales')
-                        ->label('Este gross incluye ventas')
-                        ->default(false)
-                        ->live(),
+            //         Toggle::make('gross_includes_sales')
+            //             ->label('Este gross incluye ventas')
+            //             ->default(false)
+            //             ->live(),
 
-                TextEntry::make('preview')
-                        ->label('Resumen por DJ')
-                        ->state(function (Get $get) {
-                            $gross = (float) ($get('gross') ?? 0);
-                            if ($gross <= 0) {
-                                return new HtmlString('<div style="font-size:14px;color:#6b7280;">Introduce un gross para ver el reparto.</div>');
-                            }
+            //     TextEntry::make('preview')
+            //             ->label('Resumen por DJ')
+            //             ->state(function (Get $get) {
+            //                 $gross = (float) ($get('gross') ?? 0);
+            //                 if ($gross <= 0) {
+            //                     return new HtmlString('<div style="font-size:14px;color:#6b7280;">Introduce un gross para ver el reparto.</div>');
+            //                 }
 
-                            $salesGrossPending = (float) \App\Models\Sale::query()
-                                ->where('status', 'pending')
-                                ->sum('amount');
+            //                 $salesGrossPending = (float) \App\Models\Sale::query()
+            //                     ->where('status', 'pending')
+            //                     ->sum('amount');
 
-                            $grossSubs = ($get('gross_includes_sales') ?? false)
-                                ? max(0, $gross - $salesGrossPending)
-                                : $gross;
+            //                 $grossSubs = ($get('gross_includes_sales') ?? false)
+            //                     ? max(0, $gross - $salesGrossPending)
+            //                     : $gross;
 
-                            $poolSubs = $grossSubs * 0.70;
+            //                 $poolSubs = $grossSubs * 0.70;
 
-                            $totalPairs = (int) \App\Models\Download::query()
-                                ->where('liquidated', false)
-                                ->selectRaw("
-                                    COUNT(DISTINCT 
-                                        user_id,
-                                        COALESCE(file_id, play_list_id, play_list_item_id),
-                                        CASE
-                                            WHEN file_id IS NOT NULL THEN 'file'
-                                            WHEN play_list_id IS NOT NULL THEN 'playlist'
-                                            WHEN play_list_item_id IS NOT NULL THEN 'playlist_item'
-                                        END
-                                    ) AS cnt
-                                ")
-                                ->value('cnt');
+            //                 $totalPairs = (int) \App\Models\Download::query()
+            //                     ->where('liquidated', false)
+            //                     ->selectRaw("
+            //                         COUNT(DISTINCT 
+            //                             user_id,
+            //                             COALESCE(file_id, play_list_id, play_list_item_id),
+            //                             CASE
+            //                                 WHEN file_id IS NOT NULL THEN 'file'
+            //                                 WHEN play_list_id IS NOT NULL THEN 'playlist'
+            //                                 WHEN play_list_item_id IS NOT NULL THEN 'playlist_item'
+            //                             END
+            //                         ) AS cnt
+            //                     ")
+            //                     ->value('cnt');
 
-                            $pairsByDj = \App\Models\Download::query()
-                                ->where('downloads.liquidated', false)
-                                ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
-                                ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
-                                ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
-                                ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
-                                ->where(function ($q) {
-                                    $q->whereNotNull('files.id')
-                                    ->orWhereNotNull('play_lists.id')
-                                    ->orWhereNotNull('pli_parent.id');
-                                })
-                                ->selectRaw("
-                                    COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
-                                    COUNT(DISTINCT 
-                                        downloads.user_id,
-                                        COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
-                                        CASE
-                                            WHEN downloads.file_id IS NOT NULL THEN 'file'
-                                            WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
-                                            WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
-                                        END
-                                    ) AS cnt
-                                ")
-                                ->groupBy('dj_id')
-                                ->pluck('cnt', 'dj_id');
-
-
-                            $salesNetByDj = \App\Models\Sale::query()
-                                ->where('sales.status', 'pending')
-                                ->leftJoin('files', 'sales.file_id', '=', 'files.id')
-                                ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
-                                ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
-                                ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
-                                ->selectRaw("
-                                    COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
-                                    COALESCE(SUM(sales.user_amount), 0) AS total
-                                ")
-                                ->groupBy('dj_id')
-                                ->pluck('total', 'dj_id');
+            //                 $pairsByDj = \App\Models\Download::query()
+            //                     ->where('downloads.liquidated', false)
+            //                     ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
+            //                     ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
+            //                     ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
+            //                     ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            //                     ->where(function ($q) {
+            //                         $q->whereNotNull('files.id')
+            //                         ->orWhereNotNull('play_lists.id')
+            //                         ->orWhereNotNull('pli_parent.id');
+            //                     })
+            //                     ->selectRaw("
+            //                         COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
+            //                         COUNT(DISTINCT 
+            //                             downloads.user_id,
+            //                             COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
+            //                             CASE
+            //                                 WHEN downloads.file_id IS NOT NULL THEN 'file'
+            //                                 WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
+            //                                 WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
+            //                             END
+            //                         ) AS cnt
+            //                     ")
+            //                     ->groupBy('dj_id')
+            //                     ->pluck('cnt', 'dj_id');
 
 
-                            $salesCountByDj = \App\Models\Sale::query()
-                                ->where('sales.status', 'pending')
-                                ->leftJoin('files', 'sales.file_id', '=', 'files.id')
-                                ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
-                                ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
-                                ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
-                                ->selectRaw("
-                                    COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
-                                    COUNT(*) AS cnt
-                                ")
-                                ->groupBy('dj_id')
-                                ->pluck('cnt', 'dj_id');
+            //                 $salesNetByDj = \App\Models\Sale::query()
+            //                     ->where('sales.status', 'pending')
+            //                     ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            //                     ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            //                     ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            //                     ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            //                     ->selectRaw("
+            //                         COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
+            //                         COALESCE(SUM(sales.user_amount), 0) AS total
+            //                     ")
+            //                     ->groupBy('dj_id')
+            //                     ->pluck('total', 'dj_id');
 
 
-                            $djs = \App\Models\User::query()
-                                ->whereNot('role', 'user')
-                                ->select('id', 'name')
-                                ->get();
+            //                 $salesCountByDj = \App\Models\Sale::query()
+            //                     ->where('sales.status', 'pending')
+            //                     ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            //                     ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            //                     ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            //                     ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            //                     ->selectRaw("
+            //                         COALESCE(files.user_id, play_lists.user_id, pli_parent.user_id) AS dj_id,
+            //                         COUNT(*) AS cnt
+            //                     ")
+            //                     ->groupBy('dj_id')
+            //                     ->pluck('cnt', 'dj_id');
 
-                            $items = [];
-                            foreach ($djs as $dj) {
-                                $djPairs = (int) ($pairsByDj[$dj->id] ?? 0);
 
-                                $subs = ($poolSubs > 0 && $totalPairs > 0 && $djPairs > 0)
-                                    ? (float) ($poolSubs * ($djPairs / $totalPairs))
-                                    : 0.0;
+            //                 $djs = \App\Models\User::query()
+            //                     ->whereNot('role', 'user')
+            //                     ->select('id', 'name')
+            //                     ->get();
 
-                                $sales = (float) ($salesNetByDj[$dj->id] ?? 0);
-                                $total = round($subs + $sales, 2);
+            //                 $items = [];
+            //                 foreach ($djs as $dj) {
+            //                     $djPairs = (int) ($pairsByDj[$dj->id] ?? 0);
 
-                                if ($total <= 0)
-                                    continue;
+            //                     $subs = ($poolSubs > 0 && $totalPairs > 0 && $djPairs > 0)
+            //                         ? (float) ($poolSubs * ($djPairs / $totalPairs))
+            //                         : 0.0;
 
-                                $items[] = [
-                                    'name' => $dj->name,
-                                    'sales_count' => (int) ($salesCountByDj[$dj->id] ?? 0),
-                                    'pairs' => $djPairs,
-                                    'total' => $total,
-                                ];
-                            }
+            //                     $sales = (float) ($salesNetByDj[$dj->id] ?? 0);
+            //                     $total = round($subs + $sales, 2);
 
-                            usort($items, fn($a, $b) => $b['total'] <=> $a['total']);
+            //                     if ($total <= 0)
+            //                         continue;
 
-                            // Render tabla inline compacta (similar a la que ya te quedó bonita)
-                            $html = '<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;width:100%;max-width:720px;margin:0 auto;">';
-                            $html .= '<table style="width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;">';
-                            $html .= '<colgroup><col style="width:40%"><col style="width:20%"><col style="width:40%"></colgroup>';
-                            $html .= '<thead style="background:#f9fafb;"><tr>';
-                            $html .= '<th style="padding:8px 12px;text-align:left;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;">DJ</th>';
-                            $html .= '<th style="padding:8px 12px;text-align:right;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;white-space:nowrap;">Monto</th>';
-                            $html .= '<th style="padding:8px 12px;text-align:left;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;">Detalle</th>';
-                            $html .= '</tr></thead><tbody>';
+            //                     $items[] = [
+            //                         'name' => $dj->name,
+            //                         'sales_count' => (int) ($salesCountByDj[$dj->id] ?? 0),
+            //                         'pairs' => $djPairs,
+            //                         'total' => $total,
+            //                     ];
+            //                 }
 
-                            foreach ($items as $it) {
-                                $html .= '<tr>';
-                                $html .= '<td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;">' . e($it['name']) . '</td>';
-                                $html .= '<td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:800;white-space:nowrap;">$' . number_format($it['total'], 2) . '</td>';
-                                $html .= '<td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;">'
-                                    . number_format($it['sales_count']) . ' ventas · '
-                                    . number_format($it['pairs']) . ' descargas (subs)'
-                                    . '</td>';
-                                $html .= '</tr>';
-                            }
+            //                 usort($items, fn($a, $b) => $b['total'] <=> $a['total']);
 
-                            $html .= '</tbody></table></div>';
+            //                 // Render tabla inline compacta (similar a la que ya te quedó bonita)
+            //                 $html = '<div style="border:1px solid #e5e7eb;border-radius:12px;overflow:hidden;width:100%;max-width:720px;margin:0 auto;">';
+            //                 $html .= '<table style="width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed;">';
+            //                 $html .= '<colgroup><col style="width:40%"><col style="width:20%"><col style="width:40%"></colgroup>';
+            //                 $html .= '<thead style="background:#f9fafb;"><tr>';
+            //                 $html .= '<th style="padding:8px 12px;text-align:left;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;">DJ</th>';
+            //                 $html .= '<th style="padding:8px 12px;text-align:right;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;white-space:nowrap;">Monto</th>';
+            //                 $html .= '<th style="padding:8px 12px;text-align:left;font-weight:600;color:#374151;border-bottom:1px solid #e5e7eb;">Detalle</th>';
+            //                 $html .= '</tr></thead><tbody>';
 
-                            return new HtmlString($html);
-                        })
-                        ->columnSpanFull(),
-                ])
+            //                 foreach ($items as $it) {
+            //                     $html .= '<tr>';
+            //                     $html .= '<td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;">' . e($it['name']) . '</td>';
+            //                     $html .= '<td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;text-align:right;font-weight:800;white-space:nowrap;">$' . number_format($it['total'], 2) . '</td>';
+            //                     $html .= '<td style="padding:7px 12px;border-bottom:1px solid #f3f4f6;">'
+            //                         . number_format($it['sales_count']) . ' ventas · '
+            //                         . number_format($it['pairs']) . ' descargas (subs)'
+            //                         . '</td>';
+            //                     $html .= '</tr>';
+            //                 }
+
+            //                 $html .= '</tbody></table></div>';
+
+            //                 return new HtmlString($html);
+            //             })
+            //             ->columnSpanFull(),
+            //     ])
         ];
     }
 

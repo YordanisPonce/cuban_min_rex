@@ -218,297 +218,103 @@ class User extends Authenticatable implements FilamentUser
 
     public function totalUnliquidatedDownloads(): int
     {
-        return (int) Download::query()
-            ->join('files', 'downloads.file_id', '=', 'files.id')
-            ->where('downloads.liquidated', false)
-            ->where('files.user_id', $this->id) // DJ dueño
-            ->selectRaw('COUNT(DISTINCT downloads.user_id, downloads.file_id) as cnt')
-            ->value('cnt');
+        return (int) $this->pendingDownloadsCount();
     }
 
     public function pendingSubscriptionLiquidation(): float
     {
-        // Pool pendiente (solo suscripciones pagadas NO repartidas aún)
-        $grossPending = (float) Order::query()
-            ->where('status', 'paid')
-            ->whereNotNull('plan_id')
-            ->whereNull('settled_at')
-            ->sum('amount');
-
-        $poolPending = $grossPending * 0.70;
-        if ($poolPending <= 0) {
-            return 0.0;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 1. TOTAL GLOBAL: pares únicos (user_id, elemento) sin liquidar
-        |--------------------------------------------------------------------------
-        */
-        $totalPendingPairs = Download::query()
-            ->where('liquidated', false)
-            ->selectRaw("
-                COUNT(DISTINCT 
-                    user_id,
-                    COALESCE(file_id, play_list_id, play_list_item_id),
-                    CASE
-                        WHEN file_id IS NOT NULL THEN 'file'
-                        WHEN play_list_id IS NOT NULL THEN 'playlist'
-                        WHEN play_list_item_id IS NOT NULL THEN 'playlist_item'
-                    END
-                ) AS cnt
-            ")
-            ->value('cnt');
-
-        if ($totalPendingPairs === 0) {
-            return 0.0;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 2. PARES DEL DJ: elementos cuyo owner es este usuario ($this->id)
-        |--------------------------------------------------------------------------
-        |
-        | IMPORTANTE:
-        | - play_list_items no tiene user_id → se une a play_lists
-        | - play_lists sí tiene user_id
-        | - files tiene user_id
-        */
-        $djPendingPairs = Download::query()
+        return Download::query()
             ->where('downloads.liquidated', false)
             ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
             ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
             ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
-                $q->where('files.user_id', $this->id)               // files del DJ
-                ->orWhere('play_lists.user_id', $this->id)        // playlists del DJ
-                ->orWhere('pli_parent.user_id', $this->id);       // playlist_items del DJ
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
             })
-            ->selectRaw("
-                COUNT(DISTINCT 
-                    downloads.user_id,
-                    COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
-                    CASE
-                        WHEN downloads.file_id IS NOT NULL THEN 'file'
-                        WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
-                        WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
-                    END
-                ) AS cnt
-            ")
-            ->value('cnt');
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Proporción del pool
-        |--------------------------------------------------------------------------
-        */
-        $amount = $poolPending * ($djPendingPairs / $totalPendingPairs);
-
-        return round($amount, 2);
+            ->sum('downloads.user_amount');
     }
 
     public function paidSubscriptionLiquidation(): float
     {
-        // Pool pendiente (solo suscripciones pagadas NO repartidas aún)
-        $grossPaid = (float) Order::query()
-            ->where('status', 'paid')
-            ->whereNotNull('plan_id')
-            ->whereNotNull('settled_at')
-            ->sum('amount');
-
-        $poolPaid = $grossPaid * 0.70;
-        if ($poolPaid <= 0) {
-            return 0.0;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 1. TOTAL GLOBAL: pares únicos (user_id, elemento) liquidados
-        |--------------------------------------------------------------------------
-        */
-        $totalPaidPairs = Download::query()
-            ->where('liquidated', true)
-            ->selectRaw("
-                COUNT(DISTINCT 
-                    user_id,
-                    COALESCE(file_id, play_list_id, play_list_item_id),
-                    CASE
-                        WHEN file_id IS NOT NULL THEN 'file'
-                        WHEN play_list_id IS NOT NULL THEN 'playlist'
-                        WHEN play_list_item_id IS NOT NULL THEN 'playlist_item'
-                    END
-                ) AS cnt
-            ")
-            ->value('cnt');
-
-        if ($totalPaidPairs === 0) {
-            return 0.0;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 2. PARES DEL DJ: elementos cuyo owner es este usuario ($this->id)
-        |--------------------------------------------------------------------------
-        |
-        | IMPORTANTE:
-        | - play_list_items no tiene user_id → se une a play_lists
-        | - play_lists sí tiene user_id
-        | - files tiene user_id
-        */
-        $djPaidPairs = Download::query()
+        return Download::query()
             ->where('downloads.liquidated', true)
             ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
             ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
             ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
-                $q->where('files.user_id', $this->id)               // files del DJ
-                ->orWhere('play_lists.user_id', $this->id)        // playlists del DJ
-                ->orWhere('pli_parent.user_id', $this->id);       // playlist_items del DJ
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
             })
-            ->selectRaw("
-                COUNT(DISTINCT 
-                    downloads.user_id,
-                    COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
-                    CASE
-                        WHEN downloads.file_id IS NOT NULL THEN 'file'
-                        WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
-                        WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
-                    END
-                ) AS cnt
-            ")
-            ->value('cnt');
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Proporción del pool
-        |--------------------------------------------------------------------------
-        */
-        $amount = $poolPaid * ($djPaidPairs / $totalPaidPairs);
-
-        return round($amount, 2);
+            ->sum('downloads.user_amount');
     }
 
     public function generatedToSubscriptionLiquidation()
     {
-        // Pool pendiente (solo suscripciones pagadas NO repartidas aún)
-        $grossPaid = (float) Order::query()
-            ->where('status', 'paid')
-            ->whereNotNull('plan_id')
-            ->whereNull('settled_at')
-            ->sum('amount');
-
-        $poolPaid = $grossPaid * 0.10;
-        if ($poolPaid <= 0) {
-            return 0.0;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 1. TOTAL GLOBAL: pares únicos (user_id, elemento) liquidados
-        |--------------------------------------------------------------------------
-        */
-        $totalPaidPairs = Download::query()
-            ->where('liquidated', true)
-            ->selectRaw("
-                COUNT(DISTINCT 
-                    user_id,
-                    COALESCE(file_id, play_list_id, play_list_item_id),
-                    CASE
-                        WHEN file_id IS NOT NULL THEN 'file'
-                        WHEN play_list_id IS NOT NULL THEN 'playlist'
-                        WHEN play_list_item_id IS NOT NULL THEN 'playlist_item'
-                    END
-                ) AS cnt
-            ")
-            ->value('cnt');
-
-        if ($totalPaidPairs === 0) {
-            return 0.0;
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | 2. PARES DEL DJ: elementos cuyo owner es este usuario ($this->id)
-        |--------------------------------------------------------------------------
-        |
-        | IMPORTANTE:
-        | - play_list_items no tiene user_id → se une a play_lists
-        | - play_lists sí tiene user_id
-        | - files tiene user_id
-        */
-        $djPaidPairs = Download::query()
-            ->where('downloads.liquidated', true)
+        return Download::query()
+            ->where('downloads.liquidated', false)
             ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
             ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
             ->leftJoin('play_list_items', 'downloads.play_list_item_id', '=', 'play_list_items.id')
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
-                $q->where('files.user_id', $this->id)               // files del DJ
-                ->orWhere('play_lists.user_id', $this->id)        // playlists del DJ
-                ->orWhere('pli_parent.user_id', $this->id);       // playlist_items del DJ
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
             })
-            ->selectRaw("
-                COUNT(DISTINCT 
-                    downloads.user_id,
-                    COALESCE(downloads.file_id, downloads.play_list_id, downloads.play_list_item_id),
-                    CASE
-                        WHEN downloads.file_id IS NOT NULL THEN 'file'
-                        WHEN downloads.play_list_id IS NOT NULL THEN 'playlist'
-                        WHEN downloads.play_list_item_id IS NOT NULL THEN 'playlist_item'
-                    END
-                ) AS cnt
-            ")
-            ->value('cnt');
-
-        /*
-        |--------------------------------------------------------------------------
-        | 3. Proporción del pool
-        |--------------------------------------------------------------------------
-        */
-        $amount = $poolPaid * ($djPaidPairs / $totalPaidPairs);
-
-        return round($amount, 2);
+            ->sum('downloads.admin_amount');
     }
 
     public function pendingSaleLiquidation()
     {
-        return Sale::where('status', 'pending')->whereHas('file', function ($query) {
-            $query->where('user_id', $this->id);
-        })->orWhereHas('playlist', function ($query) {
-            $query->where('user_id', $this->id);
-        })->orWhereHas('playlistItem', function ($query) {
-            $query->whereHas('playList', function ($query) {
-                $query->where('user_id', $this->id);
-            });
-        })->sum('user_amount');
+        return Sale::query()
+            ->where('sales.status', 'pending')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.user_amount');
     }
 
     public function paidSaleLiquidation()
     {
-        return Sale::where('status', 'paid')->whereHas('file', function ($query) {
-            $query->where('user_id', $this->id);
-        })->orWhereHas('playlist', function ($query) {
-            $query->where('user_id', $this->id);
-        })->orWhereHas('playlistItem', function ($query) {
-            $query->whereHas('playList', function ($query) {
-                $query->where('user_id', $this->id);
-            });
-        })->sum('user_amount');
+        return Sale::query()
+            ->where('sales.status', 'paid')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.user_amount');
     }
 
     public function generatedToSaleLiquidation()
     {
-        return Sale::where('status', 'paid')->whereHas('file', function ($query) {
-            $query->where('user_id', $this->id);
-        })->orWhereHas('playlist', function ($query) {
-            $query->where('user_id', $this->id);
-        })->orWhereHas('playlistItem', function ($query) {
-            $query->whereHas('playList', function ($query) {
-                $query->where('user_id', $this->id);
-            });
-        })->sum('admin_amount');
+        return Sale::query()
+            ->where('sales.status', 'pending')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.admin_amount');
     }
 
     public function getCurrentMonthDownloads()
@@ -638,17 +444,33 @@ class User extends Authenticatable implements FilamentUser
     public function pendingSalesTotal(): float
     {
         return (float) Sale::query()
-            ->where('status', 'pending')
-            ->whereHas('file', fn($q) => $q->where('user_id', $this->id))
-            ->sum('user_amount');
+            ->where('sales.status', 'pending')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.user_amount');
     }
 
     public function paidSalesTotal(): float
     {
         return (float) Sale::query()
-            ->where('status', 'paid')
-            ->whereHas('file', fn($q) => $q->where('user_id', $this->id))
-            ->sum('user_amount');
+            ->where('sales.status', 'paid')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            })
+            ->sum('sales.user_amount');
     }
 
     public function isAdmin()
@@ -828,6 +650,7 @@ class User extends Authenticatable implements FilamentUser
                 ->orWhere('play_lists.user_id', $this->id)
                 ->orWhere('pli_parent.user_id', $this->id);
             })
+            ->where('user_amount', '>', 0)
             ->selectRaw("
                 COUNT(DISTINCT 
                     COALESCE(sales.file_id, sales.play_list_id, sales.play_list_item_id),
@@ -920,6 +743,7 @@ class User extends Authenticatable implements FilamentUser
                 ->orWhere('play_lists.user_id', $this->id)
                 ->orWhere('pli_parent.user_id', $this->id);
             })
+            ->where('user_amount', '>', 0)
             ->selectRaw("
                 COUNT(DISTINCT 
                     downloads.user_id,
@@ -956,8 +780,16 @@ class User extends Authenticatable implements FilamentUser
 
     function pendingSales(): \Illuminate\Database\Eloquent\Builder {
         $query = Sale::query()
-            ->where('status', 'pending')
-            ->whereHas('file', fn($q) => $q->where('user_id', $this->id));
+            ->where('sales.status', 'pending')
+            ->leftJoin('files', 'sales.file_id', '=', 'files.id')
+            ->leftJoin('play_lists', 'sales.play_list_id', '=', 'play_lists.id')
+            ->leftJoin('play_list_items', 'sales.play_list_item_id', '=', 'play_list_items.id')
+            ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
+            ->where(function ($q) {
+                $q->where('files.user_id', $this->id)
+                ->orWhere('play_lists.user_id', $this->id)
+                ->orWhere('pli_parent.user_id', $this->id);
+            });
 
         return $query;
     }
@@ -991,10 +823,8 @@ class User extends Authenticatable implements FilamentUser
      */
     static function getGeneratedAmount(): float
     {
-        $subscriptions = (float) Order::query()
-            ->where('status', 'paid')
-            ->whereNotNull('plan_id')
-            ->whereNull('settled_at')
+        $subscriptions = (float) Download::query()
+            ->where('liquidated', false)
             ->sum('amount');
 
         $sales = (float)  Sale::query()
