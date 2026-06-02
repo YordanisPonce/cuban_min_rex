@@ -43,9 +43,14 @@
         </div>
         <div class="results">
             @foreach ($results as $r)
-                <div class="result-card">
+                <div class="result-card" id="{{ $r['id'] }}" data-intro="{{ $r['intro'] }}">
                     <div class="result-meta">
-                        <img src="{{ $r['img'] }}" alt="{{ $r['name'] }}" class="result-cover">
+                        <div class="result-thumb">
+                            <img src="{{ $r['img'] }}" alt="{{ $r['name'] }}" class="result-cover">
+                            @if ($r['intro'])
+                                <div class="overlay" data-id="{{ $r['id'] }}" onclick="handlePlay(this.dataset.id)"><i class="fa fa-play"></i></div>
+                            @endif
+                        </div>
                         <div class="result-data">
                             <a class="result-name" href="{{ $r['url'] }}">{{ $r['name'] }}</a>
                             <div class="result-artist">
@@ -66,6 +71,7 @@
         </div>
     </div>
 
+    @include('partials.bottom-player')
 @endsection
 
 @push('scripts')
@@ -87,6 +93,114 @@
             currentSlide = n;
         }
         setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
+    </script>
+    <script>
+        
+        const audioPlayer = document.getElementById('plyr-audio-player');
+        let currentTrack = null;
+        let isPlaying = false;
+
+        function cleanCards() {
+            document.querySelectorAll('.result-card').forEach(card => {
+                card.classList.remove('playing');
+                card.querySelector('.overlay i').className = 'fa-solid fa-play';
+            });
+        }
+
+        function closePlayer() {
+            const player = document.getElementById('bottom-player');
+            player.classList.remove('active');
+            cleanCards();
+            isPlaying = false;
+            audioPlayer.pause();
+            currentTrack = null;
+        }
+
+        function updatePlayerUI() {
+            isPlaying ? audioPlayer.play() : audioPlayer.pause();
+            const el = document.getElementById('bottom-player');
+            if (!currentTrack) {
+                el.classList.remove('active');
+                cleanCards();
+                return
+            }
+            el.classList.add('active');
+            let trackData = document.getElementById(currentTrack);
+            document.getElementById('player-img').src = trackData.querySelector('img').src;
+            document.getElementById('player-title').textContent = trackData.querySelector('.result-name').textContent;
+            document.getElementById('player-artist').textContent = trackData.querySelector('.result-artist').textContent;
+            // Update mini-player buttons
+            document.querySelectorAll('.result-card').forEach(card => {
+                const id = card.id;
+                const icon = card.querySelector('.overlay i');
+                if (id == currentTrack && isPlaying && icon) {
+                    icon.className = 'fa-solid fa-pause';
+                    card.classList.add('playing');
+                } else {
+                    icon.className = 'fa-solid fa-play';
+                    card.classList.remove('playing');
+                }
+            });
+        }
+
+        function setLoader(e) {
+            document.querySelectorAll('.result-card').forEach(card => {
+                const id = card.id;
+                const btn = card.querySelector('.overlay i');
+                if (btn && id == e) {
+                    btn.className = 'fa fa-spinner fa-spin';
+                    card.classList.add('playing');
+                }
+            });
+        }
+
+        function playTrack(id, url) {
+            setLoader(id);
+
+            audio = new Audio(url);
+
+            audio.addEventListener("canplaythrough", () => {
+                audioPlayer.src = audio.src;
+                audioPlayer.play();
+            });
+
+            audioPlayer.addEventListener("play", () => {
+                currentTrack = id;
+                isPlaying = true;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("pause", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+
+            audioPlayer.addEventListener("ended", () => {
+                isPlaying = false;
+                updatePlayerUI();
+            });
+        }
+
+        function togglePlay() {
+            if (!currentTrack) return;
+            isPlaying = !isPlaying;
+            if (isPlaying) {
+                audioPlayer.play();
+            } else {
+                audioPlayer.pause();
+            }
+            updatePlayerUI();
+        }
+
+        function handlePlay(id) {
+            if (currentTrack && currentTrack === id) {
+                togglePlay();
+                return
+            }
+            cleanCards();
+            let url = document.getElementById(`${id}`).dataset.intro;
+            playTrack(id, url);
+        }
     </script>
     @isset($error)
         <script>

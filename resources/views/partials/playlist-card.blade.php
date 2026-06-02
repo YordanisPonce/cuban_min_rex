@@ -3,17 +3,17 @@
     use Carbon\Carbon;
 @endphp
 
-<div id="{{ $item->id }}" class="playlist-card pack-card">
+<div id="{{ $item->id }}" class="playlist-card pack-card"  onclick="window.location = '{{ route('playlist.show', str_replace(' ','_', $item->name)) }}'">
     <div class="cover ph" style="aspect-ratio:16/10">
         @if ( Carbon::parse($item->created_at)->isCurrentDay() )
             <div class="badge">NEW</div>
         @endif
-        <!--<div class="lock"><i class="fa-solid fa-lock"></i></div>-->
-        <div class="play-overlay" onclick="handlePlay({{ $item->id }})"><i class="fas fa-play"></i></div>
+        {{-- <div class="lock"><i class="fa-solid fa-lock"></i></div>
+        <div class="play-overlay" onclick="handlePlay({{ $item->id }})"><i class="fas fa-play"></i></div> --}}
         <img class="playlist-cover" src="{{ $item->cover ? $item->getCoverUrl() : $item->user->photo ?? config('app.logo_alter') }}"/>
     </div>
     <div class="card-body">
-        <div class="card-title"><a href="{{ route('playlist.show', str_replace(' ', '_' , $item->name))}}"><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</a></div>
+        <div class="card-title"><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</div>
         <div class="card-meta">
             <span><i class="fas fa-music"></i> {{ $item->items->count() }} </span>
             <span>{{ $item->bpm ?? '' }}</span>

@@ -74,4 +74,13 @@ class PlayListItem extends Model
         return $cartItem !== null;
     
     } 
+
+    /**
+     * Get the Preview Intro of the Resourse
+     * 
+     * @return string|null
+     */
+    public function intro(): ?string {
+        return $this->file_path ? Storage::disk('s3')->url($this->file_path) : null;
+    }
 }

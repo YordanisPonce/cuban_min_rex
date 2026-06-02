@@ -26,10 +26,12 @@ class SearchController extends Controller
 
         $remixes = File::audios()->section(SectionEnum::MAIN->value)->search($words, true)->get()->transform( function($e) {
             return[
+                'id' => "f$e->id",
                 'name' => 'REMIX: '.$e->name,
                 'artist' => $e->user?->name ?? 'Desconocido',
                 'img' => $e->getPosterUrl() ?? $e->user?->photo ?? config('app.logo'),
                 'dj_logo' => $e->user?->photo ?? config('app.logo'),
+                'intro' => $e->intro(),
                 'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('remixes', ['title' => $e->name]),
             ];
         });
@@ -40,10 +42,12 @@ class SearchController extends Controller
 
         $videos = File::videos()->section(SectionEnum::MAIN->value)->search($words, true)->get()->transform( function($e) {
             return[
+                'id' => "f$e->id",
                 'name' => 'VIDEO: '.$e->name,
                 'artist' => $e->user->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
+                'intro' => $e->intro(),
                 'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('videos', ['title' => $e->name]),
             ];
         });
@@ -54,10 +58,12 @@ class SearchController extends Controller
 
         $packs = File::zips()->section(SectionEnum::MAIN->value)->search($words, true)->get()->transform( function($e) {
             return[
+                'id' => "f$e->id",
                 'name' => 'PACK: '.$e->name,
                 'artist' => $e->user->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
+                'intro' => $e->intro(),
                 'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('collection.index', ['title' => $e->name]),
             ];
         });
@@ -68,11 +74,13 @@ class SearchController extends Controller
 
         $playlist = PlayList::search($words, true)->get()->transform( function($e) {
             return[
+                'id' => "p$e->id",
                 'name' => 'PLAYLIST: '.$e->name,
                 'artist' => $e->user->name,
                 'img' => $e->getCoverUrl() ?? $e->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
-                'url' => route('playlist.list', ['title' => $e->name]),
+                'intro' => null,
+                'url' => route('playlist.show', str_replace(' ', '_', $e->name)),
             ];
         });
 
@@ -82,11 +90,13 @@ class SearchController extends Controller
 
         $song = PlayListItem::search($words, true)->get()->transform( function($e) {
             return[
+                'id' => "pi$e->id",
                 'name' => 'TRACK: '.$e->title.' en PLAYLIST: '.$e->playList->name,
                 'artist' => $e->playList->user->name,
                 'img' => $e->playList->getCoverUrl() ?? $e->playList->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->playList->user->photo ?? config('app.logo'),
-                'url' => route('playlist.show', $e->playList->name),
+                'intro' => $e->intro(),
+                'url' => route('playlist.show', str_replace(' ', '_', $e->playList->name)),
             ];
         });
 

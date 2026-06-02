@@ -63,9 +63,33 @@ h1 {
     color: var(--primary);
 }
 
-.result-cover {
-    width: 60px;
+.result-thumb {
+    min-width: 60px;
+    max-width: 60px;
     height: 60px;
+    display: flex;
+    position: relative;
+}
+
+.result-card .result-thumb .overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .4);
+    opacity: 0;
+    transition: opacity .2s
+}
+
+.result-card:hover .result-thumb .overlay, .result-card.playing .result-thumb .overlay {
+    opacity: 1
+}
+
+.result-card .result-thumb .overlay i {
+    font-size: 2rem;
+    color: var(--primary);
+    cursor: pointer;
 }
 
 .result-artist {

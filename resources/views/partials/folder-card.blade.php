@@ -8,6 +8,6 @@
         <img class="playlist-cover" src="{{ $item->getCoverUrl() ?? config('app.logo_alter') }}"/>
     </div>
     <div class="card-body">
-        <div class="card-title"><a href=""><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</a></div>
+        <div class="card-title"><i class="fas fa-bolt text-primary"></i> {{ $item->name }}</div>
     </div>
 </div>
