@@ -23,40 +23,16 @@ class FileDownloadWidget extends BaseWidget
 
     protected function getStats(): array
     {
-        $userId = Auth::id();
-
-        $downloadCounts = /*Download::whereHas('file', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count()*/ User::find($userId)->getPendingSalesCount();
-
-        //Stripe::setApiKey(config('services.stripe.secret_key'));
-        //$activeSubscriptions = Subscription::all(['status' => 'active'])->count();
-
-        /*$salesCount = Sale::whereHas('file', function ($query) use ($userId) {
-            $query->where('user_id', $userId);
-        })->count();*/
-
         $stats = [
-            /*Stat::make('Cantidad de Descargas', $downloadCounts)
-                ->description('Descargas únicas, sin duplicados.')
-                ->descriptionColor('info')
-                ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before)->url(SaleSumary::getUrl()),
-            Stat::make('Cantidad de descargas por liquidar', auth()->user()->totalUnliquidatedDownloads())
-                ->description('Descargas pendientes por cobrar')
-                ->descriptionColor('info')
-                ->descriptionIcon('heroicon-o-information-circle', IconPosition::Before),*/
-            Stat::make('Archivos Vendidos (Sin Cobrar)', $downloadCounts)->url(SaleSumary::getUrl())
+            Stat::make('Archivos Vendidos (Sin Cobrar)', auth()->user()->getPendingSalesCount())->url(SaleSumary::getUrl())
                 ->description('Ventas + Descargas (Click detalles)')
                 ->descriptionColor('success')
                 ->descriptionIcon('heroicon-o-musical-note', IconPosition::Before),
-            //Stat::make('Pendiente por cobrar (Ventas)', '$ ' . auth()->user()->pendingSalesTotal())->description('Cobros por ventas')->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)->descriptionColor('success'),
             Stat::make('Cantidad Pendiente a Cobro', '$ ' . auth()->user()->pendingSubscriptionLiquidation() + auth()->user()->pendingSalesTotal())
                 ->description('Ventas + Suscripciones (Click detalles)')
                 ->descriptionColor('success')
                 ->descriptionIcon('heroicon-o-currency-dollar', IconPosition::Before)
                 ->url(SuscriptionComisionDetails::getUrl()),
-            //Stat::make('Ganancia Total', '$ ' . auth()->user()->paidSalesTotal() + auth()->user()->paidSubscriptionLiquidation())->description('Ventas + Suscripciones')->descriptionIcon('heroicon-o-banknotes', IconPosition::Before)->descriptionColor('success'),
-            //Stat::make('Subscripciones Activas', $activeSubscriptions)
         ];
 
         return $stats;

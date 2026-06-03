@@ -584,7 +584,7 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the amount of Sales
      */
-    function totalSalesAmount() : int {
+    function totalSalesAmount() : float {
         /*
         |--------------------------------------------------------------------------
         | VENTAS PENDIENTES DEL DJ
@@ -605,13 +605,13 @@ class User extends Authenticatable implements FilamentUser
             })
             ->sum('sales.user_amount');
 
-        return $sales;
+        return round($sales, 2);
     }
 
     /**
      * Get the amount of Download
      */
-    function totalDownloadsAmount() : int {
+    function totalDownloadsAmount() : float {
         $downloads = Download::query()
             ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
             ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
@@ -624,7 +624,7 @@ class User extends Authenticatable implements FilamentUser
             })
             ->sum('downloads.user_amount');
 
-        return $downloads;
+        return round($downloads, 2);
     }
 
     /**
@@ -691,7 +691,7 @@ class User extends Authenticatable implements FilamentUser
             })
             ->sum('sales.user_amount');
 
-        return $sales;
+        return round($sales, 2);
     }
     
     /**
@@ -718,7 +718,7 @@ class User extends Authenticatable implements FilamentUser
             })
             ->sum('downloads.user_amount');
 
-        return $downloads;
+        return round($downloads, 2);
     }
 
     /**
@@ -815,7 +815,7 @@ class User extends Authenticatable implements FilamentUser
      */
     static function getDevUnpaidCommition(): float
     {
-        return static::getGeneratedAmount() * 0.2;
+        return round(static::getGeneratedAmount() * 0.2, 2);
     }
 
     /**
@@ -831,7 +831,7 @@ class User extends Authenticatable implements FilamentUser
             ->where('status', 'pending')
             ->sum('amount');
 
-        return $subscriptions + $sales;
+        return round($subscriptions, 2) + round($sales, 2);
     }
 
     /**

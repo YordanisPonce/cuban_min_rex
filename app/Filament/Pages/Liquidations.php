@@ -106,27 +106,17 @@ class Liquidations extends Page
                     $items = [];
 
                     foreach ($djs as $dj) {
-                        $sales = (float) ($salesByDj[$dj->id] ?? 0);
-                        $djPairs = (int) ($pairsByDj[$dj->id] ?? 0);
-                        $salesCount = (int) ($salesCountByDj[$dj->id] ?? 0);
-                        $pairsCount = (int) ($pairsByDj[$dj->id] ?? 0);
+                        $total = $dj->pendingSubscriptionLiquidation() + $dj->pendingSalesTotal();
 
-
-                        $subs = ($pool > 0 && $totalPairs > 0)
-                            ? (float) ($pool * ($djPairs / $totalPairs))
-                            : 0.0;
-
-                        $total = round($sales + $subs, 2);
-                        if ($total <= 0)
-                            continue;
-
-                        $user = User::query()->where('id', $dj->id)->first();
+                        if ($total <= 0) {
+                           continue;
+                        }
 
                         $items[] = [
                             'name' => $dj->name,
-                            'total' => $user->pendingSubscriptionLiquidation() + $user->pendingSalesTotal(),
-                            'sales_count' => $user->pendingSalesCount(),
-                            'pairs_count' => $user->pendingDownloadsCount(),
+                            'total' => $total,
+                            'sales_count' => $dj->pendingSalesCount(),
+                            'pairs_count' => $dj->pendingDownloadsCount(),
                         ];
                     }
 
