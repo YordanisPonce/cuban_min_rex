@@ -40,7 +40,7 @@ class SetMaintenanceCommand extends Command
         $maintenanceStatus = $status === 'on';
 
         // Update the maintenance status in the database
-        $setting = \App\Models\Setting::first();
+        $setting = \App\Models\Setting::firstOrCreate();
         if ($setting) {
             $setting->maintenance = $maintenanceStatus;
             $setting->save();

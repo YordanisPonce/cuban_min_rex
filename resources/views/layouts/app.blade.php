@@ -106,7 +106,8 @@
             --plyr-menu-color: white;
         }
 
-        .plyr__menu, .plyr [data-plyr=pip]{
+        .plyr__menu,
+        .plyr [data-plyr=pip] {
             display: none;
         }
     </style>
@@ -125,10 +126,339 @@
     @endphp
 
     @if ($settings && $settings->maintenance)
-        <div class="h-100 d-flex flex-column align-items-center justify-content-center">
-            <p><i class="icon-base ti tabler-mood-confuzed-filled" style="width: 6rem; height: 6rem"></i></p>
-            <h1>MANTENIMIENTO</h1>
-            <p>Lo sentimos, actualmente el sitio se encuentra en mantenimiento.</p>
+        <style>
+            <style>* {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+
+            :root {
+                --bg: #0f0d0b;
+                --card: #1a1714;
+                --primary: #f5a623;
+                --fg: #f0e8d8;
+                --muted: #8a7a66;
+                --border: #2a2520;
+                --tag-new: #e04040;
+            }
+
+            body {
+                font-family: 'Inter', sans-serif;
+                background: var(--bg);
+                color: var(--fg);
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                padding: 2rem;
+                position: relative;
+                overflow: hidden;
+            }
+
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+
+            .bg-fx {
+                position: absolute;
+                inset: 0;
+                pointer-events: none;
+            }
+
+            .bg-fx::before {
+                content: "";
+                position: absolute;
+                top: 20%;
+                left: 20%;
+                width: 400px;
+                height: 400px;
+                background: radial-gradient(circle, rgba(245, 166, 35, .12) 0%, transparent 70%);
+                border-radius: 50%;
+                filter: blur(50px);
+                animation: float 8s ease-in-out infinite;
+            }
+
+            .bg-fx::after {
+                content: "";
+                position: absolute;
+                bottom: 20%;
+                right: 20%;
+                width: 400px;
+                height: 400px;
+                background: radial-gradient(circle, rgba(245, 166, 35, .08) 0%, transparent 70%);
+                border-radius: 50%;
+                filter: blur(50px);
+                animation: float 10s ease-in-out infinite reverse;
+            }
+
+            @keyframes float {
+                50% {
+                    transform: translate(30px, -30px);
+                }
+            }
+
+            .brand {
+                position: absolute;
+                top: 1.5rem;
+                left: 2rem;
+                display: flex;
+                align-items: center;
+                gap: .5rem;
+                font-weight: 800;
+                font-size: 1.1rem;
+                z-index: 2;
+            }
+
+            .brand i {
+                color: var(--primary);
+            }
+
+            .card {
+                position: relative;
+                z-index: 2;
+                max-width: 600px;
+                text-align: center;
+            }
+
+            .gear-stack {
+                position: relative;
+                width: 160px;
+                height: 160px;
+                margin: 0 auto 2rem;
+            }
+
+            .gear {
+                position: absolute;
+                color: var(--primary);
+            }
+
+            .gear-1 {
+                top: 0;
+                left: 0;
+                font-size: 6rem;
+                animation: spin 8s linear infinite;
+            }
+
+            .gear-2 {
+                bottom: 0;
+                right: 0;
+                font-size: 4rem;
+                color: var(--muted);
+                animation: spin 5s linear infinite reverse;
+            }
+
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .code {
+                font-size: .8rem;
+                font-weight: 700;
+                color: var(--primary);
+                letter-spacing: .3em;
+                margin-bottom: .75rem;
+                text-transform: uppercase;
+            }
+
+            .title {
+                font-size: 2.5rem;
+                font-weight: 900;
+                margin-bottom: 1rem;
+                line-height: 1.1;
+                text-transform: uppercase;
+            }
+
+            .title span {
+                color: var(--primary);
+                font-style: italic;
+            }
+
+            .desc {
+                color: var(--muted);
+                font-size: 1rem;
+                line-height: 1.6;
+                margin-bottom: 2.5rem;
+                max-width: 460px;
+                margin: 0 auto 2.5rem;
+            }
+
+            /* progress */
+            .progress-card {
+                background: var(--card);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 1.25rem;
+                max-width: 440px;
+                margin: 0 auto 2rem;
+            }
+
+            .progress-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: .75rem;
+                font-size: .8rem;
+            }
+
+            .progress-label {
+                color: var(--muted);
+                text-transform: uppercase;
+                font-weight: 700;
+                letter-spacing: .05em;
+            }
+
+            .progress-pct {
+                color: var(--primary);
+                font-weight: 800;
+            }
+
+            .progress-bar {
+                width: 100%;
+                height: 6px;
+                background: var(--border);
+                border-radius: 3px;
+                overflow: hidden;
+            }
+
+            .progress-fill {
+                height: 100%;
+                background: linear-gradient(90deg, var(--primary), #ff6b35);
+                border-radius: 3px;
+                width: 0;
+                animation: fill 4s ease-in-out infinite;
+                box-shadow: 0 0 10px rgba(245, 166, 35, .5);
+            }
+
+            @keyframes fill {
+                0% {
+                    width: 5%;
+                }
+
+                50% {
+                    width: 75%;
+                }
+
+                100% {
+                    width: 5%;
+                }
+            }
+
+            .eta {
+                display: flex;
+                justify-content: center;
+                gap: 2rem;
+                margin-bottom: 2rem;
+                font-size: .85rem;
+            }
+
+            .eta-item {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: .25rem;
+            }
+
+            .eta-item .num {
+                font-size: 1.5rem;
+                font-weight: 900;
+                color: var(--primary);
+                font-variant-numeric: tabular-nums;
+            }
+
+            .eta-item .lbl {
+                font-size: .7rem;
+                color: var(--muted);
+                text-transform: uppercase;
+                letter-spacing: .1em;
+            }
+
+            .socials {
+                display: flex;
+                justify-content: center;
+                gap: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .socials a {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: var(--card);
+                border: 1px solid var(--border);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: var(--muted);
+                transition: all .2s;
+            }
+
+            .socials a:hover {
+                border-color: var(--primary);
+                color: var(--primary);
+                transform: translateY(-2px);
+            }
+
+            .note {
+                font-size: .75rem;
+                color: var(--muted);
+            }
+
+            @media(max-width:640px) {
+                .title {
+                    font-size: 1.6rem;
+                }
+
+                .gear-stack {
+                    width: 130px;
+                    height: 130px;
+                }
+
+                .gear-1 {
+                    font-size: 5rem;
+                }
+            }
+        </style>
+        <div class="bg-fx"></div>
+        <a href="#" class="brand">
+            <img class="app_logo" src="{{ config('app.logo') }}" alt="{{ config('app.name') }}"> {{ config('app.name') }}
+        </a>
+
+        <div class="card">
+            <div class="gear-stack">
+                <i class="fa-solid fa-gear gear gear-1"></i>
+                <i class="fa-solid fa-gear gear gear-2"></i>
+            </div>
+            <div class="code">— Error 503 · Servicio no disponible —</div>
+            <h1 class="title">Estamos puliendo <span>la consola</span></h1>
+            <p class="desc">CubanPool está en mantenimiento programado para mejorar tu experiencia. Volveremos en
+                breve con nuevas funciones y mejor rendimiento.</p>
+
+            <div class="progress-card">
+                <div class="progress-header">
+                    <span class="progress-label"><i class="fa-solid fa-wrench"></i> Trabajando en ello...</span>
+                    <span class="progress-pct" id="pct"> </span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill"></div>
+                </div>
+            </div>
+
+            <div class="socials">
+                @php
+                    $youtube = "https://www.youtube.com/@".config('contact.youtube')."/";
+                    $facebook = "https://www.facebook.com/@".config('contact.facebook')."/";
+                @endphp
+                <a href="https://www.instagram.com/{{config('contact.instagram')}}/" title="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="{{$youtube}}" title="Youtube"><i class="fa-brands fa-youtube"></i></a>
+                <a href="{{$facebook}}" title="Facebook"><i class="fa-brands fa-facebook"></i></a>
+                <a href="mailto:{{ config('contact.email') }}" title="Email"><i class="fa-solid fa-envelope"></i></a>
+            </div>
+            <p class="note">Síguenos para actualizaciones en tiempo real</p>
         </div>
     @else
         @include('partials.navbar')
@@ -142,6 +472,22 @@
         </main>
 
         @include('partials.footer')
+
+        <script>
+            window.addEventListener('DOMContentLoaded', function() {
+                document.getElementById('navbarToggle').addEventListener('click', function() {
+                    document.getElementById('navBar').classList.toggle('active');
+                });
+
+                document.getElementById('wloader').style.display = 'none';
+            })
+            AOS.init({
+                duration: 1500, // duración en ms
+                once: true // animar solo una vez
+            });
+        </script>
+
+        @stack('scripts')
     @endif
 
     <div class="window-loader" id="wloader">
@@ -150,6 +496,12 @@
             <span>Cargando...</span>
         </div>
     </div>
+
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('wloader').style.display = 'none';
+        })
+    </script>
 
     <script>
         function googleTranslateElementInit() {
@@ -187,22 +539,6 @@
 
     <!-- Page JS -->
          <script src="{{ asset('assets/js/front-page-landing.js') }}"></script> --}}
-
-    <script>
-        window.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('navbarToggle').addEventListener('click', function() {
-                document.getElementById('navBar').classList.toggle('active');
-            });
-
-            document.getElementById('wloader').style.display = 'none';
-        })
-        AOS.init({
-            duration: 1500, // duración en ms
-            once: true // animar solo una vez
-        });
-    </script>
-
-    @stack('scripts')
 </body>
 
 </html>

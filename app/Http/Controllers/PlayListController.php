@@ -243,11 +243,11 @@ class PlayListController extends Controller
                             }
                         }
 
-                        $zip->close();
-
                         if (!file_exists($zipFilePath)) {
                             return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
                         }
+
+                        $zip->close();
                         
                         if(auth()->check() && auth()->user()->role !== 'admin'){
                             $download = new Download();

@@ -76,6 +76,32 @@ class ItemsRelationManager extends RelationManager
             ])
             ->headerActions([
                 //CreateAction::make()->label('Agregar Archivo')->modalHeading('Agregar Archivo a la PlayList'),
+                Action::make('edit_prices')->label('Editar Precios')
+                    ->modalHeading('Editar el precio de todos los Archivos de la PlayList')
+                    ->schema([
+                        TextInput::make('items_price')->label('Nuevo Precio de los Audios por separado')->numeric()->prefix('$ ')->default(0.00),
+                    ])
+                    ->action(function(array $data){
+                        $playlist = $this->getOwnerRecord();
+
+                        $suc = 0;
+                        $fail = 0;
+                        
+                        // Procesar cada archivo subido                
+                        foreach ($playlist->items as $item) {
+                            try {
+                                $item->update([
+                                    'price' => $data['items_price']
+                                ]);
+
+                                $suc ++;
+                            } catch (\Throwable $th) {
+                                $fail ++;
+                            }
+                        }
+
+                        Notification::make()->title('Proceso terminado')->body('Actualizados: '. $suc . ' archivos. Fallaron: '. $fail)->success()->send();
+                    }),
                 Action::make('fill')->label('Agregar Archivos')
                     ->modalHeading('Agregar Archivos a la PlayList')
                     ->schema([
