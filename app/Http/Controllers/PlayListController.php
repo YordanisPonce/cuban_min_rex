@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use ZipArchive;
 
 class PlayListController extends Controller
@@ -221,7 +222,9 @@ class PlayListController extends Controller
                         $zip = new ZipArchive();
                         $name = str_replace(' ', '_', $playlist->name);
                         $zipFileName = '' . $name . '.zip';
-                        $zipFilePath = storage_path('app/public/files/zip' . $zipFileName);
+                        $uuid = Str::random();
+                        //$zipFilePath = Storage::disk('public')->path('files/zip/' . $uuid .'.zip');
+                        $zipFilePath = storage_path('app/public/files/zip/' . $uuid .'.zip');
 
                         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
                             return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
@@ -243,9 +246,9 @@ class PlayListController extends Controller
                             }
                         }
 
-                        if (!file_exists($zipFilePath)) {
+                        /*if (!file_exists($zipFilePath)) {
                             return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
-                        }
+                        }*/
 
                         $zip->close();
                         
@@ -259,7 +262,7 @@ class PlayListController extends Controller
                             $download->save();
                         }
 
-                        return Response::download($zipFilePath)->deleteFileAfterSend(true);
+                        return Response::download($zipFilePath, $zipFileName)->deleteFileAfterSend(true);
                     }
                 }
             }
