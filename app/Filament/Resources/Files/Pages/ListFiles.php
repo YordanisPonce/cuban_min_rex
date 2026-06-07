@@ -251,7 +251,7 @@ class ListFiles extends ListRecords
 
                         $followers = $file->user->followers;
                         foreach ($followers as $follower) {
-                            if ($follower->ntfs_prefs->new_remixes) {
+                            if ($follower->ntfs_prefs?->new_remixes) {
                                 NotificationController::sendRemixNtf($follower->id, $file->id);
                             }
                         }

@@ -79,7 +79,7 @@ class ListPlayLists extends ListRecords
 
                     $followers = auth()->user()->followers;
                     foreach ($followers as $follower) {
-                        if ($follower->ntfs_prefs->new_remixes) {
+                        if ($follower->ntfs_prefs?->new_remixes) {
                             NotificationController::sendPlayListNtf($follower->id, $playlist->id);
                         }
                     }
