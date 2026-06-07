@@ -237,20 +237,20 @@ class PlayListController extends Controller
                         });
 
                         foreach ($items as $item) {
-                            $path = Storage::disk('s3')->url($item->file_path);
-                            if (Storage::disk('s3')->exists($path)) {
+                            if (Storage::disk('s3')->exists($item->file_path)) {
+                                $path = Storage::disk('s3')->url($item->file_path);
                                 $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
                                 $zip->addFile($path, $fullname);
                             } else {
-                                Log::error('El archivo ' . $path . ' no se ha encontrado.');
+                                Log::error('El archivo ' . $item->title . ' no se ha encontrado.');
                             }
                         }
 
-                        /*if (!file_exists($zipFilePath)) {
-                            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
-                        }*/
-
                         $zip->close();
+
+                        if (!file_exists($zipFilePath)) {
+                            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
+                        }
                         
                         if(auth()->check() && auth()->user()->role !== 'admin'){
                             $download = new Download();
