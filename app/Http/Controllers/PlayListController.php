@@ -238,7 +238,7 @@ class PlayListController extends Controller
 
                         foreach ($items as $item) {
                             if (Storage::disk('s3')->exists($item->file_path)) {
-                                $path = Storage::disk('s3')->url($item->file_path);
+                                $path = Storage::disk('s3')->path($item->file_path);
                                 $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
                                 $zip->addFile($path, $fullname);
                             } else {
