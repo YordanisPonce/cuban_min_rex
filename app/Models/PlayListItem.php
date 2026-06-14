@@ -83,4 +83,22 @@ class PlayListItem extends Model
     public function intro(): ?string {
         return $this->file_path ? Storage::disk('s3')->url($this->file_path) : null;
     }
+
+    public function getExtension()
+    {
+        return pathinfo($this->file_path, PATHINFO_EXTENSION);
+    }
+
+    public function getSize(){
+        $size = Storage::disk('s3')->size($this->file_path);
+        if ($size >= 1073741824) {
+            return number_format($size / 1073741824, 2) . ' GB';
+        } elseif ($size >= 1048576) {
+            return number_format($size / 1048576, 2) . ' MB';
+        } elseif ($size >= 1024) {
+            return number_format($size / 1024, 2) . ' KB';
+        } else {
+            return $size . ' B';
+        }
+    }
 }

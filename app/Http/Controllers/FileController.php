@@ -24,6 +24,51 @@ use Stripe\Subscription;
 
 class FileController extends Controller
 {
+    public function info(Request $request, string $name){
+        $formatName = str_replace('_', ' ', $name);
+
+        $file = File::where('name', $formatName)->first();
+
+        if(!$file){
+            return abort(404);
+        }
+
+        $item = [
+            'name' => $file->name,
+            'poster' => $file->getPosterUrl(),
+            'artist' => $file->user?->name,
+            'description' => null,
+            'bpm' => $file->bpm,
+            'note' => $file->musical_note,
+            'date' => $file->created_at->format('d/m/Y'),
+            'price' => $file->price,
+            'categories' => $file->categories->pluck('name')->toArray(),
+            'intro' => $file->intro(),
+            'size' => $file->getSize(),
+            'ext' => $file->getExtension(),
+            'downloads' => $file->download_count,
+            'canBeDownload' => $file->canBeDownload(),
+            'download_link' => $file->canBeDownload() ? route('file.download', $file->id) : null,
+            'addToCart' => route('file.add.cart', $file->id),
+        ];
+
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
+        return view('info', compact('item', 'banners'));
+    }
+
     public function download(Request $request, string $id)
     {
         $token = $request->get('token');

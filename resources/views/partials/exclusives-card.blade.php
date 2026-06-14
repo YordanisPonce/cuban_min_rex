@@ -6,8 +6,7 @@
         </div>
         <div class="track-info">
             <div class="track-title-row">
-                <span class="track-title">{{$item['title']}}</span>
-                <!--<span class="track-type">{{$item['type']}}</span>-->
+                <a class="track-title" href="{{ route('file.info', str_replace(' ', '_', $item['title']))}}">{{$item['title']}}</a>
             </div>
             <div class="track-artist">{{$item['artist']}}</div>
             <div class="track-waveform">

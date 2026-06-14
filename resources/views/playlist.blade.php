@@ -106,14 +106,14 @@
             if(t.canDownload){
                 tl.innerHTML += `<div class="track-row" id="${t.id}">
                     <div style="position:relative;text-align:center;"><span class="track-num">${i + 1}</span><div class="track-play-icon" onclick="handleCardPlay(${t.id})"><i class="fas fa-play"></i></div></div>
-                    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title">${t.title}</div><div class="track-artist">${t.artist}</div></div></div>
+                    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title"><a href="${t.info}">${t.title}</a></div><div class="track-artist">${t.artist}</div></div></div>
                     <div class="track-downloads"><i class="fas fa-download" style="margin-right:3px;font-size:.65rem;"></i>${t.downloads}</div>
                     <div class="track-price">${t.price}</div><div><a class="btn-secondary add-to-cart" href="${t.downloadLink}"><i class="fas fa-download"></i> <span>Descargar</span></a></div>
                 </div>`;
             } else {
                 tl.innerHTML += `<div class="track-row" id="${t.id}">
                     <div style="position:relative;text-align:center;"><span class="track-num">${i + 1}</span><div class="track-play-icon" onclick="handleCardPlay(${t.id})"><i class="fas fa-play"></i></div></div>
-                    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title">${t.title}</div><div class="track-artist">${t.artist}</div></div></div>
+                    <div class="track-info"><img class="track-cover" src="${t.img}" alt="${t.title}"><div style="min-width:0;"><div class="track-title"><a href="${t.info}">${t.title}</a></div><div class="track-artist">${t.artist}</div></div></div>
                     <div class="track-downloads"><i class="fas fa-download" style="margin-right:3px;font-size:.65rem;"></i>${t.downloads}</div>
                     <div class="track-price">${t.price}</div><div><a class="btn-secondary add-to-cart" href="${t.addToCart}"><i class="fas fa-cart-plus"></i> <span>Añadir</span></a></div>
                 </div>`;

@@ -122,14 +122,6 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
 
-    Route::get('files/download/{path}', function (string $path) {
-        if (!request()->hasValidSignature()) {
-            abort(403); // URL expiró o es inválida
-        }
-
-        return Storage::disk('s3')->download($path);
-    })->name('files.download');
-
     Route::get('files/cart/add/{file}', [FileController::class, 'addToCart'])
         ->name('file.add.cart');
 
@@ -138,6 +130,9 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     
     Route::get('files/cart/empty', [FileController::class, 'emptyCart'])
         ->name('file.empty.cart');
+    
+    Route::get('info/file/{name}', [FileController::class, 'info'])
+        ->name('file.info');
 
     Route::get('cart', [HomeController::class, 'cart'])->name('cart');
     
@@ -187,6 +182,8 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
         return response(null, 404);
     });
+    Route::get('/playlists/lists/{playlist}/info/{name}', [PlayListController::class, 'info'])
+        ->name('playlist.item.info');
 
     // Rutas para textos legales
     Route::get('/legal', [HomeController::class, 'legal'])->name('legal');

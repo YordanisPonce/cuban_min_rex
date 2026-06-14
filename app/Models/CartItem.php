@@ -75,6 +75,6 @@ class CartItem extends Model
 
         if($this->playlist) return route('playlist.remove.cart', str_replace(' ', '_', $this->playlist?->name));
 
-        return route('playlist.remove.item.cart', [str_replace(' ', '_', $this->playlist?->name), $this->playlistItem->id]);
+        return route('playlist.remove.item.cart', [str_replace(' ', '_', $this->playlistItem->playlist?->name), $this->playlistItem->id]);
     }
 }

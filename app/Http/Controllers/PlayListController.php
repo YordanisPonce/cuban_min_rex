@@ -162,6 +162,7 @@ class PlayListController extends Controller
                 'canDownload' => $playlist->canBeDownload(),
                 'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_' , $playlist->name), $track->id]) : null,
                 'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_' , $playlist->name), $track->id]),
+                'info' => route('playlist.item.info', [str_replace(' ','_', $playlist->name),str_replace(' ','_', $track->title)]),
             ];
         });
 
@@ -200,6 +201,54 @@ class PlayListController extends Controller
         $index = 4;
 
         return view('playlist', compact('playlist', 'index', 'tracks', 'similar', 'banners'));
+    }
+
+    /**
+     * Display the specified resource info.
+     */
+    public function info(string $playlist, string $name){
+        $playlist = PlayList::where('name',  str_replace('_', ' ', $playlist))->first();
+
+        if(!$playlist) return abort(404);
+
+        $song = $playlist->items()->where('title', str_replace('_', ' ', $name))->first();
+
+        if(!$song) return abort(404);
+
+        $item = [
+            'name' => $song->title,
+            'poster' => $playlist->getCoverUrl(),
+            'artist' => $playlist->user?->name,
+            'description' => 'Perteneciente a la Playlist '.$playlist->name,
+            'bpm' => null,
+            'note' => null,
+            'date' => $song->created_at->format('d/m/Y'),
+            'price' => $song->price,
+            'categories' => null,
+            'intro' => $song->intro(),
+            'size' => $song->getSize(),
+            'ext' => $song->getExtension(),
+            'downloads' => $song->downloads->count(),
+            'canBeDownload' => $playlist->canBeDownload(),
+            'download_link' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ','_', $playlist->name),$song->id]) : null,
+            'addToCart' => route('playlist.add.item.cart', [str_replace(' ','_', $playlist->name),$song->id]),
+        ];
+
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
+        return view('info', compact('item', 'banners'));
     }
 
     /**

@@ -296,12 +296,8 @@
             setLoader();
 
             const url = "{{ $file->intro() }}";
-            
-            console.log(url);
 
             audio = new Audio(url.replace('cubanminiles', "cubanmin/files"));
-
-            console.log(audio.src);
 
             audio.addEventListener("canplaythrough", () => {
                 audioPlayer.src = audio.src;

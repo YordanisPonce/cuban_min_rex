@@ -11,7 +11,7 @@
         <img class="playlist-cover" src="{{ $item['img'] }}"/>
     </div>
     <div class="card-body">
-        <div class="card-title"><i class="fas fa-bolt text-primary"></i> <span class="pack-name">{{ $item['title'] }}</span></div>
+        <div class="card-title"><i class="fas fa-bolt text-primary"></i> <a class="pack-name" href="{{ route('file.info', str_replace(' ', '_', $item['title']))}}">{{ $item['title'] }}</a></div>
         <div class="card-meta">
             <div>
                 @foreach ($item['genre'] as $g)
