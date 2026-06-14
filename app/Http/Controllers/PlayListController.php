@@ -267,7 +267,7 @@ class PlayListController extends Controller
 
             if($plan || auth()->user()->role === 'admin'){
                 if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
-                    if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads || auth()->user()->role === 'admin') {
+                    if (auth()->user()->role === 'admin' || auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
                         $zip = new ZipArchive();
                         $name = str_replace(' ', '_', $playlist->name);
                         $zipFileName = '' . $name . '.zip';
@@ -282,14 +282,15 @@ class PlayListController extends Controller
                         $items = $playlist->items()->get();
 
                         $items = $items->filter(function ($item) {
-                            return pathinfo(Storage::disk('s3')->url($item->file_path), PATHINFO_EXTENSION) !== 'zip';
+                            return $item->file_path && pathinfo(Storage::disk('s3')->url($item->file_path), PATHINFO_EXTENSION) !== 'zip';
                         });
 
                         foreach ($items as $item) {
                             if (Storage::disk('s3')->exists($item->file_path)) {
-                                $path = Storage::disk('s3')->path($item->file_path);
-                                $fullname = $item->title . '.' . pathinfo($path, PATHINFO_EXTENSION);
-                                $zip->addFile($path, $fullname);
+                                $contents = Storage::disk('s3')->get($item->file_path);
+                                $extension = pathinfo($item->file_path, PATHINFO_EXTENSION);
+                                $fullname = $item->title . '.' . $extension;
+                                $zip->addFromString($fullname, $contents);
                             } else {
                                 Log::error('El archivo ' . $item->title . ' no se ha encontrado.');
                             }
