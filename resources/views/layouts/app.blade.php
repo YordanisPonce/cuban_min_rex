@@ -85,8 +85,8 @@
     <link rel="stylesheet" href="{{ asset('assets/css/app.css') }}" />
 
     <link rel="stylesheet" href="{{ asset('assets/vendor/libs/aos/aos.css') }}" />
-    <link rel="stylesheet" href="../../assets/vendor/libs/plyr/plyr.css" />
-    <script src="../../assets/vendor/libs/plyr/plyr.js"></script>
+    <link rel="stylesheet" href="{{ asset('assets/vendor/libs/plyr/plyr.css') }}" />
+    <script src="{{ asset('assets/vendor/libs/plyr/plyr.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/aos/aos.js') }}"></script>
 
     <style>
