@@ -272,8 +272,8 @@ class PlayListController extends Controller
                         $name = str_replace(' ', '_', $playlist->name);
                         $zipFileName = '' . $name . '.zip';
                         $uuid = Str::random();
-                        //$zipFilePath = Storage::disk('public')->path('files/zip/' . $uuid .'.zip');
-                        $zipFilePath = storage_path('app/public/files/zip/' . $uuid .'.zip');
+                        $zipFilePath = Storage::disk('public')->path('files/zip/' . $uuid .'.zip');
+                        //$zipFilePath = storage_path('app/public/files/zip/' . $uuid .'.zip');
 
                         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
                             return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
