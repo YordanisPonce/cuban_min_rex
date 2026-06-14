@@ -336,7 +336,7 @@ class PlayListController extends Controller
 
             if($plan || auth()->user()->role === 'admin'){
                 if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
-                    if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads || auth()->user()->role === 'admin') {
+                    if (auth()->user()->role === 'admin' || auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
                         $item = $playlist->items()->where('id', $itemId)->first();
 
                         $path = $item->file_path;

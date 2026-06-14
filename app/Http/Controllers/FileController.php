@@ -115,7 +115,7 @@ class FileController extends Controller
 
             if($plan || auth()->user()->role === 'admin'){
                 if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
-                    if (auth()->user()->get_current_plan_consume_downloads() < $plan->downloads || auth()->user()->role === 'admin') {
+                    if (auth()->user()->role === 'admin' || auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
                         $file = File::find($id);
 
                         $path = $file->original_file;
