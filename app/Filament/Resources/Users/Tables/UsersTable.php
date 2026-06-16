@@ -45,7 +45,7 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('suscription')
                     ->label('Subscripción Activa')
-                    ->default(fn(User $record) => $record->hasActivePlan() ? $record->currentPlan->name : 'Sin Plan Activo'),
+                    ->default(fn(User $record) => $record->hasActivePlan() ? $record->currentPlan?->name : 'Sin Plan Activo'),
                 TextColumn::make('currentDownloads')
                     ->label('Descargas')
                     ->alignCenter()
