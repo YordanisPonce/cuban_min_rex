@@ -38,47 +38,19 @@ class RenewSuscription extends Command
             $user = User::where('email', $email)->first();
             if ($user) {
                 $this->info("Accediendo a los datos de $user->name");
-                $planId = $user->current_plan_id;
-                if(!$planId){
-                    $this->warn("No se encontro plan reciente, buscar en registros ....");
-                    $order = Order::where('user_id', $user->id)->whereNotNull('plan_id')->where('status', 'paid')->orderBy('created_at', 'desc')->first();
-                    if(!$order){
-                        $this->warn("No se encontraron suscripciones anteriores en los registros, no se puede renovar. Saltando.");
-                        return;
-                    }
-                    $this->info("Última suscripción encontrada, fecha de suscripción $order->created_at. Recopilando datos del plan.....");
-                    $plan = Plan::find($order->plan_id);
-                    if(!$plan){
-                        $this->warn("No se encontraron datos del plan. Deteniendo Proceso.");
-                        return;
-                    }
-                    $this->info("Actualizando suscripción de $user->name.....");
-                    $user->current_plan_id = $plan->id;
-                    $user->plan_start_at = Carbon::now();
-                    $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
-                    $user->save();
-                    Subscription::updateOrCreate(
-                        ['user_id' => $user->id],
-                        ['ends_at' => $user->plan_expires_at]
-                    );
-                    $order = new Order();
-                    $order->user_id = $user->id;
-                    $order->plan_id = $plan->id;
-                    $order->amount = $plan?->price;
-                    $order->status = 'paid';
-                    $order->paid_at = Carbon::now();
-                    $order->customer_email = $user->email;
-                    $order->save();
-                    $this->info("Suscripción Actualizada.");
+                $this->warn("Buscando registros de suscripciones ....");
+                $order = Order::where('user_id', $user->id)->whereNotNull('plan_id')->where('status', 'paid')->orderBy('created_at', 'desc')->first();
+                if(!$order){
+                    $this->warn("No se encontraron suscripciones anteriores en los registros, no se puede renovar. Saltando.");
                     return;
                 }
-                $this->info("Accediendo a los datos del plan...");
-                $plan = Plan::find($planId);
+                $this->info("Última suscripción encontrada, fecha de suscripción $order->created_at. Recopilando datos del plan.....");
+                $plan = Plan::find($order->plan_id);
                 if(!$plan){
                     $this->warn("No se encontraron datos del plan. Deteniendo Proceso.");
                     return;
                 }
-                $this->info("Actualizando suscripción de $user->name...");
+                $this->info("Actualizando suscripción de $user->name.....");
                 $user->current_plan_id = $plan->id;
                 $user->plan_start_at = Carbon::now();
                 $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
@@ -87,14 +59,18 @@ class RenewSuscription extends Command
                     ['user_id' => $user->id],
                     ['ends_at' => $user->plan_expires_at]
                 );
-                $order = new Order();
-                $order->user_id = $user->id;
-                $order->plan_id = $plan->id;
-                $order->amount = $plan?->price;
-                $order->status = 'paid';
-                $order->paid_at = Carbon::now();
-                $order->customer_email = $user->email;
-                $order->save();
+                if(Carbon::parse($order->created_at)->greaterThan(Carbon::now()->subHours(72))){
+                    $newOrder = new Order();
+                    $newOrder->user_id = $user->id;
+                    $newOrder->plan_id = $plan->id;
+                    $newOrder->amount = $plan?->price;
+                    $newOrder->status = 'paid';
+                    $newOrder->paid_at = Carbon::now();
+                    $newOrder->customer_email = $user->email;
+                    $newOrder->save();
+                }
+                $this->info("Suscripción Actualizada.");
+                return;
             } else {
                 $this->info("No se pudo acceder a los datos de $email");
             }
