@@ -45,14 +45,14 @@ class UsersTable
                     ->sortable(),
                 TextColumn::make('suscription')
                     ->label('Subscripción Activa')
-                    ->default(fn(User $record) => $record->hasActivePlan() ? $record->currentPlan?->name : 'Sin Plan Activo'),
+                    ->default(fn(User $record) => $record->hasActivePlan() ? $record->currentPlan?->name ?? 'Desconocido' : 'Sin Plan Activo'),
                 TextColumn::make('currentDownloads')
                     ->label('Descargas')
                     ->alignCenter()
                     ->default(function(User $record){
                         if ($record->hasActivePlan()) {
                             if ($record->plan_start_at) {
-                                return $record->get_current_plan_consume_downloads() . ' / ' . ($record->currentPlan?->downloads ?? 1);
+                                return $record->get_current_plan_consume_downloads() . ' / ' . ($record->currentPlan?->downloads ?? 0);
                             }
                             return 'Ilimitadas';
                         }
