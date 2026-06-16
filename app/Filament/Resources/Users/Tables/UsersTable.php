@@ -52,7 +52,7 @@ class UsersTable
                     ->default(function(User $record){
                         if ($record->hasActivePlan()) {
                             if ($record->plan_start_at) {
-                                return $record->get_current_plan_consume_downloads() . ' / ' . $record->currentPlan->downloads;
+                                return $record->get_current_plan_consume_downloads() . ' / ' . ($record->currentPlan?->downloads ?? 1);
                             }
                             return 'Ilimitadas';
                         }
