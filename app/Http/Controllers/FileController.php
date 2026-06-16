@@ -110,7 +110,7 @@ class FileController extends Controller
             if (auth()->user()->currentPlan) {
                 $plan = auth()->user()->currentPlan;
             } else {
-                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
+                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
             if($plan || auth()->user()->role === 'admin'){
