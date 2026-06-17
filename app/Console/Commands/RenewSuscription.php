@@ -59,15 +59,20 @@ class RenewSuscription extends Command
                     ['user_id' => $user->id],
                     ['ends_at' => $user->plan_expires_at]
                 );
-                if(Carbon::parse($order->created_at)->greaterThan(Carbon::now()->subHours(72))){
+                if(!Carbon::parse($order->created_at)->greaterThan(Carbon::now()->subHours(72))){
                     $newOrder = new Order();
                     $newOrder->user_id = $user->id;
                     $newOrder->plan_id = $plan->id;
                     $newOrder->amount = $plan?->price;
                     $newOrder->status = 'paid';
                     $newOrder->paid_at = Carbon::now();
+                    $newOrder->expires_at = $user->plan_expires_at;
                     $newOrder->customer_email = $user->email;
                     $newOrder->save();
+                } else {
+                    $order->expires_at = $user->plan_expires_at;
+                    $order->paid_at = Carbon::now();
+                    $order->save();
                 }
                 $this->info("Suscripción Actualizada.");
                 return;

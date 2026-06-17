@@ -102,6 +102,8 @@ class PlayList extends Model
                 return true;
             }
 
+            return false;
+
             $firstPlan = Plan::orderBy('price')->first();
 
             if($user->hasActivePlan() && $user->current_plan_id){

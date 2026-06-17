@@ -296,6 +296,8 @@ class PlayListController extends Controller
                             }
                         }
 
+                        $zip->addFromString('copyright.txt', 'Esta playlist se ha descargado desde Cuban Pool');
+
                         $zip->close();
 
                         if (!file_exists($zipFilePath)) {
