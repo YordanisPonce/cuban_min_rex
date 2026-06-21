@@ -272,8 +272,16 @@ class PlayListController extends Controller
                         $name = str_replace(' ', '_', $playlist->name);
                         $zipFileName = '' . $name . '.zip';
                         $uuid = Str::random();
-                        $zipFilePath = Storage::disk('public')->path('files/zip/' . $uuid .'.zip');
+                        $zipFilePath = Storage::disk('local')->path('files/zip/' . $uuid .'.zip');
                         //$zipFilePath = storage_path('app/public/files/zip/' . $uuid .'.zip');
+
+                        // Asegurar que el directorio existe
+                        $zipDirectory = dirname($zipFilePath);
+                        if (!file_exists($zipDirectory)) {
+                            mkdir($zipDirectory, 0755, true);
+                        }
+
+                        Log::debug('Creating ZIP file at: ' . $zipFilePath);
 
                         if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
                             return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
@@ -281,9 +289,7 @@ class PlayListController extends Controller
 
                         $items = $playlist->items()->get();
 
-                        $items = $items->filter(function ($item) {
-                            return $item->file_path && pathinfo(Storage::disk('s3')->url($item->file_path), PATHINFO_EXTENSION) !== 'zip';
-                        });
+                        Log::debug('Adding files to ZIP archive');
 
                         foreach ($items as $item) {
                             if (Storage::disk('s3')->exists($item->file_path)) {
