@@ -11,18 +11,21 @@ use App\Models\User;
 use App\Models\Cart;
 use App\Models\Folder;
 use App\Models\Order;
-use App\Models\PlayListItem;
-use Carbon\Carbon;
+use App\Jobs\BuildPlaylistZipJob;
+use App\Models\PlaylistZipRequest;
+use App\Services\PlaylistZipBuilder;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
-use ZipArchive;
+use Illuminate\View\View;
 
 class PlayListController extends Controller
 {
+    private const ASYNC_ZIP_THRESHOLD_BYTES = 314572800; // 300 MB
     /**
      * Display a listing of the resource.
      */
@@ -254,17 +257,99 @@ class PlayListController extends Controller
     /**
      * Download the specified resource
      */
-    public function download(string $name)
+    public function download(string $name, PlaylistZipBuilder $builder)
     {
-        set_time_limit(0);
-        ini_set('memory_limit', '1024M');
-
         $playlist = PlayList::where('name', str_replace('_', ' ', $name))->first();
 
         if (!$playlist) {
             return redirect()->back()->with('error', 'Playlist no encontrada.');
         }
 
+        if ($authError = $this->authorizePlaylistDownload($playlist)) {
+            return $authError;
+        }
+
+        $user = auth()->user();
+        $zipFileName = str_replace(' ', '_', $playlist->name) . '.zip';
+
+        $existingRequest = $this->findReusableZipRequest($user->id, $playlist->id);
+
+        if ($existingRequest?->isReady()) {
+            return $this->redirectToZipDownload($existingRequest);
+        }
+
+        if ($existingRequest?->isInProgress()) {
+            return redirect()->route('playlist.download.status', [
+                'playlist' => str_replace(' ', '_', $playlist->name),
+                'uuid' => $existingRequest->uuid,
+            ]);
+        }
+
+        $items = $playlist->items()->get();
+        $totalBytes = $builder->estimateTotalBytes($items);
+
+        if ($totalBytes >= self::ASYNC_ZIP_THRESHOLD_BYTES) {
+            return $this->queuePlaylistZipDownload($playlist, $user, $zipFileName, $items->count());
+        }
+
+        return $this->buildPlaylistZipSynchronously($playlist, $user, $zipFileName, $builder);
+    }
+
+    public function downloadStatus(string $name, string $uuid): View|RedirectResponse
+    {
+        $zipRequest = $this->findZipRequestForUser($name, $uuid);
+
+        if (!$zipRequest) {
+            return redirect()->route('playlist.show', $name)->with('error', 'Solicitud de descarga no encontrada.');
+        }
+
+        if ($zipRequest->isReady()) {
+            return $this->redirectToZipDownload($zipRequest);
+        }
+
+        return view('playlist-download-status', [
+            'playlist' => $zipRequest->playList,
+            'zipRequest' => $zipRequest,
+            'statusUrl' => route('playlist.download.status.check', [
+                'playlist' => str_replace(' ', '_', $zipRequest->playList->name),
+                'uuid' => $zipRequest->uuid,
+            ]),
+        ]);
+    }
+
+    public function downloadStatusCheck(string $name, string $uuid): JsonResponse
+    {
+        $zipRequest = $this->findZipRequestForUser($name, $uuid);
+
+        if (!$zipRequest) {
+            return response()->json(['status' => 'not_found'], 404);
+        }
+
+        if ($zipRequest->isReady()) {
+            return response()->json([
+                'status' => 'ready',
+                'download_url' => $this->temporaryZipUrl($zipRequest),
+                'tracks_added' => $zipRequest->tracks_added,
+                'tracks_total' => $zipRequest->tracks_total,
+            ]);
+        }
+
+        if ($zipRequest->status === 'failed') {
+            return response()->json([
+                'status' => 'failed',
+                'message' => $zipRequest->error_message ?? 'No se pudo generar el archivo ZIP.',
+            ]);
+        }
+
+        return response()->json([
+            'status' => $zipRequest->status,
+            'tracks_added' => $zipRequest->tracks_added,
+            'tracks_total' => $zipRequest->tracks_total,
+        ]);
+    }
+
+    private function authorizePlaylistDownload(PlayList $playlist): ?RedirectResponse
+    {
         if (!$playlist->canBeDownload()) {
             return redirect()->back()->with('error', 'Esta playlist no está disponible para descarga.');
         }
@@ -275,16 +360,11 @@ class PlayListController extends Controller
             return redirect()->back()->with('error', 'Debe iniciar sesión para descargar.');
         }
 
-        $plan = null;
-
-        if ($user->currentPlan) {
-            $plan = $user->currentPlan;
-        } else {
-            $plan = Order::where('user_id', $user->id)
+        $plan = $user->currentPlan
+            ?? Order::where('user_id', $user->id)
                 ->where('status', 'paid')
                 ->orderBy('created_at', 'desc')
                 ->first()?->plan;
-        }
 
         if (!$plan && $user->role !== 'admin') {
             return redirect()->back()->with('error', 'No tiene un plan activo para descargar.');
@@ -298,143 +378,138 @@ class PlayListController extends Controller
             return redirect()->back()->with('error', 'Ha superado las descargas por mes permitidas por su plan, considere mejorar su plan.');
         }
 
-        $zip = new ZipArchive();
+        return null;
+    }
 
-        $zipBaseName = str_replace(' ', '_', $playlist->name);
-        $zipFileName = $zipBaseName . '.zip';
-
+    private function queuePlaylistZipDownload(
+        PlayList $playlist,
+        User $user,
+        string $zipFileName,
+        int $tracksTotal,
+    ): RedirectResponse {
         $uuid = Str::random(40);
 
+        $zipRequest = PlaylistZipRequest::create([
+            'uuid' => $uuid,
+            'user_id' => $user->id,
+            'play_list_id' => $playlist->id,
+            'status' => 'pending',
+            'zip_file_name' => $zipFileName,
+            'tracks_total' => $tracksTotal,
+        ]);
+
+        BuildPlaylistZipJob::dispatch($zipRequest);
+
+        return redirect()->route('playlist.download.status', [
+            'playlist' => str_replace(' ', '_', $playlist->name),
+            'uuid' => $zipRequest->uuid,
+        ])->with('success', 'Estamos preparando tu descarga. Esto puede tardar varios minutos.');
+    }
+
+    private function buildPlaylistZipSynchronously(
+        PlayList $playlist,
+        User $user,
+        string $zipFileName,
+        PlaylistZipBuilder $builder,
+    ): RedirectResponse {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
+
+        $uuid = Str::random(40);
         $localZipPath = Storage::disk('local')->path('files/zip/' . $uuid . '.zip');
 
-        $zipDirectory = dirname($localZipPath);
-
-        if (!file_exists($zipDirectory)) {
-            mkdir($zipDirectory, 0755, true);
-        }
-
-        Log::debug('Creating ZIP file at: ' . $localZipPath);
-
-        if ($zip->open($localZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
-            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
-        }
-
-        $items = $playlist->items()->get();
-
-        Log::debug('Adding files to ZIP archive');
-
-        $tempFiles = [];
-
-        foreach ($items as $item) {
-            try {
-                if (!Storage::disk('s3')->exists($item->file_path)) {
-                    Log::error('El archivo ' . $item->title . ' no se ha encontrado en S3.');
-                    continue;
-                }
-
-                $stream = Storage::disk('s3')->readStream($item->file_path);
-
-                if (!$stream) {
-                    Log::error('No se pudo obtener el stream del archivo: ' . $item->file_path);
-                    continue;
-                }
-
-                $tempFile = tempnam(sys_get_temp_dir(), 'cmr_track_');
-                file_put_contents($tempFile, $stream);
-                fclose($stream);
-
-                $extension = pathinfo($item->file_path, PATHINFO_EXTENSION);
-
-                $safeTitle = preg_replace('/[^A-Za-z0-9_\- áéíóúÁÉÍÓÚñÑ]/u', '', $item->title);
-
-                if (!$safeTitle) {
-                    $safeTitle = 'track_' . $item->id;
-                }
-
-                $fileNameInsideZip = $safeTitle . '.' . $extension;
-
-                $zip->addFile($tempFile, $fileNameInsideZip);
-                $tempFiles[] = $tempFile;
-            } catch (\Throwable $e) {
-                Log::error('Error agregando archivo al ZIP: ' . $item->file_path . ' - ' . $e->getMessage());
-                continue;
-            }
-        }
-
-        $copyrightTemp = tempnam(sys_get_temp_dir(), 'cmr_copyright_');
-        file_put_contents($copyrightTemp, 'Esta playlist se ha descargado desde Cuban Pool');
-        $zip->addFile($copyrightTemp, 'copyright.txt');
-        $tempFiles[] = $copyrightTemp;
-
-        $zip->close();
-
-        foreach ($tempFiles as $tempFile) {
-            @unlink($tempFile);
-        }
-
-        if (!file_exists($localZipPath)) {
-            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Subir ZIP temporal a S3
-        |--------------------------------------------------------------------------
-        */
-
-        $s3ZipPath = 'files/zip/temp/' . $uuid . '.zip';
-
         try {
+            Log::debug('Creating ZIP file at: ' . $localZipPath);
+
+            $builder->build($playlist, $localZipPath);
+
+            $s3ZipPath = 'files/zip/temp/' . $uuid . '.zip';
             $handle = fopen($localZipPath, 'r');
             Storage::disk('s3')->put($s3ZipPath, $handle);
-            fclose($handle);
-        } catch (\Throwable $e) {
-            Log::error('Error subiendo ZIP a S3: ' . $e->getMessage());
+
+            if (is_resource($handle)) {
+                fclose($handle);
+            }
 
             @unlink($localZipPath);
 
-            return response()->json(['error' => 'No se pudo subir el ZIP a S3'], 500);
+            $this->registerPlaylistDownload($user, $playlist);
+
+            return redirect($this->temporaryZipUrlFromPath($s3ZipPath, $zipFileName));
+        } catch (\Throwable $e) {
+            Log::error('Error generando ZIP de playlist: ' . $e->getMessage());
+            @unlink($localZipPath);
+
+            return redirect()->back()->with('error', 'No se pudo generar la descarga. Inténtelo de nuevo.');
+        }
+    }
+
+    private function findReusableZipRequest(int $userId, int $playlistId): ?PlaylistZipRequest
+    {
+        return PlaylistZipRequest::query()
+            ->where('user_id', $userId)
+            ->where('play_list_id', $playlistId)
+            ->whereIn('status', ['pending', 'processing', 'ready'])
+            ->where(function ($query) {
+                $query->whereNull('expires_at')
+                    ->orWhere('expires_at', '>', now());
+            })
+            ->latest()
+            ->first();
+    }
+
+    private function findZipRequestForUser(string $name, string $uuid): ?PlaylistZipRequest
+    {
+        $user = auth()->user();
+
+        if (!$user) {
+            return null;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Borrar ZIP local
-        |--------------------------------------------------------------------------
-        */
+        return PlaylistZipRequest::query()
+            ->with('playList')
+            ->where('uuid', $uuid)
+            ->where('user_id', $user->id)
+            ->whereHas('playList', function ($query) use ($name) {
+                $query->where('name', str_replace('_', ' ', $name));
+            })
+            ->first();
+    }
 
-        @unlink($localZipPath);
+    private function redirectToZipDownload(PlaylistZipRequest $zipRequest): RedirectResponse
+    {
+        return redirect($this->temporaryZipUrl($zipRequest));
+    }
 
-        /*
-        |--------------------------------------------------------------------------
-        | Registrar descarga
-        |--------------------------------------------------------------------------
-        */
+    private function temporaryZipUrl(PlaylistZipRequest $zipRequest): string
+    {
+        return $this->temporaryZipUrlFromPath($zipRequest->s3_path, $zipRequest->zip_file_name);
+    }
 
-        if ($user->role !== 'admin') {
-            $download = new Download();
-            $download->user_id = $user->id;
-            $download->play_list_id = $playlist->id;
-            $download->amount = $user->downloads_cost();
-            $download->user_amount = $user->downloads_cost() * 0.7;
-            $download->admin_amount = $user->downloads_cost() * 0.1;
-            $download->save();
-        }
-
-        /*
-        |--------------------------------------------------------------------------
-        | Descargar directo desde S3
-        |--------------------------------------------------------------------------
-        */
-
-        $temporaryUrl = Storage::disk('s3')->temporaryUrl(
-            $s3ZipPath,
+    private function temporaryZipUrlFromPath(string $s3Path, string $zipFileName): string
+    {
+        return Storage::disk('s3')->temporaryUrl(
+            $s3Path,
             now()->addMinutes(30),
             [
                 'ResponseContentDisposition' => 'attachment; filename="' . $zipFileName . '"',
             ]
         );
+    }
 
-        return redirect($temporaryUrl);
+    private function registerPlaylistDownload(User $user, PlayList $playlist): void
+    {
+        if ($user->role === 'admin') {
+            return;
+        }
+
+        $download = new Download();
+        $download->user_id = $user->id;
+        $download->play_list_id = $playlist->id;
+        $download->amount = $user->downloads_cost();
+        $download->user_amount = $user->downloads_cost() * 0.7;
+        $download->admin_amount = $user->downloads_cost() * 0.1;
+        $download->save();
     }
 
     /**

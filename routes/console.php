@@ -9,3 +9,7 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('app:auto-pay-command')->monthlyOn(1, '23:59');
+
+Schedule::command('queue:work database --stop-when-empty --max-time=3600 --tries=1')
+    ->everyMinute()
+    ->withoutOverlapping();

@@ -149,6 +149,8 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/playlists/lists', [PlayListController::class, 'list'])->name('playlist.list');
     Route::get('/playlists/lists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
     Route::get('/playlists/lists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');
+    Route::get('/playlists/lists/{playlist}/download/status/{uuid}', [PlayListController::class, 'downloadStatus'])->name('playlist.download.status');
+    Route::get('/playlists/lists/{playlist}/download/status/{uuid}/check', [PlayListController::class, 'downloadStatusCheck'])->name('playlist.download.status.check');
     Route::get('/playlists/lists/{playlist}/download_item/{itemId}', [PlayListController::class, 'download_item'])->name('playlist.download_item');
     Route::get('/playlists/lists/{playlist}/add_to_cart', [PlayListController::class, 'addToCart'])->name('playlist.add.cart');
     Route::get('/playlists/lists/{playlist}/add_item_to_cart/{itemId}', [PlayListController::class, 'addItemToCart'])->name('playlist.add.item.cart');
