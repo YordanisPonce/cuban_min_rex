@@ -254,78 +254,187 @@ class PlayListController extends Controller
     /**
      * Download the specified resource
      */
-    public function download(string $name) {
-        $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
-        if($playlist->canBeDownload()){
-            $plan = null;
+    public function download(string $name)
+    {
+        set_time_limit(0);
+        ini_set('memory_limit', '1024M');
 
-            if (auth()->user()->currentPlan) {
-                $plan = auth()->user()->currentPlan;
-            } else {
-                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
-            }
+        $playlist = PlayList::where('name', str_replace('_', ' ', $name))->first();
 
-            if($plan || auth()->user()->role === 'admin'){
-                if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
-                    if (auth()->user()->role === 'admin' || auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
-                        $zip = new ZipArchive();
-                        $name = str_replace(' ', '_', $playlist->name);
-                        $zipFileName = '' . $name . '.zip';
-                        $uuid = Str::random();
-                        $zipFilePath = Storage::disk('local')->path('files/zip/' . $uuid .'.zip');
-                        //$zipFilePath = storage_path('app/public/files/zip/' . $uuid .'.zip');
+        if (!$playlist) {
+            return redirect()->back()->with('error', 'Playlist no encontrada.');
+        }
 
-                        // Asegurar que el directorio existe
-                        $zipDirectory = dirname($zipFilePath);
-                        if (!file_exists($zipDirectory)) {
-                            mkdir($zipDirectory, 0755, true);
-                        }
+        if (!$playlist->canBeDownload()) {
+            return redirect()->back()->with('error', 'Esta playlist no está disponible para descarga.');
+        }
 
-                        Log::debug('Creating ZIP file at: ' . $zipFilePath);
+        $user = auth()->user();
 
-                        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
-                            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
-                        }
+        if (!$user) {
+            return redirect()->back()->with('error', 'Debe iniciar sesión para descargar.');
+        }
 
-                        $items = $playlist->items()->get();
+        $plan = null;
 
-                        Log::debug('Adding files to ZIP archive');
+        if ($user->currentPlan) {
+            $plan = $user->currentPlan;
+        } else {
+            $plan = Order::where('user_id', $user->id)
+                ->where('status', 'paid')
+                ->orderBy('created_at', 'desc')
+                ->first()?->plan;
+        }
 
-                        foreach ($items as $item) {
-                            if (Storage::disk('s3')->exists($item->file_path)) {
-                                $contents = Storage::disk('s3')->get($item->file_path);
-                                $extension = pathinfo($item->file_path, PATHINFO_EXTENSION);
-                                $fullname = $item->title . '.' . $extension;
-                                $zip->addFromString($fullname, $contents);
-                            } else {
-                                Log::error('El archivo ' . $item->title . ' no se ha encontrado.');
-                            }
-                        }
+        if (!$plan && $user->role !== 'admin') {
+            return redirect()->back()->with('error', 'No tiene un plan activo para descargar.');
+        }
 
-                        $zip->addFromString('copyright.txt', 'Esta playlist se ha descargado desde Cuban Pool');
+        if (!$user->plan_start_at && $user->role !== 'admin') {
+            return redirect()->back()->with('error', 'Su plan no está activo todavía.');
+        }
 
-                        $zip->close();
+        if ($user->role !== 'admin' && $user->get_current_plan_consume_downloads() >= $plan->downloads) {
+            return redirect()->back()->with('error', 'Ha superado las descargas por mes permitidas por su plan, considere mejorar su plan.');
+        }
 
-                        if (!file_exists($zipFilePath)) {
-                            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
-                        }
-                        
-                        if(auth()->check() && auth()->user()->role !== 'admin'){
-                            $download = new Download();
-                            $download->user_id = auth()->check() ? auth()->user()->id : null;
-                            $download->play_list_id = $playlist->id;
-                            $download->amount = auth()->user()->downloads_cost();
-                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
-                            $download->save();
-                        }
+        $zip = new ZipArchive();
 
-                        return Response::download($zipFilePath, $zipFileName)->deleteFileAfterSend(true);
-                    }
+        $zipBaseName = str_replace(' ', '_', $playlist->name);
+        $zipFileName = $zipBaseName . '.zip';
+
+        $uuid = Str::random(40);
+
+        $localZipPath = Storage::disk('local')->path('files/zip/' . $uuid . '.zip');
+
+        $zipDirectory = dirname($localZipPath);
+
+        if (!file_exists($zipDirectory)) {
+            mkdir($zipDirectory, 0755, true);
+        }
+
+        Log::debug('Creating ZIP file at: ' . $localZipPath);
+
+        if ($zip->open($localZipPath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== true) {
+            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+        }
+
+        $items = $playlist->items()->get();
+
+        Log::debug('Adding files to ZIP archive');
+
+        $tempFiles = [];
+
+        foreach ($items as $item) {
+            try {
+                if (!Storage::disk('s3')->exists($item->file_path)) {
+                    Log::error('El archivo ' . $item->title . ' no se ha encontrado en S3.');
+                    continue;
                 }
+
+                $stream = Storage::disk('s3')->readStream($item->file_path);
+
+                if (!$stream) {
+                    Log::error('No se pudo obtener el stream del archivo: ' . $item->file_path);
+                    continue;
+                }
+
+                $tempFile = tempnam(sys_get_temp_dir(), 'cmr_track_');
+                file_put_contents($tempFile, $stream);
+                fclose($stream);
+
+                $extension = pathinfo($item->file_path, PATHINFO_EXTENSION);
+
+                $safeTitle = preg_replace('/[^A-Za-z0-9_\- áéíóúÁÉÍÓÚñÑ]/u', '', $item->title);
+
+                if (!$safeTitle) {
+                    $safeTitle = 'track_' . $item->id;
+                }
+
+                $fileNameInsideZip = $safeTitle . '.' . $extension;
+
+                $zip->addFile($tempFile, $fileNameInsideZip);
+                $tempFiles[] = $tempFile;
+            } catch (\Throwable $e) {
+                Log::error('Error agregando archivo al ZIP: ' . $item->file_path . ' - ' . $e->getMessage());
+                continue;
             }
         }
-        return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
+
+        $copyrightTemp = tempnam(sys_get_temp_dir(), 'cmr_copyright_');
+        file_put_contents($copyrightTemp, 'Esta playlist se ha descargado desde Cuban Pool');
+        $zip->addFile($copyrightTemp, 'copyright.txt');
+        $tempFiles[] = $copyrightTemp;
+
+        $zip->close();
+
+        foreach ($tempFiles as $tempFile) {
+            @unlink($tempFile);
+        }
+
+        if (!file_exists($localZipPath)) {
+            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Subir ZIP temporal a S3
+        |--------------------------------------------------------------------------
+        */
+
+        $s3ZipPath = 'files/zip/temp/' . $uuid . '.zip';
+
+        try {
+            $handle = fopen($localZipPath, 'r');
+            Storage::disk('s3')->put($s3ZipPath, $handle);
+            fclose($handle);
+        } catch (\Throwable $e) {
+            Log::error('Error subiendo ZIP a S3: ' . $e->getMessage());
+
+            @unlink($localZipPath);
+
+            return response()->json(['error' => 'No se pudo subir el ZIP a S3'], 500);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Borrar ZIP local
+        |--------------------------------------------------------------------------
+        */
+
+        @unlink($localZipPath);
+
+        /*
+        |--------------------------------------------------------------------------
+        | Registrar descarga
+        |--------------------------------------------------------------------------
+        */
+
+        if ($user->role !== 'admin') {
+            $download = new Download();
+            $download->user_id = $user->id;
+            $download->play_list_id = $playlist->id;
+            $download->amount = $user->downloads_cost();
+            $download->user_amount = $user->downloads_cost() * 0.7;
+            $download->admin_amount = $user->downloads_cost() * 0.1;
+            $download->save();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | Descargar directo desde S3
+        |--------------------------------------------------------------------------
+        */
+
+        $temporaryUrl = Storage::disk('s3')->temporaryUrl(
+            $s3ZipPath,
+            now()->addMinutes(30),
+            [
+                'ResponseContentDisposition' => 'attachment; filename="' . $zipFileName . '"',
+            ]
+        );
+
+        return redirect($temporaryUrl);
     }
 
     /**
