@@ -29,11 +29,6 @@
             </div>
             <div class="card-actions">
                 <span><i class="fas fa-fire text-primary"></i> {{ $item->downloads->count() }}</span>
-                @if ($item->canBeDownload())
-                    <a href="{{ route('playlist.download', str_replace(' ', '_' , $item->name)) }}"><i class="fas fa-download"></i></a>
-                @else
-                    <a href="{{ route('playlist.add.cart', str_replace(' ', '_' , $item->name) ) }}"><i class="fas fa-shopping-cart"></i></a>
-                @endif
             </div>
         </div>
     </div>

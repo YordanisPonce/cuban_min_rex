@@ -70,9 +70,6 @@
                     @if ($playlist->canBeDownload())
                         <a class="btn-secondary" href="{{ route('playlist.download', str_replace(' ', '_' , $playlist->name)) }}"><i
                                 class="fas fa-download"></i> Descargar Completa</a>
-                    @else 
-                        <a class="btn-secondary" href="{{ route('playlist.add.cart', str_replace(' ', '_' , $playlist->name)) }}"><i
-                                class="fas fa-cart-plus"></i> Comprar Todo – ${{ $playlist->price }}</a>
                     @endif
                 </div>
             </div>
