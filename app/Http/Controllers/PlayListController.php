@@ -259,6 +259,7 @@ class PlayListController extends Controller
      */
     public function download(string $name, PlaylistZipBuilder $builder)
     {
+
         $playlist = PlayList::where('name', str_replace('_', ' ', $name))->first();
 
         if (!$playlist) {
@@ -270,15 +271,24 @@ class PlayListController extends Controller
         }
 
         $user = auth()->user();
+
+        Log::info('User ' . $user->id . ' requested download for playlist: ' . $playlist->name);
+
         $zipFileName = str_replace(' ', '_', $playlist->name) . '.zip';
+
+        Log::info('Generated zip file name: ' . $zipFileName);
 
         $existingRequest = $this->findReusableZipRequest($user->id, $playlist->id);
 
+        Log::info('Found existing zip request: ' . ($existingRequest ? $existingRequest->uuid : 'none'));
+
         if ($existingRequest?->isReady()) {
+            Log::info('Existing zip request is ready. Redirecting to download.');
             return $this->redirectToZipDownload($existingRequest);
         }
 
         if ($existingRequest?->isInProgress()) {
+            Log::info('Existing zip request is in progress. Redirecting to status page.');
             return redirect()->route('playlist.download.status', [
                 'playlist' => str_replace(' ', '_', $playlist->name),
                 'uuid' => $existingRequest->uuid,
@@ -289,9 +299,12 @@ class PlayListController extends Controller
         $totalBytes = $builder->estimateTotalBytes($items);
 
         if ($totalBytes >= self::ASYNC_ZIP_THRESHOLD_BYTES) {
+            Log::info('Total bytes exceed async threshold. Queuing zip download.');
             return $this->queuePlaylistZipDownload($playlist, $user, $zipFileName, $items->count());
         }
 
+        Log::info('Generating zip file synchronously.');
+        
         return $this->buildPlaylistZipSynchronously($playlist, $user, $zipFileName, $builder);
     }
 
