@@ -105,6 +105,8 @@
 
             async function pollStatus() {
                 try {
+                    console.log('Consultando estado...');
+
                     const response = await fetch(statusUrl, {
                         headers: { 'Accept': 'application/json' },
                         credentials: 'same-origin',
@@ -134,6 +136,8 @@
                     updateProgress(data.tracks_added || 0, data.tracks_total || 0);
                     setTimeout(pollStatus, 5000);
                 } catch (error) {
+                    console.log(error);
+                    console.log('Volviendo a probar...');
                     setTimeout(pollStatus, 8000);
                 }
             }
