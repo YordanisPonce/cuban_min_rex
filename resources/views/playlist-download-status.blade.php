@@ -105,7 +105,6 @@
 
             async function pollStatus() {
                 try {
-                    console.log('Consultando estado...');
 
                     const response = await fetch(statusUrl, {
                         headers: { 'Accept': 'application/json' },
@@ -121,7 +120,7 @@
                     if (data.status === 'ready' && data.download_url) {
                         progressBar.style.width = '100%';
                         statusText.textContent = 'Descarga lista. Redirigiendo...';
-                        window.location.href = data.download_url;
+                        setTimeout(() => window.location.href = data.download_url, 5000);
                         return;
                     }
 
@@ -134,11 +133,11 @@
                     }
 
                     updateProgress(data.tracks_added || 0, data.tracks_total || 0);
-                    setTimeout(pollStatus, 5000);
+                    setTimeout(pollStatus, 500);
                 } catch (error) {
                     console.log(error);
                     console.log('Volviendo a probar...');
-                    setTimeout(pollStatus, 8000);
+                    setTimeout(pollStatus, 1000);
                 }
             }
 

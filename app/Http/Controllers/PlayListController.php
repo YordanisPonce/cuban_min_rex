@@ -298,7 +298,7 @@ class PlayListController extends Controller
         $items = $playlist->items()->get();
         $totalBytes = $builder->estimateTotalBytes($items);
 
-        if ($totalBytes >= self::ASYNC_ZIP_THRESHOLD_BYTES) {
+        if ($totalBytes >= /*self::ASYNC_ZIP_THRESHOLD_BYTES*/0) {
             Log::info('Total bytes exceed async threshold. Queuing zip download.');
             return $this->queuePlaylistZipDownload($playlist, $user, $zipFileName, $items->count());
         }

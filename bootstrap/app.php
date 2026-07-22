@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Console\Scheduling\Schedule;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         //     '/ruta-que-deseas-excluir', // Cambia esto por la ruta que quieres excluir
         // ]);
         //
+    })
+    ->withSchedule(function (Schedule $schedule) {
+        $schedule->command('queue:work --stop-when-empty')
+            ->everyMinute()
+            ->withoutOverlapping();
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
