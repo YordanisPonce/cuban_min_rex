@@ -44,7 +44,7 @@ class SearchController extends Controller
             return[
                 'id' => "f$e->id",
                 'name' => 'VIDEO: '.$e->name,
-                'artist' => $e->user->name,
+                'artist' => $e->user?->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
                 'intro' => $e->intro(),
