@@ -68,7 +68,7 @@
                         Todo</button>
                     <button class="btn-secondary" onclick="playRandom()"><i class="fas fa-random"></i> Aleatorio</button>
                     @if ($playlist->canBeDownload())
-                        <a class="btn-secondary" href="{{ route('playlist.download', str_replace(' ', '_' , $playlist->name)) }}"><i
+                        <a class="btn-secondary" href="{{ route('playlist.download', str_replace(' ', '_' , $playlist->name)) }}" onclick="downloadAll()"><i
                                 class="fas fa-download"></i> Descargar Completa</a>
                     @endif
                 </div>
@@ -284,6 +284,10 @@
                     playTrack(tracks[tracks.length - 1]);
                 }
             }
+        }
+
+        function downloadAll(){
+            document.getElementById('wloader').style.display = 'flex';
         }
     </script>
     

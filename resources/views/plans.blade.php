@@ -1,5 +1,12 @@
 @extends('layouts.app')
 
+@php
+    use Carbon\Carbon;
+    use Carbon\CarbonInterface;
+
+    Carbon::setLocale('es');
+@endphp
+
 @section('title', 'Planes - '.config('app.name'))
 
 @push('styles')
@@ -51,11 +58,22 @@
 
     <!-- PRICING -->
     <section class="pricing-section">
-        <div class="pricing-grid">
-            @foreach ($plans as $plan)
-                @include('partials.plans-card', ['item' => $plan])
-            @endforeach
-        </div>
+        @if(auth()->user()->hasActivePlan())
+            <div class="contact-bar" style="margin-bottom: 30px">
+                <div class="icon"><i class="fas fa-crown"></i></div>
+                <div>
+                    <h3>Ya posees un plan activo</h3>
+                    <h2 class="text-primary" style="text-transform: uppercase">{{ auth()->user()->currentPlan ? auth()->user()->currentPlan->name : '' }}</h2>
+                    <p>Su suscripción vence <span class="text-primary">{{ Carbon::parse(auth()->user()->plan_expires_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW) }}</span>.</p>
+                </div>
+            </div>
+        @else
+            <div class="pricing-grid">
+                @foreach ($plans as $plan)
+                    @include('partials.plans-card', ['item' => $plan])
+                @endforeach
+            </div>
+        @endif
     </section>
 
     <!-- BOTTOM NOTES -->

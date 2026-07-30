@@ -3,10 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Billing;
-use App\Models\Category;
-use App\Models\Collection;
-use App\Models\Order;
-use App\Models\Plan;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
@@ -21,7 +17,6 @@ use Illuminate\Support\Str;
 use Intervention\Image\Drivers\Gd\Driver;
 use Intervention\Image\Encoders\WebpEncoder;
 use Intervention\Image\ImageManager;
-use Throwable;
 
 class ProfileController extends Controller
 {
