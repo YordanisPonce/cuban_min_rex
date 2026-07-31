@@ -1,6 +1,7 @@
 <?php
 namespace App\Services;
 
+use App\Models\Plan;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\PendingRequest;
 
@@ -98,4 +99,38 @@ class PaypalService
         return $response->json();
     }
 
+    public function createPlan(Plan $plan){
+        $product_id = 'PROD-' . substr(uniqid(), 0, 17);
+        $response = $this->client->post('/v1/billing/plans', [
+            "product_id" => $product_id,
+            "name" => $plan->name,
+            "description" => $plan->description,
+            "billing_cycles" => [
+                [
+                    "frequency" => [
+                        "interval_unit" => 'MONTH', // 'DAY', 'WEEK', 'MONTH', 'YEAR'
+                        "interval_count" => $plan->duration_months,
+                    ],
+                    "tenure_type" => "REGULAR",
+                    "sequence" => 1,
+                    "total_cycles" => 0, // 0 para ciclos ilimitados
+                    "pricing_scheme" => [
+                        "fixed_price" => [
+                            "value" => number_format($plan->price, 2, '.', ''),
+                            "currency_code" => 'USD',
+                        ]
+                    ]
+                ]
+            ],
+            "payment_preferences" => []
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception("Error al crear plan en PayPal: " . $response->body());
+        }
+
+        return $response->json();
+    }
+
+    
 }
