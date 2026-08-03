@@ -58,7 +58,7 @@
 
     <!-- PRICING -->
     <section class="pricing-section">
-        @if(auth()->user()->hasActivePlan())
+        @if(auth()->check() && auth()->user()->hasActivePlan())
             <div class="contact-bar" style="margin-bottom: 30px">
                 <div class="icon"><i class="fas fa-crown"></i></div>
                 <div>

@@ -16,6 +16,7 @@ class Plan extends Model
         'name',
         'stripe_product_id',
         'stripe_price_id',
+        'paypal_id',
         'price',
         'description',
         'duration_months',

@@ -210,4 +210,19 @@ class StripeWebhookController extends CashierController
             }
         }
     }
+
+    public function handleCustomerSubscriptionDeleted(array $payload)
+    {
+
+        $session = $payload['data']['object'];
+        $userId = $session['metadata']['user_id'] ?? null;
+        if($userId){
+            $user = User::find($userId);
+            if ($user) {
+                $user->update([
+                    'current_plan_id' => null,
+                ]);
+            }
+        }
+    }
 }

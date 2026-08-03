@@ -16,11 +16,13 @@ class Order extends Model
         'file_id',
         'stripe_session_id',
         'stripe_payment_intent',
+        'paypal_order_id',
+        'paypal_subscription_id',
         'amount',
         'status',
         'paid_at',
         'expires_at',
-        'settled_at', // ✅ añadir
+        'settled_at',
 
         //pagos CUP
         'currency',

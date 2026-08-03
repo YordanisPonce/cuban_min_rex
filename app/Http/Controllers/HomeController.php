@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\NotificationTypeEnum;
 use App\Enums\SectionEnum;
+use App\Models\AviablePaymentMethod;
 use App\Models\Banner;
 use App\Models\Cart;
 use App\Models\Category;
@@ -11,6 +12,7 @@ use App\Models\Collection;
 use App\Models\File;
 use App\Models\Follow;
 use App\Models\NotificationSettings;
+use App\Models\Order;
 use App\Models\Plan;
 use App\Models\PlayList;
 use App\Models\Setting;
@@ -395,9 +397,51 @@ class HomeController extends Controller
         return view('radio-remixes', compact('index', 'tracks', 'djs', 'genres'));
     }
 
+    protected function hasRecentPurchaseRequest(): bool
+    {
+        if (!Auth::check()) {
+            return false;
+        }
+
+        return Order::where('user_id', Auth::id())
+            ->where('created_at', '>=', Carbon::now()->subMinutes(2))
+            ->where(function ($query) {
+                $query->whereNotNull('plan_id')
+                    ->orWhereHas('order_items');
+            })
+            ->exists();
+    }
+
+    protected function getRecentPurchaseRequest(): ?array
+    {
+        $recentRequest = Order::where('user_id', Auth::id())
+            ->where('created_at', '>=', Carbon::now()->subMinutes(2))
+            ->where(function ($query) {
+                $query->whereNotNull('plan_id')
+                    ->orWhereHas('order_items');
+            })
+            ->orderBy('created_at', 'desc')
+            ->first();
+
+        if(!$recentRequest || !$recentRequest->exists()) {
+            return null;
+        }
+
+        return [
+            'requestId' => $recentRequest->paypal_subscription_id ?? $recentRequest->paypal_order_id ?? $recentRequest->id,
+            'requestStatus' => $recentRequest->status ?? null,
+            'requestDate' => $recentRequest->created_at,
+        ];
+    }
+
     public function plan()
     {
-        
+        if ($this->hasRecentPurchaseRequest()) {
+            $data =$this->getRecentPurchaseRequest();
+            $data['requestDescription'] = 'Hace poco has solicitado la compra de un plan y aún no se ha procesado. Por favor, espera a que se complete la transacción antes de realizar otra compra.';
+            return view('pending-request', $data);
+        }
+
         $plans = Plan::orderBy('price')->get();
 
         $banners = Banner::where('active', true)->pluck('path');
@@ -807,11 +851,23 @@ class HomeController extends Controller
 
     public function cart(Request $request)
     {
+        if ($this->hasRecentPurchaseRequest()) {
+            $data = $this->getRecentPurchaseRequest();
+            $data['requestDescription'] = 'Hace poco has solicitado la compra de un carrito y aún no se ha procesado. Por favor, espera a que se complete la transacción antes de realizar otra compra.';
+            return view('pending-request', $data);
+        }
+
         $index = 999;
         
         $cart = Cart::get_current_cart();
 
-        return view('cart', compact('index', 'cart'));
+        $aviablePaymentMethods = AviablePaymentMethod::firstOrCreate([]);
+
+        $isStripeEnabled = $aviablePaymentMethods->stripe;
+
+        $isPaypalEnabled = $aviablePaymentMethods->paypal;
+
+        return view('cart', compact('index', 'cart', 'isStripeEnabled', 'isPaypalEnabled'));
     }
 
     public function legal()
@@ -870,7 +926,7 @@ class HomeController extends Controller
 
         $index = 999;
 
-        $notifications = auth()->user()->notifications;
+        $notifications = auth()->user()->notifications()->orderBy('created_at', 'desc')->get();
 
         $prefers = auth()->user()->ntfs_prefs;
         if (!$prefers) {

@@ -80,17 +80,13 @@ class SaleSumary extends Page implements HasForms, HasTable
             ->recordActions([
                 //
             ])
-            ->defaultSort('created_at', 'desc')
             ->poll(null)
             ->heading('Ventas realiazadas')
             ->description('Aquí puedes ver un resumen de las ventas realizadas.')
             ->emptyStateHeading('No se han realizado ventas')
             ->emptyStateDescription('Aún no se han realizado ventas. ¡Empieza a vender tus archivos para que aparezcan aquí!')
             ->searchPlaceholder('Buscar por ID o Nombre')
-            ->defaultPaginationPageOption('5')
-            ->modifyQueryUsing(
-                fn($query) => auth()->user()->role!=='admin' ? $query->whereHas('file', function($q) { $q->where('user_id', auth()->user()->id);}) : $query
-            );
+            ->defaultPaginationPageOption('5');
     }
 
     protected function getTableQuery()
@@ -99,7 +95,7 @@ class SaleSumary extends Page implements HasForms, HasTable
 
         $query = auth()->user()->pendingSales();
 
-        return $query->orderBy('created_at', 'desc');
+        return $query->orderBy('sales.created_at', 'desc');
     }
 
     public function getFooterWidgets(): array

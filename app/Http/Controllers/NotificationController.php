@@ -109,4 +109,16 @@ class NotificationController extends Controller
         }
     }
 
+    public static function sendBuyNtf($userId, $title, $msg){
+        $user = User::find($userId);
+
+        if($user){
+            $user->notifications()->create([
+                'type' => NotificationTypeEnum::BUY->value,
+                'title' => $title,
+                'mesage' => $msg
+            ]);
+        }
+    }
+
 }

@@ -2195,6 +2195,23 @@ body>.skiptranslate>iframe {
     background: var(--primary)
 }
 
+.swal2-modal{
+    background: var(--bg2) !important;
+    color: white;
+}
+
+.swal2-modal h2{
+    color: var(--primary) !important;
+}
+
+.swal2-modal .swal2-confirm {
+    background: var(--primary) !important;
+}
+
+.swal2-modal .swal2-confirm:hover {
+    background: var(--primary-dark) !important;
+}
+
 @media(max-width: 720px) {
     .hero:not(.radio) {
         height: 80vh;

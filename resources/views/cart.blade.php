@@ -10,6 +10,19 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">
+    <style>
+        .pay-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .pay-btns {
+                flex-direction: column;
+                gap: 0.1rem;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -59,7 +72,11 @@
 
                 <div class="add-info"><i class="fas fa-info-circle"></i> Al continuar estás aceptando nuestros <a href="{{ route('terms') }}"><strong>Términos y Condiciones de Uso</strong></a>.</div>
 
-                <button class="pay-btn" onclick="proccessPayment()">REALIZAR PAGO $ {{ number_format($cart->get_cart_count(), 2) }}</button>
+                <div class="pay-btns">
+                    <button class="pay-btn" onclick="proccessStripePayment()"><i class="fas fa-credit-card"></i> PAGO CON TARJETA</button>
+                    <button class="pay-btn" onclick="proccessPaypalPayment()"><i class="fab fa-paypal"></i> PAGO CON PAYPAL</button>
+                </div>
+
                 <div class="pay-secure"><i class="fas fa-lock"></i> Pago 100% seguro y encriptado</div>
             </div>
         </div>
@@ -79,11 +96,20 @@
 
 @push('scripts')
     <script>
-        function proccessPayment() {
+        function proccessStripePayment() {
             const rute = "{{ route('file.pay') }}";
+            handleCheckout(rute, 'GET');
+        }
+
+        function proccessPaypalPayment() {
+            const rute = "{{ route('paypal.process.cart') }}";
+            handleCheckout(rute, 'POST');
+        }
+
+        function handleCheckout(rute, method = 'GET') {
             Swal.fire({
                 title: '¿Proceder con el pago?',
-                text: "Serás redirigido a Stripe para completar tu pago.",
+                text: "Serás redirigido para completar tu pago.",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: 'Sí, continuar',
@@ -91,7 +117,21 @@
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.querySelector('#wloader').style.display = 'flex';
-                    fetch(rute)
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+                    const requestOptions = {
+                        method,
+                        credentials: 'same-origin'
+                    };
+
+                    if (method === 'POST') {
+                        requestOptions.headers = {
+                            'X-CSRF-TOKEN': csrfToken,
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json'
+                        };
+                    }
+
+                    fetch(rute, requestOptions)
                         .then(async res => {
                             let data;
 

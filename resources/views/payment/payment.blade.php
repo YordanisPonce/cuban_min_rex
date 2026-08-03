@@ -4,6 +4,19 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/css/payment.css') }}" />
+    <style>
+        .pay-end>div{
+            display:flex;
+            margin-top: auto;
+            gap: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .pay-end>div{
+                flex-direction: column;
+            }
+        }
+    </style>
 @endpush
 
 @section('content')
@@ -189,11 +202,21 @@
                         </div>
 
                         <div class="pay-end">
-                            <div class="d-grid mt-5">
-                                <button id="checkoutBtn" class="btn-pay btn-primary" form="checkoutForm">
-                                    <span class="me-2">Proceder con el pago</span>
+                            <div>
+                                @if($isStripeEnabled)
+                                <button id="StripeCheckoutBtn" class="btn-pay btn-primary" form="checkoutForm">
+                                    <i class="fas fa-credit-card"></i> 
+                                    <span style="margin: 0 10px">Proceder con Tarjeta</span>
                                     <i class="icon-base ti tabler-arrow-right scaleX-n1-rtl"></i>
                                 </button>
+                                @endif
+                                @if($isPaypalEnabled)
+                                <button id="PaypalCheckoutBtn" class="btn-pay btn-primary" form="checkoutForm">
+                                    <i class="fab fa-paypal"></i> 
+                                    <span style="margin: 0 10px">Proceder con Paypal</span>
+                                    <i class="icon-base ti tabler-arrow-right scaleX-n1-rtl"></i>
+                                </button>
+                                @endif
                             </div>
 
                             <p>
@@ -216,74 +239,92 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            const form = document.getElementById("checkoutForm");
-            const button = document.getElementById("checkoutBtn");
 
-            button.addEventListener("click", function(e) {
-                e.preventDefault();
+            @if($isStripeEnabled || $isPaypalEnabled)
+                const form = document.getElementById("checkoutForm");
+                const submitCheckout = (route) => {
+                    Swal.fire({
+                        title: '¿Proceder con el pago?',
+                        text: "Serás redirigido para completar tu pago.",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonText: 'Sí, continuar',
+                        cancelButtonText: 'Cancelar'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            const requiredFields = form.querySelectorAll('[required]');
+                            let allFilled = true;
 
-                Swal.fire({
-                    title: '¿Proceder con el pago?',
-                    text: "Serás redirigido a Stripe para completar tu pago.",
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, continuar',
-                    cancelButtonText: 'Cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        const requiredFields = form.querySelectorAll('[required]');
-                        let allFilled = true;
+                            requiredFields.forEach(field => {
+                                if (!field.value.trim()) {
+                                    allFilled = false;
+                                }
+                            });
 
-                        requiredFields.forEach(field => {
-                            if (!field.value.trim()) {
-                                allFilled = false;
+                            if (allFilled) {
+                                let formData = new FormData(form);
+                                document.querySelector('#wloader').style.display = 'flex';
+                                fetch(route, {
+                                        method: "POST",
+                                        headers: {
+                                            "X-CSRF-TOKEN": document.querySelector(
+                                                'input[name="_token"]').value
+                                        },
+                                        body: formData
+                                    })
+                                    .then(async res => {
+                                        let data;
+                                        try {
+                                            data = await res.json();
+                                        } catch {
+                                            document.querySelector('#wloader').style.display =
+                                                'none';
+                                            throw new Error(
+                                                "Respuesta inesperada del servidor");
+                                        }
+
+                                        if (res.ok && data.url) {
+                                            window.location.href = data.url;
+                                        } else {
+                                            document.querySelector('#wloader').style.display =
+                                                'none';
+                                            Swal.fire("Error", data.error ??
+                                                "No se pudo generar la sesión de pago",
+                                                "error");
+                                        }
+                                    })
+                                    .catch(err => {
+                                        document.querySelector('#wloader').style.display = 'none';
+                                        Swal.fire("Error", err.message, "error");
+                                    });
+                            } else {
+                                Swal.fire("Error",
+                                    "Por favor, rellene todos los campos del formulario de facturación.",
+                                    "error");
                             }
-                        });
-
-                        if (allFilled) {
-                            let formData = new FormData(form);
-                            document.querySelector('#wloader').style.display = 'flex';
-                            fetch(form.action, {
-                                    method: "POST",
-                                    headers: {
-                                        "X-CSRF-TOKEN": document.querySelector(
-                                            'input[name="_token"]').value
-                                    },
-                                    body: formData
-                                })
-                                .then(async res => {
-                                    let data;
-                                    try {
-                                        data = await res.json();
-                                    } catch {
-                                        document.querySelector('#wloader').style.display =
-                                            'none';
-                                        throw new Error(
-                                            "Respuesta inesperada del servidor");
-                                    }
-
-                                    if (res.ok && data.url) {
-                                        window.location.href = data.url;
-                                    } else {
-                                        document.querySelector('#wloader').style.display =
-                                            'none';
-                                        Swal.fire("Error", data.error ??
-                                            "No se pudo generar la sesión de pago",
-                                            "error");
-                                    }
-                                })
-                                .catch(err => {
-                                    document.querySelector('#wloader').style.display = 'none';
-                                    Swal.fire("Error", err.message, "error");
-                                });
-                        } else {
-                            Swal.fire("Error",
-                                "Por favor, rellene todos los campos del formulario de facturación.",
-                                "error");
                         }
-                    }
+                    });
+                };
+            @endif
+            
+            @if($isStripeEnabled)
+                const stripeRoute = "{{ route('payment.process') }}";
+                const StripeButton = document.getElementById("StripeCheckoutBtn");
+                StripeButton.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    submitCheckout(stripeRoute);
                 });
-            });
+            @endif
+
+            @if($isPaypalEnabled)
+                const PaypalButton = document.getElementById("PaypalCheckoutBtn");
+                const paypalRoute = "{{ route('paypal.subscribe') }}";
+                PaypalButton.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    submitCheckout(paypalRoute);
+                });
+            @endif
+
         });
     </script>
 @endpush

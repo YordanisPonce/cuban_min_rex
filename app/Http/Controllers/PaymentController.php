@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AviablePaymentMethod;
 use App\Models\Billing;
 use App\Models\Category;
 use App\Models\File;
@@ -13,6 +14,7 @@ use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\CUPPaymentNotification;
 use App\Services\ElToqueService;
+use App\Services\PaypalService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
@@ -24,18 +26,15 @@ class PaymentController extends Controller
     {
         $plans = Plan::all();
         $planId = Plan::where('name', str_replace('_', ' ', $planName))->first()->id;
+        $aviablePaymentMethods = AviablePaymentMethod::firstOrCreate([]);
+        $isStripeEnabled = $aviablePaymentMethods->stripe;
+        $isPaypalEnabled = $aviablePaymentMethods->paypal;
         return view('payment.payment', [
             'planId' => $planId,
             'plans' => $plans,
             'index' => 7,
-            'categories' => Category::where('show_in_landing', true)->get(),
-            'djs' => User::where('role', 'worker')->orderBy('name')->get(),
-            'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-                return $item->files()->count() > 0;
-            }),
-            'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
-                return $item->files()->count() > 0;
-            })
+            'isStripeEnabled' => $isStripeEnabled,
+            'isPaypalEnabled' => $isPaypalEnabled,
         ]);
     }
 
@@ -48,9 +47,9 @@ class PaymentController extends Controller
 
         // Buscar el plan en la BD
         $plan = Plan::find($request->plan_id);
-        if (!$plan || !$plan->stripe_price_id) {
+        if (!$plan) {
             return response()->json([
-                'error' => 'El plan seleccionado no es válido o no tiene un precio en Stripe.'
+                'error' => 'El plan seleccionado no es válido.'
             ], 422);
         }
 
@@ -73,6 +72,12 @@ class PaymentController extends Controller
             $billing->postal = $request->postal;
             $billing->country = $request->country;
             $billing->save();
+
+            if (!$plan->stripe_price_id) {
+                return response()->json([
+                    'error' => 'El plan seleccionado no es válido o no tiene un precio en Stripe.'
+                ], 422);
+            }
 
             auth()->user()->createOrGetStripeCustomer();
 
@@ -117,14 +122,44 @@ class PaymentController extends Controller
 
     public function cancelSubscription()
     {
-        if (auth()->user()->subscribed('default')) {
-            auth()->user()->subscription('default')->cancel();
+        $user = auth()->user();
+        $paypalOrder = Order::where('user_id', $user->id)
+            ->whereNotNull('paypal_subscription_id')
+            ->where('status', 'paid')
+            ->whereNotNull('paid_at')
+            ->orderByDesc('paid_at')
+            ->first();
+
+        if ($paypalOrder && $paypalOrder->paypal_subscription_id) {
+            $paypalService = app(PaypalService::class);
+            $paypalService->cancelSubscription($paypalOrder->paypal_subscription_id, 'User canceled');
+
+            $paypalOrder->status = 'failed';
+            $paypalOrder->save();
+
+            Subscription::where('user_id', $user->id)
+                ->where('stripe_id', $paypalOrder->paypal_subscription_id)
+                ->update([
+                    'type' => 'paypal',
+                    'stripe_status' => 'CANCELLED',
+                    'ends_at' => Carbon::now(),
+                    'canceled_at' => Carbon::now(),
+                ]);
+
+            $user->current_plan_id = null;
+            $user->save();
+
+            return redirect()->back()->with('success', 'Suscripción de PayPal cancelada satisfactoriamente');
         }
 
-        auth()->user()->current_plan_id = null;
-        auth()->user()->save();
+        if ($user->subscribed('default')) {
+            $user->subscription('default')->cancel();
+        }
 
-        $userId = auth()->user()->id;
+        $user->current_plan_id = null;
+        $user->save();
+
+        $userId = $user->id;
 
         $dataToUpdate = [
             'canceled_at' => Carbon::now(),

@@ -7,6 +7,8 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\StripeWebhookController;
+use App\Http\Controllers\PaypalController;
+use App\Http\Controllers\PaypalWebhookController;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
@@ -76,6 +78,31 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::post('/payment/process', [PaymentController::class, 'process'])
         ->middleware('auth')
         ->name('payment.process');
+
+    Route::post('/paypal/process', [PaypalController::class, 'process'])
+        ->middleware('auth')
+        ->name('paypal.process');
+
+    Route::post('/paypal/process-cart', [PaypalController::class, 'processCart'])
+        ->middleware('auth')
+        ->name('paypal.process.cart');
+
+    Route::post('/paypal/subscribe', [PaypalController::class, 'subscribe'])
+        ->middleware('auth')
+        ->name('paypal.subscribe');
+
+    Route::get('/paypal/return/{order}', [PaypalController::class, 'returnPayPal'])
+        ->name('paypal.return');
+
+    Route::get('/paypal/cancel/{order}', [PaypalController::class, 'cancelPayPal'])
+        ->name('paypal.cancel');
+
+    Route::get('/paypal/subscribe/return/{order}', [PaypalController::class, 'returnSubscription'])
+        ->name('paypal.subscribe.return');
+
+    Route::get('/paypal/subscribe/cancel/{order}', [PaypalController::class, 'cancelSubscription'])
+        ->name('paypal.subscribe.cancel');
+
     Route::get('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
         ->middleware('auth')
         ->name('payment.cancelSubscription');
@@ -118,7 +145,16 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     // Webhook de Stripe
     Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
-        ->name('stripe.webhook');
+        ->name('stripe.webhook')
+        ->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+        ]);
+
+    Route::post('/paypal/webhook', [PaypalWebhookController::class, 'handle'])
+        ->name('paypal.webhook')
+        ->withoutMiddleware([
+            \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
+        ]);
 
     Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
 

@@ -9,6 +9,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
+use Filament\Support\Enums\IconPosition;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -46,6 +47,18 @@ class OrdersTable
                     ->label('Importe')
                     ->money('usd', true) // o 'usd'
                     ->sortable(),
+
+                TextColumn::make('plataform')
+                    ->label('Método de Pago')
+                    ->badge()
+                    ->default(function ($record) {
+                        if ($record->paypal_order_id) {
+                            return 'PayPal';
+                        } else {
+                            return 'Tarjeta de Crédito';
+                        }
+                    })
+                    ->color(fn($record) => $record->paypal_order_id ? 'info' : 'primary'),
 
                 TextColumn::make('status')
                     ->label('Estado')
@@ -87,7 +100,8 @@ class OrdersTable
                         'paid' => 'Pagado',
                         'pending' => 'Pendiente',
                         'failed' => 'Cancelada',
-                    ]),
+                    ])
+                    ->default('paid'),
                 SelectFilter::make('user_id')
                     ->label('Usuario')
                     ->relationship('user','name', function(EloquentBuilder $query) {
@@ -130,14 +144,14 @@ class OrdersTable
                         return $record->status === 'paid';
                     }),
             ])
-
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
             ])
+            ->defaultSort('created_at', 'desc')
             ->modifyQueryUsing(
-                fn(EloquentBuilder $query) => $query->where('currency', 'USD')->orderBy('created_at', 'desc')
+                fn(EloquentBuilder $query) => $query->where('currency', 'USD')
             );
     }
 }
