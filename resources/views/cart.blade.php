@@ -73,8 +73,12 @@
                 <div class="add-info"><i class="fas fa-info-circle"></i> Al continuar estás aceptando nuestros <a href="{{ route('terms') }}"><strong>Términos y Condiciones de Uso</strong></a>.</div>
 
                 <div class="pay-btns">
+                    @if($isStripeEnabled)
                     <button class="pay-btn" onclick="proccessStripePayment()"><i class="fas fa-credit-card"></i> PAGO CON TARJETA</button>
+                    @endif
+                    @if($isPaypalEnabled)
                     <button class="pay-btn" onclick="proccessPaypalPayment()"><i class="fab fa-paypal"></i> PAGO CON PAYPAL</button>
+                    @endif
                 </div>
 
                 <div class="pay-secure"><i class="fas fa-lock"></i> Pago 100% seguro y encriptado</div>
@@ -96,16 +100,21 @@
 
 @push('scripts')
     <script>
+        @if($isStripeEnabled)
         function proccessStripePayment() {
             const rute = "{{ route('file.pay') }}";
             handleCheckout(rute, 'GET');
         }
+        @endif
 
+        @if($isPaypalEnabled)
         function proccessPaypalPayment() {
             const rute = "{{ route('paypal.process.cart') }}";
             handleCheckout(rute, 'POST');
         }
+        @endif
 
+        @if($isStripeEnabled || $isPaypalEnabled)
         function handleCheckout(rute, method = 'GET') {
             Swal.fire({
                 title: '¿Proceder con el pago?',
@@ -157,6 +166,7 @@
                 }
             });
         }
+        @endif
     </script>
     @isset($error)
         <script>

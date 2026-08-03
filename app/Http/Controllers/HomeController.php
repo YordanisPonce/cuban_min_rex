@@ -863,9 +863,9 @@ class HomeController extends Controller
 
         $aviablePaymentMethods = AviablePaymentMethod::firstOrCreate([]);
 
-        $isStripeEnabled = $aviablePaymentMethods->stripe === 1;
+        $isStripeEnabled = $aviablePaymentMethods->stripe;
 
-        $isPaypalEnabled = $aviablePaymentMethods->paypal === 1;
+        $isPaypalEnabled = $aviablePaymentMethods->paypal;
 
         return view('cart', compact('index', 'cart', 'isStripeEnabled', 'isPaypalEnabled'));
     }
