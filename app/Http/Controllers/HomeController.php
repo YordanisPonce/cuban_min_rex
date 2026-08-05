@@ -458,9 +458,11 @@ class HomeController extends Controller
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
 
+        $activePlan = auth()->check() && auth()->user()->hasActivePlan() ? auth()->user()->getActivePlan() : null;
+
         $index = 7;
 
-        return view('plans', compact('index', 'plans', 'banners'));
+        return view('plans', compact('index', 'plans', 'banners', 'activePlan'));
     }
 
     public function djs()

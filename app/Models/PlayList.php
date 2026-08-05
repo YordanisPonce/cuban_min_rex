@@ -104,11 +104,14 @@ class PlayList extends Model
 
             $firstPlan = Plan::orderBy('price')->first();
 
-            if($user->hasActivePlan() && $user->current_plan_id){
+            if($user->hasActivePlan()){
+                $plan = $user->getActivePlan();
+
                 if($user->plan_start_at){
-                    return $user->get_current_plan_consume_downloads() < $user->currentPlan->downloads && $user->current_plan_id != $firstPlan->id;
+                    return $user->get_current_plan_consume_downloads() < $plan->downloads && $plan->id != $firstPlan->id;
                 }
-                return $user->current_plan_id != $firstPlan->id;
+
+                return $plan->id != $firstPlan->id;
             }
         }
         return false;

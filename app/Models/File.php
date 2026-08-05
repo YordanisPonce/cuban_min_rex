@@ -197,13 +197,14 @@ class File extends Model
 
             $lastPlan = Plan::orderBy('price', 'desc')->first();
 
-            if($user->hasActivePlan() && $user->current_plan_id){
+            if($user->hasActivePlan()){
+                $plan = $user->getActivePlan();
 
                 if($user->plan_start_at){
                     if ($this->isExclusive) {
-                        return $user->get_current_plan_consume_downloads() < $user->currentPlan->downloads && $user->current_plan_id === $lastPlan->id;
+                        return $user->get_current_plan_consume_downloads() < $plan->downloads && $plan->id === $lastPlan->id;
                     }
-                    return $user->get_current_plan_consume_downloads() < $user->currentPlan->downloads;
+                    return $user->get_current_plan_consume_downloads() < $plan->downloads;
                 }
 
                 return $this->isExclusive ? false : true;

@@ -134,6 +134,14 @@ class User extends Authenticatable implements FilamentUser
         return $isFuture;
     }
 
+    public function getActivePlan(): ?Plan {
+        if ($this->current_plan_id) {
+            return Plan::find($this->current_plan_id);
+        }
+        $lastOrder = Order::where('user_id', $this->id)->whereNotNull('plan_id')->where('status','paid')->orderBy('created_at', 'desc')->first();
+        return Plan::find($lastOrder?->plan_id);
+    }
+
     public function planExpirationDays()
     {
         return (object) [

@@ -63,7 +63,7 @@
                 <div class="icon"><i class="fas fa-crown"></i></div>
                 <div>
                     <h3>Ya posees un plan activo</h3>
-                    <h2 class="text-primary" style="text-transform: uppercase">{{ auth()->user()->currentPlan ? auth()->user()->currentPlan->name : '' }}</h2>
+                    <h2 class="text-primary" style="text-transform: uppercase">{{ $activePlan ? $activePlan->name : '' }}</h2>
                     <p>Su suscripción vence <span class="text-primary">{{ Carbon::parse(auth()->user()->plan_expires_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW) }}</span>.</p>
                 </div>
             </div>
