@@ -77,7 +77,7 @@
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-award"></i></div>
                     <div>
-                        <div class="stat-value">{{ $currentPlan ?? 'Sin Plan Activo' }}</div>
+                        <div class="stat-value">{{ $currentPlan->name ?? 'Sin Plan Activo' }}</div>
                         <div class="stat-label">SUSCRIPCIÓN ACTIVA 
                             @if ($currentPlan && auth()->user()->current_plan_id)
                                 <a style="color: red; cursor: pointer" onclick="cancelSuscription()">[Cancelar Suscripción]</a>
