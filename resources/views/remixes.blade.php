@@ -108,7 +108,7 @@
                             @endforeach
                         </div>
                     </div>
-                    <a href="{{ route('file.add.cart', $e->id) }}" class="btn-subscribe">COMPRAR</a>
+                    <a href="{{ route('exclusives', ['title' => str_replace(' ', '_', $e->name)]) }}" class="btn-subscribe">VER <i class="fas fa-angles-right"></i></a>
                 </div>
             @endforeach
             @if ($exclusives->count() == 0)

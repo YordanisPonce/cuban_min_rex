@@ -53,8 +53,8 @@
       <div class="error-code">500</div>
       <div class="error-icon-overlay"><i class="fa-solid fa-triangle-exclamation"></i></div>
     </div>
-    <h1 class="error-title">Paso algo <span>inesperado</span> de nuestro lado</h1>
-    <p class="error-desc">Nuestro servidor está pasando por un mal momento. Nuestro equipo ya fue notificado y trabaja en restablecer el ritmo.</p>
+    <h1 class="error-title">Respuesta <span>inesperada</span> del servidor</h1>
+    <p class="error-desc">Ha ocurrido un error en el proceso de la solicitud y el servidor ha detectado un error. Contácte con soporte y envie la descripción del error.</p>
 
     <div class="error-actions">
       <button class="btn-cta" onclick="location.reload()"><i class="fa-solid fa-rotate-right"></i> Reintentar</button>
@@ -62,9 +62,10 @@
     </div>
 
     <div class="error-details">
-      <div class="row"><span class="label">Estado</span><span class="val"><span class="status-badge"><span class="dot"></span> Investigando</span></span></div>
+      <div class="row"><span class="label">Estado</span><span class="val"><span class="status-badge"><span class="dot"></span> PENDIENTE</span></span></div>
       <div class="row"><span class="label">Código de error</span><span class="val">CP_500_INTERNAL</span></div>
       <div class="row"><span class="label">Hora</span><span class="val" id="ts"></span></div>
+      <div class="row" style="flex-direction: column !important; gap: 10px"><span class="label">Descripción del error: </span><span class="val">{{ $exception->getMessage() }}</span></div>
     </div>
   </div>
 </section>

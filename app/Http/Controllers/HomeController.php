@@ -572,6 +572,15 @@ class HomeController extends Controller
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->take(3)->get();
 
+        if ($exclusives->count() === 0) {
+            $exclusives = File::audios()
+            ->where('status', 'active')
+            ->where('isExclusive', true)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->orderBy('created_at', 'desc')
+            ->take(3)->get();
+        }
+
         if($title) {
             $tracks = $tracks->where('name',  'like', '%' . $title . '%');
         }
@@ -770,6 +779,15 @@ class HomeController extends Controller
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->take(3)->get();
+
+        if ($exclusives->count() === 0) {
+            $exclusives = File::videos()
+            ->where('status', 'active')
+            ->where('isExclusive', true)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->orderBy('created_at', 'desc')
+            ->take(3)->get();
+        }
 
         if($title) {
             $tracks = $tracks->where('name',  'like', '%' . $title . '%');
