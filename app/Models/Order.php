@@ -85,28 +85,53 @@ class Order extends Model
         }
 
         // Cargamos los items con sus files
-        $this->loadMissing('order_items.file');
+        $this->loadMissing('order_items.file', 'order_items.playlist', 'order_items.playlistItem');
 
         $filesAdded = 0;
 
         foreach ($this->order_items as $item) {
             $file = $item->file;
 
-            if (!$file || !$file->original_file) {
-                continue;
+            $playlistItem = $item->playlistItem;
+
+            $innerName = "";
+            $s3Path = "";
+
+            if($file){
+                if (!$file->original_file) {
+                    continue;
+                }
+
+                $s3Path = $file->original_file; // ej: "users/1/files/mi-archivo.pdf"
+
+                if (!Storage::disk('s3')->exists($s3Path)) {
+                    continue;
+                }
+            
+                // Nombre dentro del ZIP
+                $innerName = $file->name ?? basename($s3Path);
+                $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+                $innerName = str_replace(['/', '\\'], '-', $innerName);
+                $innerName = $innerName . '.' . $ext;
             }
 
-            $s3Path = $file->original_file; // ej: "users/1/files/mi-archivo.pdf"
+            if($playlistItem){
+                if (!$playlistItem->file_path) {
+                    continue;
+                }
 
-            if (!Storage::disk('s3')->exists($s3Path)) {
-                continue;
+                $s3Path = $playlistItem->file_path; // ej: "users/1/files/mi-archivo.pdf"
+
+                if (!Storage::disk('s3')->exists($s3Path)) {
+                    continue;
+                }
+            
+                // Nombre dentro del ZIP
+                $innerName = $playlistItem->title ?? basename($s3Path);
+                $ext = pathinfo($playlistItem->file_path, PATHINFO_EXTENSION);
+                $innerName = str_replace(['/', '\\'], '-', $innerName);
+                $innerName = $innerName . '.' . $ext;
             }
-
-            // Nombre dentro del ZIP
-            $innerName = $file->name ?? basename($s3Path);
-            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
-            $innerName = str_replace(['/', '\\'], '-', $innerName);
-            $innerName = $innerName . '.' . $ext;
 
             // Leemos desde S3 vía stream
             $stream = Storage::disk('s3')->readStream($s3Path);

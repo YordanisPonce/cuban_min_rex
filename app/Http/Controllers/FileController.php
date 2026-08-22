@@ -494,11 +494,11 @@ class FileController extends Controller
 
     public function addToCart(string $id){
         $user = Auth::user() ?? null;
-        $cart = Cart::get_current_cart();
+        $cart = $user ? $user->cart : Cart::get_current_cart();
 
         $cart->cart_items()->create([
             'file_id' => $id,
-            'amount' => File::find($id)->price,
+            'amount' => File::find($id)?->price,
         ]);
 
         return redirect()->back()->with('success','Archivo añadido al carrito.');
@@ -506,7 +506,7 @@ class FileController extends Controller
 
     public function removeToCart(string $id){
         $user = Auth::user() ?? null;
-        $cart = Cart::get_current_cart();
+        $cart = $user ? $user->cart : Cart::get_current_cart();
 
         $cartItem = $cart->cart_items()->where('file_id', $id)->first();
 
@@ -520,7 +520,7 @@ class FileController extends Controller
 
     public function emptyCart(){
         $user = Auth::user() ?? null;
-        $cart = Cart::get_current_cart();
+        $cart = $user ? $user->cart : Cart::get_current_cart();
         $cart->cart_items()->delete();
         return redirect()->back()->with('success','Carrito vaciado.');
     }
