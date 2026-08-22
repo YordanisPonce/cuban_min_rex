@@ -34,16 +34,16 @@
                     @if(count($purchaseItems) > 0)
                         @foreach($purchaseItems as $item)
                             <div class="purchase-item">
-                                <img src="{{ $item->img }}" alt="{{ $item->name }}">
+                                <img src="{{ $item['img'] }}" alt="{{ $item['name']}}">
                                 <div class="purchase-item-info">
-                                    <h4>{{ $item->name }}</h4>
-                                    <p>{{ $item->artist }}</p>
+                                    <h4>{{ $item['name'] }}</h4>
+                                    <p>{{ $item['artist'] }}</p>
                                     <div class="purchase-item-meta">
-                                        <span class="pill"><i class="fas fa-headphones"></i> {{ strtoupper($item->extension) }}</span>
+                                        <span class="pill"><i class="fas fa-headphones"></i> {{ strtoupper($item['extension']) }}</span>
                                     </div>
                                 </div>
                                 <div class="purchase-item-right">
-                                    <div class="purchase-item-price">$ {{ number_format($item->price, 2) }}</div>
+                                    <div class="purchase-item-price">$ {{ number_format($item['price'], 2) }}</div>
                                     <div class="purchase-item-qty">x1</div>
                                 </div>
                             </div>
