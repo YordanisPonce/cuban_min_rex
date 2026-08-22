@@ -13,17 +13,31 @@
 @section('content')
     <div class="main">
 
-        <div class="success-header">
-            <div class="success-icon"><i class="fas fa-check"></i></div>
-            <div class="success-text">
-                <h1>¡Compra <span>completada!</span></h1>
-                <p>Tu pago fue procesado correctamente. {{count($purchaseItems) > 0 ? 'Los archivos están listos para descargar.' : ''}}</p>
+        @if($order->status === 'paid')
+            <div class="success-header">
+                <div class="success-icon"><i class="fas fa-check"></i></div>
+                <div class="success-text">
+                    <h1>¡Compra <span>completada!</span></h1>
+                    <p>Tu pago fue procesado correctamente. {{count($purchaseItems) > 0 ? 'Los archivos están listos para descargar.' : ''}}</p>
+                </div>
+                <div class="success-meta">
+                    <div class="label">Nº de orden</div>
+                    <div class="val">#{{ $orderId }}</div>
+                </div>
             </div>
-            <div class="success-meta">
-                <div class="label">Nº de orden</div>
-                <div class="val">#{{ $orderId }}</div>
+        @else
+            <div class="warning-header">
+                <div class="warning-icon"><i class="fas fa-warning"></i></div>
+                <div class="warning-text">
+                    <h1>¡Compra <span>pendiente de pago!</span></h1>
+                    <p>Tu pago está pendiente a confirmar.</p>
+                </div>
+                <div class="warning-meta">
+                    <div class="label">Nº de orden</div>
+                    <div class="val">#{{ $orderId }}</div>
+                </div>
             </div>
-        </div>
+        @endif
 
         <div class="grid">
             <div>
@@ -50,7 +64,9 @@
                         @endforeach
                         <div class="dl-row">
                             <div class="dl-chip"><i class="fas fa-file-zipper"></i> {{count($purchaseItems)}} archivos · {{array_sum(array_column($purchaseItems, 'size'))}} MB</div>
-                            <button class="dl-btn"><i class="fas fa-download"></i> Descargar todo</button>
+                            @if($order->status === 'paid')
+                                <a href="{{ route('order.download.all', $order->id)}}" class="dl-btn"><i class="fas fa-download"></i> Descargar todo</a>
+                            @endif
                         </div>
                     @else
                         @if($order->plan)
@@ -78,10 +94,17 @@
                     <div class="steps">
                         <div class="step done"><span class="dotc"><i class="fas fa-check"></i></span><span
                                 class="lbl">Recibida</span></div>
+                        @if($order->status === 'paid')
                         <div class="step done"><span class="dotc"><i class="fas fa-credit-card"></i></span><span
                                 class="lbl">Pagada</span></div>
                         <div class="step active"><span class="dotc"><i class="fas fa-download"></i></span><span
-                                class="lbl">Descargada</span></div>
+                                class="lbl">Descargar</span></div>
+                        @else
+                        <div class="step active"><span class="dotc"><i class="fas fa-credit-card"></i></span><span
+                                class="lbl">Pagada</span></div>
+                        <div class="step"><span class="dotc"><i class="fas fa-download"></i></span><span
+                                class="lbl">Descargar</span></div>
+                        @endif
                     </div>
                 </div>
 
