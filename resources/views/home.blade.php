@@ -748,8 +748,7 @@
     @isset($error)
         <script>
             Swal.fire({
-                title: 'Lo sentimos. Ha ocurrido un error al procesar su solicitud.',
-                text: '{{ $error }}',
+                title: '{{ $error }}',
                 icon: 'error'
             });
         </script>

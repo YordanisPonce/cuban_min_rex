@@ -22,7 +22,7 @@ class OrderController extends Controller
 
         if ($token) {
             $user = User::whereJsonContains('downloadToken', $token)->first();
-            $order = Order::with('order_items.file')->find($id);
+            $order = Order::with('order_items')->find($id);
 
             if ($user && $order) {
                 $downloadToken = $user->downloadToken;
@@ -135,6 +135,47 @@ class OrderController extends Controller
         }
 
         return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
+    }
+
+    public function details(string $id)
+    {
+        $order = Order::with('order_items')->find($id);
+
+        if (!$order) {
+            abort(404, 'Orden no encontrada.');
+        }
+
+        if (auth()->check() && $order->user_id !== auth()->id() && !auth()->user()->role === 'admin') {
+            abort(403, 'No tiene permiso para ver esta orden.');
+        }
+
+        $purchaseItems = [];
+
+        foreach ($order->order_items as $item) {
+            if ($item->file) {
+                $purchaseItems[] = [
+                    'name' => $item->file->name,
+                    'artist' => $item->file->user->name,
+                    'img' => $item->file->getPosterUrl() ?? $item->file->user->photo ?? config('app.logo_alter'),
+                    'size' => $item->file->getSize(),
+                    'extension' => $item->file->getExtension(),
+                    'price' => $item->file->price,
+                    'download_link' => route('file.download', $item->file->id),
+                ];
+            } elseif ($item->playlistItem) {
+                $purchaseItems[] = [
+                    'name' => $item->playlistItem->title,
+                    'artist' => $item->playlistItem->playlist->user->name,
+                    'img' => $item->playlistItem->getCoverUrl() ?? $item->playlistItem->user->photo ?? config('app.logo_alter'),
+                    'size' => $item->playlistItem->getSize(),
+                    'extension' => $item->playlistItem->getExtension(),
+                    'price' => $item->playlistItem->price,
+                    'download_link' => route('playlist.download_item', [str_replace(' ', '_' , $item->playlistItem->playlist->name), $item->playlistItem->id]),
+                ];
+            }
+        }
+
+        return view('order-details', compact('order', 'purchaseItems'));
     }
 
     private function createPlaylistZip($playlist)

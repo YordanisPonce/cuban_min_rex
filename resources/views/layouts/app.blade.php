@@ -487,8 +487,6 @@
                 once: true // animar solo una vez
             });
         </script>
-
-        @stack('scripts')
     @endif
 
     <div class="window-loader" id="wloader">
@@ -540,6 +538,8 @@
 
     <!-- Page JS -->
          <script src="{{ asset('assets/js/front-page-landing.js') }}"></script> --}}
+    
+    @stack('scripts')
 </body>
 
 </html>

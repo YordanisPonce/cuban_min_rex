@@ -132,8 +132,11 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/file/{file}', [FileController::class, 'download'])
         ->name('file.download');
 
-    Route::get('/order/{file}', [OrderController::class, 'download'])
+    Route::get('/order/{order}', [OrderController::class, 'details'])
         ->name('order.download');
+
+    Route::get('/order/{order}/download', [OrderController::class, 'download'])
+        ->name('order.download.all');
 
     Route::get('/cart/pay', [FileController::class, 'pay'])
         ->name('file.pay');
