@@ -48,7 +48,7 @@ class PlayListItem extends Model
     
     public function getCoverUrl()
     {
-        return Storage::disk('s3')->url($this->cover);
+        return $this->cover ? Storage::disk('s3')->url($this->cover) : $this->playList->getCoverUrl();
     }
 
     public function scopeSearch($query, array $words, bool $full_search = false){
