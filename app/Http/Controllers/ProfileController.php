@@ -49,6 +49,7 @@ class ProfileController extends Controller
 
         $recentActivity = $user->orders()->orderBy('created_at', 'desc')->take(5)->get()->transform( function($o){
             return [
+                'id' => $o->id,
                 'title' => $o->plan ? 'Compra/Renovación de Plan' : 'Compra de artículos',
                 'type' => $o->plan ? 1 : 0,
                 'description' => $o->plan ? $o->plan->name : $o->order_items->count().' artículos',

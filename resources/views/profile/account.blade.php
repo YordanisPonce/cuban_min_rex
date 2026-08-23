@@ -10,6 +10,13 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/css/profile.css') }}" />
+    <style>
+        @media(max-width: 760px){
+            .act-link span{
+                display: none;
+            }
+        }
+        </style>
 @endpush
 
 @section('content')
@@ -235,6 +242,7 @@
                                     <div class="act-amount"><i class="fas fa-dollar-sign"></i> {{ number_format($activity['amount'], 2) }}</div>
                                     <div class="act-status {{ $activity['status'] === 'paid' ? 'success' : ( $activity['status'] === 'pending' ? '' : 'danger' ) }}"> {{ $activity['status'] === 'paid' ? 'Completada' : ( $activity['status'] === 'pending' ? 'Pendiente' : 'Fallida' ) }}</div>
                                     <div class="act-time">{{ $activity['date'] }}</div>
+                                    <div class="act-link"><a class="btn btn-primary" href="{{ route( 'order.download', $activity['id']) }}"><i class="fa fa-eye"></i> <span>Ver detalles</span></a></div>
                                 </div>
                             </div>
                         @endforeach

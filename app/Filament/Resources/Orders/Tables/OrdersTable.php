@@ -110,8 +110,12 @@ class OrdersTable
             ])
             ->recordActions([
                 EditAction::make(),
-                ViewAction::make()
-                    ->label('Ver'),
+                Action::make('view')
+                    ->label('Ver')
+                    ->icon('heroicon-o-eye')
+                    ->color('info')
+                    ->url(fn ($record) => route('order.download', $record->id))
+                    ->openUrlInNewTab(),
                 Action::make('download_files')
                     ->label('Descargar archivos')
                     ->icon('heroicon-o-arrow-down-tray')

@@ -22,7 +22,7 @@
 }
 
 /* SUCCESS HEADER */
-.success-header, .warning-header {
+.success-header, .warning-header, .danger-header {
     display: flex;
     align-items: center;
     gap: 1.5rem;
@@ -38,7 +38,11 @@
     border-left: 4px solid var(--primary-dark);
 }
 
-.success-icon, .warning-icon {
+.danger-header {
+    border-left: 4px solid var(--danger);
+}
+
+.success-icon, .warning-icon, .danger-icon {
     width: 60px;
     height: 60px;
     border-radius: 50%;
@@ -56,7 +60,11 @@
     background-color: var(--primary-dark);
 }
 
-.success-text h1, .warning-text h1 {
+.danger-icon {
+    background-color: var(--danger);
+}
+
+.success-text h1, .warning-text h1, .danger-text h1 {
     font-size: 1.5rem;
     font-weight: 900;
     text-transform: uppercase;
@@ -72,19 +80,23 @@
     color: var(--primary-dark);
 }
 
-.success-text p, .warning-text p {
+.danger-text h1 span {
+    color: var(--danger);
+}
+
+.success-text p, .warning-text p, .danger-text p {
     font-size: .85rem;
     color: var(--muted);
     line-height: 1.5;
 }
 
-.success-meta, .warning-meta {
+.success-meta, .warning-meta, .danger-meta {
     margin-left: auto;
     text-align: right;
     flex-shrink: 0;
 }
 
-.success-meta .label, .warning-meta .label {
+.success-meta .label, .warning-meta .label, .danger-meta .label {
     font-size: .65rem;
     color: var(--muted);
     text-transform: uppercase;
@@ -92,7 +104,7 @@
     font-weight: 700;
 }
 
-.success-meta .val, .warning-meta .val {
+.success-meta .val, .warning-meta .val, .danger-meta .val {
     font-size: 1.05rem;
     font-weight: 800;
     color: var(--primary);
@@ -368,6 +380,16 @@
     animation: pulse 1.6s ease-in-out infinite;
 }
 
+.pm-status.canceled .status-pill {
+    background: #8a2525;
+    border: #8a2525;
+    color: var(--danger);
+}
+
+.pm-status.canceled .status-pill .dot {
+    background: var(--danger);
+}
+
 @keyframes pulse {
     50% {
         opacity: .3;
@@ -460,6 +482,13 @@
 .step.active .dotc {
     border-color: var(--primary);
     color: var(--primary);
+    box-shadow: 0 0 0 4px rgba(245, 166, 35, .12);
+}
+
+.step.cancel .dotc {
+    border-color: var(--danger);
+    background: var(--danger);
+    color: #fff;
     box-shadow: 0 0 0 4px rgba(245, 166, 35, .12);
 }
 
