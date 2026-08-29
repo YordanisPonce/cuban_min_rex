@@ -163,7 +163,7 @@
                 </thead>
                 <tbody id="remixBody">
                     @php $i = 0; @endphp
-                    @foreach ($dj->files()->audios()->section(SectionEnum::MAIN->value)->orderBy('download_count')->take(5)->get() as $file)
+                    @foreach ($dj->files()->audios()->section(SectionEnum::MAIN->value)->orderBy('download_count', 'desc')->take(5)->get() as $file)
                         <tr class="remix-row" id="{{ $file->id }}" data-intro="{{ $file->intro() }}">
                             <td style="color:var(--muted);font-weight:600;">{{ ++$i }}</td>
                             <td>
