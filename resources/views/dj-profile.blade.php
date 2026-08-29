@@ -49,6 +49,10 @@
             align-items: center;
             justify-content: center;
         }
+
+        .remix-title {
+            max-width: 550px;
+        }
     </style>
 @endpush
 
@@ -157,7 +161,6 @@
                         <th>BPM</th>
                         <th>Descargas</th>
                         <th>Precio</th>
-                        <th></th>
                         <th></th>
                     </tr>
                 </thead>
