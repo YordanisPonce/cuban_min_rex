@@ -661,6 +661,114 @@ class HomeController extends Controller
         return view('remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives', 'banners'));
     }
 
+    public function mixes(Request $request){
+        $title = request()->get('title');
+        $genre = 'mix';
+        $bpm = request()->get('bpm');
+        $dj = request()->get('dj');
+
+        $tracks = File::audios()
+            ->where('status', 'active')
+            ->where('isExclusive', false)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value);
+
+        $exclusives = File::audios()
+            ->where('status', 'active')
+            ->where('isExclusive', true)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
+            ->whereHas('categories',  function($q) use ($genre) {
+                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
+            })
+            ->take(3)->get();
+
+        if ($exclusives->count() === 0) {
+            $exclusives = File::audios()
+            ->where('status', 'active')
+            ->where('isExclusive', true)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->orderBy('created_at', 'desc')
+            ->whereHas('categories',  function($q) use ($genre) {
+                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
+            })
+            ->take(3)->get();
+        }
+
+        if($title) {
+            $tracks = $tracks->where('name',  'like', '%' . $title . '%');
+        }
+
+        if($dj){
+            $tracks = $tracks->whereHas('user',  function($q) use ($dj) {
+                $q->where('name',  'like', '%' . str_replace('_',' ', $dj) . '%');
+            });
+        }
+
+        if($genre){
+            $tracks = $tracks->whereHas('categories',  function($q) use ($genre) {
+                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
+            });
+        }
+
+        if($bpm){
+            $tracks = $tracks->where('bpm', 'like', '%'.$bpm.'%');
+        }
+
+        $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
+
+        $tracks->getCollection()->transform(function ($file) {
+            return [
+                'id' => (string) $file->id,
+                'date' => $file->created_at,
+                'artist' => $file->user?->name ?? 'Desconocido',
+                'type' => 'Intro',
+                'title' => $file->name,
+                'badge' => null,
+                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'key' => $file->musical_note ?? '7A',
+                'duration' => 120,
+                'genre' => $file->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
+                'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'downloads' => $file->download_count,
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
+
+        $djs = User::whereHas('files', function($q){
+            $q->audios()->where('status', 'active')
+            ->whereJsonContains('sections', SectionEnum::MAIN->value);
+        })->get();
+
+        $bpms = File::audios()->where('status', 'active')
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->groupBy('bpm')
+            ->orderBy('bpm')
+            ->get('bpm');
+        
+        $banners = Banner::where('active', true)->pluck('path');
+
+        if($banners->count() > 0) 
+        {
+            $banners = $banners->toArray();
+
+            $banners = array_map(function ($banner) {
+                return Storage::disk('s3')->url($banner ?? '');
+            }, $banners);
+
+        } else {
+            $banners = [asset('assets/img/hero-base.jpeg')];
+        }
+
+        $index = 10;
+
+        return view('mixes', compact('index', 'tracks', 'djs', 'bpms', 'exclusives', 'banners'));
+    }
+
     public function exclusives(Request $request)
     {
         $title = request()->get('title');

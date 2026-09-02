@@ -136,6 +136,35 @@ class UsersTable
                     // Opcional: evita cerrar el modal si hay error de validación
                     ->closeModalByClickingAway(false),
                 /*                 DeleteAction::make()->label('Eliminar')->visible(fn() => auth()->user()?->role === 'admin'), */
+                Action::make('revokeSuscription')
+                    ->label('Suspender Suscripción')
+                    ->color('danger')
+                    ->icon('heroicon-o-bookmark-slash')
+                    ->visible(fn($record) => auth()->user()->role === 'admin' && $record->hasActivePlan())
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Suspender Suscripción?')
+                    ->modalDescription('Esta opción solo eliminará los permisos de descarga del usuario, no afectara sus suscripción en paypal o stripe. Eso debe hacerlo manualmente.')
+                    ->action(function (User $record){
+                        try {
+                            $record->update([
+                                'current_plan_id' => null,
+                                'plan_start_at' => null,
+                                'plan_expires_at' => null,
+                            ]);
+
+                            Notification::make()
+                                ->title('Suscripción suspendida')
+                                ->body("Suscripción de $record->name suspendida.")
+                                ->danger()
+                                ->send();
+                        } catch (\Throwable $th) {
+                            Notification::make()
+                                ->title('Error al proceder')
+                                ->body($th->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
                 Action::make('block')
                     ->label('Bloquear')
                     ->icon('heroicon-o-no-symbol')

@@ -235,9 +235,8 @@
         <div class="error-card">
             <div class="error-icon-big"><i class="fa-solid fa-lock"></i></div>
             <div class="error-code-small">— Error 403 · Acceso restringido —</div>
-            <h1 class="error-title">Esta zona es <span>solo para miembros vip</span></h1>
-            <p class="error-desc">No tienes permisos para acceder a este contenido. Inicia sesión con una cuenta autorizada o
-                actualiza tu plan para desbloquear esta sección.</p>
+            <h1 class="error-title">Contenido <span>no disponible</span></h1>
+            <p class="error-desc">{{ $exception->getMessage() ?? 'No tienes acceso a este contenido' }}</p>
 
             <div class="error-actions">
                 @auth

@@ -24,7 +24,7 @@ class OrderController extends Controller
         }
 
         if (auth()->check() && $order->user_id !== auth()->id() && !auth()->user()->role === 'admin') {
-            abort(403, 'No tiene permiso para ver esta orden.');
+            abort(403, 'No tiene permiso para descargar esta orden.');
         }
 
         $zip = new ZipArchive();
@@ -123,7 +123,7 @@ class OrderController extends Controller
         
     }
 
-    public function details(string $id)
+    public function details(Request $request, string $id)
     {
         $order = Order::with('order_items')->find($id);
 
@@ -131,8 +131,24 @@ class OrderController extends Controller
             abort(404, 'Orden no encontrada.');
         }
 
-        if (auth()->check() && $order->user_id !== auth()->id() && !auth()->user()->role === 'admin') {
-            abort(403, 'No tiene permiso para ver esta orden.');
+        if (!auth()->check()) {
+            $token = $request->get('token');
+            if (!$token) {
+                abort(403, 'No tiene permiso para ver esta orden.');
+            }
+            $user = User::whereJsonContains('downloadToken', $token)->first();
+            if (!$user) {
+                abort(403, 'No tiene permiso para ver esta orden.');
+            }
+            $downloadToken = $user->downloadToken;
+            $indice = array_search($token, $downloadToken);
+            unset($downloadToken[$indice]);
+            $user->downloadToken = $downloadToken;
+            $user->save();
+        } else {
+            if ($order->user_id !== auth()->id() && !auth()->user()->role === 'admin') {
+                abort(403, 'No tiene permiso para ver esta orden.');
+            }
         }
 
         $purchaseItems = [];

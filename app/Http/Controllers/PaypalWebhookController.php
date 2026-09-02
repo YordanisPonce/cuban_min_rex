@@ -155,20 +155,41 @@ class PaypalWebhookController extends Controller
                     'event_type' => $eventType,
                 ]);
 
-                $order->status = 'paid';
-                $order->paid_at = Carbon::now();
-                $order->save();
+                if($resource['status'] === 'COMPLETED'){
 
-                $this->sendCustomerPurchaseNotification($order, $resource);
-                $this->registerOrderSales($order);
+                    $order->status = 'paid';
+                    $order->paid_at = Carbon::now();
+                    $order->save();
 
+                    $this->sendCustomerPurchaseNotification($order, $resource);
+                    $this->registerOrderSales($order);
+
+                    
+
+                    NotificationController::sendBuyNtf(
+                        $order->user_id,
+                        "Pago Verificado",
+                        "Su pago ha sido verificado y procesado correctamente. Puede descargar su archivo desde la bandeja de su correo.",
+                    );
                 
+                } else {
+                    Log::warning('PayPal webhook purchase not completed', [
+                        'order_id' => $order->id,
+                        'paypal_order_id' => $orderId,
+                        'event_type' => $eventType,
+                        'status' => $resource['status'],
+                    ]);
+                    if($resource['status'] === 'DENIED'){
+                        $order->status = 'failed';
+                        $order->save();
 
-                NotificationController::sendBuyNtf(
-                    $order->user_id,
-                    "Pago Verificado",
-                    "Su pago ha sido verificado y procesado correctamente. Puede descargar su archivo desde la bandeja de su correo.",
-                );
+                        NotificationController::sendSistemNtf(
+                            $order->user_id,
+                            "Pago Denegado",
+                            "Su pago ha sido denegado. Por favor, intente realizar la compra nuevamente.",
+                        );
+                    }
+                }
 
                 break;
 
@@ -204,19 +225,38 @@ class PaypalWebhookController extends Controller
                     return response()->json(['status' => 'already_processed']);
                 }
 
-                Log::info('PayPal webhook subscription payment confirmed', [
-                    'order_id' => $order->id,
-                    'subscription_id' => $subscriptionId,
-                    'event_type' => $eventType,
-                ]);
+                if($resource['state'] === 'completed') {
+                    Log::info('PayPal webhook subscription payment confirmed', [
+                        'order_id' => $order->id,
+                        'subscription_id' => $subscriptionId,
+                        'event_type' => $eventType,
+                    ]);
 
-                $this->activatePlanFromWebhook($order, $resource);
+                    $this->activatePlanFromWebhook($order, $resource);
 
-                NotificationController::sendBuyNtf(
-                    $order->user_id,
-                    "Pago de Suscripción Verificado",
-                    "Su pago de suscripción ha sido verificado y procesado correctamente. Ahora puede disfrutar de los beneficios de su plan.",
-                );
+                    NotificationController::sendBuyNtf(
+                        $order->user_id,
+                        "Pago de Suscripción Verificado",
+                        "Su pago de suscripción ha sido verificado y procesado correctamente. Ahora puede disfrutar de los beneficios de su plan.",
+                    );
+                } else {
+                    Log::warning('PayPal webhook subscription payment not completed', [
+                        'order_id' => $order->id,
+                        'subscription_id' => $subscriptionId,
+                        'event_type' => $eventType,
+                        'state' => $resource['state'],
+                    ]);
+                    if($resource['state'] === 'denied'){
+                        $order->status = 'failed';
+                        $order->save();
+
+                        NotificationController::sendSistemNtf(
+                            $order->user_id,
+                            "Pago de Suscripción Denegado",
+                            "Su pago de suscripción ha sido denegado. Por favor, intente realizar la compra nuevamente.",
+                        );
+                    }
+                }
 
                 break;
 

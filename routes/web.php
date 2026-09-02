@@ -122,6 +122,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/djs', [HomeController::class, 'djs'])->name('djs');
     Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
     Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
+    Route::get('/mixes', [HomeController::class, 'mixes'])->name('mixes');
     Route::get('/exclusives', [HomeController::class, 'exclusives'])->name('exclusives');
     Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
 
