@@ -307,6 +307,16 @@ class PaypalWebhookController extends Controller
                     'status' => $status,
                 ]);
 
+                // Activar trial de 5 dias en lo que paypal confirma el pago
+                $user = User::find($order->user_id);
+                $plan = Plan::find($order->plan_id);
+                if($user && $plan){
+                    $user->current_plan_id = $plan->id;
+                    $user->plan_start_at = Carbon::now();
+                    $user->plan_expires_at = Carbon::now()->addDays(5);
+                    $user->save();
+                }
+
                 NotificationController::sendSistemNtf(
                     $order->user_id,
                     "Suscripción Aprobada",
@@ -387,8 +397,8 @@ class PaypalWebhookController extends Controller
         $order->expires_at = Carbon::now()->addMonths($plan->duration_months);
         $order->save();
 
-        $user->current_plan_id = $plan->id;
-        $user->plan_start_at = Carbon::now();
+        //$user->current_plan_id = $plan->id;
+        //$user->plan_start_at = Carbon::now();
         $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
         $user->save();
 
