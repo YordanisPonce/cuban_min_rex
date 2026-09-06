@@ -13,6 +13,7 @@ use App\Models\File;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ApiController extends Controller
 {
@@ -47,6 +48,18 @@ class ApiController extends Controller
     public function getFiles()
     {
         $files = File::all();
+        $files->transform(function ($file) {
+            return [
+                'title' => $file->name,
+                'genre' => $file->isExclusive ? 'Exclusive': $file->categories()->first()?->name ?? 'Unknown',
+                'artist' => $file->user?->name ?? 'Unknown',
+                'audioUrl' => Storage::disk('s3')->url($file->file),
+                'photoUrl' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'publishedAt' => $file->created_at->toDateTimeString(),
+                'downloads' => $file->download_count,
+                'price' => $file->price,
+            ];
+        });
         return response()->json($files);
     }
 
@@ -69,8 +82,20 @@ class ApiController extends Controller
      */
     public function getDJs()
     {
-        $djs = User::whereHas('files')->get();
-        return response()->json($djs);
+        $tops = User::join('files', 'users.id', '=', 'files.user_id')
+            ->join('category_files', 'category_files.file_id', 'files.id')
+            ->selectRaw('users.name, SUM(files.download_count) as downloads, users.photo' )
+            ->groupBy(['users.name', 'users.photo'])
+            ->orderBy('downloads', 'desc')
+            ->get();
+        $tops->transform(function ($dj) {
+            return [
+                'name' => $dj->name,
+                'photoUrl' => $dj->photo ?? config('app.logo_alter'),
+                'downloads' => $dj->downloads,
+            ];
+        });
+        return response()->json($tops);
     }
 
     /**
@@ -139,4 +164,30 @@ class ApiController extends Controller
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
+    /**
+     * Get all banners.
+     */
+    public function getBanners()
+    {
+        $banners = \App\Models\Banner::where('active', true)->get();
+
+        if ($banners->count() === 0) {
+            $banner = [
+                'imageUrl' => asset('img/hero-base.jpeg'),
+                'eyebrow' => '',
+                'title' => '',
+            ];
+            return response()->json($banner);
+        } else {
+            $banners->transform(function ($banner) {
+                return [
+                    'imageUrl' => $banner->image(),
+                    'eyebrow' => "",
+                    'title' => "",
+                ];
+            });
+        }
+
+        return response()->json($banners);
+    }
 }

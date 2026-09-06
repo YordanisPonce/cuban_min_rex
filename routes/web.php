@@ -36,6 +36,20 @@ Route::get('/sitemap', function () {
     SitemapGenerator::create(config('app.url'))->writeToFile(public_path('sitemap.xml'));
 });
 
+Route::get('/img/{filename}', function ($filename) {
+    $path = public_path('assets/img/' . $filename);
+
+    if (!file_exists($path)) {
+        abort(404);
+    }
+
+    return response()->file($path, [
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET',
+        'Access-Control-Allow-Headers' => 'Content-Type',
+    ]);
+});
+
 Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -278,6 +292,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::post('/download/{file}/free', [FileController::class, 'downloadFree'])->name('file.free.download.post');
 
     require __DIR__ . '/auth.php';
+    require __DIR__ . '/api.php';
 });
 
 
