@@ -100,9 +100,16 @@ class ListFiles extends ListRecords
                     Select::make('folder_id')
                         ->label('Carpeta')
                         ->options(fn () => \App\Models\Folder::where('type',  FolderTypeEnum::PACKS->value)->pluck('name', 'id'))
-                        ->helperText('Solo para Packs')
+                        ->helperText('SAMPLES & FX')
                         ->searchable()
                         ->preload(),
+                    Select::make('user_id')
+                        ->label('Asignar a')
+                        ->options(fn () => \App\Models\User::where('role',  'worker')->orderBy('name')->pluck('name', 'id'))
+                        ->helperText('Asignar archivo a DJ')
+                        ->searchable()
+                        ->preload()
+                        ->visible(auth()->user()->role === 'admin'),
 
                     Toggle::make('isExclusive')
                         ->label('Contenido Exclusivo')
@@ -135,7 +142,7 @@ class ListFiles extends ListRecords
                         $file->file = $data['file'] ?? ' ';
                         $file->poster = $webpPath ?? '';
                         $file->original_file = $data['original_file'] ?? ' ';
-                        $file->user_id = Auth::user()->id;
+                        $file->user_id = $data['user_id'] ?? Auth::user()->id;
                         $file->price = $data['price'] ?? 0;
                         $file->bpm = $data['bpm'];
                         $file->musical_note = $data['musical_note'] ?? null;

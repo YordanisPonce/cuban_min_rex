@@ -90,9 +90,22 @@
     <script src="{{ asset('assets/vendor/libs/plyr/plyr.js') }}"></script>
     <script src="{{ asset('assets/vendor/libs/aos/aos.js') }}"></script>
 
+    @php
+      use App\Models\Background;
+
+      $background = Background::where('active', true)->first();
+      
+      $backgroundUrl = asset('assets/img/bg.png');
+
+      if ($background) {
+        $backgroundUrl = $background ? $background->image()."" : null;
+        $backgroundUrl = str_replace('\\','\/', $backgroundUrl);
+      }
+    @endphp
+
     <style>
         body {
-            background: url('{{ asset('assets/img/bg.png') }}') no-repeat center center fixed;
+            background: url('{{ $backgroundUrl }}') no-repeat center center fixed;
             background-color: rgba(0, 0, 0, .75);
             background-blend-mode: overlay;
             background-size: cover;
