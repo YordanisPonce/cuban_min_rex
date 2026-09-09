@@ -84,11 +84,6 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::get('/profile/billing-link', [ProfileController::class, 'getBillingLink'])->name('profile.billingLink');
     });
 
-    // Crear orden y redirigir a Stripe
-// Route::post('/checkout/{plan}', [CheckoutController::class, 'create'])
-//     ->middleware('auth')
-//     ->name('checkout.create');
-
     Route::post('/payment/process', [PaymentController::class, 'process'])
         ->middleware('auth')
         ->name('payment.process');
@@ -292,7 +287,4 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
     Route::post('/download/{file}/free', [FileController::class, 'downloadFree'])->name('file.free.download.post');
 
     require __DIR__ . '/auth.php';
-    require __DIR__ . '/api.php';
 });
-
-

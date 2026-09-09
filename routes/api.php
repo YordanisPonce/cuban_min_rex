@@ -10,14 +10,19 @@ use App\Http\Controllers\ApiController;
 
 /*
 Route::get('/api/v1/playlists', [ApiController::class, 'getPlaylists']);
-Route::get('/api/v1/playlists/{id}', [ApiController::class, 'getPlaylist']);
-Route::get('/api/v1/files/{id}', [ApiController::class, 'getFile']);
 Route::post('/api/v1/cart/add', [ApiController::class, 'addToCart']);
 Route::post('/api/v1/cart/remove', [ApiController::class, 'removeFromCart']);
 Route::get('/api/v1/cart', [ApiController::class, 'getCart']);
-Route::get('/api/v1/djs/{id}', [ApiController::class, 'getDj']);
-Route::post('/api/v1/authenticate', [ApiController::class, 'authenticate']);
 */
-Route::get('/api/v1/banners', [ApiController::class, 'getBanners']);
-Route::get('/api/v1/files', [ApiController::class, 'getFiles']);
-Route::get('/api/v1/djs', [ApiController::class, 'getDjs']);
+Route::get('/v1/banners', [ApiController::class, 'getBanners']);
+Route::get('/v1/files', [ApiController::class, 'getFiles']);
+Route::get('/v1/djs', [ApiController::class, 'getDjs']);
+Route::get('/v1/legaltext', [ApiController::class, 'getLegalText']);
+Route::get('/v1/metadata', [ApiController::class, 'getMetadata']);
+Route::get('/v1/plans', [ApiController::class, 'getPlans']);
+Route::post('/v1/login', [ApiController::class, 'login']);
+
+Route::middleware('auth:sanctum')->get('/v1/user', [ApiController::class, 'getUser']);
+Route::middleware('auth:sanctum')->get('/v1/orders', [ApiController::class, 'getOrders']);
+Route::middleware('auth:sanctum')->post('/v1/logout', [ApiController::class, 'logout']);
+    

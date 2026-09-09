@@ -18,10 +18,11 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Support\Facades\Storage;
 use Stripe\Stripe;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable, Billable, SoftDeletes;
+    use HasFactory, Notifiable, Billable, SoftDeletes, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -381,6 +382,10 @@ class User extends Authenticatable implements FilamentUser
 
     public function get_current_plan_consume_downloads(){
         return $this->downloads()->whereBetween('created_at', [$this->plan_start_at, $this->plan_expires_at])->count();
+    }
+
+    public function get_current_plan_left_downloads(){
+        return $this->getActivePlan()?->downloads - $this->get_current_plan_consume_downloads();
     }
 
     public function getFileDownloadsAtSubscriptionPeriod($fileId)

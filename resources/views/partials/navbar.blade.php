@@ -19,7 +19,7 @@
             <li><a href="{{ route('videos') }}" class="{{$index===3 ? 'active' : ''}}">VIDEOS</a></li>
             <li><a href="{{ route('exclusives') }}" class="{{$index===8 ? 'active' : ''}}">EXCLUSIVOS</a></li>
             <li><a href="{{ route('playlist.index') }}" class="{{$index===4 ? 'active' : ''}}">PLAYLISTS</a></li>
-            <li><a href="{{ route('collection.index') }}" class="{{$index===5 ? 'active' : ''}}">PACKS</a></li>
+            <li><a href="{{ route('collection.index') }}" class="{{$index===5 ? 'active' : ''}}">SAMPLES & FX</a></li>
             <li><a href="{{ route('radio') }}" class="{{$index===6 ? 'active' : ''}}">EMISORA</a></li>
             <li><a href="{{ route('plans') }}" class="{{$index===7 ? 'active' : ''}}">PLANES</a></li>
         </ul>

@@ -26,7 +26,7 @@
           <li class="footer-link"><a href="{{ route('remixes') }}" class="d-block mb-2 text-heading">REMIXES</a></li>
           <li class="footer-link"><a href="{{ route('videos') }}" class="d-block mb-2 text-heading">VIDEOS</a></li>
           <li class="footer-link"><a href="{{ route('playlist.index') }}" class="d-block mb-2 text-heading">PLAYLISTS</a></li>
-          <li class="footer-link"><a href="{{ route('collection.index') }}" class="d-block mb-2 text-heading">PACKS</a></li>
+          <li class="footer-link"><a href="{{ route('collection.index') }}" class="d-block mb-2 text-heading">SAMPLES & FX</a></li>
           <li class="footer-link"><a href="{{ route('radio') }}" class="d-block mb-2 text-heading">EMISORA</a></li>
           <li class="footer-link"><a href="{{ route('plans') }}" class="d-block mb-2 text-heading">PLANES</a></li>
         </ul>

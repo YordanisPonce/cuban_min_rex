@@ -195,6 +195,8 @@ class PaypalWebhookController extends Controller
 
             case 'PAYMENT.SALE.COMPLETED':
                 $subscriptionId = $resource['billing_agreement_id'] ?? null;
+                $saleId = $resource['id'] ?? null;
+
                 if (!$subscriptionId) {
                     Log::warning('PayPal webhook sale completed without billing agreement id', [
                         'event_type' => $eventType,
@@ -214,14 +216,12 @@ class PaypalWebhookController extends Controller
                     return response()->json(['status' => 'ignored']);
                 }
 
-                if ($order->status === 'paid' && $order->paid_at) {
-                    Log::info('PayPal webhook duplicate payment sale completed event ignored', [
+                // idempotencia real: ¿ya procesamos ESTE pago puntual?
+                if ($order->last_paypal_sale_id === $saleId) {
+                    Log::info('PayPal webhook duplicate sale id ignored', [
                         'order_id' => $order->id,
-                        'subscription_id' => $subscriptionId,
-                        'event_type' => $eventType,
-                        'paid_at' => $order->paid_at,
+                        'sale_id' => $saleId,
                     ]);
-
                     return response()->json(['status' => 'already_processed']);
                 }
 
@@ -233,6 +233,8 @@ class PaypalWebhookController extends Controller
                     ]);
 
                     $this->activatePlanFromWebhook($order, $resource);
+                    $order->last_paypal_sale_id = $saleId;
+                    $order->save();
 
                     NotificationController::sendBuyNtf(
                         $order->user_id,
@@ -397,8 +399,8 @@ class PaypalWebhookController extends Controller
         $order->expires_at = Carbon::now()->addMonths($plan->duration_months);
         $order->save();
 
-        //$user->current_plan_id = $plan->id;
-        //$user->plan_start_at = Carbon::now();
+        $user->current_plan_id = $plan->id;
+        $user->plan_start_at = Carbon::now();
         $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
         $user->save();
 
