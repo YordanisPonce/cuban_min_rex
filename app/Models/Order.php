@@ -18,6 +18,7 @@ class Order extends Model
         'stripe_payment_intent',
         'paypal_order_id',
         'paypal_subscription_id',
+        'last_paypal_sale_id',
         'amount',
         'status',
         'paid_at',
