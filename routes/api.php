@@ -21,6 +21,8 @@ Route::get('/v1/legaltext', [ApiController::class, 'getLegalText']);
 Route::get('/v1/metadata', [ApiController::class, 'getMetadata']);
 Route::get('/v1/plans', [ApiController::class, 'getPlans']);
 Route::post('/v1/login', [ApiController::class, 'login']);
+Route::post('/v1/register', [ApiController::class, 'register']);
+Route::post('/v1/recovery', [ApiController::class, 'recovery']);
 
 Route::middleware('auth:sanctum')->get('/v1/user', [ApiController::class, 'getUser']);
 Route::middleware('auth:sanctum')->get('/v1/orders', [ApiController::class, 'getOrders']);

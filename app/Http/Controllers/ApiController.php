@@ -16,6 +16,8 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class ApiController extends Controller
 {
@@ -136,6 +138,41 @@ class ApiController extends Controller
         }
 
         return response()->json(['error' => 'Unauthorized'], 401);
+    }
+
+    public function register(Request $request){
+
+        $name = request()->input('email');
+        $email = request()->input('email');
+        $password = request()->input('password');
+
+        if ($name && $email && $password) {
+            $user = User::create([
+                'name' => $name,
+                'email' => $email,
+                'email_verified_at' => now(),
+                'password' => Hash::make($password),
+            ]);
+            return response()->json(['success' => 'Usuario Registrado']);
+        } else {
+            return response()->json(['error' => 'Bad Request'], 400);
+        }
+    }
+
+    public function recovery(){
+        $email = request()->input('email');
+
+        if (!$email) {
+            return response()->json(['error' => 'Bad Request'], 400);
+        }
+
+        $status = Password::sendResetLink(['email' => $email]);
+
+        if ($status == Password::RESET_LINK_SENT) {
+            return response()->json(['success' => 'Reset link sent']);
+        } else {
+            return response()->json(['error' => 'Reset link not sent'], 401);
+        }
     }
 
     /**
