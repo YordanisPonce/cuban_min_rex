@@ -7,6 +7,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Billing;
 use App\Models\Cart;
 use App\Models\PlayList;
 use App\Models\File;
@@ -175,6 +176,25 @@ class ApiController extends Controller
         }
     }
 
+    public function password(){
+        $currentPassword = request()->input('current_password');
+        $newPassword = request()->input('new_password');
+        $user = auth()->user();
+
+        if ($currentPassword && $newPassword) {
+            if (Hash::check($currentPassword, $user->password)) {
+                $user->password = Hash::make($newPassword);
+                $user->save();
+
+                return response()->json(['success' => 'Contraseña actualizada']);
+            } else {
+                return response()->json(['error' => 'Contraseña actual erronea'], 401);
+            }
+        } else {
+            return response()->json(['error' => 'Bad Request'], 400);
+        }
+    }
+
     /**
      * Get the user data for application
      */
@@ -215,6 +235,41 @@ class ApiController extends Controller
         ];
 
         return response()->json($user);
+    }
+
+    public function update(){
+        $user = auth()->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Not user'], 404);
+        }
+
+        $name = request()->input('name') ?? $user->name;
+        $email = request()->input('email') ?? $user->email;
+
+        $user->name = $name;
+        $user->email = $email;
+        $user->save();
+
+        //modificar el billing
+        $billing = $user->billing;
+        if (!$billing) {
+            $billing = new Billing();
+            $billing->user_id = $user->id;
+        }
+        
+        $phone = request()->input('phone') ?? $billing?->phone;
+        $address = request()->input('address') ?? $billing?->address;
+        $country = request()->input('country') ?? $billing?->country;
+        $postal_code = request()->input('postal_code') ?? $billing?->postal;
+
+        $billing->phone = $phone;
+        $billing->address = $address;
+        $billing->postal = $postal_code;
+        $billing->country = $country;
+        $billing->save();
+
+        return response()->json(['success' => 'Información editada']);
     }
 
     /**

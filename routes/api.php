@@ -27,4 +27,6 @@ Route::post('/v1/recovery', [ApiController::class, 'recovery']);
 Route::middleware('auth:sanctum')->get('/v1/user', [ApiController::class, 'getUser']);
 Route::middleware('auth:sanctum')->get('/v1/orders', [ApiController::class, 'getOrders']);
 Route::middleware('auth:sanctum')->post('/v1/logout', [ApiController::class, 'logout']);
+Route::middleware('auth:sanctum')->post('/v1/password', [ApiController::class, 'password']);
+Route::middleware('auth:sanctum')->post('/v1/update', [ApiController::class, 'update']);
     
