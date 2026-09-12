@@ -43,7 +43,7 @@ class ApiController extends Controller
             return [
                 'id' => $file->id,
                 'title' => $file->name,
-                'genre' => $file->isExclusive ? 'Exclusive': $file->categories()->first()?->name ?? 'Unknown',
+                'genre' => $file->isExclusive ? 'Exclusive': ($file->categories()->where('name', 'Mix')->exists() ? 'Mix' : $file->categories()->first()?->name ?? 'Unknown'),
                 'artist' => $file->user?->name ?? 'Unknown',
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note,
