@@ -7,32 +7,30 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AviablePaymentMethod;
 use App\Models\Billing;
 use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Download;
 use App\Models\PlayList;
 use App\Models\File;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Plan;
+use App\Models\PlayListItem;
 use App\Models\User;
+use App\Services\PaypalService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
 
 class ApiController extends Controller
 {
-    /**
-     * Fetch all playlists with their songs.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getPlaylists()
-    {
-        $playlists = PlayList::with('items')->get();
-        return response()->json($playlists);
-    }
-
     /**
      * Fetch all songs.
      *
@@ -43,6 +41,7 @@ class ApiController extends Controller
         $files = File::all();
         $files->transform(function ($file) {
             return [
+                'id' => $file->id,
                 'title' => $file->name,
                 'genre' => $file->isExclusive ? 'Exclusive': $file->categories()->first()?->name ?? 'Unknown',
                 'artist' => $file->user?->name ?? 'Unknown',
@@ -53,8 +52,7 @@ class ApiController extends Controller
                 'publishedAt' => $file->created_at->toDateTimeString(),
                 'downloads' => $file->download_count,
                 'price' => $file->price,
-                //'extension' => $file->getExtension(),
-                //'size' => $file->getSize(),
+                'canBeDownloaded' => $file->canBeDownload()
             ];
         });
         return response()->json($files);
@@ -86,10 +84,41 @@ class ApiController extends Controller
     /**
      * Get the current Cart for the user with cart_items.
      */
-    public function getCart($id)
+    public function getCart()
     {
-        $cart = Cart::with('cart_items')->where('user_id', $id)->first();
-        return response()->json($cart);
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+        
+        $cart = $user->cart;
+        if(!$cart) {
+            $cart = new Cart();
+            $cart->user_id = $user->id;
+            $cart->save();
+        }
+
+        $items = CartItem::where('cart_id', $cart->id)->whereNotNull('file_id')->get();
+        if ($items) {
+            $items->transform(function ($item) {
+                return [
+                    'id' => $item->file->id,
+                    'title' => $item->file->name,
+                    'genre' => $item->file->isExclusive ? 'Exclusive': $item->file->categories()->first()?->name ?? 'Unknown',
+                    'artist' => $item->file->user?->name ?? 'Unknown',
+                    'bpm' => $item->file->bpm,
+                    'key' => $item->file->musical_note,
+                    'audioUrl' => Storage::disk('s3')->url($item->file->file),
+                    'photoUrl' => $item->file->getPosterUrl() ?? $item->file->user->photo ?? config('app.logo_alter'),
+                    'publishedAt' => $item->file->created_at->toDateTimeString(),
+                    'downloads' => $item->file->download_count,
+                    'price' => $item->file->price,
+                    'canBeDownloaded' => $item->file->canBeDownload()
+                ];
+            });
+        }
+
+        return response()->json($items ?? []);
     }
 
     /**
@@ -97,11 +126,35 @@ class ApiController extends Controller
      */
     public function addToCart(Request $request)
     {
-        $fileId = $request->get('file_id');
-        $file = File::findOrFail($fileId);
-        $cart = Cart::firstOrCreate(['user_id' => Auth::id()]);
-        $cart->cart_items()->create(['file_id' => $file->id]);
-        return response()->json(['message' => 'File added to cart']);
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+        
+        $cart = $user->cart;
+        if(!$cart) {
+            $cart = new Cart();
+            $cart->user_id = $user->id;
+            $cart->save();
+        }
+
+        $fileId = intval(request()->input('file_id'));
+        if (!$fileId) {
+            return response()->json(['error' => 'Bad Request'], 400);
+        } 
+
+        $file = File::find($fileId);
+        if(!$file){
+            return response()->json(['error' => 'File Not Found'], 404);
+        }
+
+        CartItem::create([
+            'cart_id' => $cart->id,
+            'file_id' => $file->id,
+            'amount' => $file?->price,
+        ]);
+
+        return response()->json(['success' => 'Item add to user cart']);
     }
 
     /**
@@ -109,11 +162,320 @@ class ApiController extends Controller
      */
     public function removeFromCart(Request $request)
     {
-        $fileId = $request->get('file_id');
-        $file = File::findOrFail($fileId);
-        $cart = Cart::where('user_id', Auth::id())->first();
-        $cart->cart_items()->where('file_id', $file->id)->delete();
-        return response()->json(['message' => 'File removed from cart']);
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+        
+        $cart = $user->cart;
+        if(!$cart) {
+            $cart = new Cart();
+            $cart->user_id = $user->id;
+            $cart->save();
+        }
+
+        $fileId = intval(request()->input('file_id'));
+        if (!$fileId) {
+            return response()->json(['error' => 'Bad Request'], 400);
+        } 
+
+        $file = File::find($fileId);
+        if(!$file){
+            return response()->json(['error' => 'File Not Found'], 404);
+        }
+
+        CartItem::where('cart_id', $cart->id)->where('file_id', $file->id)->delete();
+
+        return response()->json(['success' => 'Item add to user cart']);
+    }
+
+    /**
+     * Clean cart
+     */
+    public function cleanCart(){
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+        
+        $cart = $user->cart;
+        if(!$cart) {
+            $cart = new Cart();
+            $cart->user_id = $user->id;
+            $cart->save();
+        }
+
+        $cart->cart_items()->delete();
+
+        return response()->json(['success' => 'Carrito Limpio']);
+    }
+
+    /**
+     * Proccess Cart payment
+     */
+    public function proccessCart(){
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+        
+        $cart = $user->cart;
+
+        if (!$cart || $cart->cart_items()->count() === 0) {
+            return response()->json([
+                'error' => 'El carrito está vacío.',
+            ], 422);
+        }
+
+        $payment_method = request()->input('payment_method');
+
+        if (!$payment_method) {
+            return response()->json([
+                'error' => 'Bad Request',
+            ], 400);
+        }
+
+        if ($payment_method === 'paypal') {
+            $isPaypalAviable = AviablePaymentMethod::firstOrCreate([])->paypal;
+
+            if(!$isPaypalAviable) {
+                return response()->json(['error' => 'PayPal Payment Method is not aviable'],403);
+            }
+
+            $paypalService = new PaypalService();
+
+            $order = Order::create([
+                'user_id' => $user?->id,
+                'amount' => $cart->get_cart_count(),
+                'status' => 'pending',
+                'currency' => 'USD',
+            ]);
+
+            foreach ($cart->cart_items as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'file_id' => $item->file?->id,
+                    'play_list_id' => $item->playlist?->id,
+                    'play_list_item_id' => $item->playlistItem?->id,
+                ]);
+            }
+
+            $checkout = $paypalService->createCartOrder(
+                $order,
+                route('paypal.return', ['order' => $order->id]),
+                route('paypal.cancel', ['order' => $order->id])
+            );
+
+            $order->forceFill([
+                'paypal_order_id' => $checkout['paypal_order_id'],
+            ])->save();
+
+            return response()->json([
+                'order_id' => $order->id,
+                'url' => $checkout['approval_url'],
+                'status' => $checkout['status'],
+            ]);
+        } else {
+            try {
+
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->amount = $cart->get_cart_count();
+                $order->status = 'pending';
+                $order->save();
+
+                $line_items = [];
+
+                $files_url = [];
+
+                foreach ($cart->cart_items as $item) {
+                    if ($item->file) {
+                        $file = File::find($item->file->id);
+                        if (!$file) {
+                            return response()->json([
+                                'error' => 'El archivo seleccionado no es válido.'
+                            ], 422);
+                        }
+
+                        // Valida precio
+                        $price = (float) $file->price;
+                        if ($price <= 0) {
+                            return response()->json([
+                                'error' => 'El precio del archivo no es válido.'
+                            ], 422);
+                        }
+                            
+                        // Monto en centavos
+                        $amountInCents = (int) round($price * 100);
+
+                        $line_item = [
+                            'price_data' => [
+                                'currency' => 'usd',
+                                'product_data' => [
+                                    'name' => (string) $file->name,
+                                ],
+                                'unit_amount' => $amountInCents,
+                            ],
+                            'quantity' => 1,
+                        ];
+
+                        array_push($line_items, $line_item);
+
+                        $order_item = new OrderItem();
+                        $order_item->order_id = $order->id;
+                        $order_item->file_id = $file->id;
+                        $order_item->save();
+
+                        // URL temporal al archivo
+                        $urlTemporal = Storage::disk('s3')->temporaryUrl($file->original_file, now()->addHour());
+
+                        array_push($files_url, (string) $urlTemporal);
+                    }
+                    if ($item->playlistItem) {
+                        $file = PlayListItem::find($item->playlistItem->id);
+                        if (!$file) {
+                            return response()->json([
+                                'error' => 'El archivo seleccionado no es válido.'
+                            ], 422);
+                        }
+
+                        // Valida precio
+                        $price = (float) $file->price;
+                        if ($price <= 0) {
+                            return response()->json([
+                                'error' => 'El precio del archivo no es válido.'
+                            ], 422);
+                        }
+                            
+                        // Monto en centavos
+                        $amountInCents = (int) round($price * 100);
+
+                        $line_item = [
+                            'price_data' => [
+                                'currency' => 'usd',
+                                'product_data' => [
+                                    'name' => (string) 'Audio: '.$file->title,
+                                ],
+                                'unit_amount' => $amountInCents,
+                            ],
+                            'quantity' => 1,
+                        ];
+
+                        array_push($line_items, $line_item);
+
+                        $order_item = new OrderItem();
+                        $order_item->order_id = $order->id;
+                        $order_item->play_list_item_id = $file->id;
+                        $order_item->save();
+                    }
+                }
+
+                // Configura tu clave secreta (recomendado: en AppServiceProvider::boot)
+                Stripe::setApiKey(config('services.stripe.secret_key'));
+
+                // Metadatos para rastrear compra
+                $metadata = [
+                    'user_id' => $user->id,
+                    'order_id' => (string) $order->id,
+                ];
+
+                // Crea la sesión de Checkout
+                $session = StripeSession::create([
+                    'mode' => 'payment',
+                    'payment_method_types' => ['card'],
+                    'line_items' => $line_items,
+                    'success_url' => route('payment.ok2') . '?session_id={CHECKOUT_SESSION_ID}',
+                    'cancel_url' => route('payment.ko'),
+
+                    // Si no manejas customers en Stripe, usa el email
+                    'customer_email' => optional(auth()->user())->email,
+
+                    // Metadatos en la Session (útil para búsqueda rápida)
+                    'metadata' => $metadata,
+
+                    // Metadatos en el PaymentIntent (bajan al cargo)
+                    'payment_intent_data' => [
+                        'metadata' => $metadata,
+                    ],
+                ]);
+
+                return response()->json(['url' => $session->url]);
+            } catch (\Stripe\Exception\ApiErrorException $e) {
+                report($e);
+                return response()->json([
+                    'error' => $e->getMessage(),
+                ], 500);
+            } catch (\Throwable $e) {
+                report($e);
+                return response()->json([
+                    'error' => 'No se pudo iniciar el pago.',
+                ], 500);
+            }
+        }    
+    }
+
+    /**
+     * Download a file
+     */
+    public function downloadFile(){
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+
+        $fileId = intval(request()->input('file_id'));
+        if (!$fileId) {
+            return response()->json(['error' => 'Bad Request'], 400);
+        } 
+
+        $file = File::find($fileId);
+        if(!$file){
+            return response()->json(['error' => 'File Not Found'], 404);
+        }
+        
+        if ($user->hasActivePlan() || $user->role === 'admin') {
+
+            $plan = null;
+
+            if ($user->currentPlan) {
+                $plan = $user->currentPlan;
+            } else {
+                $plan = Order::where('user_id', $user->id)->where('status', 'paid')->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first()?->plan;
+            }
+
+            if($plan || $user->role === 'admin'){
+                if($user->plan_start_at || $user->role === 'admin'){
+                    if ($user->role === 'admin' || $user->get_current_plan_consume_downloads() < $plan->downloads) {
+
+                        $path = $file->original_file;
+
+                        if (!Storage::disk('s3')->exists($path)) {
+                            abort(404);
+                        }
+
+                        $file->download_count = $file->download_count + 1;
+                        $file->save();
+
+                        if($user->role !== 'admin'){
+                            $download = new Download();
+                            $download->user_id = $user->id;
+                            $download->file_id = $file->id;
+                            $download->amount = $user->downloads_cost();
+                            $download->user_amount = $user->downloads_cost() * 0.7;
+                            $download->admin_amount = $user->downloads_cost() * 0.1;
+                            $download->save();
+                        }
+
+                        $ext = pathinfo($path, PATHINFO_EXTENSION);
+                        $downloadName = "$file->name.$ext";
+                        /*return Storage::disk('s3')->download($path, $downloadName);*/
+                        return downloadFileFromDisk('s3', $path, $downloadName);
+                    }
+                }
+                return response()->json(['error' => 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'], 401);            
+            }
+        }
+        return response()->json(['error' => 'Usted no tiene permisos para descargar el archivo seleccionado.'], 403);
     }
 
 
