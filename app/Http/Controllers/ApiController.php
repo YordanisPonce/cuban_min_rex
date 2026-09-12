@@ -74,7 +74,7 @@ class ApiController extends Controller
         $tops->transform(function ($dj) {
             return [
                 'name' => $dj->name,
-                'photoUrl' => $dj->photo ?? config('app.logo_alter'),
+                'photoUrl' => $dj->photo ? Storage::disk('s3')->url($dj->photo) : config('app.logo_alter'),
                 'downloads' => $dj->downloads,
             ];
         });
