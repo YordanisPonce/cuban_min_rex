@@ -2212,6 +2212,43 @@ body>.skiptranslate>iframe {
     background: var(--primary-dark) !important;
 }
 
+.banner {
+    display: flex;
+    margin: 20px auto 0 auto;
+    padding: 16px;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 17px;
+    border: 1px solid var(--primary-dark);
+    background: #bc892b93;
+}
+
+.banner-left {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.banner-icon{
+    background: var(--primary-dark);
+    color: white;
+    padding: 10px;
+    border-radius: 14px;
+}
+
+.banner-title .percent{
+    font-size: 30px;
+    color: var(--primary-dark)
+}
+
+.banner-links a {
+    background: var(--primary);
+    padding: 10px;
+    border-radius: 10px;
+    text-transform: uppercase;
+    font-weight: bold;
+}
+
 @media(max-width: 720px) {
     .hero:not(.radio) {
         height: 80vh;
@@ -2370,5 +2407,19 @@ body>.skiptranslate>iframe {
 
     .hero h1 {
         font-size: 2rem
+    }
+
+    .banner{
+        flex-direction: column;
+        gap: 20px
+    }
+
+    .banner-left {
+        gap: 10px;
+        text-align: center;
+    }
+
+    .banner-icon{
+        font-size: 30px;
     }
 }

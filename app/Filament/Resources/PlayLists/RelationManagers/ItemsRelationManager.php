@@ -42,7 +42,7 @@ class ItemsRelationManager extends RelationManager
                     ->label('Precio')
                     ->prefix('$ ')
                     ->numeric()
-                    ->default(0)
+                    ->default(4.99)
                     ->required()
                     ->columnSpanFull(),
                 FileUpload::make('cover')
@@ -79,7 +79,7 @@ class ItemsRelationManager extends RelationManager
                 Action::make('edit_prices')->label('Editar Precios')
                     ->modalHeading('Editar el precio de todos los Archivos de la PlayList')
                     ->schema([
-                        TextInput::make('items_price')->label('Nuevo Precio de los Audios por separado')->numeric()->prefix('$ ')->default(0.00),
+                        TextInput::make('items_price')->label('Nuevo Precio de los Audios por separado')->numeric()->prefix('$ ')->default(4.99),
                     ])
                     ->action(function(array $data){
                         $playlist = $this->getOwnerRecord();
@@ -105,7 +105,7 @@ class ItemsRelationManager extends RelationManager
                 Action::make('fill')->label('Agregar Archivos')
                     ->modalHeading('Agregar Archivos a la PlayList')
                     ->schema([
-                        TextInput::make('items_price')->label('Precio de los Audios por separado')->numeric()->prefix('$ ')->default(0.00),
+                        TextInput::make('items_price')->label('Precio de los Audios por separado')->numeric()->prefix('$ ')->default(4.99),
                         FileUpload::make('items')
                             ->label('Archivos')
                             ->helperText('Puedes subir múltiples archivos de audio para esta playlist. Mientras mayor cantidad de archivos, más tiempo tomará el procesamiento. Se paciente, por favor.')

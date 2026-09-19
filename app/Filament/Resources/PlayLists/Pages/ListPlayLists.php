@@ -31,7 +31,7 @@ class ListPlayLists extends ListRecords
                     ->schema([
                         TextInput::make('name')->label('Nombre de la Playlist')->required()->columnSpanFull(),
                         TextInput::make('price')->label('Precio total')->numeric()->prefix('$ ')->default(0.00),
-                        TextInput::make('items_price')->label('Precio de los Audios por separado')->numeric()->prefix('$ ')->default(0.00),
+                        TextInput::make('items_price')->label('Precio de los Audios por separado')->numeric()->prefix('$ ')->default(4.99),
                         Select::make('folder_id')
                             ->label('Carpeta')
                             ->options(fn () => \App\Models\Folder::where('type', FolderTypeEnum::PLAYLIST->value)->pluck('name', 'id'))

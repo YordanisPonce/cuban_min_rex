@@ -88,7 +88,6 @@
 @endpush
 
 @section('content')
-
     <section class="hero container">
         <div class="hero-slides" id="heroSlides"></div>
         <div class="hero-gradient"></div>
@@ -108,6 +107,22 @@
             </div>
         </div>
     </section>
+    
+    @if (!auth()->check() || !auth()->user()->hasActivePlan() || !auth()->user()->role === 'admin')
+        <section class="container">
+            <div class="banner">
+                <div class="banner-left">
+                    <div class="banner-icon"><i class="fas fa-crown"></i></div>
+                    <div class="banner-title">
+                        <h3>Suscríbete y ahorra hasta un <span class="percent">90%</span> con cada descarga.</h3>
+                    </div>
+                </div>
+                <div class="banner-links">
+                    <a class="btn btn-primary" href="{{ route('plans') }}">Ver planes <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </section>
+    @endif
     
     <section class="section">
         <div class="container">

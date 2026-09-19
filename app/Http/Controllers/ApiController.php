@@ -28,6 +28,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Stripe\Stripe;
 use Stripe\Checkout\Session as StripeSession;
+use ZipArchive;
 
 class ApiController extends Controller
 {
@@ -648,9 +649,124 @@ class ApiController extends Controller
                 'created_at' => Carbon::parse($order->created_at)->translatedFormat('j \d\e F \d\e Y'),
                 'amount' => $order->amount,
                 'status' => $order->status === 'paid' ? 'completed' : $order->status,
+                'payment_method' => $order->paypal_order_id ? 'paypal' : 'card',
+                'referal_id' => "$order->id",
+                'has_plan' => $order->plan_id !== null,
             ];
         });
         return response()->json($orders);
+    }
+
+    /**
+     * Get the user Order Items fo application
+     */
+    public function getOrderItems(String $id){
+        $order = Order::find(intval($id));
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+        $items = [];
+        $plan = $order->plan;
+        if($plan){
+            $items[] = [
+                'name' => $plan->name,
+                'price' => $plan->price,
+            ];
+        } else {
+            $items = OrderItem::where('order_id', $order->id)->get();
+            $items->transform(function($item) {
+                return [
+                    'name' => $item->file?->name ?? $item->playlistItem?->title,
+                    'price' => $item->file?->price ?? $item->playlistItem?->price,
+                ];
+            });
+        }
+        return response()->json($items);
+    }
+
+    /**
+     * Download the Order
+     */
+    public function downloadOrder(Request $request, string $id)
+    {
+        $order = Order::with('order_items')->find($id);
+
+        if (!$order) {
+            return response()->json(['error' => 'Order not found'], 404);
+        }
+
+        if (auth()->check() && $order->user_id !== auth()->id() && !auth()->user()->role === 'admin') {
+            return response()->json(['error' => 'Unautorized'], 403);
+        }
+
+        $zip = new ZipArchive();
+        $zipFileName = config('app.name') . '-' . uniqid() . '-pack.zip';
+        $zipFilePath = Storage::disk('local')->path("files/zip/$zipFileName");
+
+        // Asegurar que el directorio existe
+        $zipDirectory = dirname($zipFilePath);
+        if (!file_exists($zipDirectory)) {
+            mkdir($zipDirectory, 0755, true);
+        }
+
+        if ($zip->open($zipFilePath, ZipArchive::CREATE | ZipArchive::OVERWRITE) !== TRUE) {
+            return response()->json(['error' => 'No se pudo crear el archivo ZIP'], 500);
+        }
+
+        foreach ($order->order_items as $orderItem) {
+
+            if ($orderItem->file) {
+                $file = File::find($orderItem->file_id);
+
+                if (!$file) {
+                    continue;
+                }
+
+                // Verificar si el archivo existe en S3
+                if (!Storage::disk('s3')->exists($file->original_file)) {
+                    continue;
+                }
+
+                // Obtener el contenido del archivo desde S3
+                $fileContent = Storage::disk('s3')->get($file->original_file);
+
+                // Obtener la extensión del archivo
+                $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+                $downloadName = $file->name . '.' . $ext;
+
+                // Agregar el archivo al ZIP desde el contenido en memoria
+                $zip->addFromString($downloadName, $fileContent);
+            }
+
+            if ($orderItem->playlistItem) {
+                $audio = PlayListItem::find($orderItem->play_list_item_id);
+
+                if (!$audio) {
+                    continue;
+                }
+
+                if (!Storage::disk('s3')->exists($audio->file_path)) {
+                    continue;
+                }
+
+                $fileContent = Storage::disk('s3')->get($audio->file_path);
+                $ext = pathinfo($audio->file_path, PATHINFO_EXTENSION);
+                $downloadName = $audio->title . '.' . $ext;
+                $zip->addFromString($downloadName, $fileContent);
+            }
+            
+        }
+
+        $zip->close();
+
+        if (!file_exists($zipFilePath)) {
+            return response()->json(['error' => 'El archivo ' . $zipFileName . ' no se ha creado.'], 500);
+        }
+
+        return response()->download($zipFilePath, "ord-$order->id.zip", [
+            'Content-Type' => 'application/zip'
+        ])->deleteFileAfterSend(true);
+        
     }
 
     /**

@@ -66,6 +66,7 @@ class ListFiles extends ListRecords
                     TextInput::make('price')
                         ->label('Precio')
                         ->numeric()
+                        ->default(4.99)
                         ->prefix('$'),
                     TextInput::make('bpm')
                         ->label('BPM')
