@@ -358,7 +358,7 @@
         <div class="playlist-row"   data-aos="fade-right"  data-aos-delay="${ delay++*300 + 100}">
             <div class="playlist-column">
                 <span class="playlist-rank">#${++prank}</span>
-                <div class="playlist-imgs">${p.imgs.map(i=>`<img src="${i}" alt="" loading="lazy">`).join('')}</div>
+                <div class="playlist-imgs"><img src="${p.img}" alt="${p.title}" loading="lazy" /></div>
                 <div class="playlist-info"><h3>${p.title}</h3><p>${p.sub}</p></div>
             </div>
             <div class="playlist-column">

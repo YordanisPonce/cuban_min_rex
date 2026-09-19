@@ -113,14 +113,13 @@ class HomeController extends Controller
             $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
             
             $playlists->transform(function ($playlist) {
-                $imgs = [];
-                $imgs[] = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
+                $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
                 return [
                     'title' => $playlist->name,
                     'sub' => $playlist->user?->name,
                     'tag' => '',
                     'genre' => $playlist->folder?->name ?? 'HOT',
-                    'imgs' => $imgs,
+                    'img' => $img,
                     'downloads' => $playlist->downloads->count(),
                     'route' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
                 ];
