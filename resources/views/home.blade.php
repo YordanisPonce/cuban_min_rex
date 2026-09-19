@@ -114,7 +114,7 @@
                 <div class="banner-left">
                     <div class="banner-icon"><i class="fas fa-crown"></i></div>
                     <div class="banner-title">
-                        <h3>Suscríbete y ahorra hasta un <span class="percent">90%</span> con cada descarga.</h3>
+                        <h3>Acceso completo desde <span class="percent">$ 9.99</span> por 2 meses.</h3>
                     </div>
                 </div>
                 <div class="banner-links">

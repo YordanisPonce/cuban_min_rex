@@ -199,15 +199,10 @@ class File extends Model
                 $plan = $user->getActivePlan();
 
                 if($user->plan_start_at){
-                    if ($this->isExclusive) {
-                        $lastPlans = Plan::orderBy('price', 'desc')->take(2)->get();
-                        
-                        return $user->get_current_plan_consume_downloads() < $plan->downloads && $lastPlans->contains('id', $plan->id);
-                    }
                     return $user->get_current_plan_consume_downloads() < $plan->downloads;
                 }
 
-                return $this->isExclusive ? false : true;
+                return true;
             }
         }
         return false;
