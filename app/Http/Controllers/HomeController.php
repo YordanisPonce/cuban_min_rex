@@ -98,12 +98,13 @@ class HomeController extends Controller
             ->orderBy('downloads', 'desc')->take(3)->get();
         
         $playlists->transform(function ($playlist) {
+            $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
             return [
                 'title' => $playlist->title,
                 'sub' => $playlist->dj,
                 'tag' => '',
                 'genre' => $playlist->folder?->name ?? 'HOT',
-                'imgs' => [$playlist->cover ?? $playlist->photo ?? config('app.logo_alter')],
+                'img' => $img,
                 'downloads' => $playlist->downloads,
                 'route' => route('playlist.show', str_replace(' ', '_', $playlist->title)),
             ];
