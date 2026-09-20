@@ -97,6 +97,10 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
+    public function getPhotoUrl() {
+        return $this->photo ? Storage::disk('s3')->url($this->photo) : config('app.logo_alter');
+    }
+
     protected function cover(): Attribute
     {
 
