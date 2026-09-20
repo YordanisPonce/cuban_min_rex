@@ -687,36 +687,37 @@ class ApiController extends Controller
         $transformPrice = "Sin plan activo";
         $dayLeft = 0;
         $downloadLeft = 0;
+        $authUser = auth()->user();
 
-        if(auth()->user()->hasActivePlan()){
-            $plan = auth()->user()->getActivePlan();
+        if($authUser->hasActivePlan()){
+            $plan = $authUser->getActivePlan();
             $transformDuration = $plan?->duration_months > 1 ? "$plan?->duration_months meses" : 'mes';
             $transformPrice = "$ $plan->price / $transformDuration";
 
-            $dayLeft = auth()->user()->planExpirationDays()->days;
-            $downloadLeft = auth()->user()->get_current_plan_left_downloads();
+            $dayLeft = $authUser->planExpirationDays()->days;
+            $downloadLeft = $authUser->get_current_plan_left_downloads();
         }
 
         $user = [
-            'name' => auth()->user()->name,
-            'email' => auth()->user()->email,
-            'photo' => auth()->user()->photo ? Storage::disk('s3')->url(auth()->user()->photo) : asset('img/logo_alter.png'),
-            'cover' => auth()->user()->cover ? Storage::disk('s3')->url(auth()->user()->cover) : asset('img/hero-base.jpeg'),
-            'bio' => auth()->user()->bio ?? 'Sin definir',
-            'role' => auth()->user()->role,
-            'phone' => auth()->user()->billing ? auth()->user()->billing->phone : 'Sin definir',
-            'address' => auth()->user()->billing ? auth()->user()->billing->address : 'Sin definir',
-            'country' => auth()->user()->billing ? auth()->user()->billing->country : 'Sin definir',
-            'postal_code' => auth()->user()->billing ? auth()->user()->billing->postal : 'Sin definir',
-            'active_suscription' => auth()->user()->hasActivePlan(),
-            'active_suscription_name' => auth()->user()->hasActivePlan() ? auth()->user()->getActivePlan()?->name : 'Sin plan activo',
+            'name' => $authUser->name,
+            'email' => $authUser->email,
+            'photo' => $authUser->getPhotoUrl(),
+            'cover' => $authUser->getCoverUrl(),
+            'bio' => $authUser->bio ?? 'Sin definir',
+            'role' => $authUser->role,
+            'phone' => $authUser->billing?->phone ?? 'Sin definir',
+            'address' => $authUser->billing?->address ?? 'Sin definir',
+            'country' => $authUser->billing?->country ?? 'Sin definir',
+            'postal_code' => $authUser->billing?->postal ?? 'Sin definir',
+            'active_suscription' => $authUser->hasActivePlan(),
+            'active_suscription_name' =>$authUser->hasActivePlan() ? $authUser->getActivePlan()?->name : 'Sin plan activo',
             'active_suscription_price' => $transformPrice,
             'active_suscription_dayleft' => $dayLeft,
-            'active_suscription_totaldays' => auth()->user()->hasActivePlan() ? auth()->user()->getActivePlan()?->duration_months * 30 : 0,
+            'active_suscription_totaldays' => $authUser->hasActivePlan() ? $authUser->getActivePlan()?->duration_months * 30 : 0,
             'active_suscription_downloads_left' => $downloadLeft,
-            'downloads_count' => auth()->user()->downloads()->count(),
-            'sales_count' => auth()->user()->sales()->count(),
-            'suscriptions_count' => auth()->user()->orders()->whereHas('plan')->where('status', 'paid')->count(),
+            'downloads_count' => $authUser->downloads()->count(),
+            'sales_count' => $authUser->sales()->count(),
+            'suscriptions_count' => $authUser->orders()->whereHas('plan')->where('status', 'paid')->count(),
         ];
 
         return response()->json($user);

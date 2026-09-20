@@ -111,6 +111,10 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
+    public function getCoverUrl() {
+        return $this->cover ? Storage::disk('s3')->url($this->cover) : asset('img/hero-base.jpeg');
+    }
+
     // === Socialite ===
     public function getSocialiteAvatarUrl(): ?string
     {
