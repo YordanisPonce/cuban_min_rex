@@ -39,7 +39,7 @@ class ApiController extends Controller
      */
     public function getFiles()
     {
-        $files = File::all();
+        $files = File::orderBy('created_at', 'desc')->get();
         $files->transform(function ($file) {
             return [
                 'id' => $file->id,
