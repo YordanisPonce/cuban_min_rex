@@ -49,7 +49,7 @@ class ApiController extends Controller
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note,
                 'audioUrl' => Storage::disk('s3')->url($file->file),
-                'photoUrl' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'photoUrl' => $file->getPosterUrl() ?? $file->user->photo ? Storage::disk('s3')->url($file->user->photo) : config('app.logo_alter'),
                 'publishedAt' => $file->created_at->toDateTimeString(),
                 'downloads' => $file->download_count,
                 'price' => $file->price,
