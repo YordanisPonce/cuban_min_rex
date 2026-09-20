@@ -27,6 +27,7 @@ Route::middleware('auth:sanctum')->get('/v1/orders/{id}/download', [ApiControlle
 Route::middleware('auth:sanctum')->get('/v1/music', [ApiController::class, 'getFiles']);
 Route::middleware('auth:sanctum')->get('/v1/cart', [ApiController::class, 'getCart']);
 Route::middleware('auth:sanctum')->post('/v1/cart', [ApiController::class, 'proccessCart']);
+Route::middleware('auth:sanctum')->post('/v1/suscribe', [ApiController::class, 'suscribe']);
 Route::middleware('auth:sanctum')->post('/v1/logout', [ApiController::class, 'logout']);
 Route::middleware('auth:sanctum')->post('/v1/password', [ApiController::class, 'password']);
 Route::middleware('auth:sanctum')->post('/v1/update', [ApiController::class, 'update']);

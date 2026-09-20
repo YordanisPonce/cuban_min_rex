@@ -415,6 +415,128 @@ class ApiController extends Controller
         }    
     }
 
+    public function suscribe() {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        } 
+
+        $payment_method = request()->input('payment_method');
+
+        if (!$payment_method) {
+            return response()->json([
+                'error' => 'Bad Request',
+            ], 400);
+        }
+
+        $plan_id = request()->input('plan_id');
+
+        if (!$plan_id) {
+            return response()->json([
+                'error' => 'Bad Request',
+            ], 400);
+        }
+
+        $plan = Plan::findOrFail($plan_id);
+
+        if (!$plan) {
+            return response()->json(['error' => 'Plan Not Found'], 404);
+        }
+
+        if ($payment_method === 'paypal') {
+            $isPaypalAviable = AviablePaymentMethod::firstOrCreate([])->paypal;
+
+            if(!$isPaypalAviable) {
+                return response()->json(['error' => 'PayPal Payment Method is not aviable'],403);
+            }
+
+            $paypalService = new PaypalService();
+
+            $order = Order::create([
+                'user_id' => $user->id,
+                'plan_id' => $plan->id,
+                'amount' => $plan->price,
+                'status' => 'pending',
+                'currency' => 'USD',
+            ]);
+
+            $checkout = $paypalService->createSubscription(
+                $plan,
+                $user,
+                $order,
+                route('paypal.subscribe.return', ['order' => $order->id]),
+                route('paypal.subscribe.cancel', ['order' => $order->id])
+            );
+
+            $order->forceFill([
+                'paypal_subscription_id' => $checkout['subscription_id'],
+            ])->save();
+
+            return response()->json([
+                'order_id' => $order->id,
+                'subscription_id' => $checkout['subscription_id'],
+                'url' => $checkout['approval_url'],
+                'status' => $checkout['status'],
+            ]);
+            
+        } else {
+            try {
+
+                $order = new Order();
+                $order->user_id = $user->id;
+                $order->plan_id = $plan->id;
+                $order->amount = $plan->price;
+                $order->status = 'pending';
+                $order->save();
+
+                if (!$plan->stripe_price_id) {
+                    return response()->json([
+                        'error' => 'El plan seleccionado no es válido o no tiene un precio en Stripe.'
+                    ], 422);
+                }
+
+                $user->createOrGetStripeCustomer();
+
+                $session = $user->checkout(
+                    [$plan->stripe_price_id],
+                    [
+                        'payment_method_types' => ['card'],
+                        'line_items' => [
+                            [
+                                'price' => $plan->stripe_price_id,
+                                'quantity' => 1,
+                            ]
+                        ],
+                        'mode' => 'subscription',
+                        'success_url' => route('payment.ok'),
+                        'cancel_url' => route('payment.form', ['plan' => $plan->id]),
+                        'metadata' => [
+                            'plan_id' => $plan->id,
+                            'user_id' => $user->id,
+                            'order_id' => $order->id,
+                        ],
+                        'subscription_data' => [
+                            'metadata' => [
+                                'plan_id' => $plan->id,
+                                'user_id' => $user->id,
+                                'order_id' => $order->id,
+                                // ... cualquier otro dato
+                            ]
+                        ]
+
+                    ]
+                );
+
+                return response()->json(['url' => $session->url]);
+            } catch (\Exception $e) {
+                // ✅ Devolvemos JSON para que el front no rompa
+                return response()->json([
+                    'error' => $e->getMessage()
+                ], 500);
+            }
+        } 
+    }
+
     /**
      * Download a file
      */
@@ -849,6 +971,7 @@ class ApiController extends Controller
         $plans = Plan::orderBy('price', 'asc')->get();
         $plans->transform(function ($plan) {
             return [
+                'id' => "$plan->id",
                 'name' => $plan->name,
                 'description' => $plan->description,
                 'durationMonths' => $plan->duration_months,
