@@ -14,6 +14,7 @@ use App\Models\CartItem;
 use App\Models\Download;
 use App\Models\PlayList;
 use App\Models\File;
+use App\Models\Folder;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Plan;
@@ -104,6 +105,26 @@ class ApiController extends Controller
             ];
         });
         return response()->json($playlists);
+    }
+
+    /**
+     * Fetch all Folders.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getFolders()
+    {
+        $folders = Folder::orderBy('name')->get();
+        
+        $folders->transform(function ($folder) {
+            $img = $folder->getCoverUrl() ?? config('app.logo_alter');
+            return [
+                'id' => $folder->id,
+                'name' => $folder->name,
+                'coverUrl' => $img,
+            ];
+        });
+        return response()->json($folders);
     }
 
     /**
