@@ -89,25 +89,17 @@ class ApiController extends Controller
      */
     public function getPlaylists()
     {
-        $playlists = PlayList::join('downloads', 'play_lists.id', 'downloads.play_list_id')
-            ->join('users', 'play_lists.user_id', 'users.id')
-            ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as dws, play_lists.cover as cover, users.photo as photo')
-            ->groupBy(['title', 'dj', 'cover', 'photo'])
-            ->orderBy('dws', 'desc')->get();
-
-        if ($playlists->count() === 0) {
-            $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
-        }
+        $playlists = PlayList::orderBy('created_at', 'desc')->get();
         
         $playlists->transform(function ($playlist) {
             $img = $playlist->getCoverUrl() ?? $playlist->user?->getCoverUrl() ?? config('app.logo_alter');
             return [
                 'id' => $playlist->id,
-                'name' => $playlist->title ?? $playlist->name,
-                'artist' => $playlist->dj ?? $playlist->user?->name,
+                'name' => $playlist->name,
+                'artist' => $playlist->user?->name ?? 'Desconocido',
                 'folder' => $playlist->folder?->name ?? 'HOT',
                 'coverUrl' => $img,
-                'downloads' => $playlist->dws ?? $playlist->downloads()->count(),
+                'downloads' => $playlist->downloads()->count(),
                 'items' => $playlist->items()->count(),
             ];
         });
