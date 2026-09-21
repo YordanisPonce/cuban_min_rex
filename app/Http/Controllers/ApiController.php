@@ -144,6 +144,7 @@ class ApiController extends Controller
 
         $items = $items->transform(function($item) use ($playlist) {
             return [
+                'id' => $item->id,
                 'title' => $item->title,
                 'audioUrl' => $item->getFileUrl(),
                 'cover' => $item->getCoverUrl(),
@@ -174,23 +175,39 @@ class ApiController extends Controller
             $cart->save();
         }
 
-        $items = CartItem::where('cart_id', $cart->id)->whereNotNull('file_id')->get();
+        $items = CartItem::where('cart_id', $cart->id)->get();
         if ($items) {
             $items->transform(function ($item) {
-                return [
-                    'id' => $item->file->id,
-                    'title' => $item->file->name,
-                    'genre' => $item->file->isExclusive ? 'Exclusive': $item->file->categories()->first()?->name ?? 'Unknown',
-                    'artist' => $item->file->user?->name ?? 'Unknown',
-                    'bpm' => $item->file->bpm,
-                    'key' => $item->file->musical_note,
-                    'audioUrl' => Storage::disk('s3')->url($item->file->file),
-                    'photoUrl' => $item->file->getPosterUrl() ?? $item->file->user->photo ?? config('app.logo_alter'),
-                    'publishedAt' => $item->file->created_at->toDateTimeString(),
-                    'downloads' => $item->file->download_count,
-                    'price' => $item->file->price,
-                    'canBeDownloaded' => $item->file->canBeDownload()
-                ];
+                if($item->file){
+                    return [
+                        'isFile' => true,
+                        'id' => $item->file->id,
+                        'title' => $item->name(),
+                        'genre' => $item->file->isExclusive ? 'Exclusive': $item->file->categories()->first()?->name ?? 'Unknown',
+                        'artist' => $item->dj() ?? 'Unknown',
+                        'bpm' => $item->file->bpm,
+                        'key' => $item->file->musical_note,
+                        'audioUrl' => Storage::disk('s3')->url($item->file->file),
+                        'photoUrl' => $item->cover() ?? config('app.logo_alter'),
+                        'publishedAt' => $item->file->created_at?->toDateTimeString(),
+                        'downloads' => $item->file->download_count,
+                        'price' => $item->price(),
+                        'canBeDownloaded' => $item->file->canBeDownload()
+                    ];
+                } else {
+                    return [
+                        'isFile' => false,
+                        'id' => $item->playlistItem->id,
+                        'title' => $item->name(),
+                        'artist' => $item->dj() ?? 'Unknown',
+                        'audioUrl' => Storage::disk('s3')->url($item->playlistItem->file_path),
+                        'photoUrl' => $item->cover() ?? config('app.logo_alter'),
+                        'publishedAt' => $item->playlistItem->created_at?->toDateTimeString(),
+                        'downloads' => $item->playlistItem->downloads()->count(),
+                        'price' => $item->price(),
+                        'canBeDownloaded' => $item->playlistItem->playlist->canBeDownload(),
+                    ];
+                }
             });
         }
 
@@ -216,21 +233,36 @@ class ApiController extends Controller
             $cart->save();
         }
 
-        $fileId = intval(request()->input('file_id'));
-        if (!$fileId) {
+        $id = intval(request()->input('id'));
+        if (!$id) {
             return response()->json(['error' => 'Bad Request'], 400);
         } 
 
-        $file = File::find($fileId);
-        if(!$file){
-            return response()->json(['error' => 'File Not Found'], 404);
-        }
+        $isFile = request()->input('isFile') === 'true';
 
-        CartItem::create([
-            'cart_id' => $cart->id,
-            'file_id' => $file->id,
-            'amount' => $file?->price,
-        ]);
+        if ($isFile) {
+            $file = File::find($id);
+            if(!$file){
+                return response()->json(['error' => 'File Not Found'], 404);
+            }
+
+            CartItem::create([
+                'cart_id' => $cart->id,
+                'file_id' => $file->id,
+                'amount' => $file?->price,
+            ]);
+        } else {
+            $sound = PlayListItem::find($id);
+            if(!$sound){
+                return response()->json(['error' => 'Sound Not Found'], 404);
+            }
+
+            CartItem::create([
+                'cart_id' => $cart->id,
+                'play_list_item_id' => $sound->id,
+                'amount' => $sound?->price,
+            ]);
+        }
 
         return response()->json(['success' => 'Item add to user cart']);
     }
@@ -254,17 +286,28 @@ class ApiController extends Controller
             $cart->save();
         }
 
-        $fileId = intval(request()->input('file_id'));
-        if (!$fileId) {
+        $id = intval(request()->input('id'));
+        if (!$id) {
             return response()->json(['error' => 'Bad Request'], 400);
         } 
 
-        $file = File::find($fileId);
-        if(!$file){
-            return response()->json(['error' => 'File Not Found'], 404);
-        }
+        $isFile = request()->input('isFile') === 'true';
 
-        CartItem::where('cart_id', $cart->id)->where('file_id', $file->id)->delete();
+        if ($isFile) {
+            $file = File::find($id);
+            if(!$file){
+                return response()->json(['error' => 'File Not Found'], 404);
+            }
+
+            CartItem::where('cart_id', $cart->id)->where('file_id', $file->id)->delete();
+        } else {
+            $sound = PlayListItem::find($id);
+            if(!$sound){
+                return response()->json(['error' => 'Sound Not Found'], 404);
+            }
+
+            CartItem::where('cart_id', $cart->id)->where('play_list_item_id', $sound->id)->delete();
+        }
 
         return response()->json(['success' => 'Item add to user cart']);
     }
