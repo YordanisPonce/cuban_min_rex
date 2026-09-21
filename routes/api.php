@@ -13,6 +13,8 @@ use App\Http\Controllers\ApiController;
 Route::get('/v1/banners', [ApiController::class, 'getBanners']);
 Route::get('/v1/files', [ApiController::class, 'getFiles']);
 Route::get('/v1/djs', [ApiController::class, 'getDjs']);
+Route::get('/v1/playlists', [ApiController::class, 'getPlaylists']);
+Route::get('/v1/playlists/{id}', [ApiController::class, 'getPlaylist']);
 Route::get('/v1/legaltext', [ApiController::class, 'getLegalText']);
 Route::get('/v1/metadata', [ApiController::class, 'getMetadata']);
 Route::get('/v1/plans', [ApiController::class, 'getPlans']);
@@ -25,6 +27,7 @@ Route::middleware('auth:sanctum')->get('/v1/orders', [ApiController::class, 'get
 Route::middleware('auth:sanctum')->get('/v1/orders/{id}', [ApiController::class, 'getOrderItems']);
 Route::middleware('auth:sanctum')->get('/v1/orders/{id}/download', [ApiController::class, 'downloadOrder']);
 Route::middleware('auth:sanctum')->get('/v1/music', [ApiController::class, 'getFiles']);
+Route::middleware('auth:sanctum')->get('/v1/sounds/{id}', [ApiController::class, 'getPlaylist']);
 Route::middleware('auth:sanctum')->get('/v1/cart', [ApiController::class, 'getCart']);
 Route::middleware('auth:sanctum')->post('/v1/cart', [ApiController::class, 'proccessCart']);
 Route::middleware('auth:sanctum')->post('/v1/suscribe', [ApiController::class, 'suscribe']);

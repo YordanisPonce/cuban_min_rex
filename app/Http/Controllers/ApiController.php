@@ -83,7 +83,69 @@ class ApiController extends Controller
     }
 
     /**
+     * Fetch all Playlists.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPlaylists()
+    {
+        $playlists = PlayList::join('downloads', 'play_lists.id', 'downloads.play_list_id')
+            ->join('users', 'play_lists.user_id', 'users.id')
+            ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as dws, play_lists.cover as cover, users.photo as photo')
+            ->groupBy(['title', 'dj', 'cover', 'photo'])
+            ->orderBy('dws', 'desc')->get();
+
+        if ($playlists->count() === 0) {
+            $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
+        }
+        
+        $playlists->transform(function ($playlist) {
+            $img = $playlist->getCoverUrl() ?? $playlist->user?->getCoverUrl() ?? config('app.logo_alter');
+            return [
+                'id' => $playlist->id,
+                'name' => $playlist->title ?? $playlist->name,
+                'artist' => $playlist->dj ?? $playlist->user?->name,
+                'folder' => $playlist->folder?->name ?? 'HOT',
+                'coverUrl' => $img,
+                'downloads' => $playlist->dws ?? $playlist->downloads()->count(),
+                'items' => $playlist->items()->count(),
+            ];
+        });
+        return response()->json($playlists);
+    }
+
+    /**
+     * Fetch a Playlists.
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getPlaylist(String $id)
+    {
+        $playlist = PlayList::find($id);
+
+        if (!$playlist) {
+            return response()->json(['error' => 'Playlist not found'], 404);
+        }
+
+        $items = $playlist->items()->get();
+
+        $items = $items->transform(function($item) use ($playlist) {
+            return [
+                'title' => $item->title,
+                'audioUrl' => $item->getFileUrl(),
+                'cover' => $item->getCoverUrl(),
+                'downloads' => $item->downloads()->count(),
+                'price' => $item->price,
+                'canBeDownloaded' => $playlist->canBeDownload(),
+            ];
+        });
+        return response()->json($items);
+    }
+
+    /**
      * Get the current Cart for the user with cart_items.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getCart()
     {
@@ -124,6 +186,8 @@ class ApiController extends Controller
 
     /**
      * Add a file to the user's cart.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function addToCart(Request $request)
     {
@@ -160,6 +224,8 @@ class ApiController extends Controller
 
     /**
      * Remove a file from the user's cart.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function removeFromCart(Request $request)
     {
@@ -192,6 +258,8 @@ class ApiController extends Controller
 
     /**
      * Clean cart
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function cleanCart(){
         $user = auth()->user();
@@ -213,6 +281,8 @@ class ApiController extends Controller
 
     /**
      * Proccess Cart payment
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function proccessCart(){
         $user = auth()->user();
@@ -415,6 +485,11 @@ class ApiController extends Controller
         }    
     }
 
+    /**
+     * Proccess Suscription Payment
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function suscribe() {
         $user = auth()->user();
         if (!$user) {
@@ -539,6 +614,8 @@ class ApiController extends Controller
 
     /**
      * Download a file
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function downloadFile(){
         $user = auth()->user();
@@ -604,6 +681,8 @@ class ApiController extends Controller
 
     /**
      * Authenticate the user and return a token for API access.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function login()
     {
@@ -682,6 +761,8 @@ class ApiController extends Controller
 
     /**
      * Get the user data for application
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getUser(Request $request) {
         $transformPrice = "Sin plan activo";
@@ -760,6 +841,8 @@ class ApiController extends Controller
 
     /**
      * Get the users Orders for application
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getOrders(Request $request){
         Carbon::setLocale('es');
@@ -782,6 +865,8 @@ class ApiController extends Controller
 
     /**
      * Get the user Order Items fo application
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getOrderItems(String $id){
         $order = Order::find(intval($id));
@@ -809,6 +894,8 @@ class ApiController extends Controller
 
     /**
      * Download the Order
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function downloadOrder(Request $request, string $id)
     {
@@ -894,6 +981,8 @@ class ApiController extends Controller
 
     /**
      * Logout the user by revoking the current access token.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function logout(Request $request)
     {
@@ -905,6 +994,8 @@ class ApiController extends Controller
 
     /**
      * Get all banners.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getBanners()
     {
@@ -932,6 +1023,8 @@ class ApiController extends Controller
 
     /**
      * Get the legal text for the application.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getLegalText()
     {
@@ -949,6 +1042,8 @@ class ApiController extends Controller
 
     /**
      * Get the metadata for the application, including title, description, and keywords.
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getMetadata()
     {
@@ -967,6 +1062,8 @@ class ApiController extends Controller
 
     /**
      * Get the Suscriptions Plans for the application
+     * 
+     * @return \Illuminate\Http\JsonResponse
      */
     public function getPlans(){
         $plans = Plan::orderBy('price', 'asc')->get();
