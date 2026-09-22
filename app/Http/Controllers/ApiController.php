@@ -1161,8 +1161,10 @@ class ApiController extends Controller
     public function getMetadata()
     {
         $metadata = \App\Models\SeoText::first();
+        $appVersion = \App\Models\Setting::first()->android_app_version;
         return response()->json([
             'app_name' => $metadata->app_name,
+            'app_version' => $appVersion,
             'app_description' => $metadata->app_description,
             'app_logo' => $metadata->logoUrl(),
             'contact_email' => $metadata->contact_email,

@@ -123,6 +123,26 @@
             </div>
         </section>
     @endif
+
+    @php
+        $settings = \App\Models\Setting::first();
+    @endphp
+
+    @if ($settings->android_app_can_be_download && $settings->android_app_download_path)
+        <section class="container">
+            <div class="banner">
+                <div class="banner-left">
+                    <div class="banner-icon"><i class="fab fa-android"></i></div>
+                    <div class="banner-title">
+                        <h3>CubanPool ahora disponible para <span class="percent" style="font-size: 20px !important">Android</span>.</h3>
+                    </div>
+                </div>
+                <div class="banner-links">
+                    <a class="btn btn-primary" href="{{ $settings->android_app_download_path }}">Descargar Ahora <i class="fas fa-arrow-right"></i></a>
+                </div>
+            </div>
+        </section>
+    @endif
     
     <section class="section">
         <div class="container">

@@ -17,6 +17,7 @@ use Filament\Actions\Action;
 use Filament\Schemas\Components\Tabs;
 use BackedEnum;
 use Carbon\Carbon;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
@@ -62,7 +63,6 @@ class Settings extends Page implements HasForms, HasTable
             'confirmation_phone' => $setting->confirmation_phone,
             'confirmation_email' => $setting->confirmation_email,
             'currency_convertion_rate' => $setting->currency_convertion_rate,
-            /*'eltoque_api_token' => $setting->eltoque_api_token,*/
         ]);
     }
 
@@ -101,16 +101,6 @@ class Settings extends Page implements HasForms, HasTable
                                     ->required()
                                     ->placeholder('500.00'),
                             ]),
-                        /*Tabs\Tab::make('APIS')
-                            ->icon('heroicon-o-key')
-                            ->schema([
-                                TextInput::make('eltoque_api_token')
-                                    ->label('Token de API de ElToque')
-                                    ->helperText('Token de API para integración con ElToque.')
-                                    ->prefix('🔑')
-                                    ->nullable()
-                                    ->placeholder('XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX'),
-                            ]),*/
                     ])
                     ->columnSpanFull(),
             ])
@@ -127,7 +117,6 @@ class Settings extends Page implements HasForms, HasTable
             'confirmation_phone' => $data['confirmation_phone'],
             'confirmation_email' => $data['confirmation_email'],
             'currency_convertion_rate' => $data['currency_convertion_rate'],
-            /*'eltoque_api_token' => $data['eltoque_api_token'],*/
         ]);
 
         Notification::make()

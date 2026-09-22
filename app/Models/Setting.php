@@ -15,6 +15,9 @@ class Setting extends Model
         'confirmation_email',
         'currency_convertion_rate',
         'eltoque_api_token',
+        'android_app_version',
+        'android_app_download_path',
+        'android_app_can_be_download'
     ];
 
     protected $casts = [
