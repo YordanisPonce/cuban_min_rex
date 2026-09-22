@@ -19,10 +19,12 @@ use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Plan;
 use App\Models\PlayListItem;
+use App\Models\Subscription;
 use App\Models\User;
 use App\Services\PaypalService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
@@ -669,6 +671,60 @@ class ApiController extends Controller
     }
 
     /**
+     * Cancel Suscription
+     * 
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function cancelSuscription() {
+        $user = auth()->user();
+        if (!$user) {
+            return response()->json(['error' => 'User Not Found'], 404);
+        }
+        $suscription = Order::where('user_id', $user->id)->whereNotNull('plan_id')->where('status','paid')->orderBy('created_at', 'desc')->first();
+
+        if($suscription->paypal_subscription_id){
+            $paypalService = app(PaypalService::class);
+            $paypalService->cancelSubscription($suscription->paypal_subscription_id, 'User canceled');
+
+            $suscription->status = 'failed';
+            $suscription->save();
+
+            Subscription::where('user_id', $user->id)
+                ->where('stripe_id', $suscription->paypal_subscription_id)
+                ->update([
+                    'type' => 'paypal',
+                    'stripe_status' => 'CANCELLED',
+                    'ends_at' => Carbon::now(),
+                    'canceled_at' => Carbon::now(),
+                ]);
+
+            $user->current_plan_id = null;
+            $user->save();
+
+            return response()->json(['success' => 'Suscripción de PayPal cancelada satisfactoriamente']);
+        } else {
+            if ($user->subscribed('default')) {
+                $user->subscription('default')->cancel();
+            }
+
+            $user->current_plan_id = null;
+            $user->save();
+
+            $userId = $user->id;
+
+            $dataToUpdate = [
+                'canceled_at' => Carbon::now(),
+            ];
+
+            DB::transaction(function () use ($userId, $dataToUpdate) {
+                Subscription::where('user_id', $userId)->whereNull('canceled_at')->update($dataToUpdate);
+            });
+
+            return response()->json(['success' => 'Membresia cancelada satisfactoriamente']);
+        }
+    }
+
+    /**
      * Download a file
      * 
      * @return \Illuminate\Http\JsonResponse
@@ -847,6 +903,7 @@ class ApiController extends Controller
             'country' => $authUser->billing?->country ?? 'Sin definir',
             'postal_code' => $authUser->billing?->postal ?? 'Sin definir',
             'active_suscription' => $authUser->hasActivePlan(),
+            'canceled_suscription' => $authUser->current_plan_id === null,
             'active_suscription_name' =>$authUser->hasActivePlan() ? $authUser->getActivePlan()?->name : 'Sin plan activo',
             'active_suscription_price' => $transformPrice,
             'active_suscription_dayleft' => $dayLeft,
