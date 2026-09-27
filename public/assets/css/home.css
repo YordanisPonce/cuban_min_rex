@@ -31,13 +31,13 @@
 }
 
 /* CARDS GRID */
-.cards-grid {
+.cards-grid, #playlists-list {
     display: flex;
     gap: 5px
 }
 
 @media(max-width:1024px) {
-    .cards-grid, .genres-scroll {
+    .cards-grid, .genres-scroll, #playlists-list {
         display: grid !important;
         grid-template-columns: repeat(2, 1fr)
     }
@@ -50,7 +50,7 @@
 }
 
 @media(max-width:600px) {
-    .cards-grid, .genres-scroll {
+    .cards-grid, .genres-scroll, #playlists-list {
         grid-template-columns: 1fr
     }
 }
