@@ -2377,6 +2377,27 @@ body>.skiptranslate>iframe {
 }
 
 @media(max-width:900px) {
+
+    .hero h1 {
+        font-size: 2rem
+    }
+
+    .banner{
+        flex-direction: column;
+        gap: 20px
+    }
+
+    .banner-left {
+        gap: 10px;
+        text-align: center;
+    }
+
+    .banner-icon{
+        font-size: 30px;
+    }
+}
+
+@media screen and (max-width: 1372px) {
     .nav {
         align-items: flex-start;
         padding-top: 10px;
@@ -2403,23 +2424,5 @@ body>.skiptranslate>iframe {
 
     .nav-right .login {
         display: none
-    }
-
-    .hero h1 {
-        font-size: 2rem
-    }
-
-    .banner{
-        flex-direction: column;
-        gap: 20px
-    }
-
-    .banner-left {
-        gap: 10px;
-        text-align: center;
-    }
-
-    .banner-icon{
-        font-size: 30px;
     }
 }

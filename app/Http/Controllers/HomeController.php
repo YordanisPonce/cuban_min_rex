@@ -37,7 +37,7 @@ class HomeController extends Controller
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->orderBy('created_at', 'desc')->take(5)->get();
+            ->orderBy('created_at', 'desc')->take(8)->get();
             
         if ($newItems->count() == 0) {
             $newItems = File::audios()
@@ -47,7 +47,7 @@ class HomeController extends Controller
                 ->where('status', 'active')
                 ->where('isExclusive', false)
                 ->whereJsonContains('sections', SectionEnum::MAIN->value)
-                ->orderBy('created_at', 'desc')->take(5)->get();
+                ->orderBy('created_at', 'desc')->take(8)->get();
         }
 
         $newItems->transform(function ($file) {
@@ -79,7 +79,7 @@ class HomeController extends Controller
             ->join('category_files', 'category_files.file_id', 'files.id')
             ->selectRaw('users.name, SUM(files.download_count) as downloads, users.photo' )
             ->groupBy(['users.name', 'users.photo'])
-            ->orderBy('downloads', 'desc')->take(5)
+            ->orderBy('downloads', 'desc')->take(8)
             ->get();
         $tops->transform(function ($dj) {
             return [
@@ -93,35 +93,37 @@ class HomeController extends Controller
 
         $playlists = PlayList::join('downloads', 'play_lists.id', 'downloads.play_list_id')
             ->join('users', 'play_lists.user_id', 'users.id')
-            ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as downloads, play_lists.cover as cover, users.photo as photo')
-            ->groupBy(['title', 'dj', 'cover', 'photo'])
-            ->orderBy('downloads', 'desc')->take(3)->get();
+            ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as downloads, play_lists.cover as cover, users.photo as photo, play_lists.created_at as date')
+            ->groupBy(['title', 'dj', 'cover', 'photo', 'date'])
+            ->orderBy('date', 'desc')->take(8)->get();
         
         $playlists->transform(function ($playlist) {
             $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
             return [
                 'title' => $playlist->title,
                 'sub' => $playlist->dj,
-                'tag' => '',
+                'items' => $playlist->items()->count(),
                 'genre' => $playlist->folder?->name ?? 'HOT',
                 'img' => $img,
                 'downloads' => $playlist->downloads,
+                'isNew' => Carbon::parse($playlist->date)->isCurrentDay(),
                 'route' => route('playlist.show', str_replace(' ', '_', $playlist->title)),
             ];
         });
 
         if ($playlists->count() === 0) {
-            $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
+            $playlists = PlayList::orderBy('created_at', 'desc')->take(8)->get();
             
             $playlists->transform(function ($playlist) {
                 $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
                 return [
                     'title' => $playlist->name,
                     'sub' => $playlist->user?->name,
-                    'tag' => '',
+                    'items' => $playlist->items()->count(),
                     'genre' => $playlist->folder?->name ?? 'HOT',
                     'img' => $img,
                     'downloads' => $playlist->downloads->count(),
+                    'isNew' => Carbon::parse($playlist->created_at)->isCurrentDay(),
                     'route' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
                 ];
             });
@@ -130,7 +132,7 @@ class HomeController extends Controller
         $exclusives = File::where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->orderBy('created_at', 'desc')->take(5)->get();
+            ->orderBy('created_at', 'desc')->take(8)->get();
 
         $exclusives->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
@@ -163,7 +165,7 @@ class HomeController extends Controller
             })
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->orderBy('created_at', 'desc')->take(5)->get();
+            ->orderBy('created_at', 'desc')->take(8)->get();
         
         $mixes->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
@@ -193,14 +195,15 @@ class HomeController extends Controller
         $geners = Category::join('category_files', 'categories.id', 'category_files.category_id')
             ->join('files', 'files.id', 'category_files.file_id')
             ->join('downloads', 'files.id', 'downloads.file_id')
-            ->selectRaw('categories.id as id, categories.name as name, count(downloads.file_id) as downloads')
+            ->selectRaw('categories.id as id, categories.name as name, count(category_files.file_id) as tracks, count(downloads.file_id) as downloads')
             ->groupBy(['id', 'name'])
-            ->orderBy('downloads')->take(12)->get();
+            ->orderBy('tracks', 'desc')->take(8)->get();
 
         $geners->transform(function ($gener) {
             return [
                 'name' => $gener->name,
-                'icon' => $gener->id%2===0 ? 'fa-headphones' : 'fa-music',
+                'cover' => $gener->getCoverUrl(),
+                'tracks' => $gener->tracks,
                 'route' => route('remixes', ['genre' => $gener->name]),
             ];
         }); 

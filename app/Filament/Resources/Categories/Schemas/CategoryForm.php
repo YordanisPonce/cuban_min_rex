@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Categories\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\Hidden;
@@ -19,6 +20,12 @@ class CategoryForm
                 TextInput::make('name')
                     ->label('Nombre')
                     ->required()
+                    ->columnSpanFull(),
+                FileUpload::make('cover')
+                    ->label('Subir Poster')
+                    ->image()
+                    ->disk('public')
+                    ->directory('images')
                     ->columnSpanFull(),
                 Toggle::make('show_in_landing')
                     ->label('Mostrar en Home')

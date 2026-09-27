@@ -23,9 +23,9 @@ return [
 
     'description' => $seo?->app_description ?? env('APP_DESCRIPTION', 'A Laravel proyect'),
 
-    'logo' => $seo?->app_logo ? $seo->logoUrl() :  env('APP_URL').'/assets/img/logo_alter.png',
+    'logo' => $seo?->app_logo ? $seo->logoUrl() :  env('APP_URL').'/img/logo_alter.png',
 
-    'logo_alter' => env('APP_URL').'/assets/img/logo_alter.png',
+    'logo_alter' => env('APP_URL').'/img/logo_alter.png',
 
     /*
     |--------------------------------------------------------------------------

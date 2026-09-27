@@ -1,7 +1,7 @@
 
 /* SECTIONS */
 .section {
-    padding: 48px 0
+    padding: 10px 0
 }
 
 .section-header {
@@ -32,19 +32,25 @@
 
 /* CARDS GRID */
 .cards-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 16px
+    display: flex;
+    gap: 5px
 }
 
 @media(max-width:1024px) {
-    .cards-grid {
+    .cards-grid, .genres-scroll {
+        display: grid !important;
         grid-template-columns: repeat(2, 1fr)
     }
+
+    .remix-card, .genre-card, .dj-card{
+        width: auto !important;
+    }
+
+
 }
 
 @media(max-width:600px) {
-    .cards-grid {
+    .cards-grid, .genres-scroll {
         grid-template-columns: 1fr
     }
 }
@@ -55,7 +61,8 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
-    transition: border-color .2s
+    transition: border-color .2s;
+    width: 180px;
 }
 
 .remix-card:hover {
@@ -65,7 +72,7 @@
 .remix-card .thumb {
     position: relative;
     /*aspect-ratio: 1;*/
-    height: 200px;
+    height: 130px;
     overflow: hidden
 }
 
@@ -93,10 +100,10 @@
 
 .remix-card .title {
     font-weight: 700;
-    font-size: .9rem;
+    font-size: .75rem;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    line-clamp: 2;
+    -webkit-line-clamp: 1;
+    line-clamp: 1;
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -104,12 +111,12 @@
 
 .remix-card .artist {
     color: var(--primary);
-    font-size: .75rem
+    font-size: .7rem
 }
 
 .remix-card .genre {
     color: var(--fg-muted);
-    font-size: .7rem;
+    font-size: .65rem;
     margin-top: 2px
 }
 
@@ -117,12 +124,12 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    margin-top: 12px
+    margin-top: 5px
 }
 
 .play-btn {
-    width: 32px;
-    height: 32px;
+    width: 25px;
+    height: 25px;
     border-radius: 50%;
     background: var(--primary);
     color: var(--bg);
@@ -160,7 +167,7 @@
     display: flex;
     align-items: flex-end;
     height: 32px;
-    gap: 8px
+    gap: 8px;
 }
 
 .mini-actions i {
@@ -177,9 +184,13 @@
 .remix-card .meta {
     display: flex;
     justify-content: space-between;
-    margin-top: 8px;
-    font-size: .7rem;
+    margin-top: 0;
+    font-size: .65rem;
     color: var(--fg-dim)
+}
+
+.mini-player .waveform {
+    visibility: hidden;
 }
 
 /* PLAYLISTS */
@@ -302,7 +313,8 @@
     border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
-    transition: border-color .2s
+    transition: border-color .2s;
+    width: 180px;
 }
 
 .dj-card:hover {
@@ -343,52 +355,38 @@
     margin-top: 12px
 }
 
+.dj-card .actions .btn-primary {
+    background-color: transparent;
+    color: var(--primary);
+    border: .5px solid var(--primary);
+    padding: 0 20px;
+    font-weight: normal;
+}
+
 /* GENRES */
 .genres-scroll {
     display: flex;
-    gap: 24px;
-    overflow-x: auto;
+    gap: 5px;
     padding-bottom: 8px
 }
 
-.genre-item {
+.genre-card {
+    position: relative;
+}
+
+.genre-card .thumb {
+    margin-bottom: 30px;
+}
+
+.genre-card .info {
+    position: absolute;
+    bottom: 4px;
+    left: 0;
+    padding: 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
-    min-width: 80px;
-    cursor: pointer
-}
-
-.genre-icon {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    border: 2px solid var(--border);
-    background: var(--card);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    color: var(--fg-muted);
-    transition: all .2s
-}
-
-.genre-item:hover .genre-icon {
-    border-color: var(--primary);
-    color: var(--primary)
-}
-
-.genre-item span {
-    font-size: .7rem;
-    color: var(--fg-muted);
-    font-weight: 500;
-    text-align: center;
-    transition: color .2s
-}
-
-.genre-item:hover span {
-    color: var(--fg)
+    width: 100%;
 }
 
 /* CTA */

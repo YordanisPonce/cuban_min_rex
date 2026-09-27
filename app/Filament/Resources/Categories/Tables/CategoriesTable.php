@@ -40,8 +40,8 @@ class CategoriesTable
                 //
             ])
             ->recordActions([
-                EditAction::make()->hidden(fn($record) => Auth::user()->id != $record?->user_id)->label('Editar'),
-                DeleteAction::make()->hidden(fn($record) => Auth::user()->id != $record?->user_id)->label('Eliminar'),
+                EditAction::make()->hidden(fn($record) => Auth::user()->role !== 'admin' && Auth::user()->id != $record?->user_id)->label('Editar'),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->role !== 'admin' && Auth::user()->id != $record?->user_id)->label('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -158,11 +158,31 @@
     <section class="section">
         <div class="container">
             <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-music"></i> <span class="accent">GÉNEROS</span> MUSICALES 
+                </div>
+            </div>
+            <div class="genres-scroll" id="genres-scroll"></div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
                 <div class="section-title"><i class="fa-solid fa-headphones"></i> PLAYLISTS <span class="accent">PARA
                         DJs</span></div>
                 <a href="{{ route('playlist.index') }}" class="btn-outline">VER TODAS LAS PLAYLISTS »</a>
             </div>
             <div id="playlists-list"></div>
+        </div>
+    </section>
+    
+    <section class="section">
+        <div class="container">
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-trophy"></i> DJS <span class="accent">DESTACADOS</span>
+                </div><a href="{{ route('djs') }}" class="btn-outline">VER TODOS LOS DJS »</a>
+            </div>
+            <div class="cards-grid" id="top-djs-grid"></div>
         </div>
     </section>
 
@@ -185,26 +205,6 @@
             </div>
             @endif
             <div class="cards-grid" id="exclusives-grid"></div>
-        </div>
-    </section>
-    
-    <section class="section">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-trophy"></i> TOP <span class="accent">DJS</span>
-                </div><a href="{{ route('djs') }}" class="btn-outline">VER TODOS LOS DJS »</a>
-            </div>
-            <div class="cards-grid" id="top-djs-grid"></div>
-        </div>
-    </section>
-    
-    <section class="section">
-        <div class="container">
-            <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-music"></i> SONIDOS <span class="accent">DESTACADOS</span>
-                </div>
-            </div>
-            <div class="genres-scroll" id="genres-scroll"></div>
         </div>
     </section>
     
@@ -300,6 +300,7 @@
             <div class="genre">${r.genre}</div>
             <div class="mini-player">
                 <button class="play-btn" onclick="handleCardPlay('${r.id}')"><i class="fa-solid fa-play"></i></button>
+                <div class="meta"><span>BPM · ${r.bpm} </span></div>
                 <div class="waveform">
                     <div class="bar"></div>
                     <div class="bar"></div>
@@ -366,7 +367,6 @@
                     ${ r.canDownload ? '<a href="' + r.downloadLink + '" ><i class="fa-solid fa-download"></i></a>' : '<a href="' + r.addToCart +'" ><i class="ti tabler-shopping-cart-plus"></i></a>'}
                 </div>
             </div>
-            <div class="meta"><span>BPM · ${r.bpm}</span> <span>${ !r.canDownload ? '$ '+r.price : ''}</span></div>
             </div>
         </div>
         `).join('');
@@ -375,20 +375,15 @@
         let prank = 0;
         delay = 1;
         document.getElementById('playlists-list').innerHTML = playlists.map(p => `
-        <div class="playlist-row"   data-aos="fade-right"  data-aos-delay="${ delay++*300 + 100}">
-            <div class="playlist-column">
-                <span class="playlist-rank">#${++prank}</span>
-                <div class="playlist-imgs"><img src="${p.img}" alt="${p.title}" loading="lazy" /></div>
-                <div class="playlist-info"><h3>${p.title}</h3><p>${p.sub}</p></div>
+        <div class="remix-card"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}" onclick="window.location = '${p.route}'">
+            <div class="thumb">
+            <img src="${p.img}" alt="${p.title}" loading="lazy">
+            ${p.isNew?'<span class="tag-new">NEW</span>':''}
             </div>
-            <div class="playlist-column">
-                <div class="playlist-stats">
-                    <span class="playlist-tag">${p.genre}</span>
-                    <span class="playlist-genre"></span>
-                    <span class="playlist-bpm"></span>
-                    <span class="playlist-downloads"><i class="fa-solid fa-fire"></i> ${p.downloads}</span>
-                </div>
-                <a href="${p.route}" class="btn-primary">VER PLAYLIST</a>
+            <div class="info">
+            <div class="title">${p.title}</div>
+            <div class="artist">${p.sub}</div>
+            <div class="genre">${p.items} tracks</div>
             </div>
         </div>
         `).join('');
@@ -407,6 +402,7 @@
             <div class="genre">${r.genre}</div>
             <div class="mini-player">
                 <button class="play-btn" onclick="handleCardPlay('${r.id}')"><i class="fa-solid fa-play"></i></button>
+                <div class="meta"><span>BPM · ${r.bpm}</span></div>
                 <div class="waveform">
                     <div class="bar"></div>
                     <div class="bar"></div>
@@ -473,7 +469,6 @@
                     ${ r.canDownload ? '<a href="' + r.downloadLink + '" ><i class="fa-solid fa-download"></i></a>' : '<a href="' + r.addToCart +'" ><i class="ti tabler-shopping-cart-plus"></i></a>'}
                 </div>
             </div>
-            <div class="meta"><span>BPM · ${r.bpm}</span> <span>${ !r.canDownload ? '$ '+r.price : ''}</span></div>
             </div>
         </div>
         `).join('');
@@ -492,6 +487,7 @@
             <div class="genre">${r.genre}</div>
             <div class="mini-player">
                 <button class="play-btn" onclick="handleCardPlay('${r.id}')"><i class="fa-solid fa-play"></i></button>
+                <div class="meta"><span>BPM · ${r.bpm}</span></div>
                 <div class="waveform">
                     <div class="bar"></div>
                     <div class="bar"></div>
@@ -558,7 +554,6 @@
                     ${ r.canDownload ? '<a href="' + r.downloadLink + '" ><i class="fa-solid fa-download"></i></a>' : '<a href="' + r.addToCart +'" ><i class="ti tabler-shopping-cart-plus"></i></a>'}
                 </div>
             </div>
-            <div class="meta"><span>BPM · ${r.bpm}</span> <span>${ !r.canDownload ? '$ '+r.price : ''}</span></div>
             </div>
         </div>
         `).join('');
@@ -570,10 +565,11 @@
             <div class="thumb"><img src="${d.img}" alt="${d.name}" loading="lazy"></div>
             <div class="info">
             <div class="name">${d.name}</div>
-            <div class="genres">${d.genres}</div>
+            <div class="genres">
+                <p style="color:var(--fg-muted);cursor:pointer">${d.downloads} descargas</p>
+            </div>
             <div class="actions">
-                <a href="${d.route}" class="btn-primary" style="font-size:.75rem;padding:6px 14px">VER DJ</a>
-                <p style="color:var(--fg-muted);cursor:pointer">${d.downloads} <i class="fa-solid fa-download"></i></p>
+                <a href="${d.route}" class="btn-primary" style="font-size:.75rem;padding:6px 14px">SEGUIR +</a>
             </div>
             </div>
         </div>
@@ -582,10 +578,15 @@
         // Genres
         delay = 0;
         document.getElementById('genres-scroll').innerHTML = genres.map(g => `
-        <a href="${g.route}" class="genre-item"  data-aos="zoom-in"  data-aos-delay="${ delay++*100 + 100}">
-            <span class="genre-icon"><i class="fa-solid ${g.icon}"></i></span>
-            <span>${g.name}</span>
-        </a>
+        <div class="dj-card genre-card" style="cursor: pointer"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}" onclick="window.location = '${g.route}' ">
+            <div class="thumb"><img src="${g.cover}" alt="${g.name}" loading="lazy"></div>
+            <div class="info">
+                <div class="name">${g.name}</div>
+                <div class="genres">
+                    <p style="color:var(--fg-muted)">${g.tracks} tracks</p>
+                </div>
+            </div>
+        </div>
         `).join('');
 
         // ===== PLAYER STATE =====
