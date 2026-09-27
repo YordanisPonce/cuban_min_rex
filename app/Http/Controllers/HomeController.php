@@ -91,7 +91,7 @@ class HomeController extends Controller
             ];
         });
 
-        $playlists = PlayList::join('downloads', 'play_lists.id', 'downloads.play_list_id')
+        /*$playlists = PlayList::join('downloads', 'play_lists.id', 'downloads.play_list_id')
             ->join('users', 'play_lists.user_id', 'users.id')
             ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as downloads, play_lists.cover as cover, users.photo as photo, play_lists.created_at as date')
             ->groupBy(['title', 'dj', 'cover', 'photo', 'date'])
@@ -109,25 +109,23 @@ class HomeController extends Controller
                 'isNew' => Carbon::parse($playlist->date)->isCurrentDay(),
                 'route' => route('playlist.show', str_replace(' ', '_', $playlist->title)),
             ];
+        });*/
+        
+        $playlists = PlayList::orderBy('created_at', 'desc')->take(8)->get();
+        
+        $playlists->transform(function ($playlist) {
+            $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
+            return [
+                'title' => $playlist->name,
+                'sub' => $playlist->user?->name,
+                'items' => $playlist->items()->count(),
+                'genre' => $playlist->folder?->name ?? 'HOT',
+                'img' => $img,
+                'downloads' => $playlist->downloads->count(),
+                'isNew' => Carbon::parse($playlist->created_at)->isCurrentDay(),
+                'route' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
+            ];
         });
-
-        if ($playlists->count() === 0) {
-            $playlists = PlayList::orderBy('created_at', 'desc')->take(8)->get();
-            
-            $playlists->transform(function ($playlist) {
-                $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
-                return [
-                    'title' => $playlist->name,
-                    'sub' => $playlist->user?->name,
-                    'items' => $playlist->items()->count(),
-                    'genre' => $playlist->folder?->name ?? 'HOT',
-                    'img' => $img,
-                    'downloads' => $playlist->downloads->count(),
-                    'isNew' => Carbon::parse($playlist->created_at)->isCurrentDay(),
-                    'route' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
-                ];
-            });
-        }
 
         $exclusives = File::where('status', 'active')
             ->where('isExclusive', true)
