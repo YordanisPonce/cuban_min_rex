@@ -606,8 +606,11 @@
             player.classList.remove('active');
             player2.classList.remove('active');
             document.querySelectorAll('.remix-card').forEach(card => {
-                //const wf = card.querySelector('.waveform').classList.remove('playing');
-                card.querySelector('.play-btn i').className = 'fa-solid fa-play';
+                const wf = card.querySelector('.waveform').classList.remove('playing');
+                const icon = card.querySelector('.play-btn i');
+                if (icon != null) {
+                    icon.className = 'fa-solid fa-play';
+                }
             });
             isPlaying = false;
             audioPlayer.pause();
@@ -633,10 +636,10 @@
             if (!currentTrack) {
                 el.classList.remove('active');
                 elv.classList.remove('active');
-                /*document.querySelectorAll('.remix-card').forEach(card => {
+                document.querySelectorAll('.remix-card').forEach(card => {
                     const wf = card.querySelector('.waveform');
                     wf.classList.remove('playing');
-                });*/
+                });
                 return
             }
             if (isVideo) {
@@ -658,12 +661,12 @@
                 } else {
                     icon.className = 'fa-solid fa-play'
                 }
-                /*const wf = card.querySelector('.waveform');
+                const wf = card.querySelector('.waveform');
                 if (id === currentTrack.id && isPlaying) {
                     wf.classList.add('playing');
                 } else {
                     wf.classList.remove('playing');
-                }*/
+                }
             });
         }
 
