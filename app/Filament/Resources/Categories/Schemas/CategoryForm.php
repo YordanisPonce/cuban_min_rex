@@ -24,8 +24,8 @@ class CategoryForm
                 FileUpload::make('cover')
                     ->label('Subir Poster')
                     ->image()
-                    ->disk('public')
-                    ->directory('images')
+                    ->disk('s3')
+                    ->directory('categories/')
                     ->columnSpanFull(),
                 Toggle::make('show_in_landing')
                     ->label('Mostrar en Home')
