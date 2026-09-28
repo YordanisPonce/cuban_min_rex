@@ -84,7 +84,7 @@ class ApiController extends Controller
                 'tracks' => $gener->tracks,
             ];
         }); 
-        return response()->json($files);
+        return response()->json($geners);
     }
 
     /**
