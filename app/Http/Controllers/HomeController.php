@@ -173,14 +173,14 @@ class HomeController extends Controller
         $geners = Category::join('category_files', 'categories.id', 'category_files.category_id')
             ->join('files', 'files.id', 'category_files.file_id')
             ->where('categories.show_in_landing', true)
-            ->selectRaw('categories.id as id, categories.name as name, count(category_files.file_id) as tracks')
-            ->groupBy(['id', 'name'])
+            ->selectRaw('categories.id as id, categories.name as name, categories.cover as cover, count(category_files.file_id) as tracks')
+            ->groupBy(['id', 'name', 'cover'])
             ->orderBy('tracks', 'desc')->take(8)->get();
 
         $geners->transform(function ($gener) {
             return [
                 'name' => $gener->name,
-                'cover' => $gener->getCoverUrl(),
+                'cover' => $gener->cover ? Storage::disk('s3')->url($gener->cover) : asset('img/logo_alter.png'),
                 'tracks' => $gener->tracks,
                 'route' => route('remixes', ['genre' => $gener->name]),
             ];
