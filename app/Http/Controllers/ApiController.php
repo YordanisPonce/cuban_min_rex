@@ -11,6 +11,7 @@ use App\Models\AviablePaymentMethod;
 use App\Models\Billing;
 use App\Models\Cart;
 use App\Models\CartItem;
+use App\Models\Category;
 use App\Models\Download;
 use App\Models\PlayList;
 use App\Models\File;
@@ -59,6 +60,30 @@ class ApiController extends Controller
                 'canBeDownloaded' => $file->canBeDownload()
             ];
         });
+        return response()->json($files);
+    }
+
+    /**
+     * Fetch categories to shown in landing.
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLandingGenres()
+    {
+        $geners = Category::join('category_files', 'categories.id', 'category_files.category_id')
+            ->join('files', 'files.id', 'category_files.file_id')
+            ->where('categories.show_in_landing', true)
+            ->selectRaw('categories.id as id, categories.name as name, categories.cover as cover, count(category_files.file_id) as tracks')
+            ->groupBy(['id', 'name', 'cover'])
+            ->orderBy('tracks', 'desc')->take(8)->get();
+
+        $geners->transform(function ($gener) {
+            return [
+                'name' => $gener->name,
+                'cover' => $gener->cover ? Storage::disk('s3')->url($gener->cover) : asset('img/logo_alter.png'),
+                'tracks' => $gener->tracks,
+            ];
+        }); 
         return response()->json($files);
     }
 

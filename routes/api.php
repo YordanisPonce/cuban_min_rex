@@ -13,6 +13,7 @@ use App\Http\Controllers\ApiController;
 Route::get('/v1/banners', [ApiController::class, 'getBanners']);
 Route::get('/v1/files', [ApiController::class, 'getFiles']);
 Route::get('/v1/djs', [ApiController::class, 'getDjs']);
+Route::get('/v1/categories', [ApiController::class, 'getLandingGenres']);
 Route::get('/v1/playlists', [ApiController::class, 'getPlaylists']);
 Route::get('/v1/folders', [ApiController::class, 'getFolders']);
 Route::get('/v1/playlists/{id}', [ApiController::class, 'getPlaylist']);
