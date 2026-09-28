@@ -25,7 +25,7 @@ class CategoryForm
                     ->label('Subir Poster')
                     ->image()
                     ->disk('s3')
-                    ->directory('categories/')
+                    ->directory('images/categories')
                     ->columnSpanFull(),
                 Toggle::make('show_in_landing')
                     ->label('Mostrar en Home')
