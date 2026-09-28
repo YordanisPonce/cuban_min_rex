@@ -82,207 +82,177 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::post('/profile/change-password', [ProfileController::class, 'updatePassword'])->name('profile.changePassword');
         Route::get('/profile/delete', [ProfileController::class, 'destroy'])->name('profile.destroy');
         Route::get('/profile/billing-link', [ProfileController::class, 'getBillingLink'])->name('profile.billingLink');
+
+        Route::post('/payment/process', [PaymentController::class, 'process'])
+            ->middleware('auth')
+            ->name('payment.process');
+        Route::post('/paypal/process', [PaypalController::class, 'process'])
+            ->middleware('auth')
+            ->name('paypal.process');
+        Route::post('/paypal/subscribe', [PaypalController::class, 'subscribe'])
+            ->middleware('auth')
+            ->name('paypal.subscribe');
+        Route::get('/paypal/return/{order}', [PaypalController::class, 'returnPayPal'])
+            ->name('paypal.return');
+        Route::get('/paypal/cancel/{order}', [PaypalController::class, 'cancelPayPal'])
+            ->name('paypal.cancel');
+        Route::get('/paypal/subscribe/return/{order}', [PaypalController::class, 'returnSubscription'])
+            ->name('paypal.subscribe.return');
+        Route::get('/paypal/subscribe/cancel/{order}', [PaypalController::class, 'cancelSubscription'])
+            ->name('paypal.subscribe.cancel');
+        Route::get('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
+            ->middleware('auth')
+            ->name('payment.cancelSubscription');
+        Route::get('plans/{plan}/payment', [PaymentController::class, 'showForm'])
+            ->middleware('auth')
+            ->name('payment.form');
+        Route::get('/search', [SearchController::class, 'search'])->name('search');
+        Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
+        Route::get('/mixes', [HomeController::class, 'mixes'])->name('mixes');
+        Route::get('/exclusives', [HomeController::class, 'exclusives'])->name('exclusives');
+        Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
+        Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
+        Route::get('/packs', [CollectionController::class, 'index'])->name('collection.index');
+        Route::get('/file/{file}', [FileController::class, 'download'])
+            ->name('file.download');
+        Route::get('/order/{order}', [OrderController::class, 'details'])
+            ->name('order.download');
+        Route::get('/order/{order}/download', [OrderController::class, 'download'])
+            ->name('order.download.all');
+        Route::get('/radio', [HomeController::class, 'radio'])->name('radio');
+        Route::get('/radio/remixes', [HomeController::class, 'radio_remixes'])->name('radio.remixes');
+        Route::get('/radio/file/{file}/pay', [FileController::class, 'payFile'])
+            ->name('radio.file.pay');
+
+        Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
+        Route::get('files/cart/add/{file}', [FileController::class, 'addToCart'])
+            ->name('file.add.cart');
+        Route::get('files/cart/remove/{file}', [FileController::class, 'removeToCart'])
+            ->name('file.remove.cart');
+        Route::get('files/cart/empty', [FileController::class, 'emptyCart'])
+            ->name('file.empty.cart');
+        Route::get('info/file/{name}', [FileController::class, 'info'])
+            ->name('file.info');
+
+        Route::get('/playlists', [PlayListController::class, 'folders'])->name('playlist.index');
+        Route::get('/playlists/lists', [PlayListController::class, 'list'])->name('playlist.list');
+        Route::get('/playlists/lists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
+        Route::get('/playlists/lists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');
+        Route::get('/playlists/lists/{playlist}/download/status/{uuid}', [PlayListController::class, 'downloadStatus'])->name('playlist.download.status');
+        Route::get('/playlists/lists/{playlist}/download/status/{uuid}/check', [PlayListController::class, 'downloadStatusCheck'])->name('playlist.download.status.check');
+        Route::get('/playlists/lists/{playlist}/download_item/{itemId}', [PlayListController::class, 'download_item'])->name('playlist.download_item');
+        Route::get('/playlists/lists/{playlist}/add_to_cart', [PlayListController::class, 'addToCart'])->name('playlist.add.cart');
+        Route::get('/playlists/lists/{playlist}/add_item_to_cart/{itemId}', [PlayListController::class, 'addItemToCart'])->name('playlist.add.item.cart');
+        Route::get('/playlists/lists/{playlist}/remove_to_cart', [PlayListController::class, 'removeToCart'])->name('playlist.remove.cart');
+        Route::get('/playlists/lists/{playlist}/remove_item_to_cart/{itemId}', [PlayListController::class, 'removeItemToCart'])->name('playlist.remove.item.cart');
+        Route::get('/playlists-get-tracks/{id}', function ($id) {
+            $playlist = PlayList::find($id);
+
+            $tracks = $playlist->items()->get()->transform(function ($track) use ($playlist) {
+                return [
+                    'id' => (string) $track->id,
+                    'date' => $track->created_at,
+                    'artist' => $playlist->user->name,
+                    'title' => $track->title,
+                    'img' => $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo'),
+                    'bpm' => null,
+                    'playlist_id' => $playlist->id,
+                    'duration' => 120,
+                    'genre' => null,
+                    'badge' => null,
+                    'price' => $track->price,
+                    'url' => $track->file_path ? Storage::disk('s3')->url($track->file_path) : null,
+                    'downloads' => $track->downloads->count(),
+                    'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
+                    'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
+                    'addToCart' => route('playlist.add.item.cart', [$playlist->name, $track->id]),
+                ];
+            });
+
+            if ($playlist) return response()->json(['tracks' => $tracks]);
+
+            return response(null, 404);
+        });
+        Route::get('/playlists/lists/{playlist}/info/{name}', [PlayListController::class, 'info'])
+            ->name('playlist.item.info');
+
+        Route::get('/djs/{dj}/follow', [FollowController::class, 'follow'])
+            ->middleware('auth')
+            ->name('follow');
+        Route::get('/djs/{dj}/ntf', [FollowController::class, 'ntf'])
+            ->middleware('auth')
+            ->name('ntf');
+        Route::post('/djs/{dj}/review', [ReviewController::class, 'rating_dj'])
+            ->middleware('auth')
+            ->name('rating.dj');
+
+        Route::get('/reviews', [ReviewController::class, 'index'])
+            ->middleware('auth')
+            ->name('reviews');
+
+        Route::post('/reviews/submit', [ReviewController::class, 'submit'])
+            ->middleware('auth')
+            ->name('submit.review');
+
+        Route::get('/notifications', [HomeController::class, 'ntfs'])
+            ->middleware('auth')
+            ->name('ntfs');
+
+        Route::post('/notifications/update-settings', [HomeController::class, 'ntfs_setting_update'])
+            ->middleware('auth')
+            ->name('ntfs.update');
+
+        Route::get('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
+            ->middleware('auth')
+            ->name('ntfs.read.all');
+
+        Route::get('/notifications/delete-all', [NotificationController::class, 'deleteAll'])
+            ->middleware('auth')
+            ->name('ntfs.delete.all');
+
+        Route::get('/notifications/delete/{id}', [NotificationController::class, 'delete'])
+            ->middleware('auth')
+            ->name('ntfs.delete');
+
+
+        Route::get('public/files/{path}', function (string $path) {
+            if (!request()->hasValidSignature()) {
+                abort(403);
+            }
+            return Storage::disk('s3')->download($path);
+        })->where('path', '.*')->name('public.files.download');
     });
 
-    Route::post('/payment/process', [PaymentController::class, 'process'])
-        ->middleware('auth')
-        ->name('payment.process');
-
-    Route::post('/paypal/process', [PaypalController::class, 'process'])
-        ->middleware('auth')
-        ->name('paypal.process');
-
-    Route::post('/paypal/process-cart', [PaypalController::class, 'processCart'])
-        ->middleware('auth')
-        ->name('paypal.process.cart');
-
-    Route::post('/paypal/subscribe', [PaypalController::class, 'subscribe'])
-        ->middleware('auth')
-        ->name('paypal.subscribe');
-
-    Route::get('/paypal/return/{order}', [PaypalController::class, 'returnPayPal'])
-        ->name('paypal.return');
-
-    Route::get('/paypal/cancel/{order}', [PaypalController::class, 'cancelPayPal'])
-        ->name('paypal.cancel');
-
-    Route::get('/paypal/subscribe/return/{order}', [PaypalController::class, 'returnSubscription'])
-        ->name('paypal.subscribe.return');
-
-    Route::get('/paypal/subscribe/cancel/{order}', [PaypalController::class, 'cancelSubscription'])
-        ->name('paypal.subscribe.cancel');
-
-    Route::get('/payment/cancel-subscription', [PaymentController::class, 'cancelSubscription'])
-        ->middleware('auth')
-        ->name('payment.cancelSubscription');
-    Route::get('plans/{plan}/payment', [PaymentController::class, 'showForm'])
-        ->middleware('auth')
-        ->name('payment.form');
 
 
-    Route::view('/payment_ok', 'payment.ok', ['index' => 999])->name('payment.ok');
-    Route::view('/payment_ok2', 'payment.ok2', ['index' => 999])->name('payment.ok2');
-    Route::view('/payment_ko', 'payment.ko', ['index' => 999])->name('payment.ko');
-
-    Route::get('/payment/cup/{file}', [PaymentController::class, 'showCUPForm'])->name('payment.cup.form');
-    Route::post('/payment/cup/{file}/pay', [PaymentController::class, 'processCUPPayment'])->name('payment.cup.proccess');
-
-    Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
-    Route::get('/djs', [HomeController::class, 'djs'])->name('djs');
-    Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
-    Route::get('/remixes', [HomeController::class, 'remixes'])->name('remixes');
-    Route::get('/mixes', [HomeController::class, 'mixes'])->name('mixes');
-    Route::get('/exclusives', [HomeController::class, 'exclusives'])->name('exclusives');
-    Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
-
-    Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
-
-    Route::get('/packs', [CollectionController::class, 'index'])->name('collection.index');
-
-    Route::get('/file/{file}', [FileController::class, 'download'])
-        ->name('file.download');
-
-    Route::get('/order/{order}', [OrderController::class, 'details'])
-        ->name('order.download');
-
-    Route::get('/order/{order}/download', [OrderController::class, 'download'])
-        ->name('order.download.all');
-
-    Route::get('/cart/pay', [FileController::class, 'pay'])
-        ->name('file.pay');
-
-    Route::get('/radio', [HomeController::class, 'radio'])->name('radio');
-    Route::get('/radio/remixes', [HomeController::class, 'radio_remixes'])->name('radio.remixes');
-    Route::get('/radio/file/{file}/pay', [FileController::class, 'payFile'])
-        ->name('radio.file.pay');
-
-    // Webhook de Stripe
     Route::post('/stripe/webhook', [StripeWebhookController::class, 'handleWebhook'])
         ->name('stripe.webhook')
         ->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
         ]);
-
     Route::post('/paypal/webhook', [PaypalWebhookController::class, 'handle'])
         ->name('paypal.webhook')
         ->withoutMiddleware([
             \Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class,
         ]);
 
-    Route::post('/payment/process', [PaymentController::class, 'process'])->name('payment.process');
-
-    Route::get('files/cart/add/{file}', [FileController::class, 'addToCart'])
-        ->name('file.add.cart');
-
-    Route::get('files/cart/remove/{file}', [FileController::class, 'removeToCart'])
-        ->name('file.remove.cart');
-    
-    Route::get('files/cart/empty', [FileController::class, 'emptyCart'])
-        ->name('file.empty.cart');
-    
-    Route::get('info/file/{name}', [FileController::class, 'info'])
-        ->name('file.info');
-
+    Route::get('/djs', [HomeController::class, 'djs'])->name('djs');
+    Route::get('/djs/{dj}', [HomeController::class, 'dj'])->name('dj');
     Route::get('cart', [HomeController::class, 'cart'])->name('cart');
-    
-    Route::get('public/files/{path}', function (string $path) {
-        if (!request()->hasValidSignature()) {
-            abort(403);
-        }
-        // Descargar o servir el archivo desde disco 'public'
-        return Storage::disk('s3')->download($path);
-    })->where('path', '.*')->name('public.files.download');
-
-
-    Route::get('/playlists', [PlayListController::class, 'folders'])->name('playlist.index');
-    Route::get('/playlists/lists', [PlayListController::class, 'list'])->name('playlist.list');
-    Route::get('/playlists/lists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
-    Route::get('/playlists/lists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');
-    Route::get('/playlists/lists/{playlist}/download/status/{uuid}', [PlayListController::class, 'downloadStatus'])->name('playlist.download.status');
-    Route::get('/playlists/lists/{playlist}/download/status/{uuid}/check', [PlayListController::class, 'downloadStatusCheck'])->name('playlist.download.status.check');
-    Route::get('/playlists/lists/{playlist}/download_item/{itemId}', [PlayListController::class, 'download_item'])->name('playlist.download_item');
-    Route::get('/playlists/lists/{playlist}/add_to_cart', [PlayListController::class, 'addToCart'])->name('playlist.add.cart');
-    Route::get('/playlists/lists/{playlist}/add_item_to_cart/{itemId}', [PlayListController::class, 'addItemToCart'])->name('playlist.add.item.cart');
-    Route::get('/playlists/lists/{playlist}/remove_to_cart', [PlayListController::class, 'removeToCart'])->name('playlist.remove.cart');
-    Route::get('/playlists/lists/{playlist}/remove_item_to_cart/{itemId}', [PlayListController::class, 'removeItemToCart'])->name('playlist.remove.item.cart');
-    Route::get('/playlists-get-tracks/{id}', function($id){
-        $playlist = PlayList::find($id);
-
-        $tracks = $playlist->items()->get()->transform(function ($track) use($playlist) {
-            return [
-                'id' => (string) $track->id,
-                'date' => $track->created_at,
-                'artist' => $playlist->user->name,
-                'title' => $track->title,
-                'img' => $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo'),
-                'bpm' => null,
-                'playlist_id' => $playlist->id,
-                'duration' => 120,
-                'genre' => null,
-                'badge' => null,
-                'price' => $track->price,
-                'url' => $track->file_path ? Storage::disk('s3')->url($track->file_path) : null,
-                'downloads' => $track->downloads->count(),
-                'canDownload' => auth()->check() && auth()->user()->hasActivePlan(),
-                'downloadLink' => auth()->check() && auth()->user()->hasActivePlan() ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
-                'addToCart' => route('playlist.add.item.cart', [$playlist->name, $track->id]),
-            ];
-        });
-
-        if($playlist) return response()->json(['tracks' => $tracks]);
-
-        return response(null, 404);
-    });
-    Route::get('/playlists/lists/{playlist}/info/{name}', [PlayListController::class, 'info'])
-        ->name('playlist.item.info');
-
-    // Rutas para textos legales
+    Route::get('/cart/pay', [FileController::class, 'pay'])
+        ->name('file.pay');
+    Route::post('/paypal/process-cart', [PaypalController::class, 'processCart'])
+        ->name('paypal.process.cart');
+    Route::view('/payment_ok', 'payment.ok', ['index' => 999])->name('payment.ok');
+    Route::view('/payment_ok2', 'payment.ok2', ['index' => 999])->name('payment.ok2');
+    Route::view('/payment_ko', 'payment.ko', ['index' => 999])->name('payment.ko');
+    Route::get('/payment/cup/{file}', [PaymentController::class, 'showCUPForm'])->name('payment.cup.form');
+    Route::post('/payment/cup/{file}/pay', [PaymentController::class, 'processCUPPayment'])->name('payment.cup.proccess');
+    Route::get('/plans', [HomeController::class, 'plan'])->name('plans');
     Route::get('/legal', [HomeController::class, 'legal'])->name('legal');
     Route::get('/privacy', [HomeController::class, 'privacy'])->name('privacy');
     Route::get('/cookies', [HomeController::class, 'cookies'])->name('cookies');
     Route::get('/terms', [HomeController::class, 'terms'])->name('terms');
-
-    
-    Route::get('/djs/{dj}/follow', [FollowController::class, 'follow'])
-        ->middleware('auth')
-        ->name('follow');
-    Route::get('/djs/{dj}/ntf', [FollowController::class, 'ntf'])
-        ->middleware('auth')
-        ->name('ntf');
-    Route::post('/djs/{dj}/review', [ReviewController::class, 'rating_dj'])
-        ->middleware('auth')
-        ->name('rating.dj');
-
-    Route::get('/reviews', [ReviewController::class, 'index'])
-        ->middleware('auth')
-        ->name('reviews');
-
-    Route::post('/reviews/submit', [ReviewController::class, 'submit'])
-        ->middleware('auth')
-        ->name('submit.review');
-
-    Route::get('/notifications', [HomeController::class, 'ntfs'])
-        ->middleware('auth')
-        ->name('ntfs');
-
-    Route::post('/notifications/update-settings', [HomeController::class, 'ntfs_setting_update'])
-        ->middleware('auth')
-        ->name('ntfs.update');
-
-    Route::get('/notifications/read-all', [NotificationController::class, 'markAllAsRead'])
-        ->middleware('auth')
-        ->name('ntfs.read.all');
-
-    Route::get('/notifications/delete-all', [NotificationController::class, 'deleteAll'])
-        ->middleware('auth')
-        ->name('ntfs.delete.all');
-
-    Route::get('/notifications/delete/{id}', [NotificationController::class, 'delete'])
-        ->middleware('auth')
-        ->name('ntfs.delete');
-
-    Route::get('/search', [SearchController::class, 'search'])->name('search');
-
     Route::get('/download/{file}/free', [FileController::class, 'getFree'])->name('file.free.download');
     Route::post('/download/{file}/free', [FileController::class, 'downloadFree'])->name('file.free.download.post');
 

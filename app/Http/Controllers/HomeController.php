@@ -90,26 +90,6 @@ class HomeController extends Controller
                 'route' => route('dj', str_replace(' ', '_', $dj->name)),
             ];
         });
-
-        /*$playlists = PlayList::join('downloads', 'play_lists.id', 'downloads.play_list_id')
-            ->join('users', 'play_lists.user_id', 'users.id')
-            ->selectRaw('play_lists.name as title, users.name as dj, count(downloads.play_list_id) as downloads, play_lists.cover as cover, users.photo as photo, play_lists.created_at as date')
-            ->groupBy(['title', 'dj', 'cover', 'photo', 'date'])
-            ->orderBy('date', 'desc')->take(8)->get();
-        
-        $playlists->transform(function ($playlist) {
-            $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
-            return [
-                'title' => $playlist->title,
-                'sub' => $playlist->dj,
-                'items' => $playlist->items()->count(),
-                'genre' => $playlist->folder?->name ?? 'HOT',
-                'img' => $img,
-                'downloads' => $playlist->downloads,
-                'isNew' => Carbon::parse($playlist->date)->isCurrentDay(),
-                'route' => route('playlist.show', str_replace(' ', '_', $playlist->title)),
-            ];
-        });*/
         
         $playlists = PlayList::orderBy('created_at', 'desc')->take(8)->get();
         
@@ -259,7 +239,6 @@ class HomeController extends Controller
 
     public function radio()
     {
-
         $mixes = File::audios()->section(SectionEnum::CUBANDJS->value)
             ->where('status', 'active')
             ->whereNot('original_file', 'LIKE', '%.zip')

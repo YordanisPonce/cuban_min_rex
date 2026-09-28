@@ -236,7 +236,7 @@
             <div class="error-icon-big"><i class="fa-solid fa-lock"></i></div>
             <div class="error-code-small">— Error 403 · Acceso restringido —</div>
             <h1 class="error-title">Contenido <span>no disponible</span></h1>
-            <p class="error-desc">{{ $exception->getMessage() ?? 'No tienes acceso a este contenido' }}</p>
+            <p class="error-desc">{{ $exception->getMessage() != '' ? $exception->getMessage() : 'No tienes acceso a este contenido' }}</p>
 
             <div class="error-actions">
                 @auth

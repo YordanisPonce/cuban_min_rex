@@ -145,7 +145,6 @@ class PlayListController extends Controller
      */
     public function show(string $name)
     {
-
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
 
         $tracks = $playlist->items()->get()->transform(function ($track) use($playlist) {
@@ -210,6 +209,7 @@ class PlayListController extends Controller
      * Display the specified resource info.
      */
     public function info(string $playlist, string $name){
+
         $playlist = PlayList::where('name',  str_replace('_', ' ', $playlist))->first();
 
         if(!$playlist) return abort(404);

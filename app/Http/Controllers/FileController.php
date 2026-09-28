@@ -25,6 +25,7 @@ use Stripe\Subscription;
 class FileController extends Controller
 {
     public function info(Request $request, string $name){
+
         $formatName = str_replace('_', ' ', $name);
 
         $file = File::where('name', $formatName)->first();
