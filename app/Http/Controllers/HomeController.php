@@ -172,9 +172,8 @@ class HomeController extends Controller
 
         $geners = Category::join('category_files', 'categories.id', 'category_files.category_id')
             ->join('files', 'files.id', 'category_files.file_id')
-            ->join('downloads', 'files.id', 'downloads.file_id')
             ->where('categories.show_in_landing', true)
-            ->selectRaw('categories.id as id, categories.name as name, count(category_files.file_id) as tracks, count(downloads.file_id) as downloads')
+            ->selectRaw('categories.id as id, categories.name as name, count(category_files.file_id) as tracks')
             ->groupBy(['id', 'name'])
             ->orderBy('tracks', 'desc')->take(8)->get();
 
