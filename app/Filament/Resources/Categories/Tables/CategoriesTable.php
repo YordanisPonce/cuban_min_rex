@@ -41,11 +41,11 @@ class CategoriesTable
             ])
             ->recordActions([
                 EditAction::make()->hidden(fn($record) => Auth::user()->role !== 'admin' && Auth::user()->id != $record?->user_id)->label('Editar'),
-                DeleteAction::make()->hidden(fn($record) => Auth::user()->role !== 'admin' && Auth::user()->id != $record?->user_id)->label('Eliminar'),
+                DeleteAction::make()->hidden(fn($record) => Auth::user()->role !== 'admin')->label('Eliminar'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()->hidden(fn($record) => Auth::user()->id != $record?->user_id)->label('Eliminar marcados'),
+                    DeleteBulkAction::make()->hidden(fn($record) => Auth::user()->role !== 'admin')->label('Eliminar marcados'),
                 ]),
             ])->modifyQueryUsing(
                 fn(EloquentBuilder $query) => !auth()->user()->is_admin ? $query->where('is_general', true)->orWhere('user_id', Auth::user()->id)->orderBy('name') : $query->orderBy('name')

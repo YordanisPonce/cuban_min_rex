@@ -20,7 +20,7 @@ class EditCategory extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            //DeleteAction::make(),
             Action::make('reset_cover')->label("Eliminar Cover")
             ->icon('heroicon-o-photo')->requiresConfirmation()->action(function(){
                 $record = $this->record;
