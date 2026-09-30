@@ -10,6 +10,10 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/home.css') }}" />
     <style>
+        .genre-card .info .name {
+            box-shadow: 0px 0px 10px 9px rgba(0, 0, 0, 1);
+            background: black;
+        }
         .bottom-player.video{
             width: 500px;
             height: 500px;
