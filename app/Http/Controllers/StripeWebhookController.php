@@ -169,7 +169,7 @@ class StripeWebhookController extends CashierController
             // Actualiza o crea Subscription
             Subscription::updateOrCreate(
                 ['user_id' => $user->id],
-                ['ends_at' => $periodEnd]
+                ['plan_name' => $plan->name,'plan_price' => $plan->price, 'max_downloads' => $plan->downloads, 'ends_at' => $periodEnd]
             );
 
             Log::info('Renovación OK', [
@@ -204,6 +204,8 @@ class StripeWebhookController extends CashierController
 
                     $subscription = new Subscription();
                     $subscription->user_id = $user->id;
+                    $subscription->plan_name = $plan->name; 
+                    $subscription->max_downloads = $plan->downloads;
                     $subscription->ends_at = now()->addMonths($plan->duration_months);
                     $subscription->save();
                 }

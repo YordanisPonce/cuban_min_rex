@@ -14,6 +14,9 @@ class Subscription extends Model
         'stripe_price',
         'quantity',
         'trial_ends_at',
+        'max_downloads',
+        'plan_name',
+        'plan_price',
         'ends_at',
         'candeled_at'
     ];

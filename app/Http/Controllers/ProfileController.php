@@ -39,8 +39,9 @@ class ProfileController extends Controller
         $downloadLeft = 0;
 
         if ($user->hasActivePlan()) {
-            $currentPlan = $user->getActivePlan();
-            $downloadLeft = $currentPlan ? $currentPlan->downloads - $user->get_current_plan_consume_downloads() : 0;
+            $suscription = $user->getActiveSuscription();
+            $downloadLeft = $suscription->max_downloads - $user->get_current_plan_consume_downloads();
+            $currentPlan = $suscription->plan_name;
             $timeLeft = Carbon::parse($user->plan_expires_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW);
             $downloadLeft = $downloadLeft > 0 ? $downloadLeft : 0;
             if(!$user->plan_start_at) $downloadLeft = 'Ilímitadas';

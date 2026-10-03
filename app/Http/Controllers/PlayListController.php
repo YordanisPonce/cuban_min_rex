@@ -387,7 +387,7 @@ class PlayListController extends Controller
             return redirect()->back()->with('error', 'Su plan no está activo todavía.');
         }
 
-        if ($user->role !== 'admin' && $user->get_current_plan_consume_downloads() >= $plan->downloads) {
+        if ($user->role !== 'admin' && $user->get_current_plan_consume_downloads() >= $user->getActiveSuscription()->max_downloads) {
             return redirect()->back()->with('error', 'Ha superado las descargas por mes permitidas por su plan, considere mejorar su plan.');
         }
 
@@ -530,18 +530,19 @@ class PlayListController extends Controller
      */
     public function download_item(string $name, string $itemId) {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
+        $user = auth()->user();
         if($playlist->canBeDownload()){
             $plan = null;
 
-            if (auth()->user()->currentPlan) {
-                $plan = auth()->user()->currentPlan;
+            if ($user->currentPlan) {
+                $plan = $user->currentPlan;
             } else {
-                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
+                $plan = Order::where('user_id', $user->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
-            if($plan || auth()->user()->role === 'admin'){
-                if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
-                    if (auth()->user()->role === 'admin' || auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
+            if($plan || $user->role === 'admin'){
+                if($user->plan_start_at || $user->role === 'admin'){
+                    if ($user->role === 'admin' || $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()->max_downloads) {
                         $item = $playlist->items()->where('id', $itemId)->first();
 
                         $path = $item->file_path;
@@ -550,13 +551,13 @@ class PlayListController extends Controller
                             return redirect()->back()->with('error','El archivo no se ha encontrado.');
                         }*/
 
-                        if(auth()->check() && auth()->user()->role !== 'admin'){
+                        if($user->role !== 'admin'){
                             $download = new Download();
-                            $download->user_id = auth()->check() ? auth()->user()->id : null;
+                            $download->user_id = $user->id;
                             $download->play_list_item_id = $item->id;
-                            $download->amount = auth()->user()->downloads_cost();
-                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                            $download->amount = $user->downloads_cost();
+                            $download->user_amount = $user->downloads_cost() * 0.7;
+                            $download->admin_amount = $user->downloads_cost() * 0.1;
                             $download->save();
                         }
 

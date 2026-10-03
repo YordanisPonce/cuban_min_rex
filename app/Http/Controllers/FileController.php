@@ -103,20 +103,22 @@ class FileController extends Controller
             Log::debug("Usuario no encontrado para token de descarga: $token");
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
         }
+        
+        $user = auth()->user();
 
-        if (auth()->user()->hasActivePlan() || auth()->user()->role === 'admin') {
+        if ($user->hasActivePlan() || $user->role === 'admin') {
 
             $plan = null;
 
-            if (auth()->user()->currentPlan) {
-                $plan = auth()->user()->currentPlan;
+            if ($user->currentPlan) {
+                $plan = $user->currentPlan;
             } else {
-                $plan = Order::where('user_id', auth()->user()->id)->where('status', 'paid')->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first()?->plan;
+                $plan = Order::where('user_id', $user->id)->where('status', 'paid')->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
-            if($plan || auth()->user()->role === 'admin'){
-                if(auth()->user()->plan_start_at || auth()->user()->role === 'admin'){
-                    if (auth()->user()->role === 'admin' || auth()->user()->get_current_plan_consume_downloads() < $plan->downloads) {
+            if($plan || $user->role === 'admin'){
+                if($user->plan_start_at || $user->role === 'admin'){
+                    if ($user->role === 'admin' || $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()?->max_downloads) {
                         $file = File::find($id);
 
                         $path = $file->original_file;
@@ -128,13 +130,13 @@ class FileController extends Controller
                         $file->download_count = $file->download_count + 1;
                         $file->save();
 
-                        if(auth()->user()->role !== 'admin'){
+                        if($user->role !== 'admin'){
                             $download = new Download();
-                            $download->user_id = auth()->user()->id;
+                            $download->user_id = $user->id;
                             $download->file_id = $file->id;
-                            $download->amount = auth()->user()->downloads_cost();
-                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                            $download->amount = $user->downloads_cost();
+                            $download->user_amount = $user->downloads_cost() * 0.7;
+                            $download->admin_amount = $user->downloads_cost() * 0.1;
                             $download->save();
                         }
 
@@ -144,7 +146,7 @@ class FileController extends Controller
                         return downloadFileFromDisk('s3', $path, $downloadName);
                     }
                 } else {
-                    if (auth()->user()->getFileDownloadsAtSubscriptionPeriod($id) < $plan->downloads) {
+                    if ($user->getFileDownloadsAtSubscriptionPeriod($id) < $user->getActiveSuscription()?->max_downloads) {
                         $file = File::find($id);
 
                         $path = $file->original_file;
@@ -156,13 +158,13 @@ class FileController extends Controller
                         $file->download_count = $file->download_count + 1;
                         $file->save();
 
-                        if(auth()->user()->role !== 'admin'){
+                        if($user->role !== 'admin'){
                             $download = new Download();
-                            $download->user_id = auth()->user()->id;
+                            $download->user_id = $user->id;
                             $download->file_id = $file->id;
-                            $download->amount = auth()->user()->downloads_cost();
-                            $download->user_amount = auth()->user()->downloads_cost() * 0.7;
-                            $download->admin_amount = auth()->user()->downloads_cost() * 0.1;
+                            $download->amount = $user->downloads_cost();
+                            $download->user_amount = $user->downloads_cost() * 0.7;
+                            $download->admin_amount = $user->downloads_cost() * 0.1;
                             $download->save();
                         }
 

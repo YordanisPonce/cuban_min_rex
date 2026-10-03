@@ -151,6 +151,10 @@ class User extends Authenticatable implements FilamentUser
         return Plan::find($lastOrder?->plan_id);
     }
 
+    public function getActiveSuscription(): ?Subscription {
+        return Subscription::where('user_id', $this->id)->orderBy('updated_at', 'desc')->first();
+    }
+
     public function planExpirationDays()
     {
         return (object) [
@@ -393,7 +397,7 @@ class User extends Authenticatable implements FilamentUser
     }
 
     public function get_current_plan_left_downloads(){
-        return $this->getActivePlan()?->downloads - $this->get_current_plan_consume_downloads();
+        return $this->getActiveSuscription()?->max_downloads - $this->get_current_plan_consume_downloads();
     }
 
     public function getFileDownloadsAtSubscriptionPeriod($fileId)
@@ -861,37 +865,9 @@ class User extends Authenticatable implements FilamentUser
     public function downloads_cost() : float {
         if ($this->hasActivePlan()) {
             if($this->plan_start_at){
-                if ($this->current_plan_id) {
-                    $plan = Plan::find($this->current_plan_id);
-                    if($plan){
-                        return $plan->price_by_downloads();
-                    }
-                } else {
-                    $lasted_suscription = Order::where('user_id', $this->id)->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first();
-                    if ($lasted_suscription) {
-                        $lasted_plan_id = $lasted_suscription->plan_id;
-                        $lasted_plan = Plan::find($lasted_plan_id);
-                        if($lasted_plan){
-                            return $lasted_plan->price_by_downloads();
-                        }
-                    }
-                }
+                return $this->getActiveSuscription()?->plan_price / $this->getActiveSuscription()?->max_download;
             } else {
-                if ($this->current_plan_id) {
-                    $plan = Plan::find($this->current_plan_id);
-                    if($plan){
-                        return $plan->price / 100;
-                    }
-                } else {
-                    $lasted_suscription = Order::where('user_id', $this->id)->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first();
-                    if ($lasted_suscription) {
-                        $lasted_plan_id = $lasted_suscription->plan_id;
-                        $lasted_plan = Plan::find($lasted_plan_id);
-                        if($lasted_plan){
-                            return $lasted_plan->price / 100;
-                        }
-                    }
-                }
+                return $this->getActiveSuscription()?->plan_price / 1000;
             }
         }
         return 0;

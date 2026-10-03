@@ -199,7 +199,7 @@ class File extends Model
                 $plan = $user->getActivePlan();
 
                 if($user->plan_start_at){
-                    return $user->get_current_plan_consume_downloads() < $plan->downloads;
+                    return $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()->max_downloads;
                 }
 
                 return true;

@@ -108,7 +108,7 @@ class PlayList extends Model
                 $plan = $user->getActivePlan();
 
                 if($user->plan_start_at){
-                    return $user->get_current_plan_consume_downloads() < $plan->downloads && $plan->id != $firstPlan->id;
+                    return $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()->max_downloads && $plan->id != $firstPlan->id;
                 }
 
                 return $plan->id != $firstPlan->id;

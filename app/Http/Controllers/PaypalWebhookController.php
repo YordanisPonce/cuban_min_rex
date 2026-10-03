@@ -410,6 +410,9 @@ class PaypalWebhookController extends Controller
                 'type' => 'paypal',
                 'stripe_id' => $order->paypal_subscription_id ?? $order->paypal_order_id,
                 'stripe_status' => 'ACTIVE',
+                'plan_name' => $plan->name, 
+                'plan_price' => $plan->price, 
+                'max_downloads' => $plan->downloads,
                 'ends_at' => Carbon::now()->addMonths($plan->duration_months),
             ]
         );
