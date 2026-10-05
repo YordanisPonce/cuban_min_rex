@@ -865,9 +865,12 @@ class User extends Authenticatable implements FilamentUser
     public function downloads_cost() : float {
         if ($this->hasActivePlan()) {
             if($this->plan_start_at){
-                return $this->getActiveSuscription()?->plan_price / $this->getActiveSuscription()?->max_download;
+                $suscription = $this->getActiveSuscription();
+                $maxDownloads = (int) $suscription?->max_downloads;
+
+                return $maxDownloads > 0 ? $suscription->plan_price / $maxDownloads : 0;
             } else {
-                return $this->getActiveSuscription()?->plan_price / 1000;
+                return (float) $this->getActiveSuscription()?->plan_price / 1000;
             }
         }
         return 0;
