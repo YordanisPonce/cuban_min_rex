@@ -40,14 +40,12 @@ class PlayListController extends Controller
 
         $banners = Banner::where('active', true)->pluck('path');
 
-        if($banners->count() > 0) 
-        {
+        if ($banners->count() > 0) {
             $banners = $banners->toArray();
 
             $banners = array_map(function ($banner) {
                 return Storage::disk('s3')->url($banner ?? '');
             }, $banners);
-
         } else {
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
@@ -67,23 +65,23 @@ class PlayListController extends Controller
         $folder = request()->get("folder");
 
         $playlists = PlayList::whereHas('items');
-        
-        if($name){
-            $playlists = $playlists->where('name', 'like', '%'.$name.'%');
+
+        if ($name) {
+            $playlists = $playlists->where('name', 'like', '%' . $name . '%');
         }
 
-        if($dj){
-            $playlists = $playlists->whereHas('user', function($q) use ($dj) {
-                $q->where('name',  'like', '%'.str_replace('_', ' ', $dj).'%');
+        if ($dj) {
+            $playlists = $playlists->whereHas('user', function ($q) use ($dj) {
+                $q->where('name',  'like', '%' . str_replace('_', ' ', $dj) . '%');
             });
         }
 
-        if($folder){
-            $playlists = $playlists->whereHas('folder', function($q) use ($folder) {
-                $q->where('name',  'like', '%'.str_replace('_', ' ', $folder).'%');
+        if ($folder) {
+            $playlists = $playlists->whereHas('folder', function ($q) use ($folder) {
+                $q->where('name',  'like', '%' . str_replace('_', ' ', $folder) . '%');
             });
         }
-    
+
         $playlists = $playlists->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->get();
@@ -92,21 +90,19 @@ class PlayListController extends Controller
 
         $banners = Banner::where('active', true)->pluck('path');
 
-        if($banners->count() > 0) 
-        {
+        if ($banners->count() > 0) {
             $banners = $banners->toArray();
 
             $banners = array_map(function ($banner) {
                 return Storage::disk('s3')->url($banner ?? '');
             }, $banners);
-
         } else {
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
 
         $index = 4;
 
-        return view('playlists-list', compact('index', 'playlists', 'djs','folders', 'banners'));
+        return view('playlists-list', compact('index', 'playlists', 'djs', 'folders', 'banners'));
     }
 
     public function folders()
@@ -114,23 +110,21 @@ class PlayListController extends Controller
         $name = request()->get("title");
 
         $folders = Folder::whereHas('playlists');
-        
-        if($name){
-            $folders = $folders->where('name', 'like', '%'.$name.'%');
+
+        if ($name) {
+            $folders = $folders->where('name', 'like', '%' . $name . '%');
         }
-    
+
         $folders = $folders->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
         $banners = Banner::where('active', true)->pluck('path');
 
-        if($banners->count() > 0) 
-        {
+        if ($banners->count() > 0) {
             $banners = $banners->toArray();
 
             $banners = array_map(function ($banner) {
                 return Storage::disk('s3')->url($banner ?? '');
             }, $banners);
-
         } else {
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
@@ -147,7 +141,7 @@ class PlayListController extends Controller
     {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
 
-        $tracks = $playlist->items()->get()->transform(function ($track) use($playlist) {
+        $tracks = $playlist->items()->get()->transform(function ($track) use ($playlist) {
             return [
                 'id' => (string) $track->id,
                 'date' => $track->created_at,
@@ -162,16 +156,16 @@ class PlayListController extends Controller
                 'url' => $track->file_path ? Storage::disk('s3')->url($track->file_path) : '',
                 'downloads' => $track->downloads->count(),
                 'canDownload' => $playlist->canBeDownload(),
-                'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_' , $playlist->name), $track->id]) : null,
-                'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_' , $playlist->name), $track->id]),
-                'info' => route('playlist.item.info', [str_replace(' ','_', $playlist->name),str_replace(' ','_', $track->title)]),
+                'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_', $playlist->name), $track->id]) : null,
+                'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_', $playlist->name), $track->id]),
+                'info' => route('playlist.item.info', [str_replace(' ', '_', $playlist->name), str_replace(' ', '_', $track->title)]),
             ];
         });
 
         $similar = [];
 
-        if($playlist){
-            $similar = PlayList::where('id', '!=' ,$playlist->id)->where('folder_id', $playlist->folder?->id ?? null)->where('user_id', $playlist->user->id)
+        if ($playlist) {
+            $similar = PlayList::where('id', '!=', $playlist->id)->where('folder_id', $playlist->folder?->id ?? null)->where('user_id', $playlist->user->id)
                 ->orderBy('created_at', 'desc')->take(4)->get();
 
             $similar = $similar->transform(function ($s) {
@@ -188,14 +182,12 @@ class PlayListController extends Controller
 
         $banners = Banner::where('active', true)->pluck('path');
 
-        if($banners->count() > 0) 
-        {
+        if ($banners->count() > 0) {
             $banners = $banners->toArray();
 
             $banners = array_map(function ($banner) {
                 return Storage::disk('s3')->url($banner ?? '');
             }, $banners);
-
         } else {
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
@@ -208,21 +200,22 @@ class PlayListController extends Controller
     /**
      * Display the specified resource info.
      */
-    public function info(string $playlist, string $name){
+    public function info(string $playlist, string $name)
+    {
 
         $playlist = PlayList::where('name',  str_replace('_', ' ', $playlist))->first();
 
-        if(!$playlist) return abort(404);
+        if (!$playlist) return abort(404);
 
         $song = $playlist->items()->where('title', str_replace('_', ' ', $name))->first();
 
-        if(!$song) return abort(404);
+        if (!$song) return abort(404);
 
         $item = [
             'name' => $song->title,
             'poster' => $playlist->getCoverUrl(),
             'artist' => $playlist->user?->name,
-            'description' => 'Perteneciente a la Playlist '.$playlist->name,
+            'description' => 'Perteneciente a la Playlist ' . $playlist->name,
             'bpm' => null,
             'note' => null,
             'date' => $song->created_at->format('d/m/Y'),
@@ -233,20 +226,18 @@ class PlayListController extends Controller
             'ext' => $song->getExtension(),
             'downloads' => $song->downloads->count(),
             'canBeDownload' => $playlist->canBeDownload(),
-            'download_link' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ','_', $playlist->name),$song->id]) : null,
-            'addToCart' => route('playlist.add.item.cart', [str_replace(' ','_', $playlist->name),$song->id]),
+            'download_link' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_', $playlist->name), $song->id]) : null,
+            'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_', $playlist->name), $song->id]),
         ];
 
         $banners = Banner::where('active', true)->pluck('path');
 
-        if($banners->count() > 0) 
-        {
+        if ($banners->count() > 0) {
             $banners = $banners->toArray();
 
             $banners = array_map(function ($banner) {
                 return Storage::disk('s3')->url($banner ?? '');
             }, $banners);
-
         } else {
             $banners = [asset('assets/img/hero-base.jpeg')];
         }
@@ -259,6 +250,7 @@ class PlayListController extends Controller
      */
     public function download(string $name, PlaylistZipBuilder $builder)
     {
+        abort(403);
 
         $playlist = PlayList::where('name', str_replace('_', ' ', $name))->first();
 
@@ -298,13 +290,13 @@ class PlayListController extends Controller
         $items = $playlist->items()->get();
         $totalBytes = $builder->estimateTotalBytes($items);
 
-        if ($totalBytes >= /*self::ASYNC_ZIP_THRESHOLD_BYTES*/0) {
+        if ($totalBytes >= /*self::ASYNC_ZIP_THRESHOLD_BYTES*/ 0) {
             Log::info('Total bytes exceed async threshold. Queuing zip download.');
             return $this->queuePlaylistZipDownload($playlist, $user, $zipFileName, $items->count());
         }
 
         Log::info('Generating zip file synchronously.');
-        
+
         return $this->buildPlaylistZipSynchronously($playlist, $user, $zipFileName, $builder);
     }
 
@@ -375,9 +367,9 @@ class PlayListController extends Controller
 
         $plan = $user->currentPlan
             ?? Order::where('user_id', $user->id)
-                ->where('status', 'paid')
-                ->orderBy('created_at', 'desc')
-                ->first()?->plan;
+            ->where('status', 'paid')
+            ->orderBy('created_at', 'desc')
+            ->first()?->plan;
 
         if (!$plan && $user->role !== 'admin') {
             return redirect()->back()->with('error', 'No tiene un plan activo para descargar.');
@@ -528,10 +520,11 @@ class PlayListController extends Controller
     /**
      * Download a item of the specifie resource
      */
-    public function download_item(string $name, string $itemId) {
+    public function download_item(string $name, string $itemId)
+    {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
         $user = auth()->user();
-        if($playlist->canBeDownload()){
+        if ($playlist->canBeDownload()) {
             $plan = null;
 
             if ($user->currentPlan) {
@@ -540,9 +533,9 @@ class PlayListController extends Controller
                 $plan = Order::where('user_id', $user->id)->where('status', 'paid')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
-            if($plan || $user->role === 'admin'){
-                if($user->plan_start_at || $user->role === 'admin'){
-                    if ($user->role === 'admin' || $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()->max_downloads) {
+            if ($plan || $user->role === 'admin') {
+                if ($user->plan_start_at || $user->role === 'admin') {
+                    if ($user->role === 'admin' || $user->hasAviableDownloads()) {
                         $item = $playlist->items()->where('id', $itemId)->first();
 
                         $path = $item->file_path;
@@ -551,7 +544,12 @@ class PlayListController extends Controller
                             return redirect()->back()->with('error','El archivo no se ha encontrado.');
                         }*/
 
-                        if($user->role !== 'admin'){
+                        if ($user->role !== 'admin') {
+                            if ($user->isConsumeExtraDownload()) {
+                                $susc = $user->getActiveSuscription();
+                                $susc->consume_extra_downloads = $susc->consume_extra_downloads + 1;
+                                $susc->save();
+                            }
                             $download = new Download();
                             $download->user_id = $user->id;
                             $download->play_list_item_id = $item->id;
@@ -569,16 +567,17 @@ class PlayListController extends Controller
                 }
             }
         }
-        return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.'); 
+        return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
     }
 
     /**
      * Add Playlist to cart
      */
-    
-    public function addToCart(string $name){
+
+    public function addToCart(string $name)
+    {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
-        
+
         $cart = Cart::get_current_cart();
 
         $cart->cart_items()->create([
@@ -586,13 +585,14 @@ class PlayListController extends Controller
             'amount' => $playlist->price,
         ]);
 
-        return redirect()->back()->with('success','Playlist añadido al carrito.');
+        return redirect()->back()->with('success', 'Playlist añadido al carrito.');
     }
 
     /**
      * Add Playlist item to cart
      */
-    public function addItemToCart(string $name, string $itemId){
+    public function addItemToCart(string $name, string $itemId)
+    {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
 
         $cart = Cart::get_current_cart();
@@ -602,40 +602,42 @@ class PlayListController extends Controller
             'amount' => $playlist->price,
         ]);
 
-        return redirect()->back()->with('success','Elemento añadido al carrito.');
+        return redirect()->back()->with('success', 'Elemento añadido al carrito.');
     }
 
     /**
      * Remove Playlist from cart
      */
-    public function removeToCart(string $name){
+    public function removeToCart(string $name)
+    {
         $playlist = PlayList::where('name',  str_replace('_', ' ', $name))->first();
 
         $cart = Cart::get_current_cart();
 
         $cartItem = $cart->cart_items()->where('play_list_id', $playlist->id)->first();
 
-        if($cartItem){
+        if ($cartItem) {
             $cartItem->delete();
-            return redirect()->back()->with('success','Playlist eliminado del carrito.');
+            return redirect()->back()->with('success', 'Playlist eliminado del carrito.');
         }
 
-        return redirect()->back()->with('error','La playlist no está en su carrito.');
+        return redirect()->back()->with('error', 'La playlist no está en su carrito.');
     }
 
     /**
      * Remove Playlist item from cart
      */
-    public function removeItemToCart(string $name, string $itemId){
+    public function removeItemToCart(string $name, string $itemId)
+    {
         $cart = Cart::get_current_cart();
 
         $cartItem = $cart->cart_items()->where('play_list_item_id', $itemId)->first();
 
-        if($cartItem){
+        if ($cartItem) {
             $cartItem->delete();
-            return redirect()->back()->with('success','Elemento eliminado del carrito.');
+            return redirect()->back()->with('success', 'Elemento eliminado del carrito.');
         }
 
-        return redirect()->back()->with('error','El elemento no está en su carrito.');
+        return redirect()->back()->with('error', 'El elemento no está en su carrito.');
     }
 }

@@ -118,7 +118,7 @@ class FileController extends Controller
 
             if($plan || $user->role === 'admin'){
                 if($user->plan_start_at || $user->role === 'admin'){
-                    if ($user->role === 'admin' || $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()?->max_downloads) {
+                    if ($user->role === 'admin' || $user->hasAviableDownloads()) {
                         $file = File::find($id);
 
                         $path = $file->original_file;
@@ -131,6 +131,11 @@ class FileController extends Controller
                         $file->save();
 
                         if($user->role !== 'admin'){
+                            if ($user->isConsumeExtraDownload()) {
+                                $susc = $user->getActiveSuscription();
+                                $susc->consume_extra_downloads = $susc->consume_extra_downloads + 1;
+                                $susc->save();
+                            }
                             $download = new Download();
                             $download->user_id = $user->id;
                             $download->file_id = $file->id;

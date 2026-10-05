@@ -67,7 +67,7 @@
                     <button class="btn-play-all" onclick="playAllTracks()"><i class="fas fa-play"></i> Reproducir
                         Todo</button>
                     <button class="btn-secondary" onclick="playRandom()"><i class="fas fa-random"></i> Aleatorio</button>
-                    @if ($playlist->canBeDownload())
+                    @if ($playlist->canBeDownload() && false)
                         <a class="btn-secondary" href="{{ route('playlist.download', str_replace(' ', '_' , $playlist->name)) }}" onclick="downloadAll()"><i
                                 class="fas fa-download"></i> Descargar Completa</a>
                     @endif

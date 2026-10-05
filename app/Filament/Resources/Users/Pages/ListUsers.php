@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Users\Pages;
 use App\Filament\Resources\Users\UserResource;
 use App\Http\Controllers\NotificationController;
 use App\Models\Plan;
+use App\Models\Subscription;
 use App\Models\User;
 use Carbon\Carbon;
 use Filament\Actions\Action;
@@ -62,6 +63,10 @@ class ListUsers extends ListRecords
                                 'plan_start_at' => now(),
                                 'plan_expires_at' => Carbon::now()->addMonths($plan->duration_months)
                             ]);
+                            Subscription::updateOrCreate(
+                                ['user_id' => $user->id],
+                                ['plan_name' => $plan->name, 'plan_price' => $plan->price, 'max_downloads' => $plan->downloads, 'ends_at' => $user->plan_expires_at]
+                            );
                             Notification::make()
                                 ->success()
                                 ->body("Plan {$plan->name} asignado a {$user->name}")

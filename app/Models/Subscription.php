@@ -15,6 +15,8 @@ class Subscription extends Model
         'quantity',
         'trial_ends_at',
         'max_downloads',
+        'extra_downloads',
+        'consume_extra_downloads',
         'plan_name',
         'plan_price',
         'ends_at',

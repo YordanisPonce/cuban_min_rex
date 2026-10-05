@@ -196,12 +196,9 @@ class File extends Model
             }
 
             if($user->hasActivePlan()){
-                $plan = $user->getActivePlan();
-
                 if($user->plan_start_at){
-                    return $user->get_current_plan_consume_downloads() < $user->getActiveSuscription()->max_downloads;
+                    return $user->hasAviableDownloads();
                 }
-
                 return true;
             }
         }

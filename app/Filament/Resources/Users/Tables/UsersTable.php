@@ -52,7 +52,20 @@ class UsersTable
                     ->default(function(User $record){
                         if ($record->hasActivePlan()) {
                             if ($record->plan_start_at) {
-                                return $record->get_current_plan_consume_downloads() . ' / ' . ($record->getActiveSuscription()?->max_downloads ?? 0);
+                                return $record->get_current_plan_consume_downloads() -  ($record->getActiveSuscription()?->consume_extra_downloads ?? 0). ' / ' . ($record->getActiveSuscription()?->max_downloads ?? 0);
+                            }
+                            return 'Ilimitadas';
+                        }
+                        return 'Sin Plan Activo';
+                    })
+                    ->visible(fn() => auth()->user()->role === 'admin' || auth()->user()->role === 'developer'),
+                TextColumn::make('extraDownloads')
+                    ->label('Descargas extras')
+                    ->alignCenter()
+                    ->default(function(User $record){
+                        if ($record->hasActivePlan()) {
+                            if ($record->plan_start_at) {
+                                return ($record->getActiveSuscription()?->consume_extra_downloads ?? 0) . ' / ' . ($record->getActiveSuscription()?->extra_downloads ?? 0);
                             }
                             return 'Ilimitadas';
                         }

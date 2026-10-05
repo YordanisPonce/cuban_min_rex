@@ -72,7 +72,8 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-    function isBlocked(): bool {
+    function isBlocked(): bool
+    {
         return $this->is_block === 1;
     }
 
@@ -97,7 +98,8 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
-    public function getPhotoUrl() {
+    public function getPhotoUrl()
+    {
         return $this->photo ? Storage::disk('s3')->url($this->photo) : config('app.logo_alter');
     }
 
@@ -111,7 +113,8 @@ class User extends Authenticatable implements FilamentUser
         );
     }
 
-    public function getCoverUrl() {
+    public function getCoverUrl()
+    {
         return $this->cover ? Storage::disk('s3')->url($this->cover) : asset('img/hero-base.jpeg');
     }
 
@@ -143,16 +146,35 @@ class User extends Authenticatable implements FilamentUser
         return $isFuture;
     }
 
-    public function getActivePlan(): ?Plan {
+    public function getActivePlan(): ?Plan
+    {
         if ($this->current_plan_id) {
             return Plan::find($this->current_plan_id);
         }
-        $lastOrder = Order::where('user_id', $this->id)->whereNotNull('plan_id')->where('status','paid')->orderBy('created_at', 'desc')->first();
+        $lastOrder = Order::where('user_id', $this->id)->whereNotNull('plan_id')->where('status', 'paid')->orderBy('created_at', 'desc')->first();
         return Plan::find($lastOrder?->plan_id);
     }
 
-    public function getActiveSuscription(): ?Subscription {
+    public function getActiveSuscription(): ?Subscription
+    {
         return Subscription::where('user_id', $this->id)->orderBy('updated_at', 'desc')->first();
+    }
+
+    public function hasAviableDownloads(): bool
+    {
+        $susc = $this->getActiveSuscription();
+        if ($this->hasActivePlan()) {
+            if ($this->get_current_plan_consume_downloads() < $susc->max_downloads) {
+                return true;
+            }
+        }
+        return $susc->extra_downloads > $susc->consume_extra_downloads;
+    }
+
+    public function isConsumeExtraDownload(): bool
+    {
+        $susc = $this->getActiveSuscription();
+        return $this->get_current_plan_consume_downloads() >= $susc->max_downloads;
     }
 
     public function planExpirationDays()
@@ -211,17 +233,17 @@ class User extends Authenticatable implements FilamentUser
     {
         return $this->hasMany(PlayList::class);
     }
-    
+
     public function follows(): HasMany
     {
         return $this->hasMany(Follow::class, 'follower_id');
     }
-    
+
     public function followers(): HasMany
     {
         return $this->hasMany(Follow::class, 'follow_id');
     }
-    
+
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'dj_id');
@@ -252,8 +274,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('downloads.user_amount');
     }
@@ -268,8 +290,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('downloads.user_amount');
     }
@@ -284,8 +306,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('downloads.admin_amount');
     }
@@ -300,8 +322,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.user_amount');
     }
@@ -316,8 +338,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.user_amount');
     }
@@ -332,8 +354,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.admin_amount');
     }
@@ -392,11 +414,13 @@ class User extends Authenticatable implements FilamentUser
         return $totalPaid + $this->paidSaleLiquidation();
     }
 
-    public function get_current_plan_consume_downloads(){
+    public function get_current_plan_consume_downloads()
+    {
         return $this->downloads()->whereBetween('created_at', [$this->plan_start_at, $this->plan_expires_at])->count();
     }
 
-    public function get_current_plan_left_downloads(){
+    public function get_current_plan_left_downloads()
+    {
         return $this->getActiveSuscription()?->max_downloads - $this->get_current_plan_consume_downloads();
     }
 
@@ -476,8 +500,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.user_amount');
     }
@@ -492,8 +516,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.user_amount');
     }
@@ -503,7 +527,8 @@ class User extends Authenticatable implements FilamentUser
         return $this->role == 'admin';
     }
 
-    public function recordAdmin($query){
+    public function recordAdmin($query)
+    {
         return $query->where('role', 'admin');
     }
 
@@ -514,8 +539,11 @@ class User extends Authenticatable implements FilamentUser
      * 
      * @return int downloads count
      */
-    public function getDistinctDownloadsTo(int $djId) : int {
-        return Download::where('user_id', $this->id) ->whereHas('file', function($query) use ($djId) { $query->where('user_id', $djId); }) ->distinct('file_id')->count('file_id');
+    public function getDistinctDownloadsTo(int $djId): int
+    {
+        return Download::where('user_id', $this->id)->whereHas('file', function ($query) use ($djId) {
+            $query->where('user_id', $djId);
+        })->distinct('file_id')->count('file_id');
     }
 
     /**
@@ -523,7 +551,8 @@ class User extends Authenticatable implements FilamentUser
      * 
      * @return int downloads count
      */
-    public function getDistinctDownloads(): int {
+    public function getDistinctDownloads(): int
+    {
         return $this->downloads()->distinct('file_id')->count('file_id');
     }
 
@@ -532,7 +561,8 @@ class User extends Authenticatable implements FilamentUser
      * 
      * @return int downloads count
      */
-    function getDistinctDownloadsRecived() : int {
+    function getDistinctDownloadsRecived(): int
+    {
         $cont = 0;
         foreach (User::where('role', 'user')->get() as $user) {
             $cont += $user->getDistinctDownloadsTo($this->id);
@@ -543,7 +573,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the number of Sales
      */
-    function totalSalesCount() : int {
+    function totalSalesCount(): int
+    {
         /*
         |--------------------------------------------------------------------------
         | VENTAS PENDIENTES DEL DJ
@@ -559,8 +590,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->selectRaw("
                 COUNT(DISTINCT 
@@ -580,7 +611,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the number of Download
      */
-    function totalDownloadsCount() : int {
+    function totalDownloadsCount(): int
+    {
         $downloads = Download::query()
             ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
             ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
@@ -588,8 +620,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->selectRaw("
                 COUNT(DISTINCT 
@@ -609,7 +641,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the amount of Sales
      */
-    function totalSalesAmount() : float {
+    function totalSalesAmount(): float
+    {
         /*
         |--------------------------------------------------------------------------
         | VENTAS PENDIENTES DEL DJ
@@ -625,8 +658,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.user_amount');
 
@@ -636,7 +669,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the amount of Download
      */
-    function totalDownloadsAmount() : float {
+    function totalDownloadsAmount(): float
+    {
         $downloads = Download::query()
             ->leftJoin('files', 'downloads.file_id', '=', 'files.id')
             ->leftJoin('play_lists', 'downloads.play_list_id', '=', 'play_lists.id')
@@ -644,8 +678,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('downloads.user_amount');
 
@@ -655,7 +689,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the number of Pending Sales
      */
-    function pendingSalesCount() : int {
+    function pendingSalesCount(): int
+    {
         /*
         |--------------------------------------------------------------------------
         | VENTAS PENDIENTES DEL DJ
@@ -672,8 +707,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->where('user_amount', '>', 0)
             ->selectRaw("
@@ -694,7 +729,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the amount of Pending Sales
      */
-    function pendingSalesAmount() : int {
+    function pendingSalesAmount(): int
+    {
         /*
         |--------------------------------------------------------------------------
         | VENTAS PENDIENTES DEL DJ
@@ -711,18 +747,19 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('sales.user_amount');
 
         return round($sales, 2);
     }
-    
+
     /**
      * Get the amount of Downloads without liquidated
      */
-    function pendingDownloadsAmount() : int {
+    function pendingDownloadsAmount(): int
+    {
         /*
         |--------------------------------------------------------------------------
         | DESCARGAS PENDIENTES DEL DJ
@@ -738,8 +775,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->sum('downloads.user_amount');
 
@@ -749,7 +786,8 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the number of Downloads without liquidated
      */
-    function pendingDownloadsCount() : int {
+    function pendingDownloadsCount(): int
+    {
         /*
         |--------------------------------------------------------------------------
         | DESCARGAS PENDIENTES DEL DJ
@@ -765,8 +803,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             })
             ->where('user_amount', '>', 0)
             ->selectRaw("
@@ -790,7 +828,7 @@ class User extends Authenticatable implements FilamentUser
      * 
      * @return int Downloads + Sales Count
      */
-    function getPendingSalesCount() : int 
+    function getPendingSalesCount(): int
     {
         $sales = $this->pendingSalesCount();
         $downloads = $this->pendingDownloadsCount();
@@ -803,7 +841,8 @@ class User extends Authenticatable implements FilamentUser
      * @return \Illuminate\Database\Eloquent\Builder Pending sale query
      */
 
-    function pendingSales(): \Illuminate\Database\Eloquent\Builder {
+    function pendingSales(): \Illuminate\Database\Eloquent\Builder
+    {
         $query = Sale::query()
             ->where('sales.status', 'pending')
             ->leftJoin('files', 'sales.file_id', '=', 'files.id')
@@ -812,8 +851,8 @@ class User extends Authenticatable implements FilamentUser
             ->leftJoin('play_lists as pli_parent', 'play_list_items.play_list_id', '=', 'pli_parent.id')
             ->where(function ($q) {
                 $q->where('files.user_id', $this->id)
-                ->orWhere('play_lists.user_id', $this->id)
-                ->orWhere('pli_parent.user_id', $this->id);
+                    ->orWhere('play_lists.user_id', $this->id)
+                    ->orWhere('pli_parent.user_id', $this->id);
             });
 
         return $query;
@@ -824,10 +863,11 @@ class User extends Authenticatable implements FilamentUser
      * 
      * @return \Illuminate\Database\Eloquent\Builder Pending sale query
      */
-    function pendingDownloads(): \Illuminate\Database\Eloquent\Builder {
+    function pendingDownloads(): \Illuminate\Database\Eloquent\Builder
+    {
         $query = Download::query()
             ->where('liquidated', false)
-            ->distinct('user_id','file_id')
+            ->distinct('user_id', 'file_id')
             ->whereHas('file', fn($q) => $q->where('user_id', $this->id));
 
         return $query;
@@ -862,13 +902,11 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Get the user current cost by downloads
      */
-    public function downloads_cost() : float {
+    public function downloads_cost(): float
+    {
         if ($this->hasActivePlan()) {
-            if($this->plan_start_at){
-                $suscription = $this->getActiveSuscription();
-                $maxDownloads = (int) $suscription?->max_downloads;
-
-                return $maxDownloads > 0 ? $suscription->plan_price / $maxDownloads : 0;
+            if ($this->plan_start_at) {
+                return $this->getActiveSuscription()?->plan_price / $this->getActiveSuscription()?->max_downloads;
             } else {
                 return (float) $this->getActiveSuscription()?->plan_price / 1000;
             }
