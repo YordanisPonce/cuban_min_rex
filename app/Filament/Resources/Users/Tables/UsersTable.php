@@ -46,6 +46,7 @@ class UsersTable
                 TextColumn::make('suscription')
                     ->label('Subscripción Activa')
                     ->default(fn(User $record) => $record->hasActivePlan() ? $record->getActiveSuscription()?->plan_name ?? 'Desconocido' : 'Sin Plan Activo'),
+                TextColumn::make('plan_expires_at')->label('Vence')->formatStateUsing(fn($state) => Carbon::parse($state)->translatedFormat('d \d\e M \d\e Y')),
                 TextColumn::make('currentDownloads')
                     ->label('Descargas')
                     ->alignCenter()

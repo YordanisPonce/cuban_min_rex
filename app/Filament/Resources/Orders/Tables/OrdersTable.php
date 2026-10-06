@@ -109,7 +109,7 @@ class OrdersTable
                     }),
             ])
             ->recordActions([
-                EditAction::make(),
+                //EditAction::make(),
                 Action::make('view')
                     ->label('Ver')
                     ->icon('heroicon-o-eye')
@@ -123,7 +123,7 @@ class OrdersTable
                         return $record->downloadFilesZip();
                     })
                     ->visible(function (Order $record) {
-                        return $record->order_items()->count() > 0;
+                        return $record->order_items()->count() > 0 && auth()->user()->role === 'admin';
                     }),
                 Action::make('cancel')
                     ->label('Anular Orden')
@@ -145,7 +145,7 @@ class OrdersTable
                             ->send();
                     })
                     ->visible(function (Order $record) {
-                        return $record->status === 'paid';
+                        return $record->status === 'paid' && auth()->user()->role === 'admin';
                     }),
             ])
             ->toolbarActions([
