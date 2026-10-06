@@ -4,11 +4,9 @@ namespace App\Filament\Resources\Subscriptions\Tables;
 
 use App\Models\User;
 use Carbon\Carbon;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class SubscriptionsTable
 {
@@ -21,15 +19,15 @@ class SubscriptionsTable
                     ->formatStateUsing(fn($state) => User::find($state)?->name),
                 TextColumn::make('type')
                     ->label('Tipo')
-                    ->formatStateUsing(fn($state) => $state === 'default' ? 'Stripe' : 'Paypal'),
+                    ->formatStateUsing(fn($state) => Str::lower($state) === 'default' ? 'Stripe' : 'Paypal'),
                 TextColumn::make('stripe_id')
                     ->label('Identificador')
                     ->searchable(),
                 TextColumn::make('stripe_status')
                     ->badge()
                     ->label('Estado')
-                    ->color(fn($state) => $state == 'active' ? 'success' : 'danger')
-                    ->formatStateUsing(fn($state) => $state == 'active' ? 'Activa' : 'Cancelada'),
+                    ->color(fn($state) => Str::lower($state) == 'active' ? 'success' : 'danger')
+                    ->formatStateUsing(fn($state) => Str::lower($state) === 'active' ? 'Activa' : 'Cancelada'),
                 TextColumn::make('plan_name')
                     ->label('Plan')
                     ->searchable(),
