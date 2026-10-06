@@ -11,6 +11,8 @@ use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -46,8 +48,8 @@ class UsersTable
                 TextColumn::make('suscription')
                     ->label('Subscripción Activa')
                     ->default(fn(User $record) => $record->hasActivePlan() ? $record->getActiveSuscription()?->plan_name ?? 'Desconocido' : 'Sin Plan Activo'),
-                TextColumn::make('plan_start_at')->label('Inicio')->formatStateUsing(fn($state) => Carbon::parse($state)->translatedFormat('d \d\e M \d\e Y')),
-                TextColumn::make('plan_expires_at')->label('Vence')->formatStateUsing(fn($state) => Carbon::parse($state)->translatedFormat('d \d\e M \d\e Y')),
+                TextColumn::make('plan_start_at')->label('Inicio')->formatStateUsing(fn($state) => Carbon::parse($state)->translatedFormat('d \d\e F \d\e Y')),
+                TextColumn::make('plan_expires_at')->label('Vence')->formatStateUsing(fn($state) => Carbon::parse($state)->translatedFormat('d \d\e F \d\e Y')),
                 TextColumn::make('currentDownloads')
                     ->label('Descargas')
                     ->alignCenter()
@@ -171,6 +173,57 @@ class UsersTable
                                 ->title('Suscripción suspendida')
                                 ->body("Suscripción de $record->name suspendida.")
                                 ->danger()
+                                ->send();
+                        } catch (\Throwable $th) {
+                            Notification::make()
+                                ->title('Error al proceder')
+                                ->body($th->getMessage())
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+                Action::make('editSuscription')
+                    ->label('Editar Suscripción')
+                    ->color('danger')
+                    ->icon('heroicon-o-bookmark')
+                    ->visible(fn($record) => auth()->user()->role === 'admin')
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Editar Suscripción?')
+                    ->modalDescription('Esta opción cambiará directamente las fechas de la suscripción del usuario.')
+                    ->modalSubmitActionLabel('Aceptar')
+                    ->modalCancelActionLabel('Cancelar')
+                    ->modalWidth('xl')->schema(function($record) {
+                        return [
+                            DateTimePicker::make('expires_at')
+                                ->label('Fecha de Vencimiento')
+                                ->default($record->plan_expires_at)
+                                ->required(),
+
+                            TextInput::make('extra_downloads')
+                                ->numeric()
+                                ->default(0)
+                                ->label('Descargas Extras')
+                                ->required()
+                                ->helperText('Descargas extras al usuario. Independientes del plan.'),
+                        ];
+                    })
+                    ->action(function (User $record, array $data){
+                        try {
+                            $record->update([
+                                'plan_expires_at' => $data['expires_at'],
+                            ]);
+
+                            $susc = $record->getActiveSuscription();
+
+                            $susc->update([
+                                'ends_at' => $data['expires_at'],
+                                'extra_downloads' => $susc->extra_downloads + $data['extra_downloads']
+                            ]);
+
+                            Notification::make()
+                                ->title('Suscripción editada')
+                                ->body("Suscripción de $record->name editada.")
+                                ->success()
                                 ->send();
                         } catch (\Throwable $th) {
                             Notification::make()
