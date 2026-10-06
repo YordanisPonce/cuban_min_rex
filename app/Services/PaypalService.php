@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services;
 
 use App\Models\Cart;
@@ -319,12 +320,10 @@ class PaypalService
      */
     public function createSubscription(Plan $plan, User $user, Order $order, string $returnUrl, string $cancelUrl): array
     {
-        if (empty($plan->paypal_id)) {
-            $this->syncPaypalPlan($plan);
-        }
+        $paypalPlanId = $this->ensurePlanUpToDate($plan);
 
         $response = $this->client->post('/v1/billing/subscriptions', [
-            'plan_id' => $plan->paypal_id,
+            'plan_id' => $paypalPlanId,
             'subscriber' => [
                 'email_address' => $user->email,
             ],
@@ -531,5 +530,168 @@ class PaypalService
         }
 
         return 'Producto';
+    }
+
+    /**
+     * Obtiene los detalles de un plan en PayPal.
+     * Devuelve null si el plan no existe (404).
+     * @param string $paypalPlanId
+     * @return array|null
+     */
+    public function getPlan(string $paypalPlanId): ?array
+    {
+        $response = $this->client->get("/v1/billing/plans/{$paypalPlanId}");
+
+        if ($response->status() === 404) {
+            return null;
+        }
+
+        if (!$response->successful()) {
+            throw new \Exception('Error al consultar el plan de PayPal: ' . $response->body());
+        }
+
+        return $response->json();
+    }
+
+    /**
+     * Asegura que el plan de PayPal esté actualizado con los valores locales.
+     * Devuelve el paypal_id vigente (puede cambiar si hubo que recrear el plan).
+     * @param Plan $plan
+     * @return string
+     */
+    public function ensurePlanUpToDate(Plan $plan): string
+    {
+        // Nunca sincronizado: se crea desde cero.
+        if (empty($plan->paypal_id)) {
+            $this->syncPaypalPlan($plan);
+            return $plan->paypal_id;
+        }
+
+        $remote = $this->getPlan($plan->paypal_id);
+
+        // El plan ya no existe en PayPal: se recrea.
+        if ($remote === null) {
+            $this->syncPaypalPlan($plan);
+            return $plan->paypal_id;
+        }
+
+        $regularCycle = $this->findRegularCycle($remote);
+
+        $localName     = (string) $plan->name;
+        $localInterval = max(1, (int) ($plan->duration_months ?: 1));
+        $localPrice    = $this->normalizeAmount((float) $plan->price);
+        $localDesc     = $this->resolvePaypalDescription($plan);
+
+        $remoteName     = (string) ($remote['name'] ?? '');
+        $remoteInterval = (int) ($regularCycle['frequency']['interval_count'] ?? 0);
+        $remoteUnit     = $regularCycle['frequency']['interval_unit'] ?? null;
+        $remotePrice    = isset($regularCycle['pricing_scheme']['fixed_price']['value'])
+            ? $this->normalizeAmount((float) $regularCycle['pricing_scheme']['fixed_price']['value'])
+            : null;
+        $remoteDesc     = (string) ($remote['description'] ?? '');
+
+        // Campos inmutables: nombre o duración -> hay que crear un plan nuevo.
+        if ($remoteName !== $localName || $remoteInterval !== $localInterval || $remoteUnit !== 'MONTH') {
+            $this->syncPaypalPlan($plan);
+            return $plan->paypal_id;
+        }
+
+        // Descripción (PATCH).
+        if ($remoteDesc !== $localDesc) {
+            $this->updatePlanDescription($plan->paypal_id, $localDesc);
+        }
+
+        // Precio (endpoint específico).
+        if ($remotePrice !== $localPrice) {
+            $this->updatePlanPrice(
+                $plan->paypal_id,
+                (int) ($regularCycle['sequence'] ?? 1),
+                $localPrice
+            );
+        }
+
+        // Si estaba inactivo en PayPal, lo reactivamos.
+        if (($remote['status'] ?? null) !== 'ACTIVE') {
+            $this->activatePlan($plan->paypal_id);
+        }
+
+        return $plan->paypal_id;
+    }
+
+    /**
+     * Actualiza la descripción del plan en PayPal.
+     * @param string $paypalPlanId
+     * @param string $description
+     */
+    protected function updatePlanDescription(string $paypalPlanId, string $description): void
+    {
+        $response = $this->client->patch("/v1/billing/plans/{$paypalPlanId}", [
+            [
+                'op'    => 'replace',
+                'path'  => '/description',
+                'value' => $description,
+            ],
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Error al actualizar la descripción del plan en PayPal: ' . $response->body());
+        }
+    }
+
+    /**
+     * Actualiza el precio del ciclo regular del plan en PayPal.
+     * @param string $paypalPlanId
+     * @param int $sequence
+     * @param string $price
+     */
+    protected function updatePlanPrice(string $paypalPlanId, int $sequence, string $price): void
+    {
+        $response = $this->client->post("/v1/billing/plans/{$paypalPlanId}/update-pricing-schemes", [
+            'pricing_schemes' => [
+                [
+                    'billing_cycle_sequence' => $sequence,
+                    'pricing_scheme' => [
+                        'fixed_price' => [
+                            'value'         => $price,
+                            'currency_code' => 'USD',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Error al actualizar el precio del plan en PayPal: ' . $response->body());
+        }
+    }
+
+    /**
+     * Activa un plan en PayPal.
+     * @param string $paypalPlanId
+     * @throws \Exception
+     */
+    protected function activatePlan(string $paypalPlanId): void
+    {
+        $response = $this->client->post("/v1/billing/plans/{$paypalPlanId}/activate");
+
+        if (!$response->successful()) {
+            throw new \Exception('Error al activar el plan en PayPal: ' . $response->body());
+        }
+    }
+
+    /**
+     * Busca el ciclo de facturación REGULAR dentro de un plan de PayPal.
+     * @param array $remotePlan
+     * @return array
+     */
+    protected function findRegularCycle(array $remotePlan): array
+    {
+        foreach ($remotePlan['billing_cycles'] ?? [] as $cycle) {
+            if (($cycle['tenure_type'] ?? null) === 'REGULAR') {
+                return $cycle;
+            }
+        }
+
+        return [];
     }
 }
