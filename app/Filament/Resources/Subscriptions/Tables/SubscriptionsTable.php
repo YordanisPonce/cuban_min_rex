@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Subscriptions\Tables;
 
+use App\Models\User;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -14,10 +15,9 @@ class SubscriptionsTable
     {
         return $table
             ->columns([
-                TextColumn::make('user.name')
+                TextColumn::make('user_id')
                     ->label('Usuario')
-                    ->numeric()
-                    ->sortable(),
+                    ->formatStateUsing(fn($state) => User::find($state)?->name),
                 TextColumn::make('type')
                     ->label('Tipo')
                     ->searchable(),
