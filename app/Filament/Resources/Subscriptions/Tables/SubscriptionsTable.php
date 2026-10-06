@@ -4,9 +4,13 @@ namespace App\Filament\Resources\Subscriptions\Tables;
 
 use App\Models\User;
 use Carbon\Carbon;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
+
+use function Pest\Laravel\options;
 
 class SubscriptionsTable
 {
@@ -46,7 +50,14 @@ class SubscriptionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('type')->label('Tipo')->options([
+                    'default' => 'Stripe',
+                    'paypal' => 'Paypal',
+                ]),
+                SelectFilter::make('stripe_status')->label('Estado')->options([
+                    'active' => 'Activa',
+                    'canceled' => 'Cancelada',
+                ]),
             ])
             ->recordActions([
                 //EditAction::make(),
@@ -55,6 +66,6 @@ class SubscriptionsTable
                 /*BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),*/
-            ])->modifyQueryUsing(fn($query) => $query->whereNotNull('stripe_id')->whereNotNull('plan_name'));
+            ])->modifyQueryUsing(fn($query) => $query->whereNotNull('stripe_id'));
     }
 }
