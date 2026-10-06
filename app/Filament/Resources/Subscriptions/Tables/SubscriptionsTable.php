@@ -55,6 +55,6 @@ class SubscriptionsTable
                 /*BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),*/
-            ])->modifyQueryUsing(fn($query) => $query->whereNotNull('stripe_id'));
+            ])->modifyQueryUsing(fn($query) => $query->whereNotNull('stripe_id')->whereNotNull('plan_name'));
     }
 }
