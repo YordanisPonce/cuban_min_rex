@@ -19,7 +19,7 @@ class SubscriptionResource extends Resource
 {
     protected static ?string $model = Subscription::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static string|BackedEnum|null $navigationIcon = Heroicon::Trophy;
 
     protected static ?string $navigationLabel = 'Suscripciones';
 
@@ -27,7 +27,7 @@ class SubscriptionResource extends Resource
 
     protected static ?int $navigationSort = 7;
 
-    protected static ?string $pluralModelLabel = 'Órdenes';
+    protected static ?string $pluralModelLabel = 'Suscripciones';
 
     protected static string|UnitEnum|null $navigationGroup = 'Gestión';
 

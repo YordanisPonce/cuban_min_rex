@@ -45,15 +45,19 @@ class ProfileController extends Controller
             $timeLeft = Carbon::parse($user->plan_expires_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW);
             $downloadLeft = $downloadLeft > 0 ? $downloadLeft : 0;
             if(!$user->plan_start_at) $downloadLeft = 'Ilímitadas';
+            $susc = $user->getActiveSuscription();
+            if($susc && $susc->extra_downloads > 0){
+                $downloadLeft += $susc->extra_downloads - $susc->cunsume_extra_downloads;
+            }
         }
         
 
         $recentActivity = $user->orders()->orderBy('created_at', 'desc')->take(5)->get()->transform( function($o){
             return [
                 'id' => $o->id,
-                'title' => $o->plan ? 'Compra/Renovación de Plan' : 'Compra de artículos',
-                'type' => $o->plan ? 1 : 0,
-                'description' => $o->plan ? $o->plan->name : $o->order_items->count().' artículos',
+                'title' => $o->plan ? 'Compra/Renovación de Plan' : ($o->downloadPack ? 'Compra de pack de descargas' : 'Compra de artículos'),
+                'type' => $o->plan ? 1 : ($o->downloadPack ? 2 : 0),
+                'description' => $o->plan ? $o->plan->name : ($o->downloadPack ? '+'. $o->downloadPack->extra_downloads .' descargas extras' : $o->order_items->count().' artículos'),
                 'status' => $o->status,
                 'amount' => $o->amount,
                 'date' => Carbon::parse($o->created_at)->diffForHumans(now(), CarbonInterface::DIFF_RELATIVE_TO_NOW)

@@ -14,6 +14,7 @@ class Order extends Model
         'user_id',
         'plan_id',
         'file_id',
+        'download_pack_id',
         'stripe_session_id',
         'stripe_payment_intent',
         'paypal_order_id',
@@ -46,6 +47,11 @@ class Order extends Model
     public function plan(): BelongsTo
     {
         return $this->belongsTo(Plan::class);
+    }
+
+    public function downloadPack(): BelongsTo
+    {
+        return $this->belongsTo(DownloadPack::class);
     }
 
     public function file(): BelongsTo

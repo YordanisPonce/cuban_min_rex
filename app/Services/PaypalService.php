@@ -270,6 +270,81 @@ class PaypalService
     }
 
     /**
+     * Crea una orden de un elemento en PayPal para un pedido dado.
+     * @param Order $order
+     * @param string|null $returnUrl
+     * @param string|null $cancelUrl
+     * @return array
+     */
+    public function createSingleOrder(Order $order, ?string $returnUrl = null, ?string $cancelUrl = null): array
+    {
+        $order->loadMissing('order_items.file', 'order_items.playlist', 'order_items.playlistItem');
+
+        $items = [];
+        $total = 0.0;
+
+        if ($order->downloadPack) {
+            $items[] = [
+                'name' => "Pack de " . $order->downloadPack->extra_downloads . " descargas",
+                'unit_amount' => [
+                    'currency_code' => 'USD',
+                    'value' => $this->normalizeAmount($order->downloadPack->price),
+                ],
+                'quantity' => 1,
+                'category' => 'DIGITAL_GOODS',
+            ];
+            $total += $order->downloadPack->price;
+        }
+
+        if ($items === []) {
+            throw new \Exception('La orden no tiene elementos para pagar.');
+        }
+
+        $returnUrl = $returnUrl ?: route('payment.ok2');
+        $cancelUrl = $cancelUrl ?: route('payment.ko');
+
+        $response = $this->client->post('/v2/checkout/orders', [
+            'intent' => 'CAPTURE',
+            'purchase_units' => [[
+                'reference_id' => (string) $order->id,
+                'description' => 'Compra de pack de recargas extras.',
+                'custom_id' => (string) $order->id,
+                'amount' => [
+                    'currency_code' => 'USD',
+                    'value' => $this->normalizeAmount($total),
+                    'breakdown' => [
+                        'item_total' => [
+                            'currency_code' => 'USD',
+                            'value' => $this->normalizeAmount($total),
+                        ],
+                    ],
+                ],
+                'items' => $items,
+            ]],
+            'application_context' => [
+                'brand_name' => config('app.name'),
+                'landing_page' => 'BILLING',
+                'user_action' => 'PAY_NOW',
+                'return_url' => $returnUrl,
+                'cancel_url' => $cancelUrl,
+            ],
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Error al crear la orden de compra en PayPal: ' . $response->body());
+        }
+
+        $payload = $response->json();
+
+        return [
+            'paypal_order_id' => $payload['id'] ?? null,
+            'status' => $payload['status'] ?? null,
+            'approval_url' => $this->extractApprovalLink($payload),
+            'response' => $payload,
+        ];
+    }
+
+    /**
      * Captura una orden de compra en PayPal.
      * @param string $orderId
      * @return array

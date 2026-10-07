@@ -86,9 +86,15 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::post('/payment/process', [PaymentController::class, 'process'])
             ->middleware('auth')
             ->name('payment.process');
+        Route::get('/stripe/process/pack/{id}', [PaymentController::class, 'processPack'])
+            ->middleware('auth')
+            ->name('stripe.process.pack');
         Route::post('/paypal/process', [PaypalController::class, 'process'])
             ->middleware('auth')
             ->name('paypal.process');
+        Route::get('/paypal/process/pack/{id}', [PaypalController::class, 'processPack'])
+            ->middleware('auth')
+            ->name('paypal.process.pack');
         Route::post('/paypal/subscribe', [PaypalController::class, 'subscribe'])
             ->middleware('auth')
             ->name('paypal.subscribe');

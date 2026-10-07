@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AviablePaymentMethod;
 use App\Models\Billing;
 use App\Models\Category;
+use App\Models\DownloadPack;
 use App\Models\File;
 use App\Models\Order;
 use Illuminate\Http\Request;
@@ -13,7 +14,8 @@ use App\Models\Setting;
 use App\Models\Subscription;
 use App\Models\User;
 use App\Notifications\CUPPaymentNotification;
-use App\Services\ElToqueService;
+use Stripe\Stripe;
+use Stripe\Checkout\Session as StripeSession;
 use App\Services\PaypalService;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -120,6 +122,90 @@ class PaymentController extends Controller
         }
     }
 
+    public function processPack(Request $request, String $id)
+    {
+        try {
+
+            if(!auth()->user()->hasActivePlan()){
+                throw new \Exception('Debes tener un plan activo para comprar packs de descargas.');
+            }
+
+            $pack = DownloadPack::findOrFail($id);
+
+            if (!$pack) {
+                throw new \Exception('El pack de descargas no existe.');
+            }
+
+            $order = new Order();
+            $order->user_id = auth()->user()?->id;
+            $order->download_pack_id = $pack->id;
+            $order->amount = $pack->price;
+            $order->status = 'pending';
+            $order->save();
+
+            $line_items = [];
+
+            $price = (float) $pack->price;
+            if ($price <= 0) {
+                throw new \Exception('El precio del pack de descargas no es válido.');
+            }
+
+            $amountInCents = (int) round($price * 100);
+
+            $line_item = [
+                'price_data' => [
+                    'currency' => 'usd',
+                    'product_data' => [
+                        'name' => (string) "Pack de $pack->extra_downloads descargas.",
+                    ],
+                    'unit_amount' => $amountInCents,
+                ],
+                'quantity' => 1,
+            ];
+
+            array_push($line_items, $line_item);
+
+            Stripe::setApiKey(config('services.stripe.secret_key'));
+
+            $metadata = [
+                'user_id' => auth()->check() ? (string) auth()->id() : null,
+                'order_id' => (string) $order->id,
+            ];
+
+            // Crea la sesión de Checkout
+            $session = StripeSession::create([
+                'mode' => 'payment',
+                'payment_method_types' => ['card'],
+                'line_items' => $line_items,
+                'success_url' => route('payment.ok2') . '?session_id={CHECKOUT_SESSION_ID}',
+                'cancel_url' => route('payment.ko'),
+
+                // Si no manejas customers en Stripe, usa el email
+                'customer_email' => optional(auth()->user())->email,
+
+                // Metadatos en la Session (útil para búsqueda rápida)
+                'metadata' => $metadata,
+
+                // Metadatos en el PaymentIntent (bajan al cargo)
+                'payment_intent_data' => [
+                    'metadata' => $metadata,
+                ],
+            ]);
+
+            return response()->json(['url' => $session->url]);
+        } catch (\Stripe\Exception\ApiErrorException $e) {
+            report($e);
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 500);
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json([
+                'error' => 'No se pudo iniciar el pago.',
+            ], 500);
+        }
+    }
+
     public function cancelSubscription()
     {
         $user = auth()->user();
@@ -170,18 +256,18 @@ class PaymentController extends Controller
         });
 
         return redirect()->back()->with('success', 'Membresia cancelada satisfactoriamente');
-
     }
 
-    public function showPaymentHistory(string $userId) {
+    public function showPaymentHistory(string $userId)
+    {
 
         return view('filament.pages.user-payments', [
             "payments" => User::find($userId)->payments(),
         ]);
-
     }
 
-    public function showCUPForm($fileId) {
+    public function showCUPForm($fileId)
+    {
         $file = File::find($fileId);
         if (!$file) {
             abort(404);
@@ -198,7 +284,8 @@ class PaymentController extends Controller
         ]);
     }
 
-    function processCUPPayment(Request $request, string $fileId) {
+    function processCUPPayment(Request $request, string $fileId)
+    {
 
         try {
             $file = File::find($fileId);
@@ -236,7 +323,7 @@ class PaymentController extends Controller
             return view('payment.cup_payment_confirm', [
                 'categories' => Category::where('show_in_landing', true)->get(),
                 'djs' => User::where('role', 'worker')->orderBy('name')->get(),
-                'recentDjs' => User::whereNot('role','user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
+                'recentDjs' => User::whereNot('role', 'user')->orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {
                     return $item->files()->count() > 0;
                 }),
                 'recentCategories' => Category::orderBy('created_at', 'desc')->take(5)->get()->filter(function ($item) {

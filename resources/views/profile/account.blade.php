@@ -11,12 +11,12 @@
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/css/profile.css') }}" />
     <style>
-        @media(max-width: 760px){
-            .act-link span{
+        @media(max-width: 760px) {
+            .act-link span {
                 display: none;
             }
         }
-        </style>
+    </style>
 @endpush
 
 @section('content')
@@ -26,8 +26,10 @@
 
             <!-- COVER / PROFILE HEADER -->
             <div class="profile-cover">
-                <div class="profile-cover-overlay" style="
-    background: linear-gradient(135deg, rgba(15, 13, 11, .5), rgba(15, 13, 11, .3)), url('{{ $user->cover ?? $user->photo ?? config('app.logo_alter') }}') center/cover;"></div>
+                <div class="profile-cover-overlay"
+                    style="
+    background: linear-gradient(135deg, rgba(15, 13, 11, .5), rgba(15, 13, 11, .3)), url('{{ $user->cover ?? ($user->photo ?? config('app.logo_alter')) }}') center/cover;">
+                </div>
                 <div class="profile-header">
                     <div class="avatar-wrap">
                         <img src="{{ $user->photo ?? config('app.logo_alter') }}" alt="Avatar">
@@ -49,14 +51,23 @@
                         <h1>{{ $user->name }}</h1>
                         <div class="handle"> </div>
                         <div class="profile-meta">
-                            <span><i class="fas fa-calendar"></i>Miembro desde {{ Carbon::parse($user->created_at)->format('M \d\e\ Y') }}</span>
+                            <span><i class="fas fa-calendar"></i>Miembro desde
+                                {{ Carbon::parse($user->created_at)->format('M \d\e\ Y') }}</span>
                         </div>
                     </div>
                 </div>
-                <a class="edit-btn" href="{{ route('profile.billing') }}"><i class="fas fa-pen"></i> <span>Editar Perfil</span></a>
-                @if($user->role != 'user') <a class="panel-btn" href="{{ route('filament.admin.pages.dashboard') }}"><i class="fas fa-dashboard"></i> <span>Panel de Control</span></a> @endif
-                @if($user->hasActivePlan() && $user->current_plan_id) <a class="trash-btn" onclick="cancelSuscription()"><i class="fas fa-trash"></i> <span>Cancelar Suscripción</span></a> @endif
-                <a class="logout-btn" href="{{ route('logout-user') }}"><i class="fas fa-right-from-bracket"></i> <span>Cerrar Sesión</span></a>
+                <a class="edit-btn" href="{{ route('profile.billing') }}"><i class="fas fa-pen"></i> <span>Editar
+                        Perfil</span></a>
+                @if ($user->role != 'user')
+                    <a class="panel-btn" href="{{ route('filament.admin.pages.dashboard') }}"><i
+                            class="fas fa-dashboard"></i> <span>Panel de Control</span></a>
+                @endif
+                @if ($user->hasActivePlan() && $user->current_plan_id)
+                    <a class="trash-btn" onclick="cancelSuscription()"><i class="fas fa-trash"></i> <span>Cancelar
+                            Suscripción</span></a>
+                @endif
+                <a class="logout-btn" href="{{ route('logout-user') }}"><i class="fas fa-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span></a>
             </div>
 
             <div class="stats-row">
@@ -85,9 +96,10 @@
                     <div class="stat-icon"><i class="fas fa-award"></i></div>
                     <div>
                         <div class="stat-value">{{ $currentPlan ?? 'Sin Plan Activo' }}</div>
-                        <div class="stat-label">SUSCRIPCIÓN ACTIVA 
+                        <div class="stat-label">SUSCRIPCIÓN ACTIVA
                             @if ($currentPlan && auth()->user()->current_plan_id)
-                                <a style="color: red; cursor: pointer" onclick="cancelSuscription()">[Cancelar Suscripción]</a>
+                                <a style="color: red; cursor: pointer" onclick="cancelSuscription()">[Cancelar
+                                    Suscripción]</a>
                             @elseif($currentPlan && !auth()->user()->current_plan_id)
                                 <a style="color: red;">(Cancelada)</a>
                             @endif
@@ -97,15 +109,22 @@
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-clock"></i></div>
                     <div>
-                        <div class="stat-value">{{ $user->hasActivePLan() ? 'Vence '.$timeLeft : 'Sin Plan Activo' }}</div>
+                        <div class="stat-value">{{ $user->hasActivePLan() ? 'Vence ' . $timeLeft : 'Sin Plan Activo' }}</div>
                         <div class="stat-label">TIEMPO RESTANTE DE SUSCRIPCIÓN</div>
                     </div>
                 </div>
                 <div class="stat-card">
                     <div class="stat-icon"><i class="fas fa-download"></i></div>
                     <div>
-                        <div class="stat-value">{{ $user->hasActivePLan() ? $downloadLeft : 'Sin Plan Activo' }}</div>
-                        <div class="stat-label">DESCARGAS RESTANTES</div>
+                        <div class="stat-value">
+                            {{ $user->hasActivePLan() ? $downloadLeft : 'Sin Plan Activo' }}
+                        </div>
+                        <div class="stat-label">DESCARGAS RESTANTES
+                            @if ($user->hasActivePLan() && $downloadLeft <= 6)
+                                <a class="text-primary" href="{{ route('plans') }}"
+                                    style="padding: 5px; margin: 5px;">[<i class="fas fa-plus"></i> Aumentar]</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
@@ -120,14 +139,19 @@
                             <i class="fas fa-envelope"></i>
                             <div>
                                 <div class="info-label">Email</div>
-                                <div class="info-value">{{ $user->email }} @if($user->email_verified_at) <span class="verified">✓ Verificado</span> @endif</div>
+                                <div class="info-value">{{ $user->email }} @if ($user->email_verified_at)
+                                        <span class="verified">✓ Verificado</span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                         <div class="info-item">
                             <i class="fa-brands fa-paypal"></i>
                             <div>
                                 <div class="info-label">PayPal</div>
-                                <div class="info-value">{{ $user->phone ?? 'Sin Establecer' }} <i class="fas fa-info-circle" style="font-size: 0.7rem; cursor: pointer" title="Necesario para monetizar"></i></div>
+                                <div class="info-value">{{ $user->phone ?? 'Sin Establecer' }} <i
+                                        class="fas fa-info-circle" style="font-size: 0.7rem; cursor: pointer"
+                                        title="Necesario para monetizar"></i></div>
                             </div>
                         </div>
                     </div>
@@ -135,7 +159,7 @@
 
                 <div class="section-card">
                     <div class="section-header">
-                        <h3>Datos de Facturación    </h3>
+                        <h3>Datos de Facturación </h3>
                     </div>
                     <div class="info-list">
                         <div class="info-item">
@@ -230,19 +254,30 @@
                             <div class="activity-item">
                                 <div>
                                     <div class="activity-icon">
-                                        @if ($activity['type'] === 1) 
+                                        @if ($activity['type'] === 1)
                                             <i class="fas fa-crown"></i>
                                         @else
-                                            <i class="fas fa-download"></i>
+                                            @if ($activity['type'] === 2)
+                                                <i class="fas fa-gift"></i>
+                                            @else
+                                                <i class="fas fa-download"></i>
+                                            @endif
                                         @endif
                                     </div>
-                                    <div class="act-text">{{ $activity['title'] }}<br><strong>{{ $activity['description'] }}</strong></div>
+                                    <div class="act-text">
+                                        {{ $activity['title'] }}<br><strong>{{ $activity['description'] }}</strong></div>
                                 </div>
                                 <div class="act-price">
-                                    <div class="act-amount"><i class="fas fa-dollar-sign"></i> {{ number_format($activity['amount'], 2) }}</div>
-                                    <div class="act-status {{ $activity['status'] === 'paid' ? 'success' : ( $activity['status'] === 'pending' ? '' : 'danger' ) }}"> {{ $activity['status'] === 'paid' ? 'Completada' : ( $activity['status'] === 'pending' ? 'Pendiente' : 'Fallida' ) }}</div>
+                                    <div class="act-amount"><i class="fas fa-dollar-sign"></i>
+                                        {{ number_format($activity['amount'], 2) }}</div>
+                                    <div
+                                        class="act-status {{ $activity['status'] === 'paid' ? 'success' : ($activity['status'] === 'pending' ? '' : 'danger') }}">
+                                        {{ $activity['status'] === 'paid' ? 'Completada' : ($activity['status'] === 'pending' ? 'Pendiente' : 'Fallida') }}
+                                    </div>
                                     <div class="act-time">{{ $activity['date'] }}</div>
-                                    <div class="act-link"><a class="btn btn-primary" href="{{ route( 'order.download', $activity['id']) }}"><i class="fa fa-eye"></i> <span>Ver detalles</span></a></div>
+                                    <div class="act-link"><a class="btn btn-primary"
+                                            href="{{ route('order.download', $activity['id']) }}"><i
+                                                class="fa fa-eye"></i> <span>Ver detalles</span></a></div>
                                 </div>
                             </div>
                         @endforeach
@@ -256,19 +291,19 @@
 
 @push('scripts')
     <script>
-        function cancelSuscription(){
+        function cancelSuscription() {
             Swal.fire({
-                    title: '¿Cancelar Suscripción?',
-                    text: "Si cancelas la suscripción mantendras los beneficios hasta que termine su plazo, sin embargo no se renovará.",
-                    icon: 'danger',
-                    showCancelButton: true,
-                    confirmButtonText: 'Sí, continuar',
-                    cancelButtonText: 'No, cancelar'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        window.location.href = "{{ route('payment.cancelSubscription') }}";
-                    }
-                });
+                title: '¿Cancelar Suscripción?',
+                text: "Si cancelas la suscripción mantendras los beneficios hasta que termine su plazo, sin embargo no se renovará.",
+                icon: 'danger',
+                showCancelButton: true,
+                confirmButtonText: 'Sí, continuar',
+                cancelButtonText: 'No, cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    window.location.href = "{{ route('payment.cancelSubscription') }}";
+                }
+            });
         }
     </script>
     @isset($error)

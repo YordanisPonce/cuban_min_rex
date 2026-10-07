@@ -988,14 +988,15 @@ class ApiController extends Controller
         $orders->transform(function ($order) {
             return [
                 'id' => $order->paypal_order_id ?? $order->stripe_payment_intent ?? "#ORD-$order->id",
-                'title' => $order->plan_id ? 'Adquirir/Renovar Suscripción' : 'Compra de Artículos',
-                'description' =>  $order->plan_id ? "Plan ".$order->plan->name : $order->order_items->count()." artículos",
+                'title' => $order->plan_id ? 'Adquirir/Renovar Suscripción' : ($order->downloadPack ? 'Paquete de Descargas' : 'Compra de Artículos'),
+                'description' =>  $order->plan_id ? "Plan ".$order->plan->name : ($order->downloadPack ? $order->downloadPack->extra_downloads .' descargas' : $order->order_items->count()." artículos"),
                 'created_at' => Carbon::parse($order->created_at)->translatedFormat('j \d\e F \d\e Y'),
                 'amount' => $order->amount,
                 'status' => $order->status === 'paid' ? 'completed' : $order->status,
                 'payment_method' => $order->paypal_order_id ? 'paypal' : 'card',
                 'referal_id' => "$order->id",
                 'has_plan' => $order->plan_id !== null,
+                'has_download_pack' => $order->download_pack_id !== null,
             ];
         });
         return response()->json($orders);

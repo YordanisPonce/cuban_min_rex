@@ -161,15 +161,23 @@ class PaypalWebhookController extends Controller
                     $order->paid_at = Carbon::now();
                     $order->save();
 
-                    $this->sendCustomerPurchaseNotification($order, $resource);
-                    $this->registerOrderSales($order);
-
-                    
+                    if($order->downloadPack){
+                        $user = $order->user;
+                        if($user){
+                            $susc = $user->getActiveSuscription();
+                            $susc->update([
+                                'extra_downloads' => $susc->extra_downloads + $order->downloadPack->extra_downloads
+                            ]);
+                        }
+                    } else {
+                        $this->sendCustomerPurchaseNotification($order, $resource);
+                        $this->registerOrderSales($order);
+                    }
 
                     NotificationController::sendBuyNtf(
                         $order->user_id,
                         "Pago Verificado",
-                        "Su pago ha sido verificado y procesado correctamente. Puede descargar su archivo desde la bandeja de su correo.",
+                        "Su pago ha sido verificado y procesado correctamente.",
                     );
                 
                 } else {
@@ -315,7 +323,7 @@ class PaypalWebhookController extends Controller
                 if($user && $plan){
                     $user->current_plan_id = $plan->id;
                     $user->plan_start_at = Carbon::now();
-                    $user->plan_expires_at = Carbon::now()->addDays(5);
+                    $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
                     $user->save();
                 }
 

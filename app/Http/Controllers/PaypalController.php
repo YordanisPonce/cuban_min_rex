@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AviablePaymentMethod;
 use App\Models\Billing;
 use App\Models\Cart;
+use App\Models\DownloadPack;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Plan;
@@ -17,18 +18,16 @@ use Illuminate\Support\Facades\Log;
 
 class PaypalController extends Controller
 {
-    public function __construct(private readonly PaypalService $paypalService)
-    {
-    }
+    public function __construct(private readonly PaypalService $paypalService) {}
 
     public function process(Request $request): JsonResponse
     {
         $isPaypalAviable = AviablePaymentMethod::firstOrCreate([])->paypal;
 
-        if(!$isPaypalAviable) {
+        if (!$isPaypalAviable) {
             abort(403);
         }
-    
+
         $request->validate([
             'plan_id' => 'required|integer|exists:plans,id',
         ]);
@@ -66,10 +65,10 @@ class PaypalController extends Controller
     {
         $isPaypalAviable = AviablePaymentMethod::firstOrCreate([])->paypal;
 
-        if(!$isPaypalAviable) {
+        if (!$isPaypalAviable) {
             abort(403);
         }
-        
+
         $cart = Cart::get_current_cart();
 
         if (!$cart || $cart->cart_items()->count() === 0) {
@@ -124,14 +123,59 @@ class PaypalController extends Controller
         ]);
     }
 
+    public function processPack(Request $request, String $id): JsonResponse
+    {
+        $isPaypalAviable = AviablePaymentMethod::firstOrCreate([])->paypal;
+
+        if (!$isPaypalAviable) {
+            abort(403);
+        }
+
+        if (!auth()->user()->hasActivePlan()) {
+            throw new \Exception('Debes tener un plan activo para comprar packs de descargas.');
+        }
+
+        $pack = DownloadPack::findOrFail($id);
+
+        if (!$pack) {
+            throw new \Exception('El pack de descargas no existe.');
+        }
+
+        $user = $request->user();
+
+        $order = Order::create([
+            'user_id' => $user?->id,
+            'amount' => $pack->price,
+            'download_pack_id' => $pack->id,
+            'status' => 'pending',
+            'currency' => 'USD',
+        ]);
+
+        $checkout = $this->paypalService->createSingleOrder(
+            $order,
+            route('paypal.return', ['order' => $order->id]),
+            route('paypal.cancel', ['order' => $order->id])
+        );
+
+        $order->forceFill([
+            'paypal_order_id' => $checkout['paypal_order_id'],
+        ])->save();
+
+        return response()->json([
+            'order_id' => $order->id,
+            'url' => $checkout['approval_url'],
+            'status' => $checkout['status'],
+        ]);
+    }
+
     public function subscribe(Request $request): JsonResponse
     {
         $isPaypalAviable = AviablePaymentMethod::firstOrCreate([])->paypal;
 
-        if(!$isPaypalAviable) {
+        if (!$isPaypalAviable) {
             abort(403);
         }
-    
+
         $request->validate([
             'email' => 'required|email',
             'plan_id' => 'required|integer|exists:plans,id',

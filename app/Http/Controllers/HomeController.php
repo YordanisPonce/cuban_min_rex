@@ -9,6 +9,7 @@ use App\Models\Banner;
 use App\Models\Cart;
 use App\Models\Category;
 use App\Models\Collection;
+use App\Models\DownloadPack;
 use App\Models\File;
 use App\Models\Follow;
 use App\Models\NotificationSettings;
@@ -426,6 +427,8 @@ class HomeController extends Controller
 
         $plans = Plan::orderBy('price')->get();
 
+        $packs = DownloadPack::where('active', true)->get();
+
         $banners = Banner::where('active', true)->pluck('path');
 
         if($banners->count() > 0) 
@@ -444,7 +447,7 @@ class HomeController extends Controller
 
         $index = 7;
 
-        return view('plans', compact('index', 'plans', 'banners', 'activePlan'));
+        return view('plans', compact('index', 'plans', 'packs', 'banners', 'activePlan'));
     }
 
     public function djs()

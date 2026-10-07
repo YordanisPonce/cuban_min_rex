@@ -95,6 +95,15 @@
                                     <div class="purchase-item-price">$ {{ number_format($order->plan->price, 2) }}</div>
                                 </div>
                             </div>
+                        @elseif ($order->downloadPack)
+                            <div class="purchase-item">
+                                <div class="purchase-item-info">
+                                    <h4>Pack de +{{ $order->downloadPack->extra_downloads }} descargas extras.</h4>
+                                </div>
+                                <div class="purchase-item-right">
+                                    <div class="purchase-item-price">$ {{ number_format($order->downloadPack->price, 2) }}</div>
+                                </div>
+                            </div>
                         @endif
                     @endif
                 </div>
