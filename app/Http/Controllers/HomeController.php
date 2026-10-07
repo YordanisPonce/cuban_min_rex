@@ -427,7 +427,7 @@ class HomeController extends Controller
 
         $plans = Plan::orderBy('price')->get();
 
-        $packs = DownloadPack::where('active', true)->get();
+        $packs = DownloadPack::where('active', true)->orderBy('price')->get();
 
         $banners = Banner::where('active', true)->pluck('path');
 
