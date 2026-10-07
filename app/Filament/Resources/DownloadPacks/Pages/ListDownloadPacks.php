@@ -13,7 +13,7 @@ class ListDownloadPacks extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            CreateAction::make()->visible(fn() => auth()->user()->role != 'admin'),
+            CreateAction::make()->visible(fn() => auth()->user()->role === 'admin'),
         ];
     }
 }
