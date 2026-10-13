@@ -6,6 +6,7 @@ use App\Models\Billing;
 use App\Models\User;
 use Carbon\Carbon;
 use Carbon\CarbonInterface;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -239,9 +240,11 @@ class ProfileController extends Controller
     /**
      * Delete the user's account.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): JsonResponse
     {
         $user = User::find(Auth::user()->id);
+
+        if(!$user) abort(404);
 
         Auth::logout();
 
@@ -250,7 +253,7 @@ class ProfileController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return response()->json(['success' => 'Cuenta Eliminada']);
     }
 
     public function getBillingLink(Request $request)

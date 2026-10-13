@@ -92,7 +92,8 @@
 @endpush
 
 @section('content')
-    <form id="form" class="page-container" style="margin-top: 50px;" action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
+    <form id="form" class="page-container" style="margin-top: 50px;" action="{{ route('profile.update') }}" method="POST"
+        enctype="multipart/form-data">
         @csrf
         <!-- Header -->
         <div class="page-header">
@@ -101,7 +102,8 @@
                 <h1>Editar Perfil</h1>
             </div>
             <div>
-                <button id="save" class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar cambios</button>
+                <button id="save" class="btn btn-primary" type="submit"><i class="fas fa-save"></i> Guardar
+                    cambios</button>
             </div>
         </div>
 
@@ -156,7 +158,8 @@
                     </div>
                     <div class="form-group">
                         <label>Email <span class="required">*</span></label>
-                        <input type="email" value="{{ $user->email }}" placeholder="tu@email.com" name="email" readonly>
+                        <input type="email" value="{{ $user->email }}" placeholder="tu@email.com" name="email"
+                            readonly>
                     </div>
                     <div class="form-group">
                         <label>Email PayPal</label>
@@ -255,7 +258,6 @@
                     </div>
                 </div>
             </div>
-            {{-- 
             <div class="form-section danger-zone">
                 <div class="form-section-title"><i class="fas fa-exclamation-triangle" style="margin-right:8px"></i>Zona
                     de
@@ -266,10 +268,9 @@
                         <h4>Eliminar cuenta permanentemente</h4>
                         <p>Se borrarán todos tus datos. Esta acción no se puede deshacer.</p>
                     </div>
-                    <button class="btn-sm btn-outline-sm">Eliminar</button>
+                    <button id="delete-btn" type="button" class="btn-sm btn-outline-sm">Eliminar</button>
                 </div>
             </div>
-            --}}
         </div>
     </form>
 @endsection
@@ -379,6 +380,59 @@
         document.getElementById('form').addEventListener('submit', function(e) {
             //e.preventDefault();
             document.getElementById('wloader').style.display = 'flex';
+        });
+
+        document.getElementById('delete-btn').addEventListener('click', () => {
+            $rute = "{{ route('profile.destroy') }}";
+            Swal.fire({
+                title: '¿Eliminar cuenta?',
+                text: "Estás a punto de eliminar tu cuenta, esta acción es irreversible. Una vez eliminada no se podra volver a acceder a ella. Todos sus datos serán eliminados al continuar.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#ff0000',
+                confirmButtonText: 'Eliminar Cuenta',
+                cancelButtonText: 'Cancelar',
+                showCloseButton: true
+            }).then((result) => {
+                document.querySelector('#wloader').style.display = 'flex';
+                if (result.isConfirmed) {
+                    fetch($rute, {
+                        method: 'GET',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Access-Control-Allow-Origin': '*',
+                        }
+                    })
+                    .then(async res => {
+                        let data;
+
+                        try {
+                            data = await res.json();
+                        } catch {
+                            document.querySelector('#wloader').style.display =
+                                'none';
+                            throw new Error("Respuesta inesperada del servidor");
+                        }
+
+                        if (res.ok) {
+                            window.location.href = "{{ route('home') }}";
+                        } else {
+                            document.querySelector('#wloader').style.display =
+                                'none';
+                            Swal.fire("Error", data.error ?? '',
+                                "error");
+                        }
+                    })
+                    .catch(err => {
+                        document.querySelector('#wloader').style.display = 'none';
+                        Swal.fire("Error", err.message, "error");
+                    });
+                } else {
+                    document.querySelector('#wloader').style.display =
+                                'none';
+                }
+            });
         });
     </script>
     @isset($error)
