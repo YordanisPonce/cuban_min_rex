@@ -42,27 +42,27 @@ class FileForm
                     ->required(),
                 TextInput::make('musical_note')
                     ->label('Nota'),
-                FileUpload::make('poster')
+                /*FileUpload::make('poster')
                     ->label('Subir Poster')
                     ->image()
                     ->disk('s3')
                     ->directory('images')
-                    ->columnSpanFull(),
-                FileUpload::make('file')
+                    ->columnSpanFull(),*/
+                /*FileUpload::make('file')
                     ->label('Subir vista previa del archivo')
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
                     ->directory('files')
-                    ->columnSpanFull(),
+                    ->columnSpanFull(),*/
 
-                FileUpload::make('original_file')
+                /*FileUpload::make('original_file')
                     ->label('Subir archivo completo')
                     ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
                     ->required()
                     ->disk('s3')
                     ->directory('files')
-                    ->columnSpanFull(),
+                    ->columnSpanFull(),*/
 
                 Select::make('sections')
                     ->label('Secciones a mostrar')
