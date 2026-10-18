@@ -158,6 +158,18 @@
             <div class="cards-grid" id="remixes-grid"></div>
         </div>
     </section>
+
+    <section class="section">
+        <div class="container">
+            @if($exclusives->count() > 0)
+            <div class="section-header">
+                <div class="section-title"><i class="fa-solid fa-lock"></i> CONTENIDO <span class="accent">EXCLUSIVO</span>
+                </div><a href="{{ route('exclusives') }}" class="btn-outline">VER MÁS »</a>
+            </div>
+            @endif
+            <div class="cards-grid" id="exclusives-grid"></div>
+        </div>
+    </section>
     
     <section class="section">
         <div class="container">
@@ -197,18 +209,6 @@
                 </div><a href="{{ route('remixes', ['genre' => 'Mix']) }}" class="btn-outline">VER MÁS »</a>
             </div>
             <div class="cards-grid" id="mix-grid"></div>
-        </div>
-    </section>
-
-    <section class="section">
-        <div class="container">
-            @if($exclusives->count() > 0)
-            <div class="section-header">
-                <div class="section-title"><i class="fa-solid fa-lock"></i> CONTENIDO <span class="accent">EXCLUSIVO</span>
-                </div><a href="{{ route('exclusives') }}" class="btn-outline">VER MÁS »</a>
-            </div>
-            @endif
-            <div class="cards-grid" id="exclusives-grid"></div>
         </div>
     </section>
     
