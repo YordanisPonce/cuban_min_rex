@@ -27,25 +27,42 @@ class EditFile extends EditRecord
                     \Filament\Forms\Components\FileUpload::make('poster')
                         ->label('Nuevo Poster')
                         ->image()
-                        ->required()
-                        ->disk('s3')
+                        ->disk('public')
                         ->directory('images')
-                        ->visibility('public'),
+                        ->required(),
                 ])
                 ->action(function (array $data) {
+
                     try {
                         $file = $this->record;
                         if ($file->poster) {
                             try {
-                                $imagePath = Storage::disk('s3')->get($file->poster);
-                                Storage::disk('s3')->delete($imagePath);
+                                $oldPath = Storage::disk('s3')->get($file->poster);
+                                Storage::disk('s3')->delete($oldPath);
                             } catch (\Exception $e) {
                                 Notification::make()->body('No se pudo eliminar el poster anterior de AWS S3: ' . $e->getMessage())->warning()->persistent()->send();
                             }
                         }
-                        $file->poster = $data['poster'];
-                        $file->save();
-                        Notification::make()->body('Poster cambiado correctamente.')->success()->persistent()->send();
+                        if ($data['poster']) {
+                            $imagePath = Storage::disk('public')->path($data['poster']);
+                            $manager = new ImageManager(Driver::class);
+                            $image = $manager->read($imagePath);
+                            $encoded = $image->encode(new WebpEncoder(quality: 65));
+                            $webpPath = 'images/' . Str::random() . '.webp';
+                            $encoded->save(Storage::disk('public')->path($webpPath));
+
+                            $stream = fopen(Storage::disk('public')->path($webpPath), 'r');
+                            Storage::disk('s3')->writeStream($webpPath, $stream);
+                            if (is_resource($stream))
+                                fclose($stream);
+
+                            Storage::disk('public')->delete($webpPath);
+                            Storage::disk('public')->delete($imagePath);
+
+                            $file->poster = $webpPath;
+                            $file->save();
+                            Notification::make()->body('Poster cambiado correctamente.')->success()->persistent()->send();
+                        }
                     } catch (\Exception $e) {
                         Notification::make()->body('Error al cambiar el poster: ' . $e->getMessage())->danger()->persistent()->send();
                     }
