@@ -112,6 +112,23 @@ class UsersTable
             )
             ->recordActions([
                 EditAction::make()->label('Editar')->visible(fn() => auth()->user()?->role === 'admin'),
+                Action::make('impersonate')
+                    ->label('Impersonar')
+                    ->icon('heroicon-o-user-circle')
+                    ->color('warning')
+                    ->visible(fn(User $record) => auth()->user()?->role === 'admin'
+                        && $record->role !== 'admin'
+                        && !session()->has(\App\Http\Controllers\ImpersonationController::SESSION_KEY))
+                    ->requiresConfirmation()
+                    ->modalHeading('¿Impersonar usuario?')
+                    ->modalDescription(fn(User $record) => "Vas a iniciar sesión como {$record->name} en el sitio. Podrás volver a tu cuenta desde el banner superior.")
+                    ->modalSubmitActionLabel('Impersonar')
+                    ->modalCancelActionLabel('Cancelar')
+                    ->action(function (User $record) {
+                        app(\App\Http\Controllers\ImpersonationController::class)->start(request(), $record);
+
+                        return redirect()->route('home');
+                    }),
                 Action::make('changePassword')->visible(fn() => auth()->user()?->role === 'admin')
                     ->modalSubmitActionLabel('Cambiar')
                     ->modalCancelActionLabel('Cancelar')

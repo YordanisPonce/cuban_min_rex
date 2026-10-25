@@ -135,6 +135,16 @@
                 style="display: none; visibility: hidden"></iframe></noscript>
     @endif
 
+    @if (session()->has(\App\Http\Controllers\ImpersonationController::SESSION_KEY) && auth()->check())
+        <div style="position: fixed; top: 0; left: 0; right: 0; z-index: 99999; background: #f59e0b; color: #000; padding: 6px 12px; display: flex; justify-content: center; align-items: center; gap: 12px; font-size: 14px;">
+            <span>Estás viendo el sitio como <strong>{{ auth()->user()->name }}</strong></span>
+            <form method="POST" action="{{ route('impersonate.leave') }}" style="margin: 0">
+                @csrf
+                <button type="submit" style="background: #000; color: #fff; border: 0; border-radius: 4px; padding: 3px 10px; cursor: pointer">Salir de la impersonación</button>
+            </form>
+        </div>
+    @endif
+
     @php
         $settings = \App\Models\Setting::first();
     @endphp

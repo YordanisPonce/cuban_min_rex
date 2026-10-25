@@ -264,3 +264,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
 
     require __DIR__ . '/auth.php';
 });
+
+Route::middleware('auth')->group(function () {
+    Route::post('/admin/impersonate/leave', [\App\Http\Controllers\ImpersonationController::class, 'stop'])->name('impersonate.leave');
+});
