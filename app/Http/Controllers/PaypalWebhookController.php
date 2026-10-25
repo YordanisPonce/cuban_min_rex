@@ -18,9 +18,7 @@ use Illuminate\Support\Str;
 
 class PaypalWebhookController extends Controller
 {
-    public function __construct(private readonly PaypalService $paypalService)
-    {
-    }
+    public function __construct(private readonly PaypalService $paypalService) {}
 
     public function handle(Request $request)
     {
@@ -155,15 +153,15 @@ class PaypalWebhookController extends Controller
                     'event_type' => $eventType,
                 ]);
 
-                if($resource['status'] === 'COMPLETED'){
+                if ($resource['status'] === 'COMPLETED') {
 
                     $order->status = 'paid';
                     $order->paid_at = Carbon::now();
                     $order->save();
 
-                    if($order->downloadPack){
+                    if ($order->downloadPack) {
                         $user = $order->user;
-                        if($user){
+                        if ($user) {
                             $susc = $user->getActiveSuscription();
                             $susc->update([
                                 'extra_downloads' => $susc->extra_downloads + $order->downloadPack->extra_downloads
@@ -179,7 +177,6 @@ class PaypalWebhookController extends Controller
                         "Pago Verificado",
                         "Su pago ha sido verificado y procesado correctamente.",
                     );
-                
                 } else {
                     Log::warning('PayPal webhook purchase not completed', [
                         'order_id' => $order->id,
@@ -187,7 +184,7 @@ class PaypalWebhookController extends Controller
                         'event_type' => $eventType,
                         'status' => $resource['status'],
                     ]);
-                    if($resource['status'] === 'DENIED'){
+                    if ($resource['status'] === 'DENIED') {
                         $order->status = 'failed';
                         $order->save();
 
@@ -233,7 +230,7 @@ class PaypalWebhookController extends Controller
                     return response()->json(['status' => 'already_processed']);
                 }
 
-                if($resource['state'] === 'completed') {
+                if ($resource['state'] === 'completed') {
                     Log::info('PayPal webhook subscription payment confirmed', [
                         'order_id' => $order->id,
                         'subscription_id' => $subscriptionId,
@@ -256,7 +253,7 @@ class PaypalWebhookController extends Controller
                         'event_type' => $eventType,
                         'state' => $resource['state'],
                     ]);
-                    if($resource['state'] === 'denied'){
+                    if ($resource['state'] === 'denied') {
                         $order->status = 'failed';
                         $order->save();
 
@@ -320,11 +317,24 @@ class PaypalWebhookController extends Controller
                 // Activar trial de 5 dias en lo que paypal confirma el pago
                 $user = User::find($order->user_id);
                 $plan = Plan::find($order->plan_id);
-                if($user && $plan){
+                if ($user && $plan) {
                     $user->current_plan_id = $plan->id;
                     $user->plan_start_at = Carbon::now();
                     $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
                     $user->save();
+
+                    Subscription::updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'type' => 'paypal',
+                            'stripe_id' => $order->paypal_subscription_id ?? $order->paypal_order_id,
+                            'stripe_status' => 'ACTIVE',
+                            'plan_name' => $plan->name,
+                            'plan_price' => $plan->price,
+                            'max_downloads' => $plan->downloads,
+                            'ends_at' => Carbon::now()->addMonths($plan->duration_months),
+                        ]
+                    );
                 }
 
                 NotificationController::sendSistemNtf(
@@ -418,8 +428,8 @@ class PaypalWebhookController extends Controller
                 'type' => 'paypal',
                 'stripe_id' => $order->paypal_subscription_id ?? $order->paypal_order_id,
                 'stripe_status' => 'ACTIVE',
-                'plan_name' => $plan->name, 
-                'plan_price' => $plan->price, 
+                'plan_name' => $plan->name,
+                'plan_price' => $plan->price,
                 'max_downloads' => $plan->downloads,
                 'ends_at' => Carbon::now()->addMonths($plan->duration_months),
             ]

@@ -86,9 +86,9 @@ class StripeWebhookController extends CashierController
                 $order->customer_email = $email;
                 $order->save();
 
-                if($order->downloadPack){
+                if ($order->downloadPack) {
                     $user = $order->user;
-                    if($user){
+                    if ($user) {
                         $susc = $user->getActiveSuscription();
                         $susc->update([
                             'extra_downloads' => $susc->extra_downloads + $order->downloadPack->extra_downloads
@@ -180,7 +180,7 @@ class StripeWebhookController extends CashierController
             // Actualiza o crea Subscription
             Subscription::updateOrCreate(
                 ['user_id' => $user->id],
-                ['plan_name' => $plan->name,'plan_price' => $plan->price, 'max_downloads' => $plan->downloads, 'ends_at' => $periodEnd]
+                ['plan_name' => $plan->name, 'plan_price' => $plan->price, 'max_downloads' => $plan->downloads, 'ends_at' => $periodEnd]
             );
 
             Log::info('Renovación OK', [
@@ -212,13 +212,16 @@ class StripeWebhookController extends CashierController
                     $user->plan_start_at = Carbon::now();
                     $user->plan_expires_at = now()->addMonths($plan->duration_months);
                     $user->save();
-
-                    $subscription = new Subscription();
-                    $subscription->user_id = $user->id;
-                    $subscription->plan_name = $plan->name; 
-                    $subscription->max_downloads = $plan->downloads;
-                    $subscription->ends_at = now()->addMonths($plan->duration_months);
-                    $subscription->save();
+                    
+                    Subscription::updateOrCreate(
+                        ['user_id' => $user->id],
+                        [
+                            'plan_name' => $plan->name, 
+                            'plan_price' => $plan->price, 
+                            'max_downloads' => $plan->downloads, 
+                            'ends_at' => now()->addMonths($plan->duration_months)
+                        ]
+                    );
                 }
             }
         }
@@ -229,7 +232,7 @@ class StripeWebhookController extends CashierController
 
         $session = $payload['data']['object'];
         $userId = $session['metadata']['user_id'] ?? null;
-        if($userId){
+        if ($userId) {
             $user = User::find($userId);
             if ($user) {
                 $user->update([
