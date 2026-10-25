@@ -177,6 +177,51 @@ class ListUsers extends ListRecords
                     }
                 })
                 ->visible(auth()->user()->role === 'admin'),
+            Action::make('update_suscription_data')->label('')
+                ->icon('heroicon-s-arrow-path')
+                ->requiresConfirmation()
+                ->modalHeading('¿Actualizar los datos de las suscripciones?')
+                ->modalDescription('Esta acción no modificará datos del usuario, solo sirve para actualizar los datos de la suscripcion en caso de que los usuarios salgan con plan Desconocido y 0/0 descargas.')
+                ->action(function () {
+                    try {
+                        $actives = [];
+                        foreach (User::all() as $u) {
+                            if ($u->hasActivePlan()) {
+                                array_push($actives, $u);
+                            }
+                        }
+                        $ss = 0;
+                        $ff = 0;
+                        foreach ($actives as $u) {
+                            try {
+                                $susc = $u->getActivePlan();
+                                if ($susc) {
+                                    Subscription::updateOrCreate(
+                                        ['user_id' => $u->id],
+                                        ['plan_name' => $susc->name, 'plan_price' => $susc->price, 'max_downloads' => $susc->downloads, 'ends_at' => $u->plan_expires_at]
+                                    );
+                                    $ss++;
+                                } else {
+                                    $ff++;
+                                }
+                            } catch (\Throwable $e) {
+                                $ff++;
+                            }
+                        }
+                        Notification::make()
+                            ->success()
+                            ->body('Datos de '. $ss . ' suscripciones actualizadas correctamente. ' . $ff . ' suscripciones no actualizadas.')
+                            ->persistent()
+                            ->send();
+                    } catch (\Throwable $th) {
+                        Notification::make()
+                            ->danger()
+                            ->body('Error al proceder: '. $th->getMessage())
+                            ->persistent()
+                            ->send();
+                    }
+                })
+                ->visible(auth()->user()->role === 'admin'),
             CreateAction::make()->label('')
                 ->icon('heroicon-o-user-plus'),
         ];
