@@ -47,10 +47,15 @@ class StripeWebhookController extends CashierController
                 $user->plan_expires_at = Carbon::now()->addMonths($plan->duration_months);
                 $user->save();
 
-                $subscripction = new Subscription();
-                $subscripction->user_id = $user->id;
-                $subscripction->ends_at = Carbon::now()->addMonths($plan->duration_months);
-                $subscripction->save();
+                Subscription::updateOrCreate(
+                    ['user_id' => $user->id],
+                    [
+                        'plan_name' => $plan->name,
+                        'plan_price' => $plan->price,
+                        'max_downloads' => $plan->downloads,
+                        'ends_at' => now()->addMonths($plan->duration_months)
+                    ]
+                );
             }
         }
     }
@@ -212,13 +217,13 @@ class StripeWebhookController extends CashierController
                     $user->plan_start_at = Carbon::now();
                     $user->plan_expires_at = now()->addMonths($plan->duration_months);
                     $user->save();
-                    
+
                     Subscription::updateOrCreate(
                         ['user_id' => $user->id],
                         [
-                            'plan_name' => $plan->name, 
-                            'plan_price' => $plan->price, 
-                            'max_downloads' => $plan->downloads, 
+                            'plan_name' => $plan->name,
+                            'plan_price' => $plan->price,
+                            'max_downloads' => $plan->downloads,
                             'ends_at' => now()->addMonths($plan->duration_months)
                         ]
                     );
