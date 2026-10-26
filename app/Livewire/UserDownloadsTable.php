@@ -78,6 +78,8 @@ class UserDownloadsTable extends TableWidget
             ->recordActions([
                 //
             ])
+            ->paginated()
+            ->defaultPaginationPageOption(5)
             ->heading(
                 fn() => $userId
                 ? ('Descargas Realizadas por ' . (User::find($userId)->name ?? 'Usuario'))
