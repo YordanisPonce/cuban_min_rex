@@ -5,6 +5,7 @@ namespace App\Filament\Pages;
 use App\Enums\SectionEnum;
 use App\Livewire\DownloadsSummaryTable;
 use App\Models;
+use App\Models\Category;
 use BackedEnum;
 use Carbon\Carbon;
 use Filament\Forms\Concerns\InteractsWithForms;
@@ -61,7 +62,7 @@ class SaleSumary extends Page implements HasForms, HasTable
                     ->label('Categorías')
                     ->badge()
                     ->getStateUsing(function ($record) {
-                        return $record->file->categories->pluck('name');
+                        return $record->file?->categories->pluck('name') ?? 'Desconocido';
                     })
                     ->default('Sin categoría'),
                 Tables\Columns\TextColumn::make('customer_email')->label('Cliente')->default('Usuario Anónimo'),
@@ -71,10 +72,10 @@ class SaleSumary extends Page implements HasForms, HasTable
                 }),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('file.categories')
-                    ->label('Categoría')
-                    ->relationship('file.categories', 'name')
-                    ->optionsLimit(100)
+                Tables\Filters\SelectFilter::make('categories')
+                    ->relationship(name: 'categories', titleAttribute: 'name')
+                    ->label('Categorías')
+                    ->options(fn (): array => Category::orderBy('name')->pluck('name', 'id')->all())
                     ->multiple(),
             ])
             ->recordActions([

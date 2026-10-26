@@ -1,6 +1,7 @@
 <?php
 
 use App\Filament\Pages\DevDashboard;
+use App\Filament\Pages\UserDownloadHistory;
 use App\Filament\Pages\UserPayments;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\HomeController;
@@ -118,6 +119,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::get('/exclusives', [HomeController::class, 'exclusives'])->name('exclusives');
         Route::get('/videos', [HomeController::class, 'videos'])->name('videos');
         Route::get('/admin/user-payments/{record}', UserPayments::class)->name('user.payments');
+        Route::get('/admin/users/{record}/downloads', UserDownloadHistory::class)->name('user.downloads.history');
         Route::get('/packs', [CollectionController::class, 'index'])->name('collection.index');
         Route::get('/file/{file}', [FileController::class, 'download'])
             ->name('file.download');

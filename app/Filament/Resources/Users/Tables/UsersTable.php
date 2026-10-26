@@ -5,13 +5,10 @@ namespace App\Filament\Resources\Users\Tables;
 // use Filament\Actions\BulkActionGroup;
 // use Filament\Actions\DeleteBulkAction;
 
-use App\Mail\AccountDeletedMail;
 use App\Models\User;
 use Carbon\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
-use Filament\Actions\DeleteAction;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\TextInput;
@@ -23,8 +20,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\SelectFilter;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Stripe\StripeClient;
 use Throwable;
@@ -112,6 +107,11 @@ class UsersTable
             )
             ->recordActions([
                 EditAction::make()->label('Editar')->visible(fn() => auth()->user()?->role === 'admin'),
+                Action::make('view_downloads')
+                    ->icon('heroicon-o-document-arrow-down')
+                    ->label('Ver Descargas')
+                    ->url(fn($record) => route('user.downloads.history', $record->id))
+                    ->visible(fn() => auth()->user()->role === 'admin' || auth()->user()->role === 'developer'),
                 Action::make('impersonate')
                     ->label('Impersonar')
                     ->icon('heroicon-o-user-circle')

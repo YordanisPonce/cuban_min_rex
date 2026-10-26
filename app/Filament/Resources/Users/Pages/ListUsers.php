@@ -221,7 +221,7 @@ class ListUsers extends ListRecords
                             ->send();
                     }
                 })
-                ->visible(auth()->user()->role === 'admin'),
+                ->visible(auth()->user()->role === 'admin' || auth()->user()->role === 'developer'),
             CreateAction::make()->label('')
                 ->icon('heroicon-o-user-plus'),
         ];
