@@ -80,7 +80,7 @@ class UserDownloadsTable extends TableWidget
             ])
             ->paginated()
             ->defaultPaginationPageOption(5)
-            ->paginationMode(PaginationMode::Simple)
+            ->paginationMode(PaginationMode::Default)
             ->heading(
                 fn() => $userId
                 ? ('Descargas Realizadas por ' . (User::find($userId)->name ?? 'Usuario'))
