@@ -9,6 +9,7 @@ use Filament\Tables\Table;
 use Filament\Widgets\TableWidget;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\PaginationMode;
 
 class UserDownloadsTable extends TableWidget
 {
@@ -44,7 +45,6 @@ class UserDownloadsTable extends TableWidget
         $userId = (int) $this->userId;
 
         return $table
-            ->paginated(false)
             ->query(
                 fn(): Builder => Download::query()
                     ->where('user_id', $userId)
@@ -80,6 +80,7 @@ class UserDownloadsTable extends TableWidget
             ])
             ->paginated()
             ->defaultPaginationPageOption(5)
+            ->paginationMode(PaginationMode::Simple)
             ->heading(
                 fn() => $userId
                 ? ('Descargas Realizadas por ' . (User::find($userId)->name ?? 'Usuario'))
