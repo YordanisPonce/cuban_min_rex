@@ -72,11 +72,11 @@ class SaleSumary extends Page implements HasForms, HasTable
                 }),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('categories')
+                /*Tables\Filters\SelectFilter::make('categories')
                     ->relationship(name: 'categories', titleAttribute: 'name')
                     ->label('Categorías')
                     ->options(fn (): array => Category::orderBy('name')->pluck('name', 'id')->all())
-                    ->multiple(),
+                    ->multiple(),*/
             ])
             ->recordActions([
                 //
