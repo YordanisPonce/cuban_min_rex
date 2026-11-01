@@ -40,8 +40,20 @@ class FileForm
                 TextInput::make('bpm')
                     ->label('BPM')
                     ->required(),
-                TextInput::make('musical_note')
-                    ->label('Nota'),
+                Select::make('musical_note')
+                    ->label('Nota Musical')
+                    ->options(function () {
+                        $letters = ['A', 'B'];
+                        $options = [];
+                        for ($i = 1; $i <= 12; $i++) {
+                            foreach ($letters as $letter) {
+                                $options[$i . $letter] = $i . $letter;
+                            }
+                        }
+                        return $options;
+                    })
+                    ->default('7A')
+                    ->required(),
                 /*FileUpload::make('poster')
                     ->label('Subir Poster')
                     ->image()
@@ -70,7 +82,7 @@ class FileForm
                         $options = [];
 
                         $sections = SectionEnum::cases();
-    
+
                         foreach ($sections as $sectionsCase) {
                             $options[$sectionsCase->value] = SectionEnum::getTransformName($sectionsCase->value);
                         }
@@ -79,7 +91,7 @@ class FileForm
                     })
                     ->multiple()
                     ->required(),
-                
+
                 Select::make('status')
                     ->label('Estado')
                     ->required()
@@ -91,7 +103,7 @@ class FileForm
 
                 Select::make('folder_id')
                     ->label('Carpeta')
-                    ->options(fn () => \App\Models\Folder::where('type',  FolderTypeEnum::PACKS->value)->pluck('name', 'id'))
+                    ->options(fn() => \App\Models\Folder::where('type',  FolderTypeEnum::PACKS->value)->pluck('name', 'id'))
                     ->searchable()
                     ->preload(),
 

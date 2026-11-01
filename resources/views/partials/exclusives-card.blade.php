@@ -37,7 +37,7 @@
             @endif
         </div>
         <div class="track-bottom-actions"> 
-            <span> BPM {{$item['bpm']}} · {{$item['key']}} </span>
+            <span> BPM {{$item['bpm']}}</span> <span>·</span> <span class="key key-{{$item['key']}}">{{$item['key']}}</span>
             @if ( !$item['canDownload'] )
                 <span><i class="fa-solid fa-dollar-sign"></i> {{$item['price']}}</span>
             @endif

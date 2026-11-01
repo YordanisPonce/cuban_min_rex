@@ -45,7 +45,7 @@ class ListFiles extends ListRecords
                     FileUpload::make('file')->maxSize(800000)
                         ->label('Subir vista previa del archivo')
                         ->acceptedFileTypes(['audio/*', 'video/*'])
-                        ->required()
+                        //->required()
                         ->disk('s3')
                         ->directory('files')
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
@@ -53,7 +53,7 @@ class ListFiles extends ListRecords
                     FileUpload::make('original_file')->maxSize(800000)
                         ->label('Subir archivo completo')
                         ->acceptedFileTypes(['audio/*', 'video/*', 'application/zip', 'application/x-zip-compressed', 'application/x-zip', 'multipart/x-zip'])
-                        ->required()
+                        //->required()
                         ->disk('public')
                         ->directory('files')
                         ->helperText('El nombre del archivo no debe exceder los 255 caracteres')
@@ -71,8 +71,20 @@ class ListFiles extends ListRecords
                     TextInput::make('bpm')
                         ->label('BPM')
                         ->required(),
-                    TextInput::make('musical_note')
-                        ->label('Nota Musical'),
+                    Select::make('musical_note')
+                        ->label('Nota Musical')
+                        ->options(function(){
+                            $letters = ['A', 'B'];
+                            $options = [];
+                            for ($i=1; $i <= 12; $i++) { 
+                                foreach ($letters as $letter) {
+                                    $options[$i . $letter] = $i . $letter;
+                                }
+                            }
+                            return $options;
+                        })
+                        ->default('7A')
+                        ->required(),
                     Select::make('categories')
                         ->label('Selecciona la/las Categoría(s)')
                         ->searchable()

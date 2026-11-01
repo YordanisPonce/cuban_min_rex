@@ -2249,6 +2249,109 @@ body>.skiptranslate>iframe {
     font-weight: bold;
 }
 
+/* Color de las Notas */
+.key {
+    color: white;
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.key-1A {
+    background-color: #BF1818 !important;
+}
+
+.key-2A {
+    background-color: #BF6B18 !important;
+}
+
+.key-3A {
+    background-color: #BFBF18 !important;
+}
+
+.key-4A {
+    background-color: #6BBF18 !important;
+}
+
+.key-5A {
+    background-color: #18BF18 !important;
+}
+
+.key-6A {
+    background-color: #18BF6B !important;
+}
+
+.key-7A {
+    background-color: #18BFBF !important;
+}
+
+.key-8A {
+    background-color: #186BBF !important;
+}
+
+.key-9A {
+    background-color: #1818BF !important;
+}
+
+.key-10A {
+    background-color: #6B18BF !important;
+}
+
+.key-11A {
+    background-color: #BF18BF !important;
+}
+
+.key-12A {
+    background-color: #BF186B !important;
+}
+
+.key-1B {
+    background-color: #EC3C3C !important;
+}
+
+.key-2B {
+    background-color: #EC943C !important;
+}
+
+.key-3B {
+    background-color: #ECEC3C !important;
+}
+
+.key-4B {
+    background-color: #94EC3C !important;
+}
+
+.key-5B {
+    background-color: #3CEC3C !important;
+}
+
+.key-6B {
+    background-color: #3CEC94 !important;
+}
+
+.key-7B {
+    background-color: #3CECEC !important;
+}
+
+.key-8B {
+    background-color: #3C94EC !important;
+}
+
+.key-9B {
+    background-color: #3C3CEC !important;
+}
+
+.key-10B {
+    background-color: #943CEC !important;
+}
+
+.key-11B {
+    background-color: #EC3CEC !important;
+}
+
+.key-12B {
+    background-color: #EC3C94 !important;
+}
+
 @media(max-width: 720px) {
     .hero:not(.radio) {
         height: 80vh;
