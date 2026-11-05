@@ -379,7 +379,7 @@
         let prank = 0;
         delay = 1;
         document.getElementById('playlists-list').innerHTML = playlists.map(p => `
-        <div class="remix-card"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}" onclick="window.location = '${p.route}'">
+        <div class="remix-card playlist-card"  data-aos="fade-up"  data-aos-delay="${ delay++*300 + 100}" onclick="window.location = '${p.route}'">
             <div class="thumb">
             <img src="${p.img}" alt="${p.title}" loading="lazy">
             ${p.isNew?'<span class="tag-new">NEW</span>':''}

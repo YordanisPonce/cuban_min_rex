@@ -81,12 +81,16 @@
             width: 25%;
             padding: 12px;
             height: auto !important;
-            max-height: 110px !important;
+            max-height: 110px;
         }
 
         &>.info {
             width: 75%;
         }
+    }
+
+    .playlist-card .thumb {
+        max-height: 70px !important;
     }
 }
 
