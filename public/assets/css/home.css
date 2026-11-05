@@ -348,7 +348,7 @@
 
         &>.thumb {
             width: 25%;
-            padding: 14px;
+            padding: 0;
             height: auto !important;
             max-height: 110px !important;
         }
@@ -431,7 +431,6 @@
 @media (max-width: 600px) {
     .genre-card .thumb {
         margin-bottom: 0 !important;
-        padding: 0 !important;
     }
 }
 
