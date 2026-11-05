@@ -1,26 +1,29 @@
-<div class="track-card" id="{{$item['id']}}" data-intro="{{ $item['url'] }}">
+<div class="track-card" id="{{ $item['id'] }}" data-intro="{{ $item['url'] }}">
     <div class="track-left">
-        <div class="track-thumb">
-            <img src="{{$item['img']}}" alt="{{$item['title']}}" loading="lazy">
-            @if ($item['isNew']) 
-                <span class="tag-new">NEW</span>
-            @endif
-        </div>
-        <div class="track-info">
-            <div class="track-title-row">
-                <a class="track-title" href="{{ route('file.info', str_replace(' ', '_', $item['title']))}}">{{$item['title']}}</a>
+        <div class="track-meta">
+            <div class="track-thumb">
+                <img src="{{ $item['img'] }}" alt="{{ $item['title'] }}" loading="lazy">
+                @if ($item['isNew'])
+                    <span class="tag-new">NEW</span>
+                @endif
             </div>
-            <div class="track-artist">{{$item['artist']}}</div>
-            <div class="track-waveform">
-                <button class="play-btn" onclick="handlePlay({{$item['id']}})"><i class="fas fa-play"></i></button>
-                <div class="waveform">
-                    @for ($i = 0; $i < 60; $i++)  
-                        <div class="bar"></div>
-                    @endfor
-                    @for ($i = 0; $i < 60; $i++)  
-                        <div class="bar hidden-mobile"></div>
-                    @endfor
+            <div class="track-info">
+                <div class="track-title-row">
+                    <a class="track-title"
+                        href="{{ route('file.info', str_replace(' ', '_', $item['title'])) }}">{{ $item['title'] }}</a>
                 </div>
+                <div class="track-artist">{{ $item['artist'] }}</div>
+            </div>
+        </div>
+        <div class="track-waveform">
+            <button class="play-btn" onclick="handlePlay({{ $item['id'] }})"><i class="fas fa-play"></i></button>
+            <div class="waveform">
+                @for ($i = 0; $i < 60; $i++)
+                    <div class="bar"></div>
+                @endfor
+                @for ($i = 0; $i < 60; $i++)
+                    <div class="bar hidden-mobile"></div>
+                @endfor
             </div>
         </div>
     </div>
@@ -30,19 +33,23 @@
                 <span class="track-badge club">{{ $genre }}</span>
             @endforeach
         </div>
-        <div class="track-actions">
-            <span class="text-primary"><i class="fa-solid fa-fire"></i> {{$item['downloads']}}</span>
-            @if ( $item['canDownload'])
-                <a href="{{$item['downloadLink']}}" target="_blank"><i class="fas fa-download"></i></a>
-            @else
-                <a href="{{ $item['addToCart'] }}" class="cart-btn"><i class="ti tabler-shopping-cart-plus"></i></a>
-            @endif
-        </div>
-        <div class="track-bottom-actions"> 
-            <span> BPM {{$item['bpm']}}</span> <span>·</span> <span class="key key-{{$item['key']}}">{{$item['key']}}</span>
-            @if ( !$item['canDownload'] )
-                <span><i class="fa-solid fa-dollar-sign"></i> {{$item['price']}}</span>
-            @endif
+        <div class="track-actions-group">
+            <div class="track-actions">
+                <span class="text-primary"><i class="fa-solid fa-fire"></i> {{ $item['downloads'] }}</span>
+                @if ($item['canDownload'])
+                    <a href="{{ $item['downloadLink'] }}" target="_blank"><i class="fas fa-download"></i></a>
+                @else
+                    <a href="{{ $item['addToCart'] }}" class="cart-btn"><i
+                            class="ti tabler-shopping-cart-plus"></i></a>
+                @endif
+            </div>
+            <div class="track-bottom-actions">
+                <span> BPM {{ $item['bpm'] }}</span> <span>·</span> <span
+                    class="key key-{{ $item['key'] }}">{{ $item['key'] }}</span>
+                @if (!$item['canDownload'])
+                    <span><i class="fa-solid fa-dollar-sign"></i> {{ $item['price'] }}</span>
+                @endif
+            </div>
         </div>
     </div>
 </div>

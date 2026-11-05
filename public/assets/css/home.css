@@ -65,6 +65,23 @@
     width: 180px;
 }
 
+@media (max-width: 600px) {
+    .remix-card {
+        display: flex;
+
+        &>.thumb{
+            width: 25%;
+            padding: 12px;
+            height: auto !important;
+            max-height: 110px !important;
+        }
+
+        &>.info {
+            width: 75%;
+        }
+    }
+}
+
 .remix-card:hover {
     border-color: rgba(245, 166, 35, .3)
 }
@@ -315,6 +332,31 @@
     overflow: hidden;
     transition: border-color .2s;
     width: 180px;
+}
+
+@media (max-width: 600px) {
+    .dj-card {
+        display: flex;
+
+        &>.thumb{
+            width: 25%;
+            padding: 14px;
+            height: auto !important;
+            max-height: 110px !important;
+        }
+
+        &>.info {
+            width: 75%;
+            position: relative;
+
+            &>.actions{
+                position: absolute;
+                top: 7px;
+                bottom: auto;
+                right: 14px;
+            }
+        }
+    }
 }
 
 .dj-card:hover {
