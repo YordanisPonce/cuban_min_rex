@@ -118,7 +118,7 @@
                 <div class="banner-left">
                     <div class="banner-icon"><i class="fas fa-crown"></i></div>
                     <div class="banner-title">
-                        <h3>Descubre nuestro catálogo y obten 50 descargas por solo <span class="percent">$ 9.99</span>.</h3>
+                        <h3>Descubre nuestro catálogo y obtén 50 descargas por solo <span class="percent">$ 9.99</span>.</h3>
                     </div>
                 </div>
                 <div class="banner-links">
