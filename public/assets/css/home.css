@@ -515,3 +515,21 @@
 .cta li i {
     color: var(--primary)
 }
+
+@media (min-width: 2000px) {
+    .remix-card, .dj-card {
+        width: 250px !important;
+    }
+}
+
+@media (min-width: 2400px) {
+    .remix-card, .dj-card {
+        width: 300px !important;
+    }
+}
+
+@media (min-width: 2800px) {
+    .remix-card, .dj-card {
+        width: 350px !important;
+    }
+}

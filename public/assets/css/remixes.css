@@ -99,9 +99,9 @@
 
 /* Filters */
 .filters-bar {
-    max-width: 1000px;
+    max-width: 100%;
     margin: 24px auto 0;
-    padding: 0 24px
+    padding: 0 5%
 }
 
 .filter-dropdowns {
@@ -166,9 +166,9 @@
 
 /* Track List */
 .tracks-container {
-    max-width: 1000px;
+    max-width: 100%;
     margin: 16px auto;
-    padding: 0 24px
+    padding: 0 5%
 }
 
 .track-card {
@@ -336,7 +336,7 @@
     font-weight: 600
 }
 
-.track-actions-group{
+.track-actions-group {
     align-items: end;
     gap: 5px;
     display: flex;
@@ -737,5 +737,32 @@
 
     .player-track {
         width: 40%
+    }
+}
+
+@media (min-width: 1400px) {
+    .track-card{
+        display: flex;
+        justify-content: space-between;
+        gap: 20px;
+    }
+
+    .track-left {
+        flex-direction: row !important;
+        justify-content: space-between !important;
+        flex: 1;
+        align-items: center !important;
+    }
+
+    .track-right{
+        width: 10%;
+    }
+
+    .track-meta{
+        max-width: 65% !important;
+    }
+
+    .track-waveform{
+        width: 30% !important;
     }
 }
