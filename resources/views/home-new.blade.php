@@ -2110,16 +2110,15 @@
             });
         }
 
-        function verifySource(source, flag = 'audio') {
-            var audio = new Audio(source);
+        function verifySource(element, flag = 'audio') {
+            var audio = new Audio(element.dataset.src);
             if(flag == 'video'){
                 audio = document.createElement('video');
-                audio.src = source;
+                audio.src = element.dataset.src;
             }
             audio.addEventListener("canplaythrough", () => {
-                return true;
+                showPlayer(element, element.dataset.flag);
             });
-            return false;
         }
 
         function closePlayer(element, flag = 'audio') {
@@ -2168,15 +2167,15 @@
             if (icon != null) {
                 icon.className = 'fa fa-spinner fa-spin';
             }
-            if(!verifySource(element.dataset.url)){
+            try {
+                verifySource(element, element.dataset.flag)
+            } catch (error) {
                 setTimeout(() => {
                     showToast('No se pudo cargar el recurso: ' + element.dataset.track);
                     if (icon != null) {
                         icon.className = 'fas fa-play';
                     }
                 }, 1000);
-            } else {
-                showPlayer(element, element.dataset.flag);
             }
         }
 
