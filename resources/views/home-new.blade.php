@@ -2157,9 +2157,7 @@
             }
             audio.addEventListener("canplaythrough", () => {
                 showPlayer(element, element.dataset.flag);
-                return;
             });
-            throw new Exception('Error al cargar recurso');
         }
 
         function playTrack(element) {
