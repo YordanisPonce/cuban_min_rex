@@ -2156,6 +2156,7 @@
                 audio.src = element.dataset.src;
             }
             audio.addEventListener("canplaythrough", () => {
+                console.log('Se puede reproducir');
                 showPlayer(element, element.dataset.flag);
             });
         }
@@ -2168,7 +2169,7 @@
                 icon.className = 'fa fa-spinner fa-spin';
             }
             try {
-                verifySource(element, element.dataset.flag)
+                verifySource(element, element.dataset.flag);
             } catch (error) {
                 setTimeout(() => {
                     showToast('No se pudo cargar el recurso: ' + element.dataset.track);
