@@ -200,6 +200,7 @@ class HomeController extends Controller
                 'duration' => 120,
                 'flag' => $flag,
                 'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
+                'key' => $file->musical_note ?? '7A',
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
