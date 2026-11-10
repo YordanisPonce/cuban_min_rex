@@ -2146,6 +2146,8 @@
         }
 
         function verifySource(element, flag = 'audio') {
+            const audioPlayer = document.getElementById('plyr-audio-player');
+            const videoPlayer = document.getElementById('plyr-video-player');
             var audio = new Audio(element.dataset.url);
             if(flag == 'video'){
                 audio = document.createElement('video');
