@@ -1729,8 +1729,8 @@
                 </div>
                 <div class="genres">
                     @foreach($geners as $g)
-                        <div class="genre" onclick="window.location = '{{ $g->route}}'"><img src="{{ $g->cover }}"
-                            alt="Reggaeton Old School" loading="lazy"><span>{{ $g->name }}</span></div>
+                        <div class="genre" onclick="window.location = '{{ $g['route'] }}'"><img src="{{ $g['cover'] }}"
+                            alt="Reggaeton Old School" loading="lazy"><span>{{ $g['name'] }}</span></div>
                     @endforeach
                 </div>
             </section>
