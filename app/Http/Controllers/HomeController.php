@@ -129,7 +129,7 @@ class HomeController extends Controller
             ];
         });
         
-        $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
+        $playlists = PlayList::orderBy('created_at', 'desc')->take(6)->get();
         
         $playlists->transform(function ($playlist) {
             $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
@@ -182,7 +182,7 @@ class HomeController extends Controller
             })
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->orderBy('created_at', 'desc')->take(8)->get();
+            ->orderBy('created_at', 'desc')->take(6)->get();
         
         $mixes->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
@@ -215,7 +215,7 @@ class HomeController extends Controller
             ->where('categories.show_in_landing', true)
             ->selectRaw('categories.id as id, categories.name as name, categories.cover as cover, count(category_files.file_id) as tracks')
             ->groupBy(['id', 'name', 'cover'])
-            ->orderBy('tracks', 'desc')->take(8)->get();
+            ->orderBy('tracks', 'desc')->take(10)->get();
 
         $geners->transform(function ($gener) {
             return [
@@ -237,7 +237,7 @@ class HomeController extends Controller
             }, $banners);
 
         } else {
-            $banners = [ 'image' => asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $plans = Plan::orderBy('price')->get();

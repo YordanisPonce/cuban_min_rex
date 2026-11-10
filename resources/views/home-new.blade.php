@@ -1033,10 +1033,10 @@
         }
 
         .playlist-info h4 {
-            font-size: 1rem;
-            font-weight: 900;
+            font-size: .75rem;
+            font-weight: 700;
             text-transform: uppercase;
-            line-height: 1.15;
+            line-height: 1;
             margin-bottom: .4rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -1976,7 +1976,7 @@
             interval: 6000,
             pauseOnHover: true,
             loop: true,
-            slides: [@json($banners)]
+            slides: @json($banners)
         };
 
         (function initHero() {
@@ -2110,17 +2110,6 @@
             });
         }
 
-        function verifySource(element, flag = 'audio') {
-            var audio = new Audio(element.dataset.src);
-            if(flag == 'video'){
-                audio = document.createElement('video');
-                audio.src = element.dataset.src;
-            }
-            audio.addEventListener("canplaythrough", () => {
-                showPlayer(element, element.dataset.flag);
-            });
-        }
-
         function closePlayer(element, flag = 'audio') {
             const el = document.getElementById('bottom-player');
             const elv = document.getElementById('video-player');
@@ -2158,6 +2147,17 @@
             if (icon != null) {
                 icon.className = 'fas fa-play';
             }
+        }
+
+        function verifySource(element, flag = 'audio') {
+            var audio = new Audio(element.dataset.src);
+            if(flag == 'video'){
+                audio = document.createElement('video');
+                audio.src = element.dataset.src;
+            }
+            audio.addEventListener("canplaythrough", () => {
+                showPlayer(element, element.dataset.flag);
+            });
         }
 
         function playTrack(element) {
