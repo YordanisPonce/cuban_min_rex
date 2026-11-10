@@ -59,7 +59,17 @@
                             </div>
                         </div>
                     </div>
-                    <a class="btn btn-outline" href="{{ $r['url'] }}">VER <i class="fas fa-angles-right"></i></a>
+                    <div>
+                        @if($r['action'])
+                            @if($r['canDownload'])
+                                <a class="btn btn-outline" href="{{ $r['download'] }}"><i class="fas fa-download"></i></a>
+                            @else
+                                <a class="btn btn-outline" href="{{ $r['buy'] }}">$ {{ $r['price'] }} <i class="fas fa-shopping-cart"></i></a>
+                            @endif
+                        @else
+                            <a class="btn btn-outline" href="{{ $r['url'] }}">VER <i class="fas fa-angles-right"></i></a>
+                        @endif
+                    </div>
                 </div>
             @endforeach
         </div>

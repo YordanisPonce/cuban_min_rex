@@ -3,18 +3,23 @@
 namespace App\Filament\Resources\PlayLists\RelationManagers;
 
 use App\Models\File;
+use App\Models\PlayList;
+use App\Models\PlayListItem;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\HtmlString;
@@ -151,6 +156,33 @@ class ItemsRelationManager extends RelationManager
                     }),
             ])
             ->recordActions([
+                Action::make('move')->label('Mover a')->icon(Heroicon::DocumentDuplicate)->requiresConfirmation()
+                    ->schema(
+                        [
+                            Select::make('play_list_id')
+                                ->relationship('playlist', 'name', function(Builder $query) {
+                                    $query->where('id', '!=', $this->getOwnerRecord()->id);
+                                })
+                                ->searchable()
+                                ->preload()
+                                ->createOptionForm([
+                                    TextInput::make('name')->label('Nombre de la Playlist')->required(),
+                                ])
+                                ->createOptionModalHeading('Crear nueva Playlist')
+                                ->createOptionUsing(function(array $data){
+                                    $playlist = new PlayList();
+                                    $playlist->name = $data['name'];
+                                    $playlist->save();
+                                }),
+                        ]
+                    )->action(function(PlayListItem $record, array $data){
+                        try {
+                            $record->update($data);
+                            Notification::make()->body('Archivo Movido a la Nueva Playlist')->success()->send();
+                        } catch (\Throwable $th) {
+                            Notification::make()->title('Error al mover')->body('Error: '. $th->getMessage())->danger()->send();
+                        }
+                    }),
                 EditAction::make()->label('Editar')->modalHeading('Editar Archivo a la PlayList'),
                 DeleteAction::make()->label('Eliminar')
                     ->modalHeading('Eliminar Archivo de la PlayList')

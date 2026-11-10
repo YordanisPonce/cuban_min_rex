@@ -29,10 +29,15 @@ class SearchController extends Controller
                 'id' => "f$e->id",
                 'name' => 'REMIX: '.$e->name,
                 'artist' => $e->user?->name ?? 'Desconocido',
+                'price' => $e->price,
                 'img' => $e->getPosterUrl() ?? $e->user?->photo ?? config('app.logo'),
                 'dj_logo' => $e->user?->photo ?? config('app.logo'),
                 'intro' => $e->intro(),
                 'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('remixes', ['title' => $e->name]),
+                'action' => true,
+                'canDownload' => $e->canBeDownload(),
+                'download' => $e->canBeDownload() ? route('file.download', $e->id) : null,
+                'buy' => route('file.add.cart', $e->id),
             ];
         });
 
@@ -46,9 +51,14 @@ class SearchController extends Controller
                 'name' => 'VIDEO: '.$e->name,
                 'artist' => $e->user?->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
+                'price' => $e->price,
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
                 'intro' => $e->intro(),
                 'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('videos', ['title' => $e->name]),
+                'action' => true,
+                'canDownload' => $e->canBeDownload(),
+                'download' => $e->canBeDownload() ? route('file.download', $e->id) : null,
+                'buy' => route('file.add.cart', $e->id),
             ];
         });
 
@@ -62,9 +72,14 @@ class SearchController extends Controller
                 'name' => 'PACK: '.$e->name,
                 'artist' => $e->user->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
+                'price' => $e->price,
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
                 'intro' => $e->intro(),
                 'url' => $e->isExclusive ? route('exclusives', ['title' => $e->name]) : route('collection.index', ['title' => $e->name]),
+                'action' => true,
+                'canDownload' => $e->canBeDownload(),
+                'download' => $e->canBeDownload() ? route('file.download', $e->id) : null,
+                'buy' => route('file.add.cart', $e->id),
             ];
         });
 
@@ -78,9 +93,12 @@ class SearchController extends Controller
                 'name' => 'PLAYLIST: '.$e->name,
                 'artist' => $e->user->name,
                 'img' => $e->getCoverUrl() ?? $e->user->photo ?? config('app.logo'),
+                'price' => $e->price,
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
                 'intro' => null,
                 'url' => route('playlist.show', str_replace(' ', '_', $e->name)),
+                'action' => false,
+                'canDownload' => $e->canBeDownload(),
             ];
         });
 
@@ -94,9 +112,14 @@ class SearchController extends Controller
                 'name' => 'TRACK: '.$e->title.' en PLAYLIST: '.$e->playList->name,
                 'artist' => $e->playList->user->name,
                 'img' => $e->playList->getCoverUrl() ?? $e->playList->user->photo ?? config('app.logo'),
+                'price' => $e->price,
                 'dj_logo' => $e->playList->user->photo ?? config('app.logo'),
                 'intro' => $e->intro(),
                 'url' => route('playlist.show', str_replace(' ', '_', $e->playList->name)),
+                'action' => true,
+                'canDownload' => $e->playlist->canBeDownload(),
+                'download' => $e->playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_', $e->playlist->name), $e->id]) : null,
+                'buy' => route('playlist.add.item.cart', [str_replace(' ', '_', $e->playlist->name), $e->id]),
             ];
         });
 

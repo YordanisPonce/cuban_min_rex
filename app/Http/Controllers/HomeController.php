@@ -38,7 +38,7 @@ class HomeController extends Controller
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
             ->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->orderBy('created_at', 'desc')->take(8)->get();
+            ->orderBy('created_at', 'desc')->take(6)->get();
             
         if ($newItems->count() == 0) {
             $newItems = File::audios()
@@ -48,7 +48,7 @@ class HomeController extends Controller
                 ->where('status', 'active')
                 ->where('isExclusive', false)
                 ->whereJsonContains('sections', SectionEnum::MAIN->value)
-                ->orderBy('created_at', 'desc')->take(8)->get();
+                ->orderBy('created_at', 'desc')->take(6)->get();
         }
 
         $newItems->transform(function ($file) {
@@ -67,7 +67,44 @@ class HomeController extends Controller
                 'duration' => 120,
                 'flag' => $flag,
                 'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
+                'key' => $file->musical_note ?? '7A',
                 'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'canDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
+
+        $topItems = File::audios()
+                ->whereHas('categories',  function($q) {
+                    $q->whereNot('name', 'Mix');
+                })
+                ->where('status', 'active')
+                ->where('isExclusive', false)
+                ->whereJsonContains('sections', SectionEnum::MAIN->value)
+                ->orderBy('download_count', 'desc')->take(5)->get();
+
+        $topItems->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
+            return [
+                'id' => (string) $file->id,
+                'date' => $file->created_at,
+                'artist' => $file->user->name,
+                'title' => $file->name,
+                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'duration' => 120,
+                'flag' => $flag,
+                'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
+                'key' => $file->musical_note ?? '7A',
+                'price' => $file->price,
+                'downloads' => $file->download_count,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'canDownload' => $file->canBeDownload(),
@@ -80,7 +117,7 @@ class HomeController extends Controller
             ->join('category_files', 'category_files.file_id', 'files.id')
             ->selectRaw('users.name, SUM(files.download_count) as downloads, users.photo' )
             ->groupBy(['users.name', 'users.photo'])
-            ->orderBy('downloads', 'desc')->take(8)
+            ->orderBy('downloads', 'desc')->take(4)
             ->get();
         $tops->transform(function ($dj) {
             return [
@@ -92,7 +129,7 @@ class HomeController extends Controller
             ];
         });
         
-        $playlists = PlayList::orderBy('created_at', 'desc')->take(8)->get();
+        $playlists = PlayList::orderBy('created_at', 'desc')->take(3)->get();
         
         $playlists->transform(function ($playlist) {
             $img = $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter');
@@ -111,7 +148,7 @@ class HomeController extends Controller
         $exclusives = File::where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->orderBy('created_at', 'desc')->take(8)->get();
+            ->orderBy('created_at', 'desc')->take(6)->get();
 
         $exclusives->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
@@ -130,6 +167,7 @@ class HomeController extends Controller
                 'flag' => $flag,
                 'genre' => $file->categories->pluck('name')->implode(' · ') ?? '',
                 'price' => $file->price,
+                'key' => $file->musical_note ?? '7A',
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'canDownload' => $file->canBeDownload(),
@@ -194,16 +232,18 @@ class HomeController extends Controller
             $banners = $banners->toArray();
 
             $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
+                return [ 'image' => Storage::disk('s3')->url($banner ?? '') ];
             }, $banners);
 
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [ 'image' => asset('assets/img/hero-base.jpeg')];
         }
+
+        $plans = Plan::orderBy('price')->get();
 
         $index = 0;
 
-        return view('home', compact('pageTitle', 'geners', 'index', 'newItems', 'playlists', 'tops', 'banners', 'mixes', 'exclusives'));
+        return view('home-new', compact('pageTitle', 'geners', 'index', 'newItems', 'topItems','playlists', 'tops', 'plans', 'banners', 'mixes', 'exclusives'));
     }
 
     public function faq()
