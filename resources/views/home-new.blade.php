@@ -2133,15 +2133,11 @@
                 document.getElementById('video-player-img').src = element.dataset.img;
                 document.getElementById('video-player-title').textContent = element.dataset.title;
                 document.getElementById('video-player-artist').textContent = element.dataset.artist;
-                videoPlayer.src = element.dataset.url;
-                videoPlayer.play();
             } else {
                 el.classList.add('active');
                 document.getElementById('player-img').src = element.dataset.img;
                 document.getElementById('player-title').textContent = element.dataset.title;
                 document.getElementById('player-artist').textContent = element.dataset.artist;
-                audioPlayer.src = element.dataset.url;
-                audioPlayer.play();
             }
             var icon = element.querySelector('i');
             if (icon != null) {
@@ -2156,7 +2152,19 @@
                 audio.src = element.dataset.url;
             }
             audio.addEventListener("canplaythrough", () => {
-                showPlayer(element, element.dataset.flag);
+                if (flag == 'video') {
+                    videoPlayer.src = element.dataset.url;
+                    videoPlayer.play();
+                } else {
+                    audioPlayer.src = element.dataset.url;
+                    audioPlayer.play();
+                }
+            });
+            videoPlayer.addEventListener('play', () => {
+                showPlayer(element, 'video');
+            });
+            audioPlayer.addEventListener('play', () => {
+                showPlayer(element, 'audio');
             });
         }
 
