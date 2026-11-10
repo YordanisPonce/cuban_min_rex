@@ -882,7 +882,7 @@
 
         .two-col {
             display: grid;
-            grid-template-columns: 1fr 1.15fr;
+            grid-template-columns: 60% 40%;
             gap: 2rem;
             align-items: start;
         }
@@ -1038,6 +1038,12 @@
             text-transform: uppercase;
             line-height: 1.15;
             margin-bottom: .4rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .playlist-info small {
