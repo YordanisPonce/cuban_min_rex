@@ -2150,15 +2150,16 @@
         }
 
         function verifySource(element, flag = 'audio') {
-            var audio = new Audio(element.dataset.src);
+            var audio = new Audio(element.dataset.url);
             if(flag == 'video'){
                 audio = document.createElement('video');
-                audio.src = element.dataset.src;
+                audio.src = element.dataset.url;
             }
             audio.addEventListener("canplaythrough", () => {
-                console.log('Se puede reproducir');
                 showPlayer(element, element.dataset.flag);
+                return;
             });
+            throw new Exception('Error al cargar recurso');
         }
 
         function playTrack(element) {
