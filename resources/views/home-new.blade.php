@@ -2202,14 +2202,14 @@
             const videoPlayer = document.getElementById('plyr-video-player');
             if (flag == 'video') {
                 elv.classList.add('active');
-                document.getElementById('player-img').src = element.dataset.cover;
-                document.getElementById('player-title').textContent = element.dataset.track;
-                document.getElementById('player-artist').textContent = element.dataset.artist;
-            } else {
-                el.classList.add('active');
                 document.getElementById('video-player-img').src = element.dataset.cover;
                 document.getElementById('video-player-title').textContent = element.dataset.track;
                 document.getElementById('video-player-artist').textContent = element.dataset.artist;
+            } else {
+                el.classList.add('active');
+                document.getElementById('player-img').src = element.dataset.cover;
+                document.getElementById('player-title').textContent = element.dataset.track;
+                document.getElementById('player-artist').textContent = element.dataset.artist;
             }
             var icon = element.querySelector('i');
             if (icon != null) {
