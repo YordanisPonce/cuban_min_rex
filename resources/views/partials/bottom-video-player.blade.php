@@ -2,10 +2,10 @@
 <div class="bottom-player video container" id="video-player">
     <div class="player-inner">
         <div class="player-track">
-            <img id="player-img" src="" alt="">
+            <img id="video-player-img" src="" alt="">
             <div class="track-info">
-                <div class="track-title" id="player-title">Nombre del Video</div>
-                <div class="track-artist" id="player-artist">Autor</div>
+                <div class="track-title" id="video-player-title">Nombre del Video</div>
+                <div class="track-artist" id="video-player-artist">Autor</div>
             </div>
             <div class="close">
                 <button onclick="closePlayer()"><i class="fa-solid fa-close"></i></button>

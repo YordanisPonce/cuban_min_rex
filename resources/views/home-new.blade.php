@@ -2200,8 +2200,7 @@
             const elv = document.getElementById('video-player');
             const audioPlayer = document.getElementById('plyr-audio-player');
             const videoPlayer = document.getElementById('plyr-video-player');
-            el.classList.remove('active');
-            elv.classList.remove('active');
+            closePlayer();
             if (flag == 'video') {
                 elv.classList.add('active');
                 document.getElementById('player-img').src = element.dataset.cover;
