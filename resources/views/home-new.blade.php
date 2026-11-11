@@ -2111,7 +2111,7 @@
 
         function closePlayer(element, flag = 'audio') {
             const el = document.getElementById('bottom-player');
-            const elv = document.getElementById('bottom-video-player');
+            const elv = document.getElementById('video-player');
             const audioPlayer = document.getElementById('plyr-audio-player');
             const videoPlayer = document.getElementById('plyr-video-player');
             el.classList.remove('active');
