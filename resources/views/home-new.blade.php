@@ -1067,7 +1067,7 @@
 
         .plan {
             position: relative;
-            background: url("{{ config('app.logo_alter') }}");
+            background: url("{{ config('app.logo') }}");
             background-color: rgba(0, 0, 0, .75);
             background-blend-mode: overlay;
             background-size: cover;;
