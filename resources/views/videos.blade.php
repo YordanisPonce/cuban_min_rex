@@ -217,7 +217,7 @@
         }
 
         function closePlayer(){
-            const player = document.getElementById('bottom-player');
+            const player = document.getElementById('video-player');
             player.classList.remove('active');
             cleanCards();
             isPlaying = false;
@@ -227,7 +227,7 @@
 
         function updatePlayerUI() {
             isPlaying ? audioPlayer.play() : audioPlayer.pause();
-            const el = document.getElementById('bottom-player');
+            const el = document.getElementById('video-player');
             if (!currentTrack) {
                 el.classList.remove('active');
                 document.querySelectorAll('.track-card').forEach(card => {
@@ -238,9 +238,9 @@
             }
             el.classList.add('active');
             let trackData = document.getElementById(currentTrack);
-            document.getElementById('player-img').src = trackData.querySelector('img').src;
-            document.getElementById('player-title').textContent = trackData.querySelector('.track-title').textContent;
-            document.getElementById('player-artist').textContent = trackData.querySelector('.track-artist').textContent;
+            document.getElementById('video-player-img').src = trackData.querySelector('img').src;
+            document.getElementById('video-player-title').textContent = trackData.querySelector('.track-title').textContent;
+            document.getElementById('video-player-artist').textContent = trackData.querySelector('.track-artist').textContent;
             // Update mini-player buttons
             document.querySelectorAll('.track-card').forEach(card => {
                 const id = card.id;
