@@ -88,16 +88,18 @@ class PlayListController extends Controller
 
         $djs = User::whereHas('playlists')->get();
 
-        $banners = Banner::where('active', true)->pluck('path');
+        $bns = Banner::where('active', true)->get();
+        $banners = [];
 
-        if ($banners->count() > 0) {
-            $banners = $banners->toArray();
+        if($bns->count() > 0) 
+        {
+            foreach ($bns as $bn) {
+                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
+                array_push($banners,$banner);
+            }
 
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 4;
@@ -117,16 +119,18 @@ class PlayListController extends Controller
 
         $folders = $folders->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
-        $banners = Banner::where('active', true)->pluck('path');
+        $bns = Banner::where('active', true)->get();
+        $banners = [];
 
-        if ($banners->count() > 0) {
-            $banners = $banners->toArray();
+        if($bns->count() > 0) 
+        {
+            foreach ($bns as $bn) {
+                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
+                array_push($banners,$banner);
+            }
 
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 4;
@@ -180,16 +184,18 @@ class PlayListController extends Controller
             });
         }
 
-        $banners = Banner::where('active', true)->pluck('path');
+        $bns = Banner::where('active', true)->get();
+        $banners = [];
 
-        if ($banners->count() > 0) {
-            $banners = $banners->toArray();
+        if($bns->count() > 0) 
+        {
+            foreach ($bns as $bn) {
+                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
+                array_push($banners,$banner);
+            }
 
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 4;
@@ -230,16 +236,18 @@ class PlayListController extends Controller
             'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_', $playlist->name), $song->id]),
         ];
 
-        $banners = Banner::where('active', true)->pluck('path');
+        $bns = Banner::where('active', true)->get();
+        $banners = [];
 
-        if ($banners->count() > 0) {
-            $banners = $banners->toArray();
+        if($bns->count() > 0) 
+        {
+            foreach ($bns as $bn) {
+                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
+                array_push($banners,$banner);
+            }
 
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         return view('info', compact('item', 'banners'));

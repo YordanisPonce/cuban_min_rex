@@ -145,18 +145,18 @@ class SearchController extends Controller
             ]
         );
 
-        $banners = Banner::where('active', true)->pluck('path');
+        $bns = Banner::where('active', true)->get();
+        $banners = [];
 
-        if($banners->count() > 0) 
+        if($bns->count() > 0) 
         {
-            $banners = $banners->toArray();
-
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
+            foreach ($bns as $bn) {
+                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
+                array_push($banners,$banner);
+            }
 
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 999;

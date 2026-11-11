@@ -12,6 +12,7 @@ use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Storage;
 use UnitEnum;
 
 class Banners extends Page
@@ -85,6 +86,12 @@ class Banners extends Page
         $banner = Banner::find($id);
 
         if($banner) {
+            try {
+                $imagePath = Storage::disk('s3')->get($banner->path);
+                Storage::disk('s3')->delete($imagePath);
+            } catch (\Exception $e) {
+                Notification::make()->body('No se pudo eliminar la imagen anterior de AWS S3: ' . $e->getMessage())->warning()->send();
+            }
             $banner->delete();
             Notification::make()
                 ->body('Banner Eliminado Correctamente')
