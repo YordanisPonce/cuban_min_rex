@@ -2129,13 +2129,13 @@
             elv.classList.remove('active');
             if (flag == 'video') {
                 elv.classList.add('active');
-                document.getElementById('video-player-img').src = element.dataset.img;
-                document.getElementById('video-player-title').textContent = element.dataset.title;
-                document.getElementById('video-player-artist').textContent = element.dataset.artist;
+                document.getElementById('player-img').src = element.dataset.cover;
+                document.getElementById('player-title').textContent = element.dataset.track;
+                document.getElementById('player-artist').textContent = element.dataset.artist;
             } else {
                 el.classList.add('active');
-                document.getElementById('player-img').src = element.dataset.img;
-                document.getElementById('player-title').textContent = element.dataset.title;
+                document.getElementById('player-img').src = element.dataset.cover;
+                document.getElementById('player-title').textContent = element.dataset.track;
                 document.getElementById('player-artist').textContent = element.dataset.artist;
             }
             var icon = element.querySelector('i');
