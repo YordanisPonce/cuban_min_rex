@@ -72,7 +72,6 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--bg);
             color: var(--fg);
             min-height: 100vh;
             overflow-x: hidden;
@@ -821,13 +820,13 @@
         }
 
         .release-info h4 {
-            font-size: .92rem;
+            font-size: .75rem;
             font-weight: 800;
             line-height: 1.2;
             margin-bottom: .45rem;
             display: -webkit-box;
-            -webkit-line-clamp: 3;
-            line-clamp: 3;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -2112,7 +2111,7 @@
 
         function closePlayer(element, flag = 'audio') {
             const el = document.getElementById('bottom-player');
-            const elv = document.getElementById('video-player');
+            const elv = document.getElementById('bottom-video-player');
             const audioPlayer = document.getElementById('plyr-audio-player');
             const videoPlayer = document.getElementById('plyr-video-player');
             el.classList.remove('active');
