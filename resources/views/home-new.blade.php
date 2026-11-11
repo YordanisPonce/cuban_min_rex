@@ -1979,7 +1979,7 @@
                     @foreach($plans as $i => $plan)
                     <div class="plan {{ $i === 0 ? 'featured' : '' }}"
                         @if($plan->image)
-                            style="background: url('{{ $plan->image }}') center center;"
+                            style="background: url('{{ $plan->image }}') no-repeat center center;"
                         @endif
                     >
                         <div>
