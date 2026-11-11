@@ -1067,7 +1067,10 @@
 
         .plan {
             position: relative;
-            background: var(--card);
+            background: url("{{ config('app.logo_alter') }}") no-repeat center center fixed;
+            background-color: rgba(0, 0, 0, .75);
+            background-blend-mode: overlay;
+            background-size: cover;;
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 1.5rem 1.4rem;
