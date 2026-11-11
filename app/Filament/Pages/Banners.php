@@ -58,7 +58,10 @@ class Banners extends Page
                 ])
                 ->action(function(array $data){
                     try {
-                        $banner = Banner::create($data);
+                        $banner = new Banner();
+                        $banner->path = $data['path'];
+                        $banner->isVideo = $data['isVideo'];
+                        $banner->save();
 
                         Notification::make()
                             ->body('Banner Subido Correctamente')
