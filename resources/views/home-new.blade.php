@@ -1433,6 +1433,81 @@
             }
         }
 
+        .bottom-player.video{
+            width: 500px;
+            height: 500px;
+            bottom: 20px;
+            right: 20px;
+            left: auto;
+            border: 0.5px solid var(--primary);
+            padding: 0;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 700px){
+            .bottom-player.video{
+                width: 300px;
+                height: 300px;
+            }
+        }
+
+        .bottom-player.video .player-inner{
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            height: 100%;
+            padding: 15px;
+            gap: 5px;
+
+            & .video-player{
+                width: 100%;
+                height: 100%;
+
+                & .plyr{
+                    width: 100%;
+                    height: 100%;
+                }
+            }
+
+            & .player-controls{
+                width: 100%;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                gap: 10px;
+
+                & .waveform{
+                    width: 100%;
+                    height: auto;
+                    min-height: 30px;
+                }
+
+                & .main-play{
+                    width: 30px;
+                    height: 30px;
+
+                    &:hover{
+                        color: var(--text-muted)
+                    }
+                }
+            }
+
+            & .player-track{
+                display: grid;
+                width:100%;
+                position: relative;
+                gap: 10px;
+                grid-template-columns: 40px 1fr;
+                padding-right: 15px;
+
+                & .close{
+                    position: absolute;
+                    top: 10px;
+                    right: 0;
+                }
+            }
+        }
+
         /* Teléfonos */
         @media (max-width: 900px) {
             :root {

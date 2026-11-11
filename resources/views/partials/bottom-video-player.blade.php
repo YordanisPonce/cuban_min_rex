@@ -1,5 +1,5 @@
 <!-- BOTTOM PLAYER -->
-<div class="bottom-player container" id="video-player">
+<div class="bottom-player video container" id="video-player">
     <div class="player-inner">
         <div class="player-track">
             <img id="player-img" src="" alt="">
