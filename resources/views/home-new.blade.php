@@ -1067,7 +1067,7 @@
 
         .plan {
             position: relative;
-            background: url("{{ config('app.logo_alter') }}") no-repeat center center fixed;
+            background: url("{{ config('app.logo_alter') }}");
             background-color: rgba(0, 0, 0, .75);
             background-blend-mode: overlay;
             background-size: cover;;
@@ -1093,7 +1093,6 @@
         .plan.featured {
             border: 2px solid var(--primary);
             box-shadow: 0 0 34px rgba(245, 166, 35, .22);
-            background: linear-gradient(180deg, rgba(245, 166, 35, .07), var(--card) 45%);
         }
 
         .plan-flag {
