@@ -2200,7 +2200,6 @@
             const elv = document.getElementById('video-player');
             const audioPlayer = document.getElementById('plyr-audio-player');
             const videoPlayer = document.getElementById('plyr-video-player');
-            closePlayer();
             if (flag == 'video') {
                 elv.classList.add('active');
                 document.getElementById('player-img').src = element.dataset.cover;
@@ -2221,6 +2220,7 @@
         function verifySource(element, flag = 'audio') {
             const audioPlayer = document.getElementById('plyr-audio-player');
             const videoPlayer = document.getElementById('plyr-video-player');
+            closePlayer();
             var audio = new Audio(element.dataset.url);
             if(flag == 'video'){
                 audio = document.createElement('video');
