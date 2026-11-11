@@ -52,6 +52,17 @@
                 @else
                     <x-filament::badge color="danger">INACTIVO</x-filament::badge>
                 @endif
+                @if($b->isVideo)
+                <video src="{{ $b->image() }}"
+                    style="
+                    min-width: 250px;
+                    max-width: 500px;
+                    width:100%;
+                    max-height: 500px;
+                    aspect-ratio: 2;
+                    margin: 6px auto;
+                " controls></video>
+                @else
                 <img src="{{ $b->image() }}"
                     style="
                     min-width: 250px;
@@ -61,6 +72,7 @@
                     aspect-ratio: 2;
                     margin: 6px auto;
                 ">
+                @endif
                 <div style="display:flex; gap: 20px; justify-content: space-between; margin-top: 20px">
                     @if ($b->active)
                         <x-filament::button icon="heroicon-o-x-circle" color="danger"

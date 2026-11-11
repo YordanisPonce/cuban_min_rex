@@ -6,6 +6,7 @@ use App\Models\Banner;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Filament\Support\Icons\Heroicon;
@@ -45,8 +46,14 @@ class Banners extends Page
                         ->disk('s3')
                         ->directory('images/banners')
                         ->label('Banner')
-                        ->image()
+                        ->acceptedFileTypes(["video/*", "image/*"])
                         ->required()
+                        ->helperText('Tener en cuenta que los videos sufrirán los mismos efectos que las imagenes, puede que se corte o no se muestre totalmente. Un banner video puede provocar lentitud a la hora de cargar la web.'),
+                    Toggle::make('isVideo')
+                        ->onIcon('heroicon-s-check-circle')
+                        ->offIcon('heroicon-s-x-circle')
+                        ->label('Banner animado')
+                        ->helperText('Habilitar o deshabilitar para videos, de lo contrario se mostrara como imagen fija.'),
                 ])
                 ->action(function(array $data){
                     try {

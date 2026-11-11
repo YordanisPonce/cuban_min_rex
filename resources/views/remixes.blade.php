@@ -254,7 +254,7 @@
         heroImages.forEach((src, i) => {
             const slide = document.createElement('div');
             slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
-            slide.innerHTML = `<img src="${src}" alt="DJ hero ${i + 1}">`;
+            slide.innerHTML = src.isVideo ? `<video src="${src.image}" alt="DJ hero ${i + 1}" autoplay muted loop></video>` : `<img src="${src.image}" alt="DJ hero ${i + 1}">`;
             slidesEl.appendChild(slide);
         });
 

@@ -9,7 +9,8 @@ class Banner extends Model
 {
     protected $fillable = [
         'path',
-        'active'
+        'isVideo',
+        'active',
     ];
     
     public function image(): string

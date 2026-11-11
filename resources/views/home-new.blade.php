@@ -260,7 +260,7 @@
             overflow: hidden;
         }
 
-        .hero-bg img {
+        .hero-bg img, .hero-bg video {
             width: 100%;
             height: 100%;
             object-fit: cover;
@@ -271,7 +271,7 @@
             max-width: 100%;
         }
 
-        .hero-slide.is-active .hero-bg img {
+        .hero-slide.is-active .hero-bg img, .hero-bg video {
             transform: scale(1);
         }
 
@@ -2069,6 +2069,12 @@
             const autoplay = multi && HERO_CONFIG.autoplay !== false;
             const loop = HERO_CONFIG.loop !== false;
             const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+            const render_slide = (s, i) => {
+                if(s.isVideo) {
+                    return '<video src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '" autoplay muted loop></video>'
+                }
+                return '<img src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '">';
+            }
 
             hero.style.setProperty('--hero-interval', interval + 'ms');
             hero.innerHTML =
@@ -2076,7 +2082,7 @@
                     const tag = i === 0 ? 'h1' : 'h2';
                     const cta = s.cta ? '<button class="btn-cta" data-cta data-href="' + esc(s.cta.href) + '" data-toast="' + esc(s.cta.toast) + '">' + esc(s.cta.label) + ' <i class="fas fa-arrow-right"></i></button>' : '';
                     return '<article class="hero-slide' + (i === 0 ? ' is-active' : '') + '" role="group" aria-roledescription="slide" aria-label="' + (i + 1) + ' de ' + len + '">' +
-                        '<div class="hero-bg"><img src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '"></div>' +
+                        '<div class="hero-bg">'+ render_slide(s, i) +'</div>' +
                         '<div class="hero-inner">' +
                         '<div class="hero-kicker">' + (s.kicker || '') + '</div>' +
                         '<' + tag + ' class="hero-title">' + esc(s.title) + (s.accent ? '<span>' + esc(s.accent) + '</span>' : '') + '</' + tag + '>' +

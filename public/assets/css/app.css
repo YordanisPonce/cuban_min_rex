@@ -2098,7 +2098,7 @@ body>.skiptranslate>iframe {
     inset: 0
 }
 
-.hero-bg img {
+.hero-bg img, .hero-bg video {
     max-width: 1200px;
     width: 100%;
     height: 100%;
@@ -2129,7 +2129,7 @@ body>.skiptranslate>iframe {
     opacity: 1;
 }
 
-.hero-slide img {
+.hero-slide img, .hero-slide video {
     width: 100%;
     height: 100%;
     object-fit: cover;
