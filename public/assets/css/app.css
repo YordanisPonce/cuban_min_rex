@@ -2090,7 +2090,7 @@ body>.skiptranslate>iframe {
     position: relative;
     padding: 100px 0 60px;
     overflow: hidden;
-    min-height: 420px
+    min-height: 80dvh
 }
 
 .hero-bg {
@@ -2133,6 +2133,11 @@ body>.skiptranslate>iframe {
     width: 100%;
     height: 100%;
     object-fit: cover;
+}
+
+.hero-slide video {
+    object-fit: fill !important;
+    object-position: center;
 }
 
 .hero-gradient {

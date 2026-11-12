@@ -25,30 +25,6 @@
             scroll-behavior: smooth;
         }
 
-        @media (min-width: 1600px) {
-            html {
-                font-size: 16.5px;
-            }
-        }
-
-        @media (min-width: 1920px) {
-            html {
-                font-size: 18px;
-            }
-        }
-
-        @media (min-width: 2560px) {
-            html {
-                font-size: 22px;
-            }
-        }
-
-        @media (min-width: 3200px) {
-            html {
-                font-size: 27px;
-            }
-        }
-
         .window-loader {
             display: none;
         }
@@ -229,7 +205,7 @@
             padding: 0;
             border-bottom: 1px solid var(--border);
             background: var(--bg);
-            min-height: 60dvh;
+            min-height: 80dvh;
         }
 
         .hero-track {
@@ -2071,9 +2047,9 @@
             const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
             const render_slide = (s, i) => {
                 if(s.isVideo) {
-                    return '<video src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '" autoplay muted loop></video>'
+                    return '<video src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '; object-fit: fill" autoplay muted loop></video>'
                 }
-                return '<img src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '">';
+                return '<img src="' + esc(s.image) + '" alt="" decoding="async" ' + (i === 0 ? 'fetchpriority="high"' : 'loading="lazy"') + ' style="object-position:' + esc(s.position || 'center') + '; object-fit: cover">';
             }
 
             hero.style.setProperty('--hero-interval', interval + 'ms');
@@ -2278,4 +2254,9 @@
             button.addEventListener('click', () => playTrack(button));
         });
     </script>
+    @isset($error)
+        <script>
+            showToast({{$error}});
+        </script>
+    @endisset
 @endpush
