@@ -32,7 +32,7 @@ class ListUsers extends ListRecords
                     Select::make('user_id')->label('Usuario')->options(function () {
                         $options = [];
 
-                        foreach (User::where('current_plan_id', null)->get() as $user) {
+                        foreach (User::all() as $user) {
                             $options[$user->id] = $user->name;
                         }
 
