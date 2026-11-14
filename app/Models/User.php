@@ -160,6 +160,17 @@ class User extends Authenticatable implements FilamentUser
         return Subscription::where('user_id', $this->id)->orderBy('updated_at', 'desc')->first();
     }
 
+    public function updateSuscriptionData(): void
+    {
+        if($this->hasActivePlan()){
+            $susc = $this->getActivePlan();
+            Subscription::updateOrCreate(
+                ['user_id' => $this->id],
+                ['plan_name' => $susc->name, 'plan_price' => $susc->price, 'max_downloads' => $susc->downloads, 'ends_at' => $this->plan_expires_at]
+            );
+        }
+    }
+
     public function hasAviableDownloads(): bool
     {
         $susc = $this->getActiveSuscription();
