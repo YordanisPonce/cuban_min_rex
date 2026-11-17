@@ -20,6 +20,6 @@ class Subscription extends Model
         'plan_name',
         'plan_price',
         'ends_at',
-        'candeled_at'
+        'canceled_at'
     ];
 }
