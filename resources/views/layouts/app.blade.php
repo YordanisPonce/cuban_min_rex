@@ -16,6 +16,7 @@
     <meta name="description" content="{{ config('app.description') }}">
     <meta name="author" content="{{ config('app.name') }}">
     <meta name="robots" content="index, follow">
+    <meta name="image" content="{{ config('app.logo') }}">
     <meta name="language" content="es">
     <meta name="distribution" content="global">
     <meta name="rating" content="general">

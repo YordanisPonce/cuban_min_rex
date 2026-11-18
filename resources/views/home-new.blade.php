@@ -1675,25 +1675,25 @@
             <section class="hero" id="hero" aria-roledescription="carousel" aria-label="Destacados"></section>
 
             <section class="features">
-                <div class="feature"><i class="fas fa-headphones"></i>
+                <div class="feature" data-aos="fade-in" data-aos-delay="300"><i class="fas fa-headphones"></i>
                     <div>
                         <h4>Audio de Alta Calidad</h4>
                         <p>WAV / MP3 320 kbps</p>
                     </div>
                 </div>
-                <div class="feature"><i class="fas fa-bolt"></i>
+                <div class="feature" data-aos="fade-in" data-aos-delay="300"><i class="fas fa-bolt"></i>
                     <div>
                         <h4>Descargas Inmediatas</h4>
                         <p>sin esperas</p>
                     </div>
                 </div>
-                <div class="feature"><i class="fas fa-layer-group"></i>
+                <div class="feature" data-aos="fade-in" data-aos-delay="300"><i class="fas fa-layer-group"></i>
                     <div>
                         <h4>Catálogo Actualizado</h4>
                         <p>nuevos remixes cada semana</p>
                     </div>
                 </div>
-                <div class="feature"><i class="fas fa-shield-halved"></i>
+                <div class="feature" data-aos="fade-in" data-aos-delay="300"><i class="fas fa-shield-halved"></i>
                     <div>
                         <h4>Contenido Exclusivo</h4>
                         <p>para DJs</p>
@@ -1701,7 +1701,7 @@
                 </div>
             </section>
 
-            <section class="search-zone" id="buscar">
+            <section class="search-zone" id="buscar" data-aos="fade-in" data-aos-delay="300">
                 <form class="search-form" id="searchForm" action="{{ route('search') }}" method="get" role="search" autocomplete="off">
                     <div class="search-input field-q">
                         <i class="fas fa-search" aria-hidden="true"></i>
@@ -1782,26 +1782,35 @@
 
             @if(count($geners) > 0)
             <section class="section">
-                <div class="section-head">
+                <div class="section-head" data-aos="fade-right" data-aos-delay="300">
                     <h2>Explora por <span>Géneros</span></h2>
                 </div>
                 <div class="genres">
+                    @php
+                        $i = 0;
+                    @endphp
                     @foreach($geners as $g)
-                        <div class="genre" onclick="window.location = '{{ $g['route'] }}'"><img src="{{ $g['cover'] }}"
+                        <div class="genre" data-aos="fade-in" data-aos-delay="{{ 300 + $i }}" onclick="window.location = '{{ $g['route'] }}'"><img src="{{ $g['cover'] }}"
                             alt="Reggaeton Old School" loading="lazy"><span>{{ $g['name'] }}</span></div>
+                    @php
+                        $i+=150;
+                    @endphp
                     @endforeach
                 </div>
             </section>
             @endif
 
             <section class="section">
-                <div class="section-head">
+                <div class="section-head"  data-aos="fade-right" data-aos-delay="300">
                     <h2>Últimos <span>Lanzamientos</span></h2>
                     <a class="see-all" href="{{ route('remixes') }}">Ver Todos <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="releases">
+                    @php
+                        $i = 0;
+                    @endphp
                     @foreach($newItems as $release)
-                    <div class="release">
+                    <div class="release" data-aos="fade-in" data-aos-delay="{{ 300 + $i }}">
                         <img src="{{ $release['img'] }}" alt="{{ $release['title'] }}"
                             loading="lazy">
                         <div class="release-info">
@@ -1825,18 +1834,24 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                        $i+=150;
+                    @endphp
                     @endforeach
                 </div>
             </section>
 
             <section class="section two-col">
                 <div>
-                    <div class="section-head">
+                    <div class="section-head" data-aos="fade-in" data-aos-delay="300">
                         <h2>Más <span>Descargados</span></h2>
                     </div>
                     <div class="top-list">
+                        @php
+                            $i = 0;
+                        @endphp
                         @foreach($topItems as $i => $item)
-                            <div class="top-item">
+                            <div class="top-item" data-aos="fade-right" data-aos-delay="{{ 300 + $i }}">
                                 <div class="top-rank">{{ $i + 1 }}</div>
                                 <div class="top-info">
                                     <h4>{{ $item['title'] }}</h4>
@@ -1854,36 +1869,48 @@
                                 <span class="top-play btn-play"
                                     data-track="{{ $item['title'] }}" data-artist="{{ $item['artist'] }}" data-cover="{{ $item['img'] }}" data-url="{{ $item['url'] }}" data-flag="{{ $item['flag']}}"><i class="fas fa-play"></i></span>
                             </div>
+                            @php
+                                $i+=150;
+                            @endphp
                         @endforeach
                     </div>
                 </div>
                 <div>
-                    <div class="section-head">
+                    <div class="section-head" data-aos="fade-in" data-aos-delay="300">
                         <h2>Playlists <span>Destacadas</span></h2>
                         <a class="see-all" href="{{ route('playlist.index') }}">Ver Todas <i class="fas fa-arrow-right"></i></a>
                     </div>
                     <div class="playlists-grid">
+                        @php
+                            $i = 0;
+                        @endphp
                         @foreach($playlists as $playlist)
-                        <div class="playlist-card" onclick="window.location = '{{ $playlist['route'] }}'">
+                        <div class="playlist-card" data-aos="fade-in" data-aos-delay="{{ 300 + $i }}" onclick="window.location = '{{ $playlist['route'] }}'">
                             <img src="{{ $playlist['img'] }}"
                                 alt="{{ $playlist['title'] }}" loading="lazy">
                             <div class="playlist-info">
                                 <h4>{{ $playlist['title'] }}</h4><small><i class="fas fa-list"></i> {{ $playlist['items'] }} Tracks</small>
                             </div>
                         </div>
+                        @php
+                            $i += 150;
+                        @endphp
                         @endforeach
                     </div>
                 </div>
             </section>
 
             <section class="section">
-                <div class="section-head">
+                <div class="section-head" data-aos="fade-right" data-aos-delay="300">
                     <h2>Contenido <span>Exclusivo</span></h2>
                     <a class="see-all" href="{{ route('exclusives') }}">Ver Todos <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="releases">
+                    @php
+                        $i = 0;
+                    @endphp
                     @foreach($exclusives as $release)
-                    <div class="release">
+                    <div class="release" data-aos="fade-in" data-aos-delay="{{ 300 + $i }}">
                         <img src="{{ $release['img'] }}" alt="{{ $release['title'] }}"
                             loading="lazy">
                         <div class="release-info">
@@ -1907,18 +1934,24 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                        $i += 150;
+                    @endphp
                     @endforeach
                 </div>
             </section>
 
             <section class="section">
-                <div class="section-head">
+                <div class="section-head" data-aos="fade-right" data-aos-delay="300">
                     <h2>MIX <span>SESSIONS</span></h2>
                     <a class="see-all" href="{{ route('remixes', ['genre' => 'Mix']) }}">Ver Todos <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="releases">
+                    @php
+                        $i = 0;
+                    @endphp
                     @foreach($mixes as $release)
-                    <div class="release">
+                    <div class="release" data-aos="fade-in" data-aos-delay="{{ 300 + $i }}">
                         <img src="{{ $release['img'] }}" alt="{{ $release['title'] }}"
                             loading="lazy">
                         <div class="release-info">
@@ -1942,18 +1975,24 @@
                             </div>
                         </div>
                     </div>
+                    @php
+                        $i += 150;
+                    @endphp
                     @endforeach
                 </div>
             </section>
 
             <section class="section" id="planes">
-                <div class="section-head" style="flex-direction:column;align-items:flex-start;gap:.2rem; margin-bottom: 2rem">
+                <div class="section-head" style="flex-direction:column;align-items:flex-start;gap:.2rem; margin-bottom: 2rem" data-aos="fade-right" data-aos-delay="300">
                     <h2>Planes de <span>Suscripción</span></h2>
                     <p class="section-sub">Accede a todo el catálogo y lleva tus sets al siguiente nivel.</p>
                 </div>
                 <div class="plans">
+                    @php
+                        $ii = 0;
+                    @endphp
                     @foreach($plans as $i => $plan)
-                    <div class="plan {{ $i === 0 ? 'featured' : '' }}"
+                    <div class="plan {{ $i === 0 ? 'featured' : '' }}" data-aos="fade-in" data-aos-delay="{{ 300 + $ii }}"
                         @if($plan->image)
                             style="background: url('{{ $plan->image }}') no-repeat center center;background-color: rgba(0, 0, 0, .75);background-blend-mode: overlay;background-size: cover;"
                         @endif
@@ -1977,6 +2016,9 @@
                         <a class="plan-btn" href="{{ route('payment.form', str_replace(' ', '_', $plan->name)) }}">Comenzar Ahora <i
                                 class="fas fa-arrow-right"></i></a>
                     </div>
+                    @php
+                        $ii += 150;
+                    @endphp
                     @endforeach
                 </div>
             </section>
@@ -1990,13 +2032,19 @@
                     <a class="see-all" href="{{ route('djs') }}">Ver Todos <i class="fas fa-arrow-right"></i></a>
                 </div>
                 <div class="djs-row">
+                    @php
+                        $i = 0;
+                    @endphp
                     @foreach($tops as $dj)
-                    <div class="dj-card" onclick="window.location = '{{ $dj['route'] }}'">
+                    <div class="dj-card" data-aos="fade-in" data-aos-delay="{{ 300 + $i }}" onclick="window.location = '{{ $dj['route'] }}'">
                         <div class="dj-avatar"><img
                                 src="{{ $dj['img'] }}"
                                 alt="{{ $dj['name'] }}"></div>
                         <h4>{{ $dj['name'] }}</h4>
                     </div>
+                    @php
+                        $i += 150;
+                    @endphp
                     @endforeach
                 </div>
             </section>
