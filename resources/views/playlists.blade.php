@@ -1076,11 +1076,11 @@
 
         function renderFolders() {
             let i = 0;
-            let html = `<div class="folder all ${activeFolder === 'all' ? 'active' : ''}" data-folder="all" data-aos="fade-in" data-aos-delay="${ 300 + i++ * 150 }">
+            let html = `<div class="folder all ${activeFolder === 'all' ? 'active' : ''}" data-folder="all" data-aos="fade-in" data-aos-delay="${ i++ * 150 }">
     <div class="all-inner"><div class="all-icon"><i class="fas fa-layer-group"></i></div><h4>Todos</h4><small>${playlists.length} playlists</small></div>
   </div>`;
             folders.forEach(f => {
-                html += `<div class="folder ${activeFolder === f.id ? 'active' : ''}" data-folder="${f.name}" data-aos="fade-in" data-aos-delay="${ 300 + i++ * 150 }">
+                html += `<div class="folder ${activeFolder === f.id ? 'active' : ''}" data-folder="${f.name}" data-aos="fade-in" data-aos-delay="${ i++ * 150 }">
       <img src="${f.img}" alt="${f.name}" loading="lazy">
       <div class="folder-info"><h4>${f.name}</h4><small><i class="fas fa-list"></i> ${folderCount(f.name)} playlists</small></div>
     </div>`;
