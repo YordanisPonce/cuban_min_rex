@@ -231,7 +231,6 @@
             playTrack(id, url);
         }
     </script>
-    
     @isset($error)
         <script>
             Swal.fire({

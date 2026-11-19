@@ -27,6 +27,10 @@
             --primary: var(--red) !important;
         }
 
+        .hero-slide img{
+            object-fit: fill !important;
+        }
+
         .content {
             display: flex;
             flex-direction: column-reverse;
@@ -82,21 +86,11 @@
 @endpush
 
 @section('content')
-
-    <section class="hero radio container">
-        <div class="hero-bg">
-            <img style="width: 100%" src="{{ asset('assets/img/emisora-portada.png') }}" alt="hero-banner">
-            <div class="overlay"></div>
-        </div>
-        <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">NUESTRA <span class="text-primary">EMISORA</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Escucha música a tu gusto directamente desde nuestra emisora.</p>
-            <ul>
-                <li data-aos="fade-right" data-aos-delay="700"><strong>+1000 tracks</strong> actualizados semanalmente.</li>
-                <li data-aos="fade-right" data-aos-delay="900"><strong>Locutores en línea</strong></li>
-            </ul>
-        </div>
-    </section>
+    @include('partials.hero', [
+        'baseTitle' => 'NUESTRA',
+        'baseAscent' => 'EMISORA',
+        'baseDescription' => 'Escucha música a tu gusto directamente desde nuestra emisora.',
+    ])
 
     <!-- Filters -->
     <div class="filters-bar">

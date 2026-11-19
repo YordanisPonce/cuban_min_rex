@@ -28,13 +28,17 @@
             --primary: var(--red) !important;
         }
 
+        .hero-slide img{
+            object-fit: fill !important;
+        }
+
         .frames-section {
             max-width: 1000px;
             margin: 0 auto;
             display: flex;
             width: 100%;
             gap: 1rem;
-            padding: 1rem 0;
+            padding: 1.5rem 0;
 
             & iframe {
                 height: 100%;
@@ -98,39 +102,34 @@
                 flex-direction: row;
             }
 
-            .hero-bg .overlay{
-                background: rgba(0,0,0,.7)
+            .hero-bg .overlay {
+                background: rgba(0, 0, 0, .7)
             }
         }
     </style>
 @endpush
 
 @section('content')
-    <section class="hero radio container">
-        <div class="hero-bg">
-            <img style="width: 100%" src="{{ asset('assets/img/emisora-portada.png') }}" alt="hero-banner">
-            <div class="overlay"></div>
-        </div>
-        <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">NUESTRA <span class="text-primary">EMISORA</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Escucha música a tu gusto directamente desde nuestra emisora.</p>
-            <ul>
-                <li data-aos="fade-right" data-aos-delay="700"><strong>+1000 tracks</strong> actualizados semanalmente.</li>
-                <li data-aos="fade-right" data-aos-delay="900"><strong>Locutores en línea</strong></li>
-            </ul>
-        </div>
-    </section>
+
+    @include('partials.hero', [
+        'baseTitle' => 'NUESTRA',
+        'baseAscent' => 'EMISORA',
+        'baseDescription' => 'Escucha música a tu gusto directamente desde nuestra emisora.',
+    ])
 
     <div class="container content">
         <div class="tracks-sections">
             <div class="tracks-container" id="tracks-list" data-aos="fade-up" data-aos-delay="300">
-                <h2><span>SESIONES EN VIVO</span><a class="btn-outline" href="{{ route('radio.remixes', ['genre' => SectionEnum::CUBANDJS_LIVE_SESSIONS->value]) }}">VER TODOS »</a></h2>
+                <h2><span>SESIONES EN VIVO</span><a class="btn-outline"
+                        href="{{ route('radio.remixes', ['genre' => SectionEnum::CUBANDJS_LIVE_SESSIONS->value]) }}">VER
+                        TODOS »</a></h2>
                 @foreach ($lives as $track)
                     @include('partials.radio-remix-card', ['item' => $track])
                 @endforeach
             </div>
             <div class="tracks-container" id="tracks-list" data-aos="fade-up" data-aos-delay="300">
-                <h2><span>MIX & REMIX</span><a class="btn-outline" href="{{ route('radio.remixes', ['genre' => SectionEnum::CUBANDJS->value]) }}">VER TODOS »</a></h2>
+                <h2><span>MIX & REMIX</span><a class="btn-outline"
+                        href="{{ route('radio.remixes', ['genre' => SectionEnum::CUBANDJS->value]) }}">VER TODOS »</a></h2>
                 @foreach ($mixes as $track)
                     @include('partials.radio-remix-card', ['item' => $track])
                 @endforeach

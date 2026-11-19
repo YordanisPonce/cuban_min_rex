@@ -340,10 +340,12 @@ class HomeController extends Controller
                 'cup_pay' => route('payment.cup.form', $file->id),
             ];
         });
+            
+        $banners = [[ 'image' => asset('assets/img/emisora-portada.png') ]];
 
         $index = 6;
 
-        return view('radio', compact('index', 'lives', 'mixes'));
+        return view('radio', compact('index', 'lives', 'mixes', 'banners'));
     }
     
     public function radio_remixes(Request $request)
@@ -416,9 +418,11 @@ class HomeController extends Controller
             ]
         ];
 
+        $banners = [[ 'image' => asset('assets/img/emisora-portada.png') ]];
+
         $index = 6;
 
-        return view('radio-remixes', compact('index', 'tracks', 'djs', 'genres'));
+        return view('radio-remixes', compact('index', 'tracks', 'djs', 'genres', 'banners'));
     }
 
     protected function hasRecentPurchaseRequest(): bool
