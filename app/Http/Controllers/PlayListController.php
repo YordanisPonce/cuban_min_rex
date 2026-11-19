@@ -31,23 +31,41 @@ class PlayListController extends Controller
      */
     public function index()
     {
-        $name = request()->get("title");
-        $dj = request()->get("dj");
 
-        $playlists = PlayList::whereHas('items')->orderBy('created_at', 'desc')->paginate(5)->withQueryString();
+        $playlists = PlayList::whereHas('items')->orderBy('created_at', 'desc')->get();
+
+        $playlists->transform(function ($playlist) {
+            return [
+                'name' => $playlist->name,
+                'artist' => $playlist->user?->name ?? 'CubanPool',
+                'items' => $playlist->items()->count(),
+                'folder' => $playlist->folder?->name ?? 'Desconocido',
+                'img' => $playlist->getCoverUrl() ?? $playlist->user->photo ?? config('app.logo_alter'),
+                'url' => route('playlist.show', str_replace(' ', '_', $playlist->name)),
+            ];
+        });
 
         $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->orderBy('created_at', 'desc')->take(5)->get();
 
-        $banners = Banner::where('active', true)->pluck('path');
+        $folders->transform(function ($folder) {
+            return [
+                'name' => $folder->name,
+                'img' => $folder->getCoverUrl() ?? config('app.logo_alter'),
+            ];
+        });
 
-        if ($banners->count() > 0) {
-            $banners = $banners->toArray();
+        $bns = Banner::where('active', true)->get();
+        $banners = [];
 
-            $banners = array_map(function ($banner) {
-                return Storage::disk('s3')->url($banner ?? '');
-            }, $banners);
+        if($bns->count() > 0) 
+        {
+            foreach ($bns as $bn) {
+                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
+                array_push($banners,$banner);
+            }
+
         } else {
-            $banners = [asset('assets/img/hero-base.jpeg')];
+            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 4;
@@ -149,9 +167,9 @@ class PlayListController extends Controller
             return [
                 'id' => (string) $track->id,
                 'date' => $track->created_at,
-                'artist' => $playlist->user->name,
+                'artist' => $playlist->user?->name,
                 'title' => $track->title,
-                'img' => $playlist->cover ? $playlist->getCoverUrl() : $playlist->user->photo ?? config('app.logo_alter'),
+                'img' => $playlist->cover ? $playlist->getCoverUrl() : $playlist->user?->photo ?? config('app.logo_alter'),
                 'bpm' => null,
                 'duration' => 120,
                 'genre' => null,
@@ -162,14 +180,14 @@ class PlayListController extends Controller
                 'canDownload' => $playlist->canBeDownload(),
                 'downloadLink' => $playlist->canBeDownload() ? route('playlist.download_item', [str_replace(' ', '_', $playlist->name), $track->id]) : null,
                 'addToCart' => route('playlist.add.item.cart', [str_replace(' ', '_', $playlist->name), $track->id]),
-                'info' => route('playlist.item.info', [str_replace(' ', '_', $playlist->name), str_replace(' ', '_', $track->title)]),
+                'info' => route('playlist.item.info', [str_replace(' ', '_', $playlist->name), str_replace(' ', '_', $track->title ?? 'Desconocido')]),
             ];
         });
 
         $similar = [];
 
         if ($playlist) {
-            $similar = PlayList::where('id', '!=', $playlist->id)->where('folder_id', $playlist->folder?->id ?? null)->where('user_id', $playlist->user->id)
+            $similar = PlayList::where('id', '!=', $playlist->id)->where('folder_id', $playlist->folder?->id ?? null)->where('user_id', $playlist->user?->id)
                 ->orderBy('created_at', 'desc')->take(4)->get();
 
             $similar = $similar->transform(function ($s) {

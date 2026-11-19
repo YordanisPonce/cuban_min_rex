@@ -142,7 +142,7 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::get('info/file/{name}', [FileController::class, 'info'])
             ->name('file.info');
 
-        Route::get('/playlists', [PlayListController::class, 'folders'])->name('playlist.index');
+        Route::get('/playlists', [PlayListController::class, 'index'])->name('playlist.index');
         Route::get('/playlists/lists', [PlayListController::class, 'list'])->name('playlist.list');
         Route::get('/playlists/lists/{playlist}', [PlayListController::class, 'show'])->name('playlist.show');
         Route::get('/playlists/lists/{playlist}/download', [PlayListController::class, 'download'])->name('playlist.download');

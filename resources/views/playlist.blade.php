@@ -57,8 +57,8 @@
                 <h1 class="playlist-title">{{ $playlist->name }}</h1>
                 <p class="playlist-desc">{{ $playlist->description }}</p>
                 <div class="playlist-info-row">
-                    <a class="playlist-creator" href="{{ route('dj', str_replace(' ', '_', $playlist->user->name)) }}"><img src="{{ $playlist->user->photo ?? config('app.logo') }}"
-                            alt="{{ $playlist->user->name }}"><span>{{ $playlist->user->name }}</span></a>
+                    <a class="playlist-creator" href="{{ route('dj', str_replace(' ', '_', $playlist->user?->name ?? 'CubanPool')) }}"><img src="{{ $playlist->user->photo ?? config('app.logo') }}"
+                            alt="{{ $playlist->user?->name ?? 'CubanPool' }}"><span>{{ $playlist->user?->name ?? 'CubanPool' }}</span></a>
                     <span><i class="fas fa-music"></i> {{ $playlist->items->count() }} pistas</span>
                     <span><i class="fas fa-download"></i> {{ NumEnum::letter_format($playlist->downloads->count()) }}
                         descargas</span>
