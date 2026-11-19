@@ -45,7 +45,7 @@ class PlayListController extends Controller
             ];
         });
 
-        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->orderBy('created_at', 'desc')->take(5)->get();
+        $folders = Folder::where('type', FolderTypeEnum::PLAYLIST->value)->orderBy('created_at', 'desc')->get();
 
         $folders->transform(function ($folder) {
             return [
