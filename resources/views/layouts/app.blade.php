@@ -105,6 +105,11 @@
     @endphp
 
     <style>
+        :root{
+            --maxw: 100%;
+            --gutter: 10%;
+        }
+        
         body {
             background: url('{{ $backgroundUrl }}') no-repeat center center fixed;
             background-color: rgba(0, 0, 0, .75);
@@ -124,6 +129,305 @@
         .plyr__menu,
         .plyr [data-plyr=pip] {
             display: none;
+        }
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 0;
+            border-bottom: 1px solid var(--border);
+            background: var(--bg);
+            min-height: 80dvh;
+        }
+
+        .hero-track {
+            display: grid;
+            min-height: clamp(20rem, 48vh, 34rem);
+        }
+
+        .hero-slide {
+            grid-area: 1 / 1;
+            position: absolute;
+            display: flex;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity .9s ease, visibility 0s linear .9s;
+        }
+
+        .hero-slide.is-active {
+            opacity: 1;
+            visibility: visible;
+            z-index: 1;
+            transition: opacity .9s ease, visibility 0s;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+        }
+
+        .hero-bg img, .hero-bg video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.07);
+            transition: transform 8s ease-out;
+            aspect-ratio: auto;
+            position: relative;
+            max-width: 100%;
+        }
+
+        .hero-slide.is-active .hero-bg img, .hero-bg video {
+            transform: scale(1);
+        }
+
+        .hero-bg::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, rgba(15, 13, 11, .97) 0%, rgba(15, 13, 11, .85) 38%, rgba(15, 13, 11, .35) 70%, rgba(15, 13, 11, .55) 100%);
+        }
+
+        .hero-inner {
+            position: relative;
+            z-index: 2;
+            max-width: var(--maxw);
+            margin: 0 auto;
+            padding: 2.6rem var(--gutter) 3.6rem;
+            width: 100%;
+        }
+
+        .hero-inner>* {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity .6s ease, transform .6s ease;
+        }
+
+        .hero-slide.is-active .hero-inner>* {
+            opacity: 1;
+            transform: none;
+        }
+
+        .hero-slide.is-active .hero-inner> :nth-child(1) {
+            transition-delay: .15s;
+        }
+
+        .hero-slide.is-active .hero-inner> :nth-child(2) {
+            transition-delay: .27s;
+        }
+
+        .hero-slide.is-active .hero-inner> :nth-child(3) {
+            transition-delay: .39s;
+        }
+
+        .hero-slide.is-active .hero-inner> :nth-child(4) {
+            transition-delay: .5s;
+        }
+
+        .hero-kicker {
+            font-size: .74rem;
+            font-weight: 800;
+            letter-spacing: .18em;
+            text-transform: uppercase;
+            color: var(--fg);
+            margin-bottom: .8rem;
+        }
+
+        .hero-kicker em {
+            color: var(--primary);
+            font-style: normal;
+        }
+
+        .hero-title {
+            font-size: clamp(2rem, 5.2vw + .4rem, 3.2rem);
+            font-weight: 900;
+            font-style: italic;
+            text-transform: uppercase;
+            line-height: 1.02;
+            letter-spacing: -.01em;
+            visibility: visible !important
+        }
+
+        .hero-title span {
+            display: block;
+            background: linear-gradient(90deg, var(--primary), #ffcf6e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        .hero-text {
+            margin: .9rem 0 1.4rem;
+            font-size: .9rem;
+            color: #cfc4b2;
+            max-width: 26rem;
+            line-height: 1.55;
+        }
+
+        .btn-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: .6rem;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #14100b;
+            padding: .8rem 1.7rem;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: .82rem;
+            text-transform: uppercase;
+            letter-spacing: .04em;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all .2s;
+            box-shadow: 0 8px 24px rgba(245, 166, 35, .3);
+        }
+
+        .btn-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(245, 166, 35, .45);
+        }
+
+        .hero-arrow {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 5;
+            width: 2.6rem;
+            height: 2.6rem;
+            border-radius: 50%;
+            border: 1px solid rgba(240, 232, 216, .25);
+            background: rgba(15, 13, 11, .55);
+            backdrop-filter: blur(6px);
+            color: var(--fg);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: .85rem;
+            opacity: 0;
+            transition: opacity .25s, background .2s, border-color .2s;
+        }
+
+        .hero-arrow.prev {
+            left: max(.8rem, calc((100% - var(--maxw)) / 2 + .6rem));
+        }
+
+        .hero-arrow.next {
+            right: max(.8rem, calc((100% - var(--maxw)) / 2 + .6rem));
+        }
+
+        .hero:hover .hero-arrow,
+        .hero-arrow:focus-visible {
+            opacity: 1;
+        }
+
+        .hero-arrow:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #14100b;
+        }
+
+        .hero-nav {
+            position: absolute;
+            bottom: 1.1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: .55rem;
+            z-index: 5;
+        }
+
+        .hero-dot {
+            position: relative;
+            width: 8px;
+            height: 8px;
+            padding: 0;
+            border: none;
+            border-radius: 99px;
+            background: rgba(240, 232, 216, .32);
+            cursor: pointer;
+            transition: all .25s;
+        }
+
+        .hero-dot::after {
+            content: '';
+            position: absolute;
+            inset: -10px -4px;
+        }
+
+        .hero-dot.active {
+            background: var(--primary);
+            width: 22px;
+        }
+
+        .hero-pause {
+            margin-left: .4rem;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            border: 1px solid rgba(240, 232, 216, .3);
+            background: rgba(15, 13, 11, .45);
+            color: var(--fg);
+            font-size: .55rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-pause:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .hero-progress {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 3px;
+            background: rgba(240, 232, 216, .1);
+            z-index: 5;
+        }
+
+        .hero-progress span {
+            display: block;
+            height: 100%;
+            background: var(--primary);
+            transform-origin: left;
+            transform: scaleX(0);
+        }
+
+        .hero-progress span.run {
+            animation: heroProgress var(--hero-interval, 6s) linear forwards;
+        }
+
+        @keyframes heroProgress {
+            to {
+                transform: scaleX(1);
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            .hero-slide,
+            .hero-slide.is-active {
+                transition: none;
+            }
+
+            .hero-bg img {
+                transition: none;
+                transform: none;
+            }
+
+            .hero-inner>* {
+                transition: none;
+                transform: none;
+            }
         }
     </style>
 

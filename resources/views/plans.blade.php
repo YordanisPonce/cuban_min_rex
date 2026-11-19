@@ -14,31 +14,11 @@
 @endpush
 
 @section('content')
-    <!-- HERO -->
-    <section class="hero container">
-        <div class="hero-slides" id="heroSlides"></div>
-        <div class="hero-gradient"></div>
-        <div class="hero-gradient-b"></div>
-        <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">LLEVA <span class="accent">TU MÚSICA</span> AL
-                <br>SIGUIENTE NIVEL
-            </h1>
-            <p data-aos="fade-right" data-aos-delay="500">Más de 10,000 remixes exclusivos para DJs afrolatinos. <br> Todo
-                lo que necesitas para hacer estallar la pista.</p>
-            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
-                href="{{ route('remixes') }}">+ 11000 REMIXES EXCLUSIVOS</a>
-            <div class="hero-stats">
-                <span data-aos="fade-right" data-aos-delay="1000"><i class="fa-solid fa-check text-primary"></i> Acceso a
-                    contenido exclusivo de remixes premium</span>
-                <span data-aos="fade-right" data-aos-delay="1100"><i class="fa-solid fa-check text-primary"></i> Recibe
-                    actualizaciones semanales con nuevos tracks</span>
-                <span data-aos="fade-right" data-aos-delay="1200"><i class="fa-solid fa-check text-primary"></i> Paga de
-                    forma parcial o descarga sin límites</span>
-                <span data-aos="fade-right" data-aos-delay="1300"><i class="fa-solid fa-check text-primary"></i> Pagos
-                    seguros y encriptados</span>
-            </div>
-        </div>
-    </section>
+    @include('partials.hero', [
+        'baseDescription' => 'Más de 10,000 remixes exclusivos para DJs afrolatinos. Todo lo que necesitas para hacer estallar la pista.',
+        'baseLinkText' => '+10k REMIXES EXCLUSIVOS',
+        'baseLinkAddress' => route('remixes'),
+    ])
 
     <!-- FEATURES -->
     <div class="features-row">
@@ -133,25 +113,6 @@
             premiunPlan.appendChild(icon);
 
         });
-    </script>
-    <script>
-        // HERO SLIDESHOW
-        const heroImages = @json($banners);
-
-        const slidesEl = document.getElementById('heroSlides');
-        let currentSlide = 0;
-        heroImages.forEach((src, i) => {
-            const slide = document.createElement('div');
-            slide.className = 'hero-slide' + (i === 0 ? ' active' : '');
-            slide.innerHTML = src.isVideo ? `<video src="${src.image}" alt="DJ hero ${i + 1}" autoplay muted loop></video>` : `<img src="${src.image}" alt="DJ hero ${i + 1}">`;
-            slidesEl.appendChild(slide);
-        });
-
-        function goToSlide(n) {
-            document.querySelectorAll('.hero-slide').forEach((s, i) => s.classList.toggle('active', i === n));
-            currentSlide = n;
-        }
-        setInterval(() => goToSlide((currentSlide + 1) % heroImages.length), 5000);
     </script>
     <script>
         document.querySelectorAll('.pack-btn').forEach(btn => {

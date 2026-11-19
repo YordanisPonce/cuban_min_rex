@@ -8,22 +8,11 @@
 
 @section('content')
     <!-- HERO -->
-    <section class="hero container">
-        <div class="hero-slides" id="heroSlides"></div>
-        <div class="hero-gradient"></div>
-        <div class="hero-gradient-b"></div>
-        <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">DJS<br><span class="accent">DESTACADOS</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Descubre a los mejores DJs disponibles para tus fiestas y eventos.</p>
-            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
-                href="{{ route('plans') }}"><i class="fas fa-crown"></i> REMIXES
-                    EXCLUSIVOS</a>
-            <div class="hero-stats">
-                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span><strong>+1000 tracks</strong> actualizados semanalmente. </span>
-                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
-            </div>
-        </div>
-    </section>
+    @include('partials.hero', [
+        'baseDescription' => 'Descubre a los mejores DJs disponibles para tus fiestas y eventos.',
+        'baseLinkText' => 'REMIXES EXCLUSIVOS',
+        'baseLinkAddress' => route('remixes'),
+    ])
 
     <div class="djs-container">
         <p class="page-subtitle"></p>
