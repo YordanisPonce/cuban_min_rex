@@ -8,7 +8,7 @@ class ReviewController extends Controller
 {
     public function index()
     {
-        $reviews = \App\Models\Review::orderBy('created_at', 'desc')->take(5)->get();
+        $reviews = \App\Models\Review::orderBy('created_at', 'desc')->whereNull('dj_id')->take(5)->get();
 
         $index = 999;
 
