@@ -18,7 +18,7 @@
                 @foreach ($reviews as $review)
                     <div class="review-item">
                         <div class="review-header">
-                            <strong>{{ $review->user->name }}</strong>
+                            <strong>{{ $review->user?->name ?? 'Anónimo' }}</strong>
                             <span>{{ Carbon::parse($review->created_at)->diffForHumans() }}</span>
                         </div>
                         <div class="rating">
