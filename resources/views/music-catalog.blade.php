@@ -1302,7 +1302,7 @@
         }
 
         function actions(t) {
-            return '<div class="t-actions">' + (!t.canBeDownload ? `<span class="price">$ ${t.price.toFixed(2)}</span>` :
+            return '<div class="t-actions">' + (!t.canBeDownload ? `<span class="price">$ ${t.price}</span>` :
                     '') +
                 (t.canBeDownload ?
                     `<a class="ic-btn" aria-label="Descargar" href="${t.downloadLink}"><i class="fas fa-download"></i></a>` :
