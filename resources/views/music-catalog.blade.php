@@ -1336,7 +1336,7 @@
                 <div class="t-cover"><img src="${t.cover}" alt="Cover de ${t.title}" loading="lazy"></div>
                 <div class="t-info"><h4 title="${t.title}">${t.title}</h4><p>${t.artist}</p>
                     <div class="t-meta"><span class="tag"><i class="fas fa-gauge-high"></i> ${t.bpm} BPM</span><span class="tag"><i class="fas fa-download"></i> ${t.downloads}</span><span class="tag key key-${t.key}"><i class="fas fa-music"></i> ${t.key}</span>${ genres(t) }</div></div>
-                <div class="t-wave"><div><button class="t-play" aria-label="Reproducir" data-id="${t.id}" data-track="${t.title}" data-artist="${t.artist}" data-cover="${t.cover}" data-url="${t.url}" data-flag="${t.flag}"><i class="fas fa-play"></i></button><div class="wave">${waveHTML(t)}</div></div></div>${actions(t)}
+                <div class="t-wave"><div><button class="t-play" aria-label="Reproducir" data-id="${t.id}" data-track="${t.title}" data-artist="${t.artist}" data-cover="${t.cover}" data-url="${t.url}" data-flag="${t.flag}" onclick="playTrack(this)"><i class="fas fa-play"></i></button><div class="wave">${waveHTML(t)}</div></div></div>${actions(t)}
                 </article>`).join('') :
                 `<div class="empty"><i class="fas fa-compact-disc"></i>No hay temas que coincidan con los filtros.<br><br><button class="btn-ghost" onclick="resetFilters()">Limpiar filtros</button></div>`;
             renderPagination(pages);
@@ -1554,9 +1554,9 @@
             }
         }
 
-        playBtns.forEach(button => {
+        /*playBtns.forEach(button => {
             button.addEventListener('click', () => playTrack(button));
-        });
+        });*/
     </script>
     @isset($success)
         <script>
