@@ -1533,6 +1533,7 @@
             try {
                 verifySource(element, element.dataset.flag);
             } catch (error) {
+                console.log(error);
                 setTimeout(() => {
                     showToast('No se pudo cargar el recurso: ' + element.dataset.track);
                     if (icon != null) {
@@ -1546,4 +1547,20 @@
             button.addEventListener('click', () => playTrack(button));
         });
     </script>
+    @isset($success)
+        <script>
+            Swal.fire({
+                title: '{{ $success }}',
+                icon: 'success'
+            });
+        </script>
+    @endisset
+    @isset($error)
+        <script>
+            Swal.fire({
+                title: '{{ $error }}',
+                icon: 'error'
+            });
+        </script>
+    @endisset
 @endpush
