@@ -982,13 +982,13 @@
             }
 
             .track {
-                grid-template-columns: 80px 1fr;
-                gap: .3rem;
+                grid-template-columns: 100px 1fr;
+                gap: .5rem;
             }
 
             .t-cover {
-                width: 80px;
-                height: 80px;
+                width: 100px;
+                height: 100px;
             }
 
             .t-actions {
