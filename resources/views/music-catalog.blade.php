@@ -1440,7 +1440,10 @@
         }
 
         function closePlayer(element, flag = 'audio') {
-            const trackCard = $(element.dataset.id);
+            if (element != undefined && element != null) {
+                const trackCard = $(''+ element.dataset.id);
+                trackCard.classList.remove('playing');
+            }
             const el = document.getElementById('bottom-player');
             const elv = document.getElementById('video-player');
             const audioPlayer = document.getElementById('plyr-audio-player');
@@ -1449,11 +1452,10 @@
             elv.classList.remove('active');
             audioPlayer.pause();
             videoPlayer.pause();
-            trackCard.classList.remove('playing');
         }
 
         function showPlayer(element, flag = 'audio') {
-            const trackCard = $(element.dataset.id);
+            const trackCard = $('' + element.dataset.id);
             const el = document.getElementById('bottom-player');
             const elv = document.getElementById('video-player');
             const audioPlayer = document.getElementById('plyr-audio-player');
@@ -1488,7 +1490,7 @@
         function verifySource(element, flag = 'audio') {
             const audioPlayer = document.getElementById('plyr-audio-player');
             const videoPlayer = document.getElementById('plyr-video-player');
-            closePlayer();
+            closePlayer(element);
             var audio = new Audio(element.dataset.url);
             if (flag == 'video') {
                 audio = document.createElement('video');
@@ -1533,7 +1535,6 @@
             try {
                 verifySource(element, element.dataset.flag);
             } catch (error) {
-                console.log(error);
                 setTimeout(() => {
                     showToast('No se pudo cargar el recurso: ' + element.dataset.track);
                     if (icon != null) {
