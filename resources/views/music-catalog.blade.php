@@ -479,7 +479,6 @@
         }
 
         .t-play {
-            position: absolute;
             inset: 0;
             margin: auto;
             width: 36px;
@@ -553,6 +552,14 @@
             min-width: 0;
         }
 
+        .t-wave>div{
+            display: flex;
+            gap: .5rem;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+            padding: 10px;
+        }
         .wave {
             flex: 1;
             height: 42px;
@@ -909,8 +916,8 @@
         /* Tablet */
         @media(max-width:1024px) {
             .track {
-                grid-template-columns: 72px 1fr auto;
-                grid-template-areas: "c i a" "w w w";
+                grid-template-columns: auto 1fr;
+                grid-template-areas: "c i" "a w";
             }
 
             .t-cover {
@@ -975,13 +982,13 @@
             }
 
             .track {
-                grid-template-columns: 60px 1fr;
-                gap: .7rem;
+                grid-template-columns: 80px 1fr;
+                gap: .3rem;
             }
 
             .t-cover {
-                width: 60px;
-                height: 60px;
+                width: 80px;
+                height: 80px;
             }
 
             .t-actions {
@@ -1008,10 +1015,6 @@
 
             .ex-card .img{
                 aspect-ratio: 16/5;
-            }
-
-            .t-wave {
-                display: none;
             }
         }
 
@@ -1329,10 +1332,10 @@
                 'Sin resultados';
             $('tracks').innerHTML = slice.length ? slice.map(t => `
                 <article class="track" id="${t.id}">
-                <div class="t-cover"><img src="${t.cover}" alt="Cover de ${t.title}" loading="lazy"><button class="t-play" aria-label="Reproducir" data-id="${t.id}" data-track="${t.title}" data-artist="${t.artist}" data-cover="${t.cover}" data-url="${t.url}" data-flag="${t.flag}"><i class="fas fa-play"></i></button></div>
+                <div class="t-cover"><img src="${t.cover}" alt="Cover de ${t.title}" loading="lazy"></div>
                 <div class="t-info"><h4 title="${t.title}">${t.title}</h4><p>${t.artist}</p>
                     <div class="t-meta"><span class="tag"><i class="fas fa-gauge-high"></i> ${t.bpm} BPM</span><span class="tag"><i class="fas fa-download"></i> ${t.downloads}</span><span class="tag key key-${t.key}"><i class="fas fa-music"></i> ${t.key}</span>${ genres(t) }</div></div>
-                <div class="t-wave"><div class="wave">${waveHTML(t)}</div></div>${actions(t)}
+                <div class="t-wave"><div><button class="t-play" aria-label="Reproducir" data-id="${t.id}" data-track="${t.title}" data-artist="${t.artist}" data-cover="${t.cover}" data-url="${t.url}" data-flag="${t.flag}"><i class="fas fa-play"></i></button><div class="wave">${waveHTML(t)}</div></div></div>${actions(t)}
                 </article>`).join('') :
                 `<div class="empty"><i class="fas fa-compact-disc"></i>No hay temas que coincidan con los filtros.<br><br><button class="btn-ghost" onclick="resetFilters()">Limpiar filtros</button></div>`;
             renderPagination(pages);
