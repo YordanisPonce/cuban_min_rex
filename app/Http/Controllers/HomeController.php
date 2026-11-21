@@ -585,78 +585,80 @@ class HomeController extends Controller
 
     public function remixes(Request $request)
     {
-        $title = request()->get('title');
-        $genre = request()->get('genre');
-        $bpm = request()->get('bpm');
-        $dj = request()->get('dj');
-
         $tracks = File::audios()
             ->where('status', 'active')
             ->where('isExclusive', false)
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
 
-        $exclusives = File::audios()
+        $extras = File::audios()
             ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->take(3)->get();
+            ->take(6)->get();
 
-        if ($exclusives->count() === 0) {
-            $exclusives = File::audios()
+        if ($extras->count() === 0) {
+            $extras = File::audios()
             ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->orderBy('created_at', 'desc')
-            ->take(3)->get();
+            ->take(6)->get();
         }
 
-        if($title) {
-            $tracks = $tracks->where('name',  'like', '%' . $title . '%');
-        }
-
-        if($dj){
-            $tracks = $tracks->whereHas('user',  function($q) use ($dj) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $dj) . '%');
-            });
-        }
-
-        if($genre){
-            $tracks = $tracks->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            });
-        }
-
-        if($bpm){
-            $tracks = $tracks->where('bpm', 'like', '%'.$bpm.'%');
-        }
-
-        $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-        $tracks->getCollection()->transform(function ($file) {
+        $extras->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
                 'id' => (string) $file->id,
-                'date' => $file->created_at,
                 'artist' => $file->user?->name ?? 'Desconocido',
-                'type' => 'Intro',
                 'title' => $file->name,
-                'badge' => null,
-                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'flag' => $flag,
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note ?? '7A',
-                'duration' => 120,
                 'genre' => $file->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'downloads' => $file->download_count,
-                'canDownload' => $file->canBeDownload(),
+                'canBeDownload' => $file->canBeDownload(),
                 'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
 
-        $djs = User::whereHas('files', function($q){
+        $tracks = $tracks->orderBy('created_at', 'desc')->get();
+
+        $tracks->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
+            return [
+                'id' => (string) $file->id,
+                'artist' => $file->user?->name ?? 'Desconocido',
+                'title' => $file->name,
+                'flag' => $flag,
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'key' => $file->musical_note ?? '7A',
+                'genre' => $file->categories->pluck('name')->toArray() ?? ['CubanPool'],
+                'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'downloads' => $file->download_count,
+                'canBeDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
+
+        $artists = User::whereHas('files', function($q){
             $q->audios()->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
         })->get();
@@ -665,12 +667,6 @@ class HomeController extends Controller
             $q->audios()->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
         })->orderBy('name')->get();
-
-        $bpms = File::audios()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->groupBy('bpm')
-            ->orderBy('bpm')
-            ->get('bpm');
         
         $bns = Banner::where('active', true)->get();
         $banners = [];
@@ -688,97 +684,109 @@ class HomeController extends Controller
 
         $index = 2;
 
-        return view('remixes', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives', 'banners'));
+        $metadata = [
+            'title' => 'Remixes',
+            'subtitle' => 'Remixes',
+            'heroDescription' => '',
+            'heroLinkText' => null,
+            'heroLinkAddress' => null,
+        ];
+
+        return view('music-catalog', compact('index', 'tracks', 'artists', 'genres', 'extras', 'banners', 'metadata'));
     }
 
     public function mixes(Request $request){
-        $title = request()->get('title');
-        $genre = 'mix';
-        $bpm = request()->get('bpm');
-        $dj = request()->get('dj');
-
         $tracks = File::audios()
             ->where('status', 'active')
             ->where('isExclusive', false)
-            ->whereJsonContains('sections', SectionEnum::MAIN->value);
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->whereHas('categories',  function($q) {
+                $q->where('name',  'mix');
+            });
 
-        $exclusives = File::audios()
+        $extras = File::audios()
             ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            })
-            ->take(3)->get();
+            ->take(6)->get();
 
-        if ($exclusives->count() === 0) {
-            $exclusives = File::audios()
+        if ($extras->count() === 0) {
+            $extras = File::audios()
             ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->orderBy('created_at', 'desc')
-            ->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            })
-            ->take(3)->get();
+            ->take(6)->get();
         }
 
-        if($title) {
-            $tracks = $tracks->where('name',  'like', '%' . $title . '%');
-        }
-
-        if($dj){
-            $tracks = $tracks->whereHas('user',  function($q) use ($dj) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $dj) . '%');
-            });
-        }
-
-        if($genre){
-            $tracks = $tracks->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            });
-        }
-
-        if($bpm){
-            $tracks = $tracks->where('bpm', 'like', '%'.$bpm.'%');
-        }
-
-        $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-        $tracks->getCollection()->transform(function ($file) {
+        $extras->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
                 'id' => (string) $file->id,
-                'date' => $file->created_at,
                 'artist' => $file->user?->name ?? 'Desconocido',
-                'type' => 'Intro',
                 'title' => $file->name,
-                'badge' => null,
-                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'flag' => $flag,
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note ?? '7A',
-                'duration' => 120,
                 'genre' => $file->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'downloads' => $file->download_count,
-                'canDownload' => $file->canBeDownload(),
+                'canBeDownload' => $file->canBeDownload(),
                 'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
 
-        $djs = User::whereHas('files', function($q){
+        $tracks = $tracks->orderBy('created_at', 'desc')->get();
+
+        $tracks->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
+            return [
+                'id' => (string) $file->id,
+                'artist' => $file->user?->name ?? 'Desconocido',
+                'title' => $file->name,
+                'flag' => $flag,
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'key' => $file->musical_note ?? '7A',
+                'genre' => $file->categories->pluck('name')->toArray() ?? ['CubanPool'],
+                'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'downloads' => $file->download_count,
+                'canBeDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
+
+        $artists = User::whereHas('files', function($q){
             $q->audios()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value);
+            ->whereJsonContains('sections', SectionEnum::MAIN->value)
+            ->whereHas('categories',  function($q) {
+                $q->where('name',  'mix');
+            });
         })->get();
 
-        $bpms = File::audios()->where('status', 'active')
+        $genres = Category::whereHas('files', function($q){
+            $q->audios()->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->groupBy('bpm')
-            ->orderBy('bpm')
-            ->get('bpm');
+            ->whereHas('categories',  function($q) {
+                $q->where('name',  'mix');
+            });
+        })->orderBy('name')->get();
         
         $bns = Banner::where('active', true)->get();
         $banners = [];
@@ -796,43 +804,29 @@ class HomeController extends Controller
 
         $index = 10;
 
-        return view('mixes', compact('index', 'tracks', 'djs', 'bpms', 'exclusives', 'banners'));
+        $metadata = [
+            'title' => 'Mixes',
+            'subtitle' => 'Mixes',
+            'heroDescription' => '',
+            'heroLinkText' => null,
+            'heroLinkAddress' => null,
+        ];
+
+        return view('music-catalog', compact('index', 'tracks', 'artists', 'genres', 'extras', 'banners', 'metadata'));
     }
 
     public function exclusives(Request $request)
     {
-        $title = request()->get('title');
-        $genre = request()->get('genre');
-        $bpm = request()->get('bpm');
-        $dj = request()->get('dj');
-
-        $tracks = File::where('status', 'active')
+        $tracks = File::audios()
+            ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
 
-        if($title) {
-            $tracks = $tracks->where('name',  'like', '%' . $title . '%');
-        }
+        $extras = [];
 
-        if($dj){
-            $tracks = $tracks->whereHas('user',  function($q) use ($dj) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $dj) . '%');
-            });
-        }
+        $tracks = $tracks->orderBy('created_at', 'desc')->get();
 
-        if($genre){
-            $tracks = $tracks->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            });
-        }
-
-        if($bpm){
-            $tracks = $tracks->where('bpm', 'like', '%'.$bpm.'%');
-        }
-
-        $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-        $tracks->getCollection()->transform(function ($file) {
+        $tracks->transform(function ($file) {
             $zips = ['zip', 'rar', '7z'];
             $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
             $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
@@ -840,45 +834,34 @@ class HomeController extends Controller
             $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
                 'id' => (string) $file->id,
-                'date' => $file->created_at,
                 'artist' => $file->user?->name ?? 'Desconocido',
-                'type' => 'Intro',
                 'title' => $file->name,
-                'badge' => null,
                 'flag' => $flag,
-                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note ?? '7A',
-                'duration' => 120,
-                'genre' => $file->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
+                'genre' => $file->categories->pluck('name')->toArray() ?? ['CubanPool'],
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
-                'downloads' => $file->sales->count(),
-                'canDownload' => $file->canBeDownload(),
+                'downloads' => $file->download_count,
+                'canBeDownload' => $file->canBeDownload(),
                 'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
 
-        $djs = User::whereHas('files', function($q){
+        $artists = User::whereHas('files', function($q){
             $q->audios()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->where('isExclusive', true);
+            ->where('isExclusive', true)
+            ->whereJsonContains('sections', SectionEnum::MAIN->value);
         })->get();
 
         $genres = Category::whereHas('files', function($q){
             $q->audios()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->where('isExclusive', true);
-        })->orderBy('name')->get();
-
-        $bpms = File::audios()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->where('isExclusive', true)
-            ->groupBy('bpm')
-            ->orderBy('bpm')
-            ->get('bpm');
+            ->whereJsonContains('sections', SectionEnum::MAIN->value);
+        })->orderBy('name')->get();
         
         $bns = Banner::where('active', true)->get();
         $banners = [];
@@ -896,83 +879,93 @@ class HomeController extends Controller
 
         $index = 8;
 
-        return view('exclusives', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'banners'));
+        $metadata = [
+            'title' => 'Exclusivos',
+            'subtitle' => 'Exclusivos',
+            'heroDescription' => '',
+            'heroLinkText' => null,
+            'heroLinkAddress' => null,
+        ];
+
+        return view('music-catalog', compact('index', 'tracks', 'artists', 'genres', 'extras', 'banners', 'metadata'));
     }
 
     public function videos(Request $request)
     {
-        $title = request()->get('title');
-        $genre = request()->get('genre');
-        $bpm = request()->get('bpm');
-        $dj = request()->get('dj');
-
         $tracks = File::videos()
             ->where('status', 'active')
             ->where('isExclusive', false)
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
-        
-        $exclusives = File::videos()
+
+        $extras = File::videos()
             ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->whereBetween('created_at', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])
-            ->take(3)->get();
+            ->take(6)->get();
 
-        if ($exclusives->count() === 0) {
-            $exclusives = File::videos()
+        if ($extras->count() === 0) {
+            $extras = File::videos()
             ->where('status', 'active')
             ->where('isExclusive', true)
             ->whereJsonContains('sections', SectionEnum::MAIN->value)
             ->orderBy('created_at', 'desc')
-            ->take(3)->get();
+            ->take(6)->get();
         }
 
-        if($title) {
-            $tracks = $tracks->where('name',  'like', '%' . $title . '%');
-        }
-
-        if($dj){
-            $tracks = $tracks->whereHas('user',  function($q) use ($dj) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $dj) . '%');
-            });
-        }
-
-        if($genre){
-            $tracks = $tracks->whereHas('categories',  function($q) use ($genre) {
-                $q->where('name',  'like', '%' . str_replace('_',' ', $genre) . '%');
-            });
-        }
-
-        if($bpm){
-            $tracks = $tracks->where('bpm', 'like', '%'.$bpm.'%');
-        }
-
-        $tracks = $tracks->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
-
-        $tracks->getCollection()->transform(function ($file) {
+        $extras->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
             return [
                 'id' => (string) $file->id,
-                'date' => $file->created_at,
                 'artist' => $file->user?->name ?? 'Desconocido',
-                'type' => 'Intro',
                 'title' => $file->name,
-                'badge' => null,
-                'img' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'flag' => $flag,
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
                 'bpm' => $file->bpm,
                 'key' => $file->musical_note ?? '7A',
-                'duration' => 120,
                 'genre' => $file->categories->pluck('name')->toArray() ?? ['DESCONOCIDO'],
                 'price' => $file->price,
                 'url' => Storage::disk('s3')->url($file->file),
                 'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
                 'downloads' => $file->download_count,
-                'canDownload' => $file->canBeDownload(),
+                'canBeDownload' => $file->canBeDownload(),
                 'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
                 'addToCart' => route('file.add.cart', $file->id),
             ];
         });
 
-        $djs = User::whereHas('files', function($q){
+        $tracks = $tracks->orderBy('created_at', 'desc')->get();
+
+        $tracks->transform(function ($file) {
+            $zips = ['zip', 'rar', '7z'];
+            $vids = ['mp4', 'avi', 'mov', 'wmv', 'mkv'];
+            $auds =  ['mp3', 'wav', 'ogg', 'm4a', 'flac'];
+            $ext = pathinfo($file->original_file, PATHINFO_EXTENSION);
+            $flag = array_search($ext,$zips) !== false ? 'pack' : (array_search($ext,$vids) !== false ? 'video' : (array_search($ext,$auds) !== false ? 'audio' : 'other'));
+            return [
+                'id' => (string) $file->id,
+                'artist' => $file->user?->name ?? 'Desconocido',
+                'title' => $file->name,
+                'flag' => $flag,
+                'cover' => $file->getPosterUrl() ?? $file->user->photo ?? config('app.logo_alter'),
+                'bpm' => $file->bpm,
+                'key' => $file->musical_note ?? '7A',
+                'genre' => $file->categories->pluck('name')->toArray() ?? ['CubanPool'],
+                'price' => $file->price,
+                'url' => Storage::disk('s3')->url($file->file),
+                'isNew' => Carbon::parse($file->created_at)->isCurrentDay(),
+                'downloads' => $file->download_count,
+                'canBeDownload' => $file->canBeDownload(),
+                'downloadLink' => $file->canBeDownload() ? route('file.download', $file->id) : null,
+                'addToCart' => route('file.add.cart', $file->id),
+            ];
+        });
+
+        $artists = User::whereHas('files', function($q){
             $q->videos()->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
         })->get();
@@ -980,14 +973,8 @@ class HomeController extends Controller
         $genres = Category::whereHas('files', function($q){
             $q->videos()->where('status', 'active')
             ->whereJsonContains('sections', SectionEnum::MAIN->value);
-        })->get();
-
-        $bpms = File::videos()->where('status', 'active')
-            ->whereJsonContains('sections', SectionEnum::MAIN->value)
-            ->groupBy('bpm')
-            ->orderBy('bpm')
-            ->get('bpm');
-
+        })->orderBy('name')->get();
+        
         $bns = Banner::where('active', true)->get();
         $banners = [];
 
@@ -1004,7 +991,15 @@ class HomeController extends Controller
 
         $index = 3;
 
-        return view('videos', compact('index', 'tracks', 'djs', 'genres', 'bpms', 'exclusives', 'banners'));
+        $metadata = [
+            'title' => 'Videos',
+            'subtitle' => 'Videos',
+            'heroDescription' => '',
+            'heroLinkText' => null,
+            'heroLinkAddress' => null,
+        ];
+
+        return view('music-catalog', compact('index', 'tracks', 'artists', 'genres', 'extras', 'banners', 'metadata'));
     }
 
     public function cart(Request $request)

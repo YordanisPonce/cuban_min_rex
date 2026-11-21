@@ -13,26 +13,7 @@
 @endpush
 
 @section('content')
-    <!-- HERO -->
-    <section class="hero container">
-        <div class="hero-slides" id="heroSlides"></div>
-        <div class="hero-gradient"></div>
-        <div class="hero-gradient-b"></div>
-        <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">REMIXES<br>EXCLUSIVOS<br><span class="accent">PARA DJS
-                    LATINOS</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intros, mashups y más musical para hacer historia
-                en la pista.</p>
-            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
-                href="{{ route('plans') }}"><i class="fas fa-crown"></i> REMIXES
-                EXCLUSIVOS</a>
-            <div class="hero-stats">
-                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +1000 REMIXES
-                    EXCLUSIVOS</span>
-                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
-            </div>
-        </div>
-    </section>
+    @include('partials.hero')
 
     <div class="container" style="padding: 2rem 1rem">
         <div class="search-header">
@@ -55,7 +36,7 @@
                             <a class="result-name" href="{{ $r['url'] }}">{{ $r['name'] }}</a>
                             <div class="result-artist">
                                 <img src="{{ $r['dj_logo'] }}" class="avatar">
-                                <a class="result-artist" href="{{ route('dj', str_replace(' ','_',$r['artist'])) }}">{{ $r['artist'] }}</a>
+                                <a class="result-artist" href="{{ route('dj', str_replace(' ','_',$r['artist'] ?? 'CubanPool')) }}">{{ $r['artist'] ?? 'CubanPool' }}</a>
                             </div>
                         </div>
                     </div>

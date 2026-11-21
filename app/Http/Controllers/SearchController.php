@@ -70,7 +70,7 @@ class SearchController extends Controller
             return[
                 'id' => "f$e->id",
                 'name' => 'PACK: '.$e->name,
-                'artist' => $e->user->name,
+                'artist' => $e->user?->name,
                 'img' => $e->getPosterUrl() ?? $e->user->photo ?? config('app.logo'),
                 'price' => $e->price,
                 'dj_logo' => $e->user->photo ?? config('app.logo'),
@@ -91,10 +91,10 @@ class SearchController extends Controller
             return[
                 'id' => "p$e->id",
                 'name' => 'PLAYLIST: '.$e->name,
-                'artist' => $e->user->name,
-                'img' => $e->getCoverUrl() ?? $e->user->photo ?? config('app.logo'),
+                'artist' => $e->user?->name,
+                'img' => $e->getCoverUrl() ?? $e->user?->photo ?? config('app.logo'),
                 'price' => $e->price,
-                'dj_logo' => $e->user->photo ?? config('app.logo'),
+                'dj_logo' => $e->user?->photo ?? config('app.logo'),
                 'intro' => null,
                 'url' => route('playlist.show', str_replace(' ', '_', $e->name)),
                 'action' => false,
