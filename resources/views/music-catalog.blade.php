@@ -1433,13 +1433,17 @@
     </script>
     <script>
         let playBtns = document.querySelectorAll('.t-play');
+        let trackCards = document.querySelectorAll('.track');
 
-        function resetBtns() {
+        function resetBtns(element) {
             playBtns.forEach(button => () => {
                 var icon = button.querySelector('i');
-                if (icon != null) {
+                if (icon != null && button != element) {
                     icon.className = 'fas fa-play';
                 }
+            });
+            trackCards.forEach(card => () => {
+                card.classList.remove('playing');
             });
         }
 
@@ -1531,7 +1535,7 @@
 
         function playTrack(element) {
             showToast('Cargando ' + element.dataset.track);
-            resetBtns();
+            resetBtns(element);
             var icon = element.querySelector('i');
             if (icon != null) {
                 icon.className = 'fa fa-spinner fa-spin';
