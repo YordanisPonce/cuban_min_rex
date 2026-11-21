@@ -1434,6 +1434,7 @@
     <script>
         let playBtns = document.querySelectorAll('.t-play');
         let trackCards = document.querySelectorAll('.track');
+        let currentTrack = null;
 
         function resetBtns(element) {
             playBtns.forEach(button => () => {
@@ -1479,7 +1480,7 @@
                 document.getElementById('player-title').textContent = element.dataset.track;
                 document.getElementById('player-artist').textContent = element.dataset.artist;
             }
-            trackCard.classList.add('playing');
+            if(currentTrack == element.dataset.id) trackCard.classList.add('playing');
             var icon = element.querySelector('i');
             if (icon != null) {
                 icon.className = 'fas fa-play';
@@ -1505,6 +1506,7 @@
                 audio.src = element.dataset.url;
             }
             audio.addEventListener("canplaythrough", () => {
+                currentTrack = element.dataset.id;
                 if (flag == 'video') {
                     videoPlayer.src = element.dataset.url;
                     videoPlayer.play();
