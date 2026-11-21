@@ -992,7 +992,8 @@
             }
 
             .t-actions {
-                justify-content: space-between;
+                justify-content: space-evenly;
+                gap: 0.3rem;
             }
 
             .ex-box {
