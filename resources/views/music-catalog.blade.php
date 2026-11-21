@@ -1439,7 +1439,7 @@
         function resetBtns(element) {
             playBtns.forEach(button => () => {
                 var icon = button.querySelector('i');
-                if (icon != null && button != element) {
+                if (icon != null && button.dataset.id != currentTrack) {
                     icon.className = 'fas fa-play';
                 }
             });
@@ -1490,10 +1490,6 @@
         function pausePlayer(element, flag = 'audio') {
             const trackCard = $(element.dataset.id);
             trackCard.classList.remove('playing');
-            var icon = element.querySelector('i');
-            if (icon != null) {
-                icon.className = 'fas fa-play';
-            }
         }
 
         function verifySource(element, flag = 'audio') {
