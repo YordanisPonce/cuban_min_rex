@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'PlayLists - ' . config('app.name'))
+@section('title', 'PlayLists')
 
 @push('styles')
     <style>

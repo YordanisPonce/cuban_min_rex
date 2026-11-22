@@ -5,7 +5,8 @@
     use App\Enums\SectionEnum;
 @endphp
 
-@section('title', $dj->name . ' – ' . config('app.name'))
+@section('title', $dj->name)
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/dj-profile.css') }}">

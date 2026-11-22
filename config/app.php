@@ -17,15 +17,41 @@ return [
     |
     */
 
-    'name' => $seo?->app_name ?? env('APP_NAME', 'Laravel'),
+    'name' => $seo?->app_name ?? env('APP_NAME', 'CubanPool'),
+    
+    /*
+    |--------------------------------------------------------------------------
+    | SEO
+    |--------------------------------------------------------------------------
+    */
 
-    'keywords' => $seo?->app_keywords ?? env('APP_KEYWORDS', 'Laravel'),
+    'keywords' => $seo?->app_keywords ?: env('APP_KEYWORDS', 'CubanPool, cuban pool, música, remixes, dj, descargas, mp3, sets, mixes, electrónica, edm, descargar música, escuchar música online, dj tools, producer tools, club music, dance music'),
 
-    'description' => $seo?->app_description ?? env('APP_DESCRIPTION', 'A Laravel proyect'),
+    'description' => $seo?->app_description ?: env('APP_DESCRIPTION', 'Escucha y descarga música, remixes y contenido exclusivo para DJs.'),
 
-    'logo' => $seo?->app_logo ? $seo->logoUrl() :  env('APP_URL').'/img/logo_alter.png',
+    'logo' => env('APP_URL').'/assets/img/favicon/logo.png',
 
-    'logo_alter' => env('APP_URL').'/img/logo_alter.png',
+    'logo_alter' => env('APP_URL').'/assets/img/favicon/logo.png',
+
+    'logo_32x32' => env('APP_URL').'/assets/img/favicon/logo-32x32.png',
+
+    'logo_180x180' => env('APP_URL').'/assets/img/favicon/logo-180x180.png',
+
+    'logo_192x192' => env('APP_URL').'/assets/img/favicon/logo-192x192.png',
+
+    'logo_512x512' => env('APP_URL').'/assets/img/favicon/logo-512x512.png',
+
+    'og_image' => env('APP_OG_IMAGE', env('APP_URL').'/assets/img/favicon/logo.png'),
+
+    'twitter' => env('APP_TWITTER', ''),
+
+    'og_locale' => env('APP_OG_LOCALE', 'es_ES'),
+
+    'social' => array_values(array_filter([
+        env('APP_INSTAGRAM', ''),
+        env('APP_YOUTUBE', ''),
+        env('APP_FACEBOOK', ''),
+    ])),
 
     /*
     |--------------------------------------------------------------------------

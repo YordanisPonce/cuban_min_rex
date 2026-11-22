@@ -24,13 +24,14 @@ use Stripe\Subscription;
 
 class FileController extends Controller
 {
-    public function info(Request $request, string $name){
+    public function info(Request $request, string $name)
+    {
 
         $formatName = str_replace('_', ' ', $name);
 
         $file = File::where('name', $formatName)->first();
 
-        if(!$file){
+        if (!$file) {
             return abort(404);
         }
 
@@ -56,18 +57,33 @@ class FileController extends Controller
         $bns = Banner::where('active', true)->get();
         $banners = [];
 
-        if($bns->count() > 0) 
-        {
+        if ($bns->count() > 0) {
             foreach ($bns as $bn) {
-                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
-                array_push($banners,$banner);
+                $banner = ['image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo];
+                array_push($banners, $banner);
             }
-
         } else {
-            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
+            $banners = [['image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         return view('info', compact('item', 'banners'));
+    }
+
+    public function image(string $filename)
+    {
+        $path = public_path('assets/img/' . $filename);
+        abort_unless(is_file($path), 404);
+
+        return response()->file($path, [
+            'Access-Control-Allow-Origin'  => '*',
+            'Access-Control-Allow-Methods' => 'GET',
+            'Access-Control-Allow-Headers' => 'Content-Type',
+        ]);
+    }
+
+    public function publicDownload(string $path)
+    {
+        return Storage::disk('s3')->download($path);
     }
 
     public function download(Request $request, string $id)
@@ -82,7 +98,7 @@ class FileController extends Controller
                 $downloadToken = $user->downloadToken;
                 $indice = array_search($token, $downloadToken);
 
-               // unset($downloadToken[$indice]);
+                // unset($downloadToken[$indice]);
                 $user->downloadToken = $downloadToken;
                 $user->save();
 
@@ -103,7 +119,7 @@ class FileController extends Controller
             Log::debug("Usuario no encontrado para token de descarga: $token");
             return redirect('/')->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
         }
-        
+
         $user = auth()->user();
 
         if ($user->hasActivePlan() || $user->role === 'admin') {
@@ -116,8 +132,8 @@ class FileController extends Controller
                 $plan = Order::where('user_id', $user->id)->where('status', 'paid')->whereNotNull('plan_id')->orderBy('created_at', 'desc')->first()?->plan;
             }
 
-            if($plan || $user->role === 'admin'){
-                if($user->plan_start_at || $user->role === 'admin'){
+            if ($plan || $user->role === 'admin') {
+                if ($user->plan_start_at || $user->role === 'admin') {
                     if ($user->role === 'admin' || $user->hasAviableDownloads()) {
                         $file = File::find($id);
 
@@ -130,7 +146,7 @@ class FileController extends Controller
                         $file->download_count = $file->download_count + 1;
                         $file->save();
 
-                        if($user->role !== 'admin'){
+                        if ($user->role !== 'admin') {
                             if ($user->isConsumeExtraDownload()) {
                                 $susc = $user->getActiveSuscription();
                                 $susc->consume_extra_downloads = $susc->consume_extra_downloads + 1;
@@ -163,7 +179,7 @@ class FileController extends Controller
                         $file->download_count = $file->download_count + 1;
                         $file->save();
 
-                        if($user->role !== 'admin'){
+                        if ($user->role !== 'admin') {
                             $download = new Download();
                             $download->user_id = $user->id;
                             $download->file_id = $file->id;
@@ -179,7 +195,7 @@ class FileController extends Controller
                         return downloadFileFromDisk('s3', $path, $downloadName);
                     }
                 }
-                return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');            
+                return redirect()->back()->with('error', 'Ha superados las descargas por mes permitida por su plan, considere mejorar su plan.');
             }
         }
         return redirect()->back()->with('error', 'Usted no tiene permisos para descargar el archivo seleccionado.');
@@ -195,15 +211,13 @@ class FileController extends Controller
         $bns = Banner::where('active', true)->get();
         $banners = [];
 
-        if($bns->count() > 0) 
-        {
+        if ($bns->count() > 0) {
             foreach ($bns as $bn) {
-                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
-                array_push($banners,$banner);
+                $banner = ['image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo];
+                array_push($banners, $banner);
             }
-
         } else {
-            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
+            $banners = [['image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         return view('freedownload', ['file' => $file, 'banners' => $banners]);
@@ -267,7 +281,7 @@ class FileController extends Controller
                             'error' => 'El precio del archivo no es válido.'
                         ], 422);
                     }
-                        
+
                     // Monto en centavos
                     $amountInCents = (int) round($price * 100);
 
@@ -294,7 +308,7 @@ class FileController extends Controller
 
                     array_push($files_url, (string) $urlTemporal);
                 }
-                if($item->playlist){
+                if ($item->playlist) {
                     $file = PlayList::find($item->playlist->id);
                     if (!$file) {
                         return response()->json([
@@ -309,7 +323,7 @@ class FileController extends Controller
                             'error' => 'El precio del archivo no es válido.'
                         ], 422);
                     }
-                        
+
                     // Monto en centavos
                     $amountInCents = (int) round($price * 100);
 
@@ -317,7 +331,7 @@ class FileController extends Controller
                         'price_data' => [
                             'currency' => 'usd',
                             'product_data' => [
-                                'name' => (string) 'Playlist: '.$file->name,
+                                'name' => (string) 'Playlist: ' . $file->name,
                             ],
                             'unit_amount' => $amountInCents,
                         ],
@@ -346,7 +360,7 @@ class FileController extends Controller
                             'error' => 'El precio del archivo no es válido.'
                         ], 422);
                     }
-                        
+
                     // Monto en centavos
                     $amountInCents = (int) round($price * 100);
 
@@ -354,7 +368,7 @@ class FileController extends Controller
                         'price_data' => [
                             'currency' => 'usd',
                             'product_data' => [
-                                'name' => (string) 'Audio: '.$file->title,
+                                'name' => (string) 'Audio: ' . $file->title,
                             ],
                             'unit_amount' => $amountInCents,
                         ],
@@ -413,7 +427,8 @@ class FileController extends Controller
         }
     }
 
-    public function payFile(string $id) { 
+    public function payFile(string $id)
+    {
 
         try {
 
@@ -431,7 +446,7 @@ class FileController extends Controller
                     'error' => 'El precio del archivo no es válido.'
                 ], 422);
             }
-                
+
             // Monto en centavos
             $amountInCents = (int) round($price * 100);
 
@@ -440,12 +455,12 @@ class FileController extends Controller
             $order->amount = $price;
             $order->status = 'pending';
             $order->save();
-            
+
             $order_item = new OrderItem();
             $order_item->order_id = $order->id;
             $order_item->file_id = $file->id;
             $order_item->save();
-            
+
             // Configura tu clave secreta (recomendado: en AppServiceProvider::boot)
             Stripe::setApiKey(config('services.stripe.secret_key'));
 
@@ -500,7 +515,8 @@ class FileController extends Controller
         }
     }
 
-    public function addToCart(string $id){
+    public function addToCart(string $id)
+    {
         $user = Auth::user() ?? null;
         $cart = $user ? $user->cart : Cart::get_current_cart();
 
@@ -509,27 +525,29 @@ class FileController extends Controller
             'amount' => File::find($id)?->price,
         ]);
 
-        return redirect()->back()->with('success','Archivo añadido al carrito.');
+        return redirect()->back()->with('success', 'Archivo añadido al carrito.');
     }
 
-    public function removeToCart(string $id){
+    public function removeToCart(string $id)
+    {
         $user = Auth::user() ?? null;
         $cart = $user ? $user->cart : Cart::get_current_cart();
 
         $cartItem = $cart->cart_items()->where('file_id', $id)->first();
 
-        if($cartItem){
+        if ($cartItem) {
             $cartItem->delete();
-            return redirect()->back()->with('success','Archivo eliminado del carrito.');
+            return redirect()->back()->with('success', 'Archivo eliminado del carrito.');
         }
 
-        return redirect()->back()->with('error','El archivo no está en su carrito.');
+        return redirect()->back()->with('error', 'El archivo no está en su carrito.');
     }
 
-    public function emptyCart(){
+    public function emptyCart()
+    {
         $user = Auth::user() ?? null;
         $cart = $user ? $user->cart : Cart::get_current_cart();
         $cart->cart_items()->delete();
-        return redirect()->back()->with('success','Carrito vaciado.');
+        return redirect()->back()->with('success', 'Carrito vaciado.');
     }
 }

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Página no Encontrada - ' . config('app.name'))
+@section('title', 'Página no Encontrada')
+@section('robots', 'noindex, follow')
 
 @push('styles')
 <style>

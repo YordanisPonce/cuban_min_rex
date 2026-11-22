@@ -5,7 +5,8 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', 'Packs - '.config('app.name'))
+@section('title', 'SAMPLES/FX')
+@section('description', 'Descarga SAMPLES/FX de remixes y música para DJs en un solo paquete. Colecciones listas para tus sets al mejor precio.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/playlist.css') }}" />

@@ -57,15 +57,13 @@ class PlayListController extends Controller
         $bns = Banner::where('active', true)->get();
         $banners = [];
 
-        if($bns->count() > 0) 
-        {
+        if ($bns->count() > 0) {
             foreach ($bns as $bn) {
-                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
-                array_push($banners,$banner);
+                $banner = ['image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo];
+                array_push($banners, $banner);
             }
-
         } else {
-            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
+            $banners = [['image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 4;
@@ -122,15 +120,13 @@ class PlayListController extends Controller
         $bns = Banner::where('active', true)->get();
         $banners = [];
 
-        if($bns->count() > 0) 
-        {
+        if ($bns->count() > 0) {
             foreach ($bns as $bn) {
-                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
-                array_push($banners,$banner);
+                $banner = ['image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo];
+                array_push($banners, $banner);
             }
-
         } else {
-            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
+            $banners = [['image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         $index = 4;
@@ -174,18 +170,44 @@ class PlayListController extends Controller
         $bns = Banner::where('active', true)->get();
         $banners = [];
 
-        if($bns->count() > 0) 
-        {
+        if ($bns->count() > 0) {
             foreach ($bns as $bn) {
-                $banner = [ 'image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo ];
-                array_push($banners,$banner);
+                $banner = ['image' => Storage::disk('s3')->url($bn->path ?? ''), 'isVideo' => $bn->isVideo];
+                array_push($banners, $banner);
             }
-
         } else {
-            $banners = [[ 'image' => asset('assets/img/hero-base.jpeg')]];
+            $banners = [['image' => asset('assets/img/hero-base.jpeg')]];
         }
 
         return view('info', compact('item', 'banners'));
+    }
+
+    public function tracks(int $id)
+    {
+        $playlist = PlayList::with('user')->findOrFail($id);
+        $canDownload = auth()->check() && auth()->user()->hasActivePlan();
+        $cover = $playlist->cover ? $playlist->getCoverUrl() : ($playlist->user->photo ?? config('app.logo'));
+
+        $tracks = $playlist->items()->withCount('downloads')->get()->map(fn($track) => [
+            'id'           => (string) $track->id,
+            'date'         => $track->created_at,
+            'artist'       => $playlist->user->name,
+            'title'        => $track->title,
+            'img'          => $cover,
+            'bpm'          => null,
+            'playlist_id'  => $playlist->id,
+            'duration'     => 120,
+            'genre'        => null,
+            'badge'        => null,
+            'price'        => $track->price,
+            'url'          => $track->file_path ? \Storage::disk('s3')->url($track->file_path) : null,
+            'downloads'    => $track->downloads_count,
+            'canDownload'  => $canDownload,
+            'downloadLink' => $canDownload ? route('playlist.download_item', [$playlist->name, $track->id]) : null,
+            'addToCart'    => route('playlist.add.item.cart', [$playlist->name, $track->id]),
+        ]);
+
+        return response()->json(['tracks' => $tracks]);
     }
 
     /**

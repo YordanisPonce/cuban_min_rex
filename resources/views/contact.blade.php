@@ -5,6 +5,7 @@
 @endphp
 
 @section('title', 'Página de Contacto')
+@section('robots', 'noindex, follow')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />

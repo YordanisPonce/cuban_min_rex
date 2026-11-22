@@ -1,3 +1,37 @@
 User-agent: *
-Disallow:
 Allow: /
+
+Disallow: /admin
+Disallow: /login
+Disallow: /logout
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /verify-email
+Disallow: /auth/
+Disallow: /profile
+Disallow: /notifications
+Disallow: /reviews
+
+Disallow: /cart
+Disallow: /payment
+Disallow: /paypal/
+Disallow: /stripe/
+Disallow: /order/
+Disallow: /download/
+Disallow: /file/
+Disallow: /files/
+Disallow: /info/
+Disallow: /public/files/
+
+Disallow: /search
+Disallow: /sitemap
+Disallow: /playlists-get-tracks/
+Disallow: /playlists/*/download
+Disallow: /playlists/*/add_
+Disallow: /playlists/*/remove_
+Disallow: /djs/*/follow
+Disallow: /djs/*/ntf
+Disallow: /djs/*/review
+
+Sitemap: https://cubanpool.com/sitemap.xml

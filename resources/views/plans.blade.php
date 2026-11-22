@@ -7,7 +7,8 @@
     Carbon::setLocale('es');
 @endphp
 
-@section('title', 'Planes - ' . config('app.name'))
+@section('title', 'Planes y precios')
+@section('description', 'Elige tu plan y accede a descargas de remixes y música exclusiva para DJs. Compara precios y beneficios.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/plans.css') }}" />

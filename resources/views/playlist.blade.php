@@ -13,7 +13,8 @@
     $error = session('error');
 @endphp
 
-@section('title', $playlist->name . ' – ' . config('app.name'))
+@section('title', $playlist->name)
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/playlist-details.css') }}" />

@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Acesso denegado - ' . config('app.name'))
+@section('title', 'Acesso denegado')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <style>

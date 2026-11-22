@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Error del servidor - ' . config('app.name'))
+@section('title', 'Error del servidor')
+@section('robots', 'noindex, follow')
 
 @push('styles')
 <style>

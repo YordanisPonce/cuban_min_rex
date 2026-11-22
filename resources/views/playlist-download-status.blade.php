@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Preparando descarga – ' . config('app.name'))
+@section('title', 'Preparando descarga')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <style>

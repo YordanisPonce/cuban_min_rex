@@ -4,45 +4,98 @@
     data-assets-path="{{ asset('assets/') }}" data-template="front-pages">
 
 <head>
+    @php
+        use Illuminate\Support\Str;
+
+        $siteName = config('app.name');
+
+        // Cada vista puede sobrescribir con @section('title', '...'), etc.
+        $title       = trim($__env->yieldContent('title'));
+        $pageTitle   = $title !== '' ? "$title | $siteName" : "$siteName - Música, Remixes y Descargas";
+        $description = Str::limit(strip_tags(trim($__env->yieldContent('description')) ?: (string) config('app.description')), 160);
+        $canonical   = trim($__env->yieldContent('canonical')) ?: url()->current();
+        $ogType      = trim($__env->yieldContent('og_type')) ?: 'website';     
+        $robots      = trim($__env->yieldContent('robots')) ?: 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1';
+
+        $toAbsolute = fn ($path) => Str::startsWith($path, ['http://', 'https://']) ? $path : asset(ltrim($path, '/'));
+        $logoUrl    = $toAbsolute((string) config('app.logo'));
+        $image      = $toAbsolute(trim($__env->yieldContent('image')) ?: (string) config('app.og_image', config('app.logo')));
+        $imageAlt   = trim($__env->yieldContent('image_alt')) ?: $siteName;
+
+        $twitter  = ltrim((string) config('app.twitter'), '@');
+        $ogLocale = config('app.og_locale', 'es_ES');
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type'       => 'WebSite',
+                    '@id'         => url('/') . '#website',
+                    'url'         => url('/'),
+                    'name'        => $siteName,
+                    'description' => config('app.description'),
+                    'inLanguage'  => 'es',
+                ],
+                [
+                    '@type'  => 'Organization', // cámbialo a MusicGroup o Person si aplica
+                    '@id'    => url('/') . '#organization',
+                    'name'   => $siteName,
+                    'url'    => url('/'),
+                    'logo'   => $logoUrl,
+                    'sameAs' => array_values(array_filter((array) config('app.social', []))),
+                ],
+            ],
+        ];
+    @endphp
+
     <meta charset="utf-8" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <title>@yield('title', config('app.name'))</title>
-
-    <!-- Canonical SEO -->
-    <link rel="canonical" href="{{ config('app.url') }}">
-    <meta name="keywords" content="{{ config('app.keywords') }}">
-    <meta name="description" content="{{ config('app.description') }}">
-    <meta name="author" content="{{ config('app.name') }}">
-    <meta name="robots" content="index, follow">
-    <meta name="image" content="{{ config('app.logo') }}">
-    <meta name="language" content="es">
-    <meta name="distribution" content="global">
-    <meta name="rating" content="general">
-    <meta name="revisit-after" content="7 days">
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $description }}">
+    <meta name="author" content="{{ $siteName }}">
+    <meta name="robots" content="{{ $robots }}">
+    <link rel="canonical" href="{{ $canonical }}">
 
     <!-- Open Graph (Facebook, WhatsApp, Instagram) -->
-    <meta property="og:title" content="{{ config('app.name') }} - Música, Remixes y Descargas">
-    <meta property="og:type" content="website">
-    <meta property="og:image" content="{{ config('app.logo') }}">
-    <meta property="og:description" content="{{ config('app.description') }}">
-    <meta property="og:site_name" content="{{ config('app.name') }}">
-    <meta property="og:url" content="{{ config('app.url') }}">
-    <meta property="og:locale" content="es_ES">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $description }}">
+    <meta property="og:url" content="{{ $canonical }}">
+    <meta property="og:locale" content="{{ $ogLocale }}">
+    <meta property="og:image" content="{{ $image }}">
+    <meta property="og:image:secure_url" content="{{ $image }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $imageAlt }}">
 
-    <!-- Twitter Cards -->
+    <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ config('app.name') }} - Música y Remixes">
-    <meta name="twitter:description" content="Escucha y descarga música, remixes y contenido exclusivo para DJs.">
-    <meta name="twitter:image" content="{{ config('app.logo') }}">
-    <meta name="twitter:site" content="{{ '@' . config('app.name') }}">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $description }}">
+    <meta name="twitter:image" content="{{ $image }}">
+    <meta name="twitter:image:alt" content="{{ $imageAlt }}">
+    @if($twitter)
+        <meta name="twitter:site" content="{{ '@' . $twitter }}">
+        <meta name="twitter:creator" content="{{ '@' . $twitter }}">
+    @endif
 
-    <!-- Mobile & PWA -->
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Iconos, manifest y PWA -->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ config('app.logo_32x32') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ config('app.logo_180x180') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
     <meta name="theme-color" content="#000000">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="{{ $siteName }}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- Datos estructurados -->
+    <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
+    @stack('structured-data')
 
     @if (env('APP_ENV') == 'production')
         <script>
@@ -61,9 +114,6 @@
             })(window, document, 'script', 'dataLayer', 'GTM-5J3LMKC');
         </script>
     @endif
-
-    <!-- Favicon -->
-    <link rel="icon" href="{{ config('app.logo') }}" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com/" />

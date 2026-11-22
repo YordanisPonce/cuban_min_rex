@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Djs – ' . config('app.name'))
+@section('title', 'DJs y artistas')
+@section('description', 'Conoce a los DJs de la plataforma, sigue a tus favoritos y descubre sus remixes, mixes y playlists.')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/djs.css') }}">

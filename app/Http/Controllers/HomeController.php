@@ -685,7 +685,8 @@ class HomeController extends Controller
         $index = 2;
 
         $metadata = [
-            'title' => 'Remixes',
+            'title' => 'Remixes para DJs en alta calidad',
+            'description' => 'Descarga los últimos remixes para DJs en alta calidad. Escucha un adelanto y llévalos directo a tu set.',
             'subtitle' => 'Remixes',
             'heroDescription' => '',
             'heroLinkText' => null,
@@ -805,8 +806,9 @@ class HomeController extends Controller
         $index = 10;
 
         $metadata = [
-            'title' => 'Mixes',
+            'title' => 'Mixes y sesiones para DJs',
             'subtitle' => 'Mixes',
+            'description' => 'Escucha y descarga mixes y sesiones completas de DJs. Novedades constantes, listas para tus eventos y entrenamientos.',
             'heroDescription' => '',
             'heroLinkText' => null,
             'heroLinkAddress' => null,
@@ -880,8 +882,9 @@ class HomeController extends Controller
         $index = 8;
 
         $metadata = [
-            'title' => 'Exclusivos',
+            'title' => 'Contenido exclusivo para DJs',
             'subtitle' => 'Exclusivos',
+            'description' => 'Accede a remixes y música exclusiva que no encontrarás en otro lugar. Descargas en alta calidad para tus sets.',
             'heroDescription' => '',
             'heroLinkText' => null,
             'heroLinkAddress' => null,
@@ -992,8 +995,9 @@ class HomeController extends Controller
         $index = 3;
 
         $metadata = [
-            'title' => 'Videos',
+            'title' => 'Videos musicales y video remixes',
             'subtitle' => 'Videos',
+            'description' => 'Mira y descarga videos musicales y video remixes para DJs. Contenido listo para tus pantallas, eventos y sets en vivo.',
             'heroDescription' => '',
             'heroLinkText' => null,
             'heroLinkAddress' => null,

@@ -5,7 +5,8 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', 'Review - ' . config('app.name'))
+@section('title', 'Reviews')
+@section('robots', 'noindex, follow')
 
 @push('styles')
 @endpush

@@ -5,8 +5,6 @@
     $error = session('error');
 @endphp
 
-@section('title', 'Inicio - ' . config('app.name'))
-
 @push('styles')
     <style>
         :root {

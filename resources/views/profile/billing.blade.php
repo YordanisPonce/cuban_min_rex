@@ -70,7 +70,8 @@
         'Vietnam',
     ];
 @endphp
-@section('title', 'Editar Perfil - ' . config('app.name'))
+@section('title', 'Editar Perfil')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/edit-profile.css') }}" />

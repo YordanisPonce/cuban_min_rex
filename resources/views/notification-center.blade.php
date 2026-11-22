@@ -8,7 +8,8 @@
     $error = session('error');
 @endphp
 
-@section('title', 'Notificaciones - ' . config('app.name'))
+@section('title', 'Notificaciones')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/notification-center.css') }}">

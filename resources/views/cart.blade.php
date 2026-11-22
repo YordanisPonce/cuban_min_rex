@@ -6,7 +6,9 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', 'Carrito - ' . config('app.name'))
+
+@section('title', 'Carrito')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/cart.css') }}">

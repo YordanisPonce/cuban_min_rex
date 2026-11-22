@@ -4,7 +4,8 @@
     $orderId = $order->stripe_payment_intent ?? ($order->paypal_order_id ?? $order->id);
 @endphp
 
-@section('title', 'Detalles Orden #' . $order->id . ' - ' . config('app.name'))
+@section('title', 'Detalles Orden #' . $order->id)
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/order-details.css') }}">

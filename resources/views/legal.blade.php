@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', $title.' - ' . config('app.name'))
+@section('title', $title)
 
 @push('styles')
     <style>

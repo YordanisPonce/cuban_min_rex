@@ -2,6 +2,8 @@
 
 @section('title', 'Checkout')
 
+@section('robots', 'noindex, follow')
+
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/css/payment.css') }}" />
     <style>

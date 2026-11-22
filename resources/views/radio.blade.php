@@ -17,6 +17,7 @@
 @endphp
 
 @section('title', 'Emisora')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/remixes.css') }}" />

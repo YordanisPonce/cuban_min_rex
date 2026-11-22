@@ -5,7 +5,9 @@
     $success = session('success');
     $error = session('error');
 @endphp
-@section('title', ($metadata['title'] ?? 'Catálogo') . ' - ' . config('app.name'))
+
+@section('title', ($metadata['title'] ?? 'Catálogo de música y remixes'))
+@section('description', ($metadata['description'] ?? 'Explora el catálogo completo de remixes, mashups y pistas para DJs. Escucha un adelanto y descarga en alta calidad.'))
 
 @push('styles')
     <style>

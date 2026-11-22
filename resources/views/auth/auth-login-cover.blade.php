@@ -3,23 +3,97 @@
     $success = session('success');
     $error = session('error');
 @endphp
-<html lang="en" class="layout-navbar-fixed layout-wide" dir="ltr" data-skin="default" data-bs-theme="dark" data-assets-path="{{ asset('assets/') }}" data-template="front-pages">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
-    <meta name="robots" content="noindex, nofollow" />
-    <title>@yield('title', 'Iniciar sesión - '.config('app.name'))</title>
+<html lang="es" class="layout-navbar-fixed layout-wide" dir="ltr" data-skin="default" data-bs-theme="dark"
+    data-assets-path="{{ asset('assets/') }}" data-template="front-pages">
+    <head>
+    @php
+        use Illuminate\Support\Str;
 
-    <meta name="description" content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
-    <!-- Canonical SEO -->
-    <meta name="keywords" content="Vuexy bootstrap dashboard, vuexy bootstrap 5 dashboard, themeselection, html dashboard, web dashboard, frontend dashboard, responsive bootstrap theme" />
-    <meta property="og:title" content="Vuexy bootstrap Dashboard by Pixinvent" />
-    <meta property="og:type" content="product" />
-    <meta property="og:url" content="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
-    <meta property="og:image" content="{{ asset('assets/img/vuexy-hero-image.png') }}" />
-    <meta property="og:description" content="Vuexy is the best bootstrap 5 dashboard for responsive web apps. Streamline your app development process with ease." />
-    <meta property="og:site_name" content="Pixinvent" />
-    <link rel="canonical" href="https://themeforest.net/item/vuexy-vuejs-html-laravel-admin-dashboard-template/23328599" />
+        $siteName = config('app.name');
+
+        // Cada vista puede sobrescribir con @section('title', '...'), etc.
+        $title       = trim($__env->yieldContent('title'));
+        $pageTitle   = $title !== '' ? "$title | $siteName" : "Iniciar Sesión | $siteName";
+        $description = Str::limit(strip_tags(trim($__env->yieldContent('description')) ?: (string) config('app.description')), 160);
+        $canonical   = trim($__env->yieldContent('canonical')) ?: url()->current();
+        $ogType      = trim($__env->yieldContent('og_type')) ?: 'website';     
+        $robots      = trim($__env->yieldContent('robots')) ?: 'noindex, nofollow';
+
+        $toAbsolute = fn ($path) => Str::startsWith($path, ['http://', 'https://']) ? $path : asset(ltrim($path, '/'));
+        $logoUrl    = $toAbsolute((string) config('app.logo'));
+        $image      = $toAbsolute(trim($__env->yieldContent('image')) ?: (string) config('app.og_image', config('app.logo')));
+        $imageAlt   = trim($__env->yieldContent('image_alt')) ?: $siteName;
+
+        $twitter  = ltrim((string) config('app.twitter'), '@');
+        $ogLocale = config('app.og_locale', 'es_ES');
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type'       => 'WebSite',
+                    '@id'         => url('/') . '#website',
+                    'url'         => url('/'),
+                    'name'        => $siteName,
+                    'description' => config('app.description'),
+                    'inLanguage'  => 'es',
+                ],
+                [
+                    '@type'  => 'Organization', // cámbialo a MusicGroup o Person si aplica
+                    '@id'    => url('/') . '#organization',
+                    'name'   => $siteName,
+                    'url'    => url('/'),
+                    'logo'   => $logoUrl,
+                    'sameAs' => array_values(array_filter((array) config('app.social', []))),
+                ],
+            ],
+        ];
+    @endphp
+
+    <meta charset="utf-8" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $description }}">
+    <meta name="author" content="{{ $siteName }}">
+    <meta name="robots" content="{{ $robots }}">
+    <link rel="canonical" href="{{ $canonical }}">
+
+    <!-- Open Graph (Facebook, WhatsApp, Instagram) -->
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $description }}">
+    <meta property="og:url" content="{{ $canonical }}">
+    <meta property="og:locale" content="{{ $ogLocale }}">
+    <meta property="og:image" content="{{ $image }}">
+    <meta property="og:image:secure_url" content="{{ $image }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="{{ $imageAlt }}">
+
+    <!-- Twitter / X Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $pageTitle }}">
+    <meta name="twitter:description" content="{{ $description }}">
+    <meta name="twitter:image" content="{{ $image }}">
+    <meta name="twitter:image:alt" content="{{ $imageAlt }}">
+    @if($twitter)
+        <meta name="twitter:site" content="{{ '@' . $twitter }}">
+        <meta name="twitter:creator" content="{{ '@' . $twitter }}">
+    @endif
+
+    <!-- Iconos, manifest y PWA -->
+    <link rel="icon" href="{{ config('app.logo') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="{{ $siteName }}">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     @if(env('APP_ENV') == 'production')
     <script>

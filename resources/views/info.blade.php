@@ -1,6 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Info ' . $item['name'] . ' - ' . config('app.name'))
+@section('title', "{$item['name']} - {$item['artist']}")
+@section('description', "Descarga {$item['name']} de {$item['artist']}. Remix en alta calidad listo para tus sets.")
+@section('og_type', 'music.song')
+@section('image', {{ $item['poster'] ?? config('app.logo_alter') }})
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/free-download.css') }}">

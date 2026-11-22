@@ -6,7 +6,8 @@
     use Carbon\Carbon;
 @endphp
 
-@section('title', 'Perfil - ' . config('app.name'))
+@section('title', 'Perfil')
+@section('robots', 'noindex, follow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('/assets/css/profile.css') }}" />

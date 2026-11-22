@@ -16,9 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
         ]);
 
-        $middleware->validateCsrfTokens(except: [
-            '/stripe/webhook',
-        ]);
+        $middleware->validateCsrfTokens(except: ['stripe/webhook', 'paypal/webhook']);
 
         $middleware->group('api', [
             \Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful::class,
