@@ -326,7 +326,7 @@
 
         .filters-grid {
             display: grid;
-            grid-template-columns: 2fr repeat(4, 1fr) auto;
+            grid-template-columns: 2fr repeat(5, 1fr) auto;
             gap: .8rem;
             align-items: end;
         }
@@ -1140,6 +1140,7 @@
                         <div class="f-field"><label for="fBpm">BPM</label><select id="fBpm"></select></div>
                         <div class="f-field"><label for="fKey">Nota</label><select id="fKey"></select></div>
                         <div class="f-field"><label for="fGenre">Género</label><select id="fGenre"></select></div>
+                        <div class="f-field"><label for="fOrder">Ordernar</label><select id="fOrder"></select></div>
                         <div class="f-reset-wrap"><button class="f-reset" id="fReset"><i class="fas fa-rotate-left"></i>
                                 Limpiar</button></div>
                     </div>
@@ -1205,6 +1206,9 @@
         const KEYS = [];
         for (let n = 1; n <= 12; n++) KEYS.push(n + 'A');
         for (let n = 1; n <= 12; n++) KEYS.push(n + 'B');
+        const ORDERS = [
+            'Más Descargados'
+        ]
 
         // ===== State =====
         const PER_PAGE = 10;
@@ -1218,7 +1222,8 @@
             artist: $('fArtist'),
             bpm: $('fBpm'),
             key: $('fKey'),
-            genre: $('fGenre')
+            genre: $('fGenre'),
+            order: $('fOrder'),
         };
 
         function fillSelect(el, label, values) {
@@ -1240,6 +1245,7 @@
         fillSelect(F.bpm, 'Todos los BPM', [...BPM]);
         fillSelect(F.key, 'Todas las notas', KEYS);
         fillSelect(F.genre, 'Todos los géneros', [...GENRES].sort());
+        fillSelect(F.order, 'Por Defecto (Más Recientes)', [...ORDERS]);
 
         function hasNumsLeft(str, value) {
             const regex = /-?\d+(\.\d+)?/g;
@@ -1293,7 +1299,9 @@
 
         function filtered() {
             const q = F.search.value.trim().toLowerCase();
-            return tracks.filter(t => (!q || t.title.toLowerCase().includes(q)) && (!F.artist.value || t.artist === F.artist
+            const o = F.order.value;
+            const result = o === 'Más Descargados' ? tracks.sort( (a,b) => b.downloads - a.downloads) : tracks.sort( (a,b) => parseInt(b.id) - parseInt(a.id));
+            return result.filter(t => (!q || t.title.toLowerCase().includes(q)) && (!F.artist.value || t.artist === F.artist
                 .value) && hasBPM(t) && (!F.key.value || t.key === F.key.value) && (!F.genre
                 .value || hasGenre(t)));
         }
@@ -1364,7 +1372,8 @@
                 artist: 'Artista',
                 bpm: 'BPM',
                 key: 'Nota',
-                genre: 'Género'
+                genre: 'Género',
+                order: 'Ordenar'
             };
             $('chips').innerHTML = Object.entries(F).filter(([, el]) => el.value !== '').map(([k, el]) =>
                     `<span class="chip" data-chip="${k}">${labels[k]}: ${el.value}<i class="fas fa-xmark"></i></span>`)
