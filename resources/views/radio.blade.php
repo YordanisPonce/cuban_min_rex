@@ -17,7 +17,7 @@
 @endphp
 
 @section('title', 'Emisora')
-@section('robots', 'noindex, follow')
+@section('title', 'Escucha directamente a CubanDjsPro desde nuestra emisora en '. config('app.name'))
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/remixes.css') }}" />

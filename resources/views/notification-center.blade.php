@@ -9,7 +9,7 @@
 @endphp
 
 @section('title', 'Notificaciones')
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/notification-center.css') }}">

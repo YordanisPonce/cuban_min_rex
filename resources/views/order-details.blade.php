@@ -5,7 +5,7 @@
 @endphp
 
 @section('title', 'Detalles Orden #' . $order->id)
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/order-details.css') }}">

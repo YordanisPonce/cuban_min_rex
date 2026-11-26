@@ -222,7 +222,7 @@ class HomeController extends Controller
                 'name' => $gener->name,
                 'cover' => $gener->cover ? Storage::disk('s3')->url($gener->cover) : asset('img/logo_alter.png'),
                 'tracks' => $gener->tracks,
-                'route' => route('remixes', ['genre' => $gener->name]),
+                'route' => route('genres.show', $gener->name),
             ];
         }); 
 

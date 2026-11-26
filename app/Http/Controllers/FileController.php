@@ -46,7 +46,7 @@ class FileController extends Controller
             'price' => $file->price,
             'categories' => $file->categories->pluck('name')->toArray(),
             'intro' => $file->intro(),
-            'size' => $file->getSize(),
+            'size' => /*$file->getSize()*/'',
             'ext' => $file->getExtension(),
             'downloads' => $file->download_count,
             'canBeDownload' => $file->canBeDownload(),
@@ -66,7 +66,9 @@ class FileController extends Controller
             $banners = [['image' => asset('assets/img/hero-base.jpeg')]];
         }
 
-        return view('info', compact('item', 'banners'));
+        $index = 2;
+
+        return view('info', compact('item', 'banners', 'index'));
     }
 
     public function image(string $filename)

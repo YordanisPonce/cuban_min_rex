@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'PlayLists')
+@section('description', 'Encuentra tus playlist favoritas, ordenadas por carpetas para facilitar tu busqueda.')
 
 @push('styles')
     <style>

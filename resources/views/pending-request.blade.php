@@ -5,7 +5,7 @@ use Carbon\Carbon;
 Carbon::setLocale('es');
 @endphp
 
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <style>

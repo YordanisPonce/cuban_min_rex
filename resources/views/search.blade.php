@@ -8,7 +8,7 @@
 @endphp
 
 @section('title', 'Resultado de Busqueda ')
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/search.css') }}" />

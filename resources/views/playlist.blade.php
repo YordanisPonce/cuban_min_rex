@@ -14,6 +14,7 @@
 @endphp
 
 @section('title', $playlist->name)
+@section('description', 'Detalles de la playlist: ' . $playlist->name .'. Escuchala completa y elige tus tracks favoritos.')
 @section('robots', 'noindex, follow')
 
 @push('styles')

@@ -4,6 +4,7 @@ use App\Filament\Pages\UserDownloadHistory;
 use App\Filament\Pages\UserPayments;
 use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\GoogleAuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CollectionController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\FollowController;
@@ -69,6 +70,41 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::get('/plans', 'plan')->name('plans');
         Route::get('/djs', 'djs')->name('djs');
         Route::get('/djs/{dj}', 'dj')->name('dj');
+        Route::get('/remixes', 'remixes')->name('remixes');
+        Route::get('/mixes', 'mixes')->name('mixes');
+        Route::get('/exclusives', 'exclusives')->name('exclusives');
+        Route::get('/videos', 'videos')->name('videos');
+        Route::get('/radio', 'radio')->name('radio');
+        Route::get('/radio/remixes', 'radio_remixes')->name('radio.remixes');
+    });
+
+    Route::controller(PlayListController::class)
+        ->prefix('playlists')
+        ->name('playlist.')
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('{playlist}', 'show')->name('show');
+            Route::get('{playlist}/add_to_cart', 'addToCart')->name('add.cart');
+            Route::get('{playlist}/add_item_to_cart/{itemId}', 'addItemToCart')->name('add.item.cart');
+            Route::get('{playlist}/remove_to_cart', 'removeToCart')->name('remove.cart');
+            Route::get('{playlist}/remove_item_to_cart/{itemId}', 'removeItemToCart')->name('remove.item.cart');
+            Route::get('{playlist}/{name}', 'info')->name('item.info');
+        });
+
+    Route::controller(CategoryController::class)
+        ->prefix('genres')
+        ->name('genres.')
+        ->group(function () {
+            Route::get('{name}', 'show')->name('show');
+        });
+
+    /*
+    |----------------------------------------------------------------------
+    | 3.2 Publicas transaccionales (usar noindex en sus vistas)
+    |----------------------------------------------------------------------
+    */
+
+    Route::controller(HomeController::class)->group(function () {
         Route::get('/legal', 'legal')->name('legal');
         Route::get('/privacy', 'privacy')->name('privacy');
         Route::get('/cookies', 'cookies')->name('cookies');
@@ -76,11 +112,19 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
         Route::get('/cart', 'cart')->name('cart');
     });
 
-    /*
-    |----------------------------------------------------------------------
-    | 3.2 Publicas transaccionales (usar noindex en sus vistas)
-    |----------------------------------------------------------------------
-    */
+    // Archivos y carrito
+    Route::controller(FileController::class)->group(function () {
+        Route::get('/remixes/{name}', 'info')->name('file.info');
+        Route::get('/radio/file/{file}/pay', 'payFile')->name('radio.file.pay');
+        Route::get('/files/cart/add/{file}', 'addToCart')->name('file.add.cart');
+        Route::get('/files/cart/remove/{file}', 'removeToCart')->name('file.remove.cart');
+        Route::get('/files/cart/empty', 'emptyCart')->name('file.empty.cart');
+    });
+
+    // Catalogo
+    Route::get('/search', [SearchController::class, 'search'])->name('search');
+    Route::get('/packs', [CollectionController::class, 'index'])->name('collection.index');
+
     Route::get('/cart/pay', [FileController::class, 'pay'])->name('file.pay');
     Route::post('/paypal/process-cart', [PaypalController::class, 'processCart'])->name('paypal.process.cart');
 
@@ -127,27 +171,9 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
                 Route::get('delete', 'destroy')->name('destroy');
             });
 
-        // Catalogo
-        Route::get('/search', [SearchController::class, 'search'])->name('search');
-        Route::get('/packs', [CollectionController::class, 'index'])->name('collection.index');
-
-        Route::controller(HomeController::class)->group(function () {
-            Route::get('/remixes', 'remixes')->name('remixes');
-            Route::get('/mixes', 'mixes')->name('mixes');
-            Route::get('/exclusives', 'exclusives')->name('exclusives');
-            Route::get('/videos', 'videos')->name('videos');
-            Route::get('/radio', 'radio')->name('radio');
-            Route::get('/radio/remixes', 'radio_remixes')->name('radio.remixes');
-        });
-
         // Archivos y carrito
         Route::controller(FileController::class)->group(function () {
             Route::get('/file/{file}', 'download')->name('file.download');
-            Route::get('/info/file/{name}', 'info')->name('file.info');
-            Route::get('/radio/file/{file}/pay', 'payFile')->name('radio.file.pay');
-            Route::get('/files/cart/add/{file}', 'addToCart')->name('file.add.cart');
-            Route::get('/files/cart/remove/{file}', 'removeToCart')->name('file.remove.cart');
-            Route::get('/files/cart/empty', 'emptyCart')->name('file.empty.cart');
         });
 
         // Descarga firmada desde S3
@@ -184,17 +210,10 @@ Route::middleware(IsUserMiddleware::class)->group(function () {
             ->prefix('playlists')
             ->name('playlist.')
             ->group(function () {
-                Route::get('/', 'index')->name('index');
-                Route::get('{playlist}', 'show')->name('show');
                 Route::get('{playlist}/download', 'download')->name('download');
                 Route::get('{playlist}/download/status/{uuid}', 'downloadStatus')->name('download.status');
                 Route::get('{playlist}/download/status/{uuid}/check', 'downloadStatusCheck')->name('download.status.check');
                 Route::get('{playlist}/download_item/{itemId}', 'download_item')->name('download_item');
-                Route::get('{playlist}/add_to_cart', 'addToCart')->name('add.cart');
-                Route::get('{playlist}/add_item_to_cart/{itemId}', 'addItemToCart')->name('add.item.cart');
-                Route::get('{playlist}/remove_to_cart', 'removeToCart')->name('remove.cart');
-                Route::get('{playlist}/remove_item_to_cart/{itemId}', 'removeItemToCart')->name('remove.item.cart');
-                Route::get('lists/{playlist}/info/{name}', 'info')->name('item.info');
             });
 
         // JSON de pistas de una playlist (lo consume el reproductor)

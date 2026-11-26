@@ -19,6 +19,7 @@ Schedule::command('queue:work database --stop-when-empty --max-time=3600 --tries
 Artisan::command('sitemap:generate', function () {
     $routes = [
         'home',             // Inicio
+        'djs',              // Djs
         'remixes',          // Remixes
         'mixes',            // Mixes
         'videos',           // Videos

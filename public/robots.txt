@@ -21,7 +21,6 @@ Disallow: /order/
 Disallow: /download/
 Disallow: /file/
 Disallow: /files/
-Disallow: /info/
 Disallow: /public/files/
 
 Disallow: /search

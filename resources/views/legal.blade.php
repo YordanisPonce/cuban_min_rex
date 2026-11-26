@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('title', $title)
+@section('description', 'Detalles de los/las '. $title . ' de '. config('app.name'))
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <style>

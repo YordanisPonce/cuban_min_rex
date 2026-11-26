@@ -6,7 +6,7 @@
     $error = session('error');
 @endphp
 @section('title', 'Reviews')
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
 @endpush

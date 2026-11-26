@@ -3,7 +3,7 @@
 @section('title', "{$item['name']} - {$item['artist']}")
 @section('description', "Descarga {$item['name']} de {$item['artist']}. Remix en alta calidad listo para tus sets.")
 @section('og_type', 'music.song')
-@section('image', {{ $item['poster'] ?? config('app.logo_alter') }})
+@section('image', "{$item['poster']}")
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/free-download.css') }}">
@@ -15,6 +15,18 @@
             --danger: #e04040;
             --success: #2ecc71;
         }
+
+        .main{
+            max-width: var(--maxw);
+            padding: 2rem var(--gutter);
+        }
+
+        .form-card{
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
         @media(max-width: 800px){
             .file-card{
                 position: unset;
@@ -47,25 +59,7 @@
 
 @section('content')
 
-    <section class="hero container">
-        <div class="hero-slides" id="heroSlides"></div>
-        <div class="hero-gradient"></div>
-        <div class="hero-gradient-b"></div>
-        <div class="container">
-            <h1 data-aos="fade-right" data-aos-delay="300">REMIXES<br>EXCLUSIVOS<br><span class="accent">PARA DJS
-                    LATINOS</span></h1>
-            <p data-aos="fade-right" data-aos-delay="500">Descarga edits, intros, mashups y más musical para hacer historia
-                en la pista.</p>
-            <a data-aos="zoom-right" data-aos-delay="700" class="btn-primary" style="padding:12px 28px;font-size:.9rem"
-                href="{{ route('plans') }}"><i class="fas fa-crown"></i> REMIXES
-                EXCLUSIVOS</a>
-            <div class="hero-stats">
-                <span data-aos="fade-right" data-aos-delay="900"><span class="dot"></span> +1000 REMIXES
-                    EXCLUSIVOS</span>
-                <span data-aos="fade-right" data-aos-delay="1100">✓ ACTUALIZACIONES SEMANALES</span>
-            </div>
-        </div>
-    </section>
+    @include('partials.hero')
 
     <div class="main">
         <!-- FILE INFO -->

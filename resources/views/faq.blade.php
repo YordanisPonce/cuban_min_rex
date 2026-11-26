@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', 'Página de FAQ')
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
 <link rel="stylesheet" href="{{ asset('/assets/vendor/css/pages/front-page.css') }}" />

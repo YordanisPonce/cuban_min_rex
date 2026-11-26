@@ -6,6 +6,7 @@
 @endphp
 
 @section('title', $dj->name)
+@section('description', 'Conoce a '. $dj->name .' y descubre sus remixes, mixes y playlists.')
 @section('robots', 'noindex, follow')
 
 @push('styles')

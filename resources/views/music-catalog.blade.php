@@ -1118,6 +1118,9 @@
     <div id="content">
         <div class="main">
             @include('partials.hero', [
+                'baseTooltip' => $metadata['heroTooltip'] ?? '',
+                'baseTitle' => $metadata['heroTitle'] ?? '',
+                'baseAscent' => $metadata['heroAscent'] ?? '',
                 'baseDescription' =>
                     $metadata['heroDescription'] ??
                     'Descarga edits, intros, mashups y más musical para hacer historia en la pista.',

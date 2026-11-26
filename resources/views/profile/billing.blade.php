@@ -71,7 +71,7 @@
     ];
 @endphp
 @section('title', 'Editar Perfil')
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/edit-profile.css') }}" />

@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('title', "Descargar {$file->name} - {$file->user?->name}")
-@section('robots', 'noindex, follow')
+@section('robots', 'noindex, nofollow')
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('assets/css/free-download.css') }}">
