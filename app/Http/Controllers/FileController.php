@@ -46,7 +46,7 @@ class FileController extends Controller
             'price' => $file->price,
             'categories' => $file->categories->pluck('name')->toArray(),
             'intro' => $file->intro(),
-            'size' => /*$file->getSize()*/'',
+            'size' => $file->getSize(),
             'ext' => $file->getExtension(),
             'downloads' => $file->download_count,
             'canBeDownload' => $file->canBeDownload(),
